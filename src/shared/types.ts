@@ -37,6 +37,8 @@ export interface Signal {
   fillColor?: string; // vector fill, default semi-transparent stroke
   rowHeight: number; // px at zoom=1, default 40
   phase?: number; // clock phase offset (0 or 0.5), for 'p'/'n' type signals
+  /** WaveDrom node string — one character per step; anchors for edge[] */
+  node?: string;
 }
 
 export interface SignalGroup {
@@ -111,6 +113,8 @@ export interface DiagramState {
   version: 1;
   signals: SignalOrGroup[];
   config: DiagramConfig;
+  /** WaveDrom edge[] dependency arrow strings */
+  edges: string[];
   annotations: Annotation[];
 }
 

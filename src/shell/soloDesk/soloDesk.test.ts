@@ -49,6 +49,7 @@ function sampleDiagram(): DiagramState {
       },
     ],
     config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+    edges: [],
     annotations: [],
   };
 }
@@ -66,6 +67,7 @@ describe('localDraft', () => {
         version: 1,
         signals: [],
         config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+        edges: [],
         annotations: [],
       }),
     ).toBe(true);

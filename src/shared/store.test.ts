@@ -8,6 +8,7 @@ function emptyDiagram(): DiagramState {
     version: 1,
     signals: [],
     config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+    edges: [],
     annotations: [],
   };
 }
@@ -72,7 +73,8 @@ describe('useStore', () => {
           ],
         },
       ],
-      annotations: [],
+      edges: [],
+    annotations: [],
     });
 
     useStore.getState().removeSignal('nested-sig');

@@ -8,6 +8,7 @@ function bitDiagram(steps = 20): DiagramState {
   return {
     version: 1,
     config: { totalSteps: steps, hscale: 1 },
+    edges: [],
     annotations: [],
     signals: [
       {
@@ -78,7 +79,8 @@ describe('hitTest', () => {
     const diagram: DiagramState = {
       version: 1,
       config: { totalSteps: 10, hscale: 1 },
-      annotations: [],
+      edges: [],
+    annotations: [],
       signals: [
         {
           id: 'g1',

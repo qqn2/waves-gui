@@ -18,6 +18,7 @@ function signalToEntry(sig: Signal): WdSignal | Record<string, never> {
       wave: encodeWaveString(sig.states),
     };
     if (sig.phase !== undefined) entry.phase = sig.phase;
+    if (sig.node !== undefined) entry.node = sig.node;
     return entry;
   }
   const steps =
@@ -35,7 +36,10 @@ function signalToEntry(sig: Signal): WdSignal | Record<string, never> {
       wave += '.';
     }
   }
-  return { name: sig.name, wave, data };
+  const entry: WdSignal = { name: sig.name, wave, data };
+  if (sig.node !== undefined) entry.node = sig.node;
+  if (sig.phase !== undefined) entry.phase = sig.phase;
+  return entry;
 }
 
 function toEntry(item: SignalOrGroup): WdSignalEntry {
@@ -58,5 +62,8 @@ export function toWavedromJSON(diagram: DiagramState): WdRoot {
   };
   if (root.config?.head === undefined) delete root.config?.head;
   if (root.config?.foot === undefined) delete root.config?.foot;
+  if (diagram.edges.length > 0) {
+    root.edge = [...diagram.edges];
+  }
   return root;
 }

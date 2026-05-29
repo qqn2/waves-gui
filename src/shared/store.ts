@@ -77,6 +77,7 @@ function defaultDiagram(): DiagramState {
     version: 1,
     signals: [],
     config: { totalSteps: DEFAULT_STEPS, hscale: DEFAULT_HSCALE },
+    edges: [],
     annotations: [],
   };
 }
