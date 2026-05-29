@@ -44,6 +44,10 @@ export interface Actions {
   eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
   updateSignalColor(id: string, color: string): void;
+  updateVectorSegmentValue(signalId: string, segmentId: string, value: string): void;
+  setSignalPhase(signalId: string, phase: number | undefined): void;
+  setSignalPeriod(signalId: string, period: number | undefined): void;
+  setActiveSignalIds(ids: string[]): void;
   setTotalSteps(steps: number): void;
   setHscale(hscale: number): void;
   // Annotations
@@ -255,6 +259,46 @@ export const useStore = create<AppState & Actions>()(
         findSignal(s.diagram.signals, id, (sig) => {
           sig.name = name;
         });
+      });
+    },
+
+    updateVectorSegmentValue(signalId, segmentId, value) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type !== 'vector') return;
+          const seg = sig.segments.find((x) => x.id === segmentId);
+          if (seg) seg.value = value;
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    setSignalPhase(signalId, phase) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (phase === undefined) delete sig.phase;
+          else sig.phase = phase;
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    setSignalPeriod(signalId, period) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (period === undefined || period < 1) delete sig.period;
+          else sig.period = Math.floor(period);
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    setActiveSignalIds(ids) {
+      set((s) => {
+        s.view.activeSignalIds = ids;
       });
     },
 

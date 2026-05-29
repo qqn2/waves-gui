@@ -36,7 +36,9 @@ export interface Signal {
   color: string; // stroke color, default '#4A9EFF'
   fillColor?: string; // vector fill, default semi-transparent stroke
   rowHeight: number; // px at zoom=1, default 40
-  phase?: number; // clock phase offset (0 or 0.5), for 'p'/'n' type signals
+  phase?: number; // horizontal shift in steps (WaveDrom phase)
+  /** Cycles per column for this lane (WaveDrom period, integer >= 1) */
+  period?: number;
   /** WaveDrom node string — one character per step; anchors for edge[] */
   node?: string;
 }

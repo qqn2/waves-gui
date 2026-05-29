@@ -29,14 +29,14 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 | P3-STORE | done | 3e60c42 | `DiagramState.edges`, `Signal.node`, bridge round-trip |
 | P3-HF | done | d4b45cd | Head/foot render + `HeadFootFields` in shell; hitTest aligned |
 | P3-GOLD | done | d4b45cd | `upstreamGolden.test.ts` (5 tests) |
-| P3-DATA | pending | — | Bus `data` label editor |
+| P3-DATA | done | 2b20416 | `VectorSegmentEditor` in signal panel; `updateVectorSegmentValue` |
 | P3-EDGE | done | 323a5ee | `EdgeOverlay` SVG + `edgeLayout.ts` |
 | P3-VEC | done | 323a5ee | Bus add re-enabled; segment paint still JSON-only |
-| P3-TIMING | pending | — | `period` / `phase` UI |
+| P3-TIMING | done | 2b20416 | `SignalTimingBar` phase/period; bridge `timingRoundTrip.test.ts` |
 | Docs | done | 223dac2 | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` |
 
 ## Known gaps (see FUTURE_FEATURES.md)
 
-- Bus labels (`data`) — bridge only, no GUI edit (P3-DATA)
+- Bus `data[]` export may add extra `0` labels for non-bus steps (importer/exporter parity)
 - Edge drawing — simplified SVG (not full WaveDrom path grammar)
-- Vector segment paint — add bus in UI; edit values in JSON (P3-TIMING / segment tool later)
+- Vector segment paint on canvas — add bus in UI; edit labels in signal panel or JSON

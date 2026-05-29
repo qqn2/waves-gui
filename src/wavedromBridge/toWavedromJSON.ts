@@ -18,6 +18,7 @@ function signalToEntry(sig: Signal): WdSignal | Record<string, never> {
       wave: encodeWaveString(sig.states),
     };
     if (sig.phase !== undefined) entry.phase = sig.phase;
+    if (sig.period !== undefined) entry.period = sig.period;
     if (sig.node !== undefined) entry.node = sig.node;
     return entry;
   }
@@ -39,6 +40,7 @@ function signalToEntry(sig: Signal): WdSignal | Record<string, never> {
   const entry: WdSignal = { name: sig.name, wave, data };
   if (sig.node !== undefined) entry.node = sig.node;
   if (sig.phase !== undefined) entry.phase = sig.phase;
+  if (sig.period !== undefined) entry.period = sig.period;
   return entry;
 }
 

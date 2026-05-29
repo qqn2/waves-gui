@@ -299,3 +299,108 @@
   background: var(--border);
   margin: 0 2px;
 }
+
+.timingBarRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 2px 6px 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.timingBarSignal {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: min(10rem, 24vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timingBarField {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.timingBarLabel {
+  min-width: 2.75rem;
+  text-align: right;
+}
+
+.timingBarNum {
+  width: 3.25rem;
+  padding: 2px 4px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.timingBarClear {
+  padding: 0 5px;
+  font-size: 14px;
+  line-height: 1;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.timingBarClear:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.timingBarClear:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.timingBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 2px 8px 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.timingBarLabel {
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timingField {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+}
+
+.timingInput {
+  width: 3.5rem;
+  padding: 2px 4px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  text-align: center;
+}

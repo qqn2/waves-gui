@@ -14,6 +14,7 @@ import { ExportDialog } from './exportEngine';
 import { useStore } from './shared/store';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { HeadFootFields } from './shell/HeadFootFields';
+import { SignalTimingBar } from './shell/SignalTimingBar';
 import './App.css';
 
 function IntegratedCanvas({
@@ -123,6 +124,7 @@ function App() {
       <header className="shellHeader">
         <Toolbar onExport={() => setExportOpen(true)} />
         <HeadFootFields />
+        <SignalTimingBar />
       </header>
       <div className="mainArea">
         <AppLayout

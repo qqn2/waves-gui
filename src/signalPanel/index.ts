@@ -1,4 +1,5 @@
 export { SignalPanel } from './SignalPanel';
+export { VectorSegmentEditor } from './VectorSegmentEditor';
 export type { SignalPanelProps, ScrollSyncHandles } from './SignalPanel';
 export { SignalRow } from './SignalRow';
 export { GroupRow } from './GroupRow';
