@@ -6,12 +6,10 @@ import { PatternsMenu } from '../patterns/PatternsMenu';
 import { loadSampleDiagram, SAMPLE_DIAGRAMS } from './samples';
 import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
 import { loadRecentFiles } from './soloDesk/recentFiles';
+import { BUS_SEGMENT_EDIT_HINT } from '../tools/vectorPaintTool';
 import styles from './shell.module.css';
 
 const BIT_STATES: BitState[] = ['1', '0', 'z', 'x'];
-
-const VECTOR_ADD_DISABLED_TITLE =
-  'Vector editing coming later — use JSON/code panel for buses';
 
 export interface ToolbarProps {
   onExport: () => void;
@@ -177,8 +175,11 @@ export function Toolbar({ onExport }: ToolbarProps) {
             </button>
             <button
               type="button"
-              disabled
-              title={VECTOR_ADD_DISABLED_TITLE}
+              title={BUS_SEGMENT_EDIT_HINT}
+              onClick={() => {
+                addSignal('vector');
+                setAddOpen(false);
+              }}
             >
               Bus
             </button>
