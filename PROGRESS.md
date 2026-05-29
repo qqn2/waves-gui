@@ -30,8 +30,8 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 | P3-HF | done | d4b45cd | Head/foot render + `HeadFootFields` in shell; hitTest aligned |
 | P3-GOLD | done | d4b45cd | `upstreamGolden.test.ts` (5 tests) |
 | P3-DATA | pending | — | Bus `data` label editor |
-| P3-EDGE | done | (this commit) | `EdgeOverlay` SVG + `edgeNodeRoundTrip.test.ts` |
-| P3-VEC | done | (this commit) | Bus add re-enabled; segment paint still JSON-only |
+| P3-EDGE | done | 323a5ee | `EdgeOverlay` SVG + `edgeLayout.ts` |
+| P3-VEC | done | 323a5ee | Bus add re-enabled; segment paint still JSON-only |
 | P3-TIMING | pending | — | `period` / `phase` UI |
 | Docs | done | 223dac2 | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` |
 
