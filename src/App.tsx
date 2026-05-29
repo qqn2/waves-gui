@@ -6,7 +6,7 @@ import {
   type AppLayoutPaneContext,
 } from './shell';
 import { SignalPanel } from './signalPanel';
-import { WaveformCanvas, PointerMarker } from './renderer';
+import { WaveformCanvas, PointerMarker, EdgeOverlay } from './renderer';
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
 import { CodePanel } from './codePanel';
@@ -99,6 +99,7 @@ function CanvasWithMarker({
     <div className="canvasWrapOuter">
       <IntegratedCanvas scrollSync={scrollSync} onHoverHit={handleHover} />
       <PointerMarker hit={displayHit} diagram={diagram} view={view} />
+      <EdgeOverlay />
     </div>
   );
 }

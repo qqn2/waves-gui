@@ -26,18 +26,17 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 
 | Track | Status | Commit | Notes |
 |-------|--------|--------|-------|
-| P3-STORE | pending | — | Extend types/store for `edge[]`, `node` (orchestrator gate) |
-| P3-HF | done | (this commit) | Head/foot render + `HeadFootFields` in shell; hitTest aligned |
-| P3-GOLD | done | (this commit) | `upstreamGolden.test.ts` (5 tests) |
+| P3-STORE | done | 3e60c42 | `DiagramState.edges`, `Signal.node`, bridge round-trip |
+| P3-HF | done | d4b45cd | Head/foot render + `HeadFootFields` in shell; hitTest aligned |
+| P3-GOLD | done | d4b45cd | `upstreamGolden.test.ts` (5 tests) |
 | P3-DATA | pending | — | Bus `data` label editor |
-| P3-EDGE | pending | — | `edge` + `node` round-trip + render (needs P3-STORE) |
-| P3-VEC | pending | — | Vector add + canvas tools |
+| P3-EDGE | done | (this commit) | `EdgeOverlay` SVG + `edgeNodeRoundTrip.test.ts` |
+| P3-VEC | done | (this commit) | Bus add re-enabled; segment paint still JSON-only |
 | P3-TIMING | pending | — | `period` / `phase` UI |
 | Docs | done | 223dac2 | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` |
 
 ## Known gaps (see FUTURE_FEATURES.md)
 
-- Head/foot text in JSON but not drawn on canvas
-- Bus labels (`data`) — bridge only, no GUI edit
-- `edge` / `node` — dropped on import
-- Vector signals — import OK; add UI hidden (SOLO-L)
+- Bus labels (`data`) — bridge only, no GUI edit (P3-DATA)
+- Edge drawing — simplified SVG (not full WaveDrom path grammar)
+- Vector segment paint — add bus in UI; edit values in JSON (P3-TIMING / segment tool later)
