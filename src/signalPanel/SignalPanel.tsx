@@ -19,6 +19,9 @@ import {
 } from './panelTree';
 import styles from './SignalPanel.module.css';
 
+const VECTOR_ADD_DISABLED_TITLE =
+  'Vector editing coming later — use JSON/code panel for buses';
+
 export type { ScrollSyncHandles } from './scrollSyncTypes';
 
 export interface SignalPanelProps {
@@ -246,10 +249,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
               <button
                 type="button"
                 role="menuitem"
-                onClick={() => {
-                  addSignal('vector');
-                  setAddOpen(false);
-                }}
+                disabled
+                title={VECTOR_ADD_DISABLED_TITLE}
               >
                 Vector signal
               </button>

@@ -2,6 +2,8 @@ import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { toWavedromJSON } from '../wavedromBridge';
 import type { DiagramState } from '../shared/types';
 import { useStore } from '../shared/store';
+import { clearDraft } from './soloDesk/localDraft';
+import { recordRecentFile } from './soloDesk/recentFiles';
 
 type FilePickerWindow = Window & {
   showOpenFilePicker?: (options?: {
@@ -44,6 +46,7 @@ export async function openDiagramFile(): Promise<void> {
       }
       useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
       useStore.getState().markClean(handle.name);
+      recordRecentFile(handle.name);
       return;
     } catch (e) {
       if ((e as DOMException).name === 'AbortError') return;
@@ -68,6 +71,7 @@ export async function openDiagramFile(): Promise<void> {
         else {
           useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
           useStore.getState().markClean(file.name);
+          recordRecentFile(file.name);
         }
       } catch {
         window.alert('Could not open file');
@@ -101,6 +105,8 @@ export async function saveDiagramFile(
       await writable.write(blob);
       await writable.close();
       useStore.getState().markClean(handle.name);
+      clearDraft();
+      recordRecentFile(handle.name);
       return;
     } catch (e) {
       if ((e as DOMException).name === 'AbortError') return;
@@ -113,6 +119,8 @@ export async function saveDiagramFile(
   a.click();
   URL.revokeObjectURL(a.href);
   useStore.getState().markClean(a.download);
+  clearDraft();
+  recordRecentFile(a.download);
 }
 
 export function newDiagramFile(): void {
@@ -124,6 +132,7 @@ export function newDiagramFile(): void {
     config: { ...diagram.config, totalSteps: diagram.config.totalSteps },
     annotations: [],
   });
+  clearDraft();
   useStore.setState((s) => {
     s.view.fileName = null;
   });

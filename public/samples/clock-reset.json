@@ -1,0 +1,9 @@
+{
+  "signal": [
+    { "name": "clk", "wave": "p........" },
+    { "name": "reset_n", "wave": "10........" },
+    { "name": "enable", "wave": "0..1..0..1" }
+  ],
+  "config": { "hscale": 1 },
+  "head": { "text": "Clock and reset" }
+}

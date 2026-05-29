@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react';
 import type { Signal } from '../shared/types';
 import styles from './SignalPanel.module.css';
 
+const VECTOR_ADD_DISABLED_TITLE =
+  'Vector editing coming later — use JSON/code panel for buses';
+
 export interface MenuAnchor {
   x: number;
   y: number;
@@ -82,7 +85,8 @@ export function SignalContextMenu({
       <button
         type="button"
         role="menuitem"
-        onClick={() => onAddAbove('vector')}
+        disabled
+        title={VECTOR_ADD_DISABLED_TITLE}
       >
         Add bus above
       </button>
@@ -96,7 +100,8 @@ export function SignalContextMenu({
       <button
         type="button"
         role="menuitem"
-        onClick={() => onAddBelow('vector')}
+        disabled
+        title={VECTOR_ADD_DISABLED_TITLE}
       >
         Add bus below
       </button>

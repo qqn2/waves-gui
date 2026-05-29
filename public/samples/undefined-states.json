@@ -1,0 +1,10 @@
+{
+  "signal": [
+    { "name": "clk", "wave": "p......." },
+    { "name": "data", "wave": "x.101.x." },
+    { "name": "tri", "wave": "z.0.1.z." },
+    { "name": "meta", "wave": "u..d..u." }
+  ],
+  "config": { "hscale": 1 },
+  "head": { "text": "X, Z, U, D states" }
+}

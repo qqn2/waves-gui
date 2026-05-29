@@ -6,3 +6,5 @@ export { MenuBar } from './MenuBar';
 export { Toolbar } from './Toolbar';
 export { StatusBar } from './StatusBar';
 export { openDiagramFile, saveDiagramFile, newDiagramFile } from './FileOperations';
+export { loadSampleDiagram, SAMPLE_DIAGRAMS, sampleAssetUrl } from './samples';
+export type { SampleDiagram } from './samples';

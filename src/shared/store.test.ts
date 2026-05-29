@@ -85,6 +85,20 @@ describe('useStore', () => {
     }
   });
 
+  it('toggleSignalStateRange flips each step', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().setSignalState(id, 2, '1');
+    useStore.getState().setSignalState(id, 3, '1');
+    useStore.getState().toggleSignalStateRange(id, 2, 3);
+    const sig = useStore.getState().diagram.signals[0] as { states: BitState[] };
+    expect(sig.states[2]).toBe('0');
+    expect(sig.states[3]).toBe('0');
+    useStore.getState().toggleSignalStateRange(id, 2, 2);
+    const after = useStore.getState().diagram.signals[0] as { states: BitState[] };
+    expect(after.states[2]).toBe('1');
+  });
+
   it('paintDraft does not grow history length', () => {
     useStore.getState().addSignal('bit');
     const signalId = useStore.getState().diagram.signals[0]!.id;
@@ -95,6 +109,7 @@ describe('useStore', () => {
       startStep: 0,
       endStep: 2,
       bitState: '1',
+      apply: 'set',
       mode: 'paint',
     });
     expect(useStore.getState().history.length).toBe(historyAfterAdd);

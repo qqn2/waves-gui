@@ -1,4 +1,5 @@
 import type { DiagramState, ViewState, BitState } from '../shared/types';
+import { toggleBinaryBitState } from '../shared/bitToggle';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from './rowLayout';
 import { renderGrid } from './renderGrid';
@@ -65,7 +66,10 @@ export class CanvasRenderer {
             const hi = Math.max(view.paintDraft.startStep, view.paintDraft.endStep);
             for (let s = lo; s <= hi; s++) {
               if (view.paintDraft.mode === 'paint') {
-                draft[s] = view.paintDraft.bitState;
+                draft[s] =
+                  view.paintDraft.apply === 'toggle'
+                    ? toggleBinaryBitState(item.states[s])
+                    : view.paintDraft.bitState;
               } else {
                 draft[s] = s > 0 ? draft[s - 1] : '0';
               }

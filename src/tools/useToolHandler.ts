@@ -28,6 +28,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   const tool = useStore((s) => s.view.selectedTool);
   const setTool = useStore((s) => s.setTool);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
+  const setPaintMode = useStore((s) => s.setPaintMode);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const setZoom = useStore((s) => s.setZoom);
@@ -88,6 +89,8 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setTool('erase');
       } else if (e.key === 's' || e.key === 'S') {
         setTool('select');
+      } else if (e.key === 'n' || e.key === 'N') {
+        setPaintMode('toggle');
       } else if (e.key === '1') {
         setActiveBitState('1');
       } else if (e.key === '0') {
@@ -113,6 +116,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     tool,
     setTool,
     setActiveBitState,
+    setPaintMode,
     undo,
     redo,
     setZoom,

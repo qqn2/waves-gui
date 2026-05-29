@@ -1,34 +1,17 @@
 import { useState } from 'react';
-import {
-  ArrowRight,
-  Clock,
-  Eraser,
-  Minus,
-  MousePointer2,
-  Paintbrush,
-  Plus,
-  Square,
-  Type,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Eraser, Paintbrush, Plus, Square, ZoomIn, ZoomOut } from 'lucide-react';
 import { useStore } from '../shared/store';
-import type { BitState, Tool } from '../shared/types';
+import type { BitState } from '../shared/types';
 import { PatternsMenu } from '../patterns/PatternsMenu';
+import { loadSampleDiagram, SAMPLE_DIAGRAMS } from './samples';
+import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
+import { loadRecentFiles } from './soloDesk/recentFiles';
 import styles from './shell.module.css';
 
-const TOOLS: { id: Tool; icon: typeof Paintbrush; label: string }[] = [
-  { id: 'paint', icon: Paintbrush, label: 'Paint' },
-  { id: 'erase', icon: Eraser, label: 'Erase' },
-  { id: 'select', icon: Square, label: 'Select' },
-  { id: 'cursor', icon: MousePointer2, label: 'Cursor' },
-  { id: 'arrow', icon: ArrowRight, label: 'Arrow' },
-  { id: 'timespan', icon: Minus, label: 'Time span' },
-  { id: 'marker', icon: Clock, label: 'Marker' },
-  { id: 'text', icon: Type, label: 'Text' },
-];
-
 const BIT_STATES: BitState[] = ['1', '0', 'z', 'x'];
+
+const VECTOR_ADD_DISABLED_TITLE =
+  'Vector editing coming later — use JSON/code panel for buses';
 
 export interface ToolbarProps {
   onExport: () => void;
@@ -36,66 +19,171 @@ export interface ToolbarProps {
 
 export function Toolbar({ onExport }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
+  const paintMode = useStore((s) => s.view.paintMode);
   const activeBit = useStore((s) => s.view.activeBitState);
   const zoom = useStore((s) => s.view.zoom);
+  const diagram = useStore((s) => s.diagram);
+  const view = useStore((s) => s.view);
   const setTool = useStore((s) => s.setTool);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
+  const setPaintMode = useStore((s) => s.setPaintMode);
   const setZoom = useStore((s) => s.setZoom);
+  const toggleCodePanel = useStore((s) => s.toggleCodePanel);
+  const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
+  const setTheme = useStore((s) => s.setTheme);
   const addSignal = useStore((s) => s.addSignal);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
 
+  const [fileOpen, setFileOpen] = useState(false);
+  const recentFiles = fileOpen ? loadRecentFiles() : [];
   const [addOpen, setAddOpen] = useState(false);
   const [patternsOpen, setPatternsOpen] = useState(false);
 
   return (
     <div className={styles.toolbar}>
+      <div className={styles.addWrap}>
+        <button
+          type="button"
+          className={styles.toolBtn}
+          onClick={() => {
+            setFileOpen((o) => !o);
+            setAddOpen(false);
+          }}
+        >
+          File ▾
+        </button>
+        {fileOpen && (
+          <div className={styles.dropdown}>
+            <button type="button" onClick={() => { newDiagramFile(); setFileOpen(false); }}>
+              New
+            </button>
+            <button type="button" onClick={() => { void openDiagramFile(); setFileOpen(false); }}>
+              Open…
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void saveDiagramFile(diagram, view.fileName);
+                setFileOpen(false);
+              }}
+            >
+              Save
+            </button>
+            <button type="button" onClick={() => { onExport(); setFileOpen(false); }}>
+              Export…
+            </button>
+            {recentFiles.length > 0 ? (
+              <>
+                <div className={styles.menuSubheading}>Recent</div>
+                {recentFiles.map((e) => (
+                  <button
+                    key={e.name + e.openedAt}
+                    type="button"
+                    disabled
+                    title="Re-open via Open… (browser cannot reopen path automatically)"
+                  >
+                    {e.name}
+                  </button>
+                ))}
+              </>
+            ) : null}
+            <div className={styles.menuSubheading}>Samples</div>
+            {SAMPLE_DIAGRAMS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  void loadSampleDiagram(s.id);
+                  setFileOpen(false);
+                }}
+              >
+                {s.title}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <button type="button" className={styles.toolBtn} onClick={() => undo()} title="Undo">
-        ↶
+        Undo
       </button>
       <button type="button" className={styles.toolBtn} onClick={() => redo()} title="Redo">
-        ↷
+        Redo
       </button>
       <span className={styles.divider} />
+
       <button
         type="button"
-        className={styles.toolBtn}
-        onClick={() => setZoom(zoom / 1.25)}
-        title="Zoom out"
+        title="Paint"
+        className={`${styles.toolBtn} ${tool === 'paint' ? styles.toolActive : ''}`}
+        onClick={() => setTool('paint')}
       >
-        <ZoomOut size={16} />
+        <Paintbrush size={15} />
       </button>
-      <span className={styles.zoomLabel}>{Math.round(zoom * 100)}%</span>
       <button
         type="button"
-        className={styles.toolBtn}
-        onClick={() => setZoom(zoom * 1.25)}
-        title="Zoom in"
+        title="Erase"
+        className={`${styles.toolBtn} ${tool === 'erase' ? styles.toolActive : ''}`}
+        onClick={() => setTool('erase')}
       >
-        <ZoomIn size={16} />
+        <Eraser size={15} />
+      </button>
+      <button
+        type="button"
+        title="Select"
+        className={`${styles.toolBtn} ${tool === 'select' ? styles.toolActive : ''}`}
+        onClick={() => setTool('select')}
+      >
+        <Square size={15} />
       </button>
       <span className={styles.divider} />
+
+      <button
+        type="button"
+        title="Toggle (NOT) — click flips 0/1"
+        className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
+        onClick={() => setPaintMode('toggle')}
+      >
+        ¬
+      </button>
+      {BIT_STATES.map((st) => (
+        <button
+          key={st}
+          type="button"
+          className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
+          onClick={() => setActiveBitState(st)}
+        >
+          {st.toUpperCase()}
+        </button>
+      ))}
+      <span className={styles.divider} />
+
       <div className={styles.addWrap}>
         <button
           type="button"
           className={styles.toolBtn}
           onClick={() => {
             setAddOpen((o) => !o);
-            setPatternsOpen(false);
+            setFileOpen(false);
           }}
         >
-          <Plus size={16} /> Signal
+          <Plus size={15} /> Signal
         </button>
         {addOpen && (
           <div className={styles.dropdown}>
             <button type="button" onClick={() => { addSignal('bit'); setAddOpen(false); }}>
-              Bit signal
+              Bit
             </button>
-            <button type="button" onClick={() => { addSignal('vector'); setAddOpen(false); }}>
-              Vector signal
+            <button
+              type="button"
+              disabled
+              title={VECTOR_ADD_DISABLED_TITLE}
+            >
+              Bus
             </button>
             <button type="button" onClick={() => { addSignal('spacer'); setAddOpen(false); }}>
-              Blank row
+              Blank
             </button>
             <button
               type="button"
@@ -104,7 +192,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
                 setPatternsOpen(true);
               }}
             >
-              Predefined patterns…
+              Pattern…
             </button>
           </div>
         )}
@@ -117,32 +205,34 @@ export function Toolbar({ onExport }: ToolbarProps) {
           </div>
         )}
       </div>
+
       <span className={styles.divider} />
-      {BIT_STATES.map((st) => (
-        <button
-          key={st}
-          type="button"
-          className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
-          onClick={() => setActiveBitState(st)}
-        >
-          {st.toUpperCase()}
-        </button>
-      ))}
-      <span className={styles.divider} />
-      {TOOLS.map(({ id, icon: Icon, label }) => (
-        <button
-          key={id}
-          type="button"
-          title={label}
-          className={`${styles.toolBtn} ${tool === id ? styles.toolActive : ''}`}
-          onClick={() => setTool(id)}
-        >
-          <Icon size={16} />
-        </button>
-      ))}
-      <span className={styles.divider} />
-      <button type="button" className={styles.toolBtn} onClick={onExport}>
-        Export
+      <button type="button" className={styles.toolBtn} onClick={() => setZoom(zoom / 1.25)}>
+        <ZoomOut size={15} />
+      </button>
+      <span className={styles.zoomLabel}>{Math.round(zoom * 100)}%</span>
+      <button type="button" className={styles.toolBtn} onClick={() => setZoom(zoom * 1.25)}>
+        <ZoomIn size={15} />
+      </button>
+
+      <span className={styles.toolbarSpacer} />
+
+      <button
+        type="button"
+        className={styles.toolBtn}
+        onClick={() => toggleCodePanel()}
+        title="WaveDrom JSON"
+      >
+        {view.showCodePanel ? '✓ ' : ''}JSON
+      </button>
+      <button type="button" className={styles.toolBtn} onClick={() => toggleTimeAxis()}>
+        {view.showTimeAxis ? '✓ ' : ''}Axis
+      </button>
+      <button type="button" className={styles.toolBtn} onClick={() => setTheme('light')}>
+        Light
+      </button>
+      <button type="button" className={styles.toolBtn} onClick={() => setTheme('dark')}>
+        Dark
       </button>
     </div>
   );

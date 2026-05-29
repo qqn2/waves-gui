@@ -1,4 +1,5 @@
 export { WaveformCanvas } from './WaveformCanvas';
+export { PointerMarker } from './PointerMarker';
 export type { WaveformCanvasProps, CanvasScrollSync } from './WaveformCanvas';
 export { hitTest } from './hitTest';
 export type { HitTestResult } from './hitTest';

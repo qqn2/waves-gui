@@ -1,0 +1,10 @@
+{
+  "signal": [
+    { "name": "clk", "wave": "p...." },
+    { "name": "addr", "wave": "=...=...", "data": ["A0", "A1", "A2", "A3"] },
+    { "name": "data", "wave": "=...=...", "data": ["D0", "D1", "D2", "D3"] },
+    { "name": "we", "wave": "0.1.0." }
+  ],
+  "config": { "hscale": 2 },
+  "head": { "text": "Address / data bus" }
+}

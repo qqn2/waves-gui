@@ -4,6 +4,27 @@
 
 ---
 
+## Solo desk scope (architecture fork A)
+
+**Target user:** one engineer at a desk editing timing diagrams next to RTL or specs.
+
+**In scope**
+
+- Client-only SPA: no API server, no database, no auth, no real-time collaboration.
+- **Source of truth:** WaveDrom-compatible JSON on disk (Open/Save) or clipboard; Git in the repo handles versions and sharing.
+- Core loop: visual edit (bit signals first) ↔ live JSON panel ↔ export PNG/SVG when needed.
+- Optional **local-only** helpers: `localStorage` crash-recovery draft, recent file *names*, bundled samples — not cloud persistence.
+
+**Explicitly out of scope (do not re-open without a new user story)**
+
+- `backend/`, Postgres/SQLite, diagram libraries, team permissions, hosted storage.
+- VCD import/export, annotation overlays in the main UI (not WaveDrom-exportable).
+- Extended reference-editor features listed as out of scope in `ORCHESTRATOR_PROMPT.md`.
+
+**Deployment:** static `dist/` (e.g. `make build`, `make preview`, or internal nginx). `make back-end` remains a no-op stub until a future *team* fork explicitly requests path B/C.
+
+---
+
 ## How to Use This Document
 
 **Phase 0** must be completed (or at least the TypeScript interfaces agreed upon) before any tracks begin.

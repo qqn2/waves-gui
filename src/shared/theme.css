@@ -14,22 +14,26 @@
   --grid-line: #333333;
   --selection-fill: #4a9eff20;
   --selection-stroke: #4a9eff;
+  --pointer-marker: #4a9eff88;
+  --pointer-marker-row: #4a9eff22;
 }
 
 :root[data-theme='light'] {
-  --bg-app: #f5f5f5;
+  --bg-app: #ececec;
   --bg-panel: #ffffff;
-  --bg-canvas: #ffffff;
-  --border: #e0e0e0;
+  --bg-canvas: #fafafa;
+  --border: #c8c8c8;
   --text-primary: #1a1a1a;
-  --text-secondary: #666666;
-  --accent: #4a9eff;
-  --signal-default: #4a9eff;
+  --text-secondary: #555555;
+  --accent: #2563eb;
+  --signal-default: #2563eb;
   --signal-high: var(--signal-default);
-  --signal-x-fill: #ff6b6b40;
-  --signal-x-stroke: #ff6b6b;
-  --signal-z-stroke: #888888;
-  --grid-line: #e0e0e0;
-  --selection-fill: #4a9eff20;
-  --selection-stroke: #4a9eff;
+  --signal-x-fill: #ef444440;
+  --signal-x-stroke: #dc2626;
+  --signal-z-stroke: #6b7280;
+  --grid-line: #d4d4d4;
+  --selection-fill: #2563eb22;
+  --selection-stroke: #2563eb;
+  --pointer-marker: #2563eb55;
+  --pointer-marker-row: #2563eb18;
 }

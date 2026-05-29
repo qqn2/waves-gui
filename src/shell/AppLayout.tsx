@@ -1,9 +1,6 @@
 import {
-  useCallback,
   useMemo,
   useRef,
-  useState,
-  type PointerEvent,
   type ReactNode,
   type RefObject,
 } from 'react';
@@ -11,9 +8,6 @@ import { LABEL_WIDTH } from '../shared/constants';
 import { useStore } from '../shared/store';
 import { createScrollSync, type ScrollSyncHandles } from './scrollSync';
 import styles from './shell.module.css';
-
-const DEFAULT_CODE_PANEL_WIDTH = 400;
-const MIN_CODE_PANEL_WIDTH = 280;
 
 export interface AppLayoutPaneContext {
   scrollSync: ScrollSyncHandles;
@@ -37,10 +31,9 @@ export function AppLayout({
   signalPanel,
   canvas,
   codePanel,
-  showCodePanel = false,
+  showCodePanel = true,
 }: AppLayoutProps) {
   const panelScrollRef = useRef<HTMLDivElement | null>(null);
-  const [codePanelWidth, setCodePanelWidth] = useState(DEFAULT_CODE_PANEL_WIDTH);
 
   const scrollSync = useMemo(
     () =>
@@ -61,46 +54,19 @@ export function AppLayout({
     [scrollSync],
   );
 
-  const onResizePointerDown = useCallback((e: PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const startX = e.clientX;
-    const startWidth = codePanelWidth;
-
-    const onMove = (moveEvent: globalThis.PointerEvent) => {
-      const delta = startX - moveEvent.clientX;
-      setCodePanelWidth(Math.max(MIN_CODE_PANEL_WIDTH, startWidth + delta));
-    };
-
-    const onUp = () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  }, [codePanelWidth]);
-
   return (
-    <div className={styles.appLayout}>
-      <div className={styles.signalPane} style={{ flexBasis: LABEL_WIDTH, minWidth: LABEL_WIDTH }}>
-        {renderPane(signalPanel, paneCtx)}
+    <div className={styles.columnLayout}>
+      <div className={styles.mainRow}>
+        <div
+          className={styles.signalPane}
+          style={{ flexBasis: LABEL_WIDTH, minWidth: LABEL_WIDTH }}
+        >
+          {renderPane(signalPanel, paneCtx)}
+        </div>
+        <div className={styles.canvasPane}>{renderPane(canvas, paneCtx)}</div>
       </div>
-      <div className={styles.canvasPane}>{renderPane(canvas, paneCtx)}</div>
       {showCodePanel && codePanel ? (
-        <>
-          <div
-            className={styles.resizeHandle}
-            role="separator"
-            aria-orientation="vertical"
-            onPointerDown={onResizePointerDown}
-          />
-          <div
-            className={styles.codePane}
-            style={{ flexBasis: codePanelWidth, minWidth: MIN_CODE_PANEL_WIDTH }}
-          >
-            {codePanel}
-          </div>
-        </>
+        <div className={styles.codeDock}>{codePanel}</div>
       ) : null}
     </div>
   );
