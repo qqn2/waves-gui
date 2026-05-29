@@ -121,6 +121,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       color: DEFAULT_SIGNAL_COLOR,
       rowHeight: ROW_HEIGHT,
       phase: sig.phase,
+      ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
   }
   const states = decodeWaveString(wave);
@@ -133,6 +134,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     color: DEFAULT_SIGNAL_COLOR,
     rowHeight: ROW_HEIGHT,
     phase: sig.phase,
+    ...(sig.node !== undefined ? { node: sig.node } : {}),
   };
 }
 
@@ -153,8 +155,18 @@ function maxSteps(signals: SignalOrGroup[]): number {
   return max || 20;
 }
 
+function padNode(node: string | undefined, totalSteps: number): string | undefined {
+  if (node === undefined) return undefined;
+  if (node.length >= totalSteps) return node.slice(0, totalSteps);
+  const pad = node.length > 0 ? node[node.length - 1]! : '.';
+  return node + pad.repeat(totalSteps - node.length);
+}
+
 function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
   const padSignal = (s: Signal) => {
+    if (s.node !== undefined) {
+      s.node = padNode(s.node, totalSteps);
+    }
     if (s.type === 'bit') {
       const last = s.states[s.states.length - 1] ?? '0';
       while (s.states.length < totalSteps) s.states.push(last);
@@ -207,6 +219,7 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
     version: 1,
     signals,
     config,
+    edges: wd.edge ? [...wd.edge] : [],
     annotations: [],
   };
 }

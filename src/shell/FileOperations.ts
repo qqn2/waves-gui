@@ -130,6 +130,7 @@ export function newDiagramFile(): void {
     version: 1,
     signals: [],
     config: { ...diagram.config, totalSteps: diagram.config.totalSteps },
+    edges: [],
     annotations: [],
   });
   clearDraft();
