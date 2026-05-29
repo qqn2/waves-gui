@@ -1,2 +1,5 @@
-/** No-op until Track E wires debounced code sync */
-export function flushPendingCodeToDiagram(): void {}
+/**
+ * Re-export for Track C — implementation in src/codePanel/flushRegistry.ts.
+ * CodePanel registers debouncedApply.flush() on mount via useCodeToDiagram.
+ */
+export { flushPendingCodeToDiagram } from '../codePanel';

@@ -46,3 +46,153 @@
   display: flex;
   flex-direction: column;
 }
+
+.menuBar {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.menuGroup {
+  position: relative;
+}
+
+.menuGroup:hover .menuDropdown {
+  display: block;
+}
+
+.menuLabel {
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: default;
+}
+
+.menuDropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  min-width: 160px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.menuDropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.menuDropdown button:hover {
+  background: var(--selection-fill);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.toolBtn:hover {
+  border-color: var(--accent);
+}
+
+.toolActive {
+  background: var(--selection-fill);
+  border-color: var(--accent);
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.zoomLabel {
+  font-size: 12px;
+  min-width: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.addWrap {
+  position: relative;
+}
+
+.dropdown,
+.patternsPopover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  margin-top: 4px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown button {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dropdown button:hover {
+  background: var(--selection-fill);
+}
+
+.patternsPopover {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.statusBar {
+  display: flex;
+  gap: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.dirty {
+  color: var(--accent);
+}

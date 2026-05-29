@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, type RefObject } from 'react';
 import { useStore } from '../shared/store';
 import { CELL_WIDTH } from '../shared/constants';
 import { CanvasRenderer } from './CanvasRenderer';
@@ -12,15 +12,24 @@ export interface CanvasScrollSync {
 
 export interface WaveformCanvasProps {
   scrollSync?: CanvasScrollSync;
+  /** Optional external ref for pointer capture (tools). */
+  canvasRef?: RefObject<HTMLCanvasElement | null>;
   onPointerEvent?: (
     phase: 'down' | 'move' | 'up',
     e: PointerEvent,
     hit: HitTestResult,
   ) => void;
+  onContextMenu?: (e: MouseEvent, hit: HitTestResult) => void;
 }
 
-export function WaveformCanvas({ scrollSync, onPointerEvent }: WaveformCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export function WaveformCanvas({
+  scrollSync,
+  canvasRef: canvasRefProp,
+  onPointerEvent,
+  onContextMenu,
+}: WaveformCanvasProps) {
+  const internalRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = canvasRefProp ?? internalRef;
   const rendererRef = useRef<CanvasRenderer | null>(null);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
@@ -109,6 +118,11 @@ export function WaveformCanvas({ scrollSync, onPointerEvent }: WaveformCanvasPro
       onPointerDown={(e) => dispatchPointer('down', e)}
       onPointerMove={(e) => dispatchPointer('move', e)}
       onPointerUp={(e) => dispatchPointer('up', e)}
+      onContextMenu={(e) => {
+        if (!onContextMenu) return;
+        const hit = hitTest(e.nativeEvent.offsetX, e.nativeEvent.offsetY, diagram, view);
+        onContextMenu(e.nativeEvent, hit);
+      }}
     />
   );
 }
