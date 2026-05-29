@@ -42,3 +42,5 @@ make check     # typecheck + test + build
 | `public/samples/` | Example diagrams |
 
 Spec and parallel build plan: `agent.md`, `PROGRESS.md`.
+
+WaveDrom capability checklist (labels, `edge`, head/foot, etc.): [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md). Vendored upstream docs: [`docs/wavedrom-ref/`](docs/wavedrom-ref/).

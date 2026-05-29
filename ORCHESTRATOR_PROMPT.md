@@ -3,7 +3,7 @@
 ## Copy-paste invocation (user → agent)
 
 ```text
-You are the lead orchestrator for the WaveDrom GUI Editor in Multitask Mode. Follow ORCHESTRATOR_PROMPT.md exactly; agent.md is the canonical spec. Delegate tracks to background subagents (Task tool, run_in_background: true) in parallel per the DAG—do not serialize track work. Integrate and verify at checkpoints yourself (tsc, npm test, npm run build). Work autonomously; do not ask permission between routine steps. Commit locally after each checkpoint passes (never git push). Report briefly at checkpoint boundaries or true blockers only.
+You are the lead orchestrator for the WaveDrom GUI Editor in Multitask Mode. Follow ORCHESTRATOR_PROMPT.md exactly; agent.md is the canonical spec. CP0–CP5 and Phase 2 (solo desk) are DONE—execute Phase 3 WaveDrom fidelity tracks from agent.md and docs/FUTURE_FEATURES.md. Delegate tracks to background subagents (Task tool, run_in_background: true) in parallel per the DAG—do not serialize track work. Integrate and verify at checkpoints yourself (npm test, npm run build). Work autonomously; do not ask permission between routine steps. Commit locally after each checkpoint passes (never git push). Update PROGRESS.md when committing. Report briefly at checkpoint boundaries or true blockers only.
 ```
 
 ---
@@ -29,6 +29,57 @@ Parallel batches for the locked fork. Orchestrator owns `App.tsx` integration on
 | **SOLO-L** | `src/shell/Toolbar.tsx`, `src/signalPanel/SignalPanel.tsx`, `src/signalPanel/SignalContextMenu.tsx` | Hide vector “add” until canvas vector edit exists |
 
 **Batch (parallel, background):** SOLO-J + SOLO-K + SOLO-L → orchestrator wires `useSoloDeskPersistence` in `App.tsx` → `npm test` + `npm run build` → commit `Phase 2: solo desk polish`.
+
+**Status:** **Complete** @ `9307f59` (64/64 tests).
+
+---
+
+## Phase 3 — WaveDrom fidelity (active)
+
+Brownfield orchestration after MVP. **Read** [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md) and [`docs/wavedrom-ref/WaveJSON.md`](docs/wavedrom-ref/WaveJSON.md) before scoping tracks.
+
+### P3-STORE gate (sequential — orchestrator or one subagent)
+
+**Own:** `src/shared/types.ts`, `src/shared/store.ts` (extend only; do not rewrite)
+
+**Deliver:**
+
+- `DiagramState` holds `edge?: string[]` (WaveDrom `edge` array).
+- Per-signal `node?: string` on `Signal` (same length semantics as WaveDrom).
+- `fromWavedromJSON` / `toWavedromJSON` preserve `edge` and `node`.
+- Vitest in `src/wavedromBridge/` for `signal-arcs.json5` import (fixture under `docs/wavedrom-ref/upstream-tests/`).
+
+**Gate:** `npm test` green → **commit** `Extend store for edge and node` → then launch P3-EDGE.
+
+### Phase 3 parallel tracks
+
+| Track | Owns | Delivers | Depends |
+|-------|------|----------|---------|
+| **P3-HF** | `src/renderer/renderHeadFoot.ts`, `src/shell/HeadFootDialog.tsx` (or toolbar fields), `shell.module.css` | Edit + draw `config.head` / `config.foot` | — |
+| **P3-DATA** | `src/signalPanel/` vector row editor **or** `src/tools/vectorLabelTool.ts` | Edit bus segment `value` (maps to `data[]`) | Vector render exists |
+| **P3-EDGE** | `src/renderer/EdgeOverlay.tsx`, `src/wavedromBridge/` edge helpers | Draw arrows; import/export `edge` | **P3-STORE** |
+| **P3-VEC** | `src/tools/`, `src/renderer/` vector hit/paint, re-enable SOLO-L files | Bus add + segment paint on canvas | — |
+| **P3-TIMING** | `src/shared/constants.ts`, `src/renderer/`, `src/shell/` period/phase controls | Per-lane `period` / `phase` | — |
+| **P3-GOLD** | `src/wavedromBridge/upstreamGolden.test.ts`, copy or reference `docs/wavedrom-ref/upstream-tests/` | Import tests for timing JSON5 only | — |
+
+**Forbidden for all P3 tracks (orchestrator only):** `App.tsx` wiring unless track prompt says otherwise; cross-track file edits.
+
+### Recommended Phase 3 batches
+
+```
+P3-STORE (sequential)     → verify → commit
+Batch 3a (parallel):       P3-HF, P3-GOLD, P3-DATA*   → verify → integrate App.tsx → commit
+Batch 3b (parallel):       P3-EDGE (after STORE), P3-VEC → verify → commit
+Batch 3c:                  P3-TIMING                  → verify → commit
+```
+
+\*P3-DATA may be stubbed as signal-panel text fields if canvas hit-test is not ready.
+
+### Phase 3 verification
+
+Same as CP gates: `npm test`, `npm run build`. Target **≥64** tests (count grows with goldens).
+
+Update [`PROGRESS.md`](PROGRESS.md) on each commit.
 
 ---
 
@@ -73,13 +124,18 @@ Multitask Mode means **many subagents run concurrently** while you stay the sing
 
 ### Recommended batch schedule (Multitask)
 
+**Initial build (complete):**
+
 ```
-Batch 0 (sequential):     Phase 0          → verify → commit "Phase 0: shared store and types"
+Batch 0 (sequential):     Phase 0          → verify → commit
 Batch 1 (parallel):       A, B, C, D, H*, I   → verify → integrate CP1 → commit
 Batch 2 (parallel):       F, G               → verify → integrate CP2/4 prep → commit
 Batch 3 (sequential):     E (needs D)        → verify → integrate CP3 → commit
-Batch 4 (orchestrator):   CP2 tools wire, CP5 polish, final verify → commit
+Batch 4 (orchestrator):   CP2 tools wire, CP5 polish → commit
+Phase 2 (parallel):      SOLO-J, SOLO-K, SOLO-L → commit @ 9307f59
 ```
+
+**Active — Phase 3:** see [Phase 3 — WaveDrom fidelity](#phase-3--wavedrom-fidelity-active) above.
 
 \*Track H: layout skeleton + `scrollSync.ts` only in batch 1; full menus in batch 4.
 
@@ -117,7 +173,8 @@ Deliver a working **browser-based interactive** timing diagram editor:
 5. Use `structuredClone` for undo history (use Immer `current()` per `agent.md`).
 6. **`git push`** for any reason unless the user explicitly asks.
 7. Let subagents run `git commit` or `git push`.
-8. Expand scope beyond `agent.md` MVP.
+8. Expand scope beyond `agent.md` + Phase 3 table without user approval.
+9. Re-introduce `backend/`, database, or non-exportable annotation UI (solo desk fork A).
 
 ### When to stop and ask the user
 
@@ -140,6 +197,8 @@ Deliver a working **browser-based interactive** timing diagram editor:
 |------|-------------|
 | Phase 0 | `tsc` + `npm test` green for shared store |
 | After each integration checkpoint (CP1–CP5) | Checkpoint criteria met + `npm run build` green |
+| Phase 2 / Phase 3 track batch | Same; update `PROGRESS.md` |
+| Docs-only (`docs/`, `agent.md`, `PROGRESS.md`) | After user-requested doc pass or orchestrator planning gate |
 | Hotfix | Only if you already committed this session and hooks modified files (new commit, not amend unless amend rules apply) |
 
 Do **not** commit broken builds, secrets (`.env`), or `node_modules`.
@@ -358,24 +417,35 @@ Update when committing each checkpoint.
 
 ---
 
-## Deliverables (project complete)
+## Deliverables
 
-1. Runnable app: `npm run dev`
-2. Checkpoints 1–5 met; each with a local commit on the branch
-3. `npm test` + `npm run build` green
-4. Final report: CP table, commit range (`git log --oneline` since start), deferred post-MVP, run instructions
-5. **No push** — user pushes when ready
+### MVP (complete)
+
+1. Runnable app: `make dev`
+2. CP0–CP5 + Phase 2 committed; `npm test` + `npm run build` green
+3. Solo desk fork A documented in `agent.md` / `README.md`
+
+### Phase 3 (in progress)
+
+1. Items in [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md) marked **Yes** or **Bridge** for timing diagrams
+2. Golden coverage includes upstream timing fixtures where applicable
+3. **No push** — user pushes when ready
 
 ---
 
 ## First actions when invoked (Multitask)
 
-1. Read `agent.md` + this file.
-2. `git status`; list `src/` and `package.json`.
-3. If empty → bootstrap Vite + deps (no sudo).
-4. Phase 0: one background `generalPurpose` task **or** implement → verify → **commit**.
-5. Launch **Batch 1** (6 parallel `Task`s, `run_in_background: true`) in **one message**.
-6. On batch complete → verify → integrate CP1 → **commit** → brief user report.
-7. Repeat batches 2–4 until CP5 or blocker.
+**Brownfield (current repo):**
+
+1. Read `agent.md`, this file, `PROGRESS.md`, `docs/FUTURE_FEATURES.md`.
+2. `git status`; `npm test`; note test count in `PROGRESS.md`.
+3. If Phase 3 not started → run **P3-STORE** (or launch parallel **P3-HF** + **P3-GOLD** if store not needed yet).
+4. Launch next parallel batch per [Phase 3 batches](#recommended-phase-3-batches) — multiple `Task`s, `run_in_background: true`, disjoint OWN paths.
+5. On batch complete → verify → orchestrator integrates `App.tsx` → **commit** → update `PROGRESS.md` → brief report.
+
+**Greenfield only (empty repo):**
+
+1. Bootstrap per Environment section.
+2. Phase 0 → Batch 1–4 as in initial build schedule.
 
 Proceed autonomously. **Commit at gates; never push.**
