@@ -2,3 +2,7 @@ export { AppLayout } from './AppLayout';
 export type { AppLayoutPane, AppLayoutPaneContext, AppLayoutProps } from './AppLayout';
 export { createScrollSync } from './scrollSync';
 export type { ScrollSyncHandles } from './scrollSync';
+export { MenuBar } from './MenuBar';
+export { Toolbar } from './Toolbar';
+export { StatusBar } from './StatusBar';
+export { openDiagramFile, saveDiagramFile, newDiagramFile } from './FileOperations';
