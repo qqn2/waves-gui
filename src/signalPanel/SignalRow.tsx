@@ -19,6 +19,7 @@ export interface SignalRowProps {
   onDragOver: (e: React.DragEvent, id: string) => void;
   onDrop: (e: React.DragEvent, id: string) => void;
   onOpenMenu: (signal: Signal, anchor: { x: number; y: number }) => void;
+  onSelect?: (id: string) => void;
 }
 
 function typeBadge(type: Signal['type']): string {
@@ -40,6 +41,7 @@ export function SignalRow({
   onDragOver,
   onDrop,
   onOpenMenu,
+  onSelect,
 }: SignalRowProps) {
   const renameSignal = useStore((s) => s.renameSignal);
   const updateSignalColor = useStore((s) => s.updateSignalColor);
@@ -73,6 +75,7 @@ export function SignalRow({
         e.preventDefault();
         openMenuAt(e.clientX, e.clientY);
       }}
+      onClick={() => onSelect?.(signal.id)}
     >
       <DragHandle
         onDragStart={(e) => onDragStart(e, signal.id)}

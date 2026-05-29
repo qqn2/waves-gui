@@ -12,6 +12,8 @@ import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
 import { GroupRow } from './GroupRow';
 import { SignalContextMenu } from './SignalContextMenu';
+import { VectorSegmentEditor } from './VectorSegmentEditor';
+import { findSignal } from '../shared/store';
 import {
   collectVisibleRows,
   getSiblingIds,
@@ -43,6 +45,7 @@ function renderTree(
     onDragOver: (e: React.DragEvent, id: string) => void;
     onDrop: (e: React.DragEvent, id: string) => void;
     onOpenMenu: (signal: Signal, anchor: { x: number; y: number }) => void;
+    onSelect: (id: string) => void;
   },
   renameId: string | null,
   onEditEnd: () => void,
@@ -103,6 +106,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const removeSignal = useStore((s) => s.removeSignal);
   const reorderSignals = useStore((s) => s.reorderSignals);
   const setSignalStateRange = useStore((s) => s.setSignalStateRange);
+  const setActiveSignalIds = useStore((s) => s.setActiveSignalIds);
 
   const [drag, setDrag] = useState<DragState | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
@@ -192,6 +196,17 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   };
 
   const menuSignalId = menuSignal?.id;
+  const selectedVectorId =
+    activeIds.length > 0
+      ? (() => {
+          const id = activeIds[0]!;
+          let isVector = false;
+          findSignal(signals, id, (sig) => {
+            isVector = sig.type === 'vector';
+          });
+          return isVector ? id : null;
+        })()
+      : null;
 
   return (
     <div className={styles.panel} style={{ width: LABEL_WIDTH }}>
@@ -215,11 +230,16 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
               setMenuSignal(signal);
               setMenuAnchor(anchor);
             },
+            onSelect: (id) => setActiveSignalIds([id]),
           },
           renameId,
           () => setRenameId(null),
         )}
       </div>
+
+      {selectedVectorId && (
+        <VectorSegmentEditor signalId={selectedVectorId} />
+      )}
 
       <div className={styles.footer}>
         <div className={styles.addWrap} ref={addMenuRef}>

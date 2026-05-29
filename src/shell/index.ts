@@ -5,6 +5,7 @@ export type { ScrollSyncHandles } from './scrollSync';
 export { MenuBar } from './MenuBar';
 export { Toolbar } from './Toolbar';
 export { HeadFootFields } from './HeadFootFields';
+export { SignalTimingBar } from './SignalTimingBar';
 export { StatusBar } from './StatusBar';
 export { openDiagramFile, saveDiagramFile, newDiagramFile } from './FileOperations';
 export { loadSampleDiagram, SAMPLE_DIAGRAMS, sampleAssetUrl } from './samples';

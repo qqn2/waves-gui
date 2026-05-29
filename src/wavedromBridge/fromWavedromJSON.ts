@@ -121,6 +121,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       color: DEFAULT_SIGNAL_COLOR,
       rowHeight: ROW_HEIGHT,
       phase: sig.phase,
+      period: sig.period,
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
   }
@@ -134,6 +135,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     color: DEFAULT_SIGNAL_COLOR,
     rowHeight: ROW_HEIGHT,
     phase: sig.phase,
+    period: sig.period,
     ...(sig.node !== undefined ? { node: sig.node } : {}),
   };
 }
