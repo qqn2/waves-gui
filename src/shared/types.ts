@@ -128,12 +128,16 @@ export type Tool =
 
 export type Theme = 'dark' | 'light';
 
+/** Paint tool: toggle clicked cells (NOT) vs apply a fixed bit state */
+export type PaintMode = 'toggle' | 'set';
+
 export interface ViewState {
   zoom: number; // 0.25–4.0, default 1.0
   scrollX: number; // canvas horizontal scroll in logical px
   scrollY: number; // canvas vertical scroll in logical px
   selectedTool: Tool;
-  activeBitState: BitState; // the state the paint tool will apply
+  paintMode: PaintMode;
+  activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
   activeSignalIds: string[]; // selected for operations
   showCodePanel: boolean;
   showTimeAxis: boolean;
@@ -149,7 +153,8 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
-  bitState: BitState; // paint: target state; erase: ignored (erase uses propagate-left logic in renderer)
+  bitState: BitState; // paint+set: target state; paint+toggle: unused
+  apply: 'toggle' | 'set'; // paint only; erase ignores
   mode: 'paint' | 'erase';
 }
 

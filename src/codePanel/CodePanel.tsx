@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Copy, ExternalLink } from 'lucide-react';
 import { useStore } from '../shared/store';
 import { CodeEditor } from './CodeEditor';
-import { WavedromPreview } from './WavedromPreview';
 import { diagramToCodeString, validateCodeString } from './codeSync';
 import { useCodeToDiagram } from './useCodeToDiagram';
 import styles from './CodePanel.module.css';
@@ -68,7 +67,7 @@ export function CodePanel() {
           </button>
         </div>
       </div>
-      <div className={styles.split}>
+      <div className={styles.editorArea}>
         <CodeEditor
           code={code}
           onChange={handleCodeChange}
@@ -77,7 +76,6 @@ export function CodePanel() {
             isEditorFocusedRef.current = focused;
           }}
         />
-        <WavedromPreview code={code} />
       </div>
     </div>
   );

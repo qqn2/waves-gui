@@ -29,20 +29,16 @@ export function paintPointerDown(
   flushPendingCodeToDiagram();
 
   const { view } = useStore.getState();
-  let bitState: BitState;
-  if (e.shiftKey) {
-    bitState = view.activeBitState;
-  } else if (hit.half === 'top') {
-    bitState = '1';
-  } else {
-    bitState = '0';
-  }
+  const apply: 'toggle' | 'set' =
+    e.shiftKey || view.paintMode === 'set' ? 'set' : 'toggle';
+  const bitState: BitState = view.activeBitState;
 
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,
     startStep: hit.step,
     endStep: hit.step,
     bitState,
+    apply,
     mode: 'paint',
   });
   capturePointer(canvas, e);
@@ -64,7 +60,11 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   if (!draft) return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
-  useStore.getState().setSignalStateRange(draft.signalId, lo, hi, draft.bitState);
+  if (draft.apply === 'toggle') {
+    useStore.getState().toggleSignalStateRange(draft.signalId, lo, hi);
+  } else {
+    useStore.getState().setSignalStateRange(draft.signalId, lo, hi, draft.bitState);
+  }
   useStore.getState().clearPaintDraft();
 }
 

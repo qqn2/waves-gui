@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# WaveDrom GUI Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Browser-based timing diagram editor with a visual canvas workflow: draw waveforms on a canvas, keep WaveDrom JSON in sync, save files locally. **Client-only** — no server or database.
 
-Currently, two official plugins are available:
+## Solo desk scope
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Built for **one engineer at a desk**: open a diagram from the repo, edit, save JSON next to RTL or docs. Version control and sharing are handled by **Git**, not by this app.
 
-## React Compiler
+| In scope | Out of scope |
+|----------|----------------|
+| Open / Save / New, export PNG/SVG/JSON | Backend, API, Postgres, auth |
+| Paint, erase, toggle (NOT), undo | Team libraries, cloud sync |
+| Live JSON editor + samples | VCD, non-WaveDrom annotations in UI |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+See [`agent.md`](./agent.md) (Solo desk scope) and [`ORCHESTRATOR_PROMPT.md`](./ORCHESTRATOR_PROMPT.md) for build process and tracks.
 
-## Expanding the ESLint configuration
+## Quick start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+make install   # once
+make dev       # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+SSH port forward if developing remotely. Production build: `make build` → serve `dist/` (`make preview`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Verify
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+make test
+make check     # typecheck + test + build
 ```
+
+## Project layout
+
+| Path | Role |
+|------|------|
+| `src/shared/` | Types, Zustand store, theme |
+| `src/renderer/` | Canvas + hit test |
+| `src/wavedromBridge/` | WaveDrom JSON import/export |
+| `src/codePanel/` | CodeMirror JSON editor |
+| `src/shell/` | Toolbar, layout, file I/O |
+| `public/samples/` | Example diagrams |
+
+Spec and parallel build plan: `agent.md`, `PROGRESS.md`.

@@ -14,7 +14,9 @@ import type {
   Theme,
   ViewState,
   PaintDraft,
+  PaintMode,
 } from './types';
+import { toggleBinaryBitState } from './bitToggle';
 import {
   DEFAULT_STEPS,
   DEFAULT_HSCALE,
@@ -37,6 +39,7 @@ export interface Actions {
     endStep: number,
     bitState: BitState,
   ): void;
+  toggleSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   eraseSignalState(signalId: string, step: number): void;
   eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
@@ -61,6 +64,7 @@ export interface Actions {
   setScroll(x: number, y: number): void;
   setTool(tool: Tool): void;
   setActiveBitState(state: BitState): void;
+  setPaintMode(mode: PaintMode): void;
   toggleCodePanel(): void;
   toggleTimeAxis(): void;
   setTheme(theme: Theme): void;
@@ -83,11 +87,12 @@ function defaultView(): ViewState {
     scrollX: 0,
     scrollY: 0,
     selectedTool: 'paint',
+    paintMode: 'toggle',
     activeBitState: '1',
     activeSignalIds: [],
-    showCodePanel: false,
+    showCodePanel: true,
     showTimeAxis: true,
-    theme: 'dark',
+    theme: 'light',
     isDirty: false,
     fileName: null,
     paintDraft: null,
@@ -103,7 +108,7 @@ function pushHistory(state: AppState): void {
 }
 
 /** Walk the signal tree to find a signal by id, call fn on it. Recurses into groups. */
-function findSignal(
+export function findSignal(
   signals: SignalOrGroup[],
   id: string,
   fn: (s: Signal) => void,
@@ -269,6 +274,21 @@ export const useStore = create<AppState & Actions>()(
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type === 'bit') {
             for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
+          }
+        });
+      });
+    },
+
+    toggleSignalStateRange(signalId, startStep, endStep) {
+      set((s) => {
+        pushHistory(s);
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type === 'bit') {
+            for (let i = lo; i <= hi; i++) {
+              sig.states[i] = toggleBinaryBitState(sig.states[i]);
+            }
           }
         });
       });
@@ -446,6 +466,13 @@ export const useStore = create<AppState & Actions>()(
     setActiveBitState(state) {
       set((s) => {
         s.view.activeBitState = state;
+        s.view.paintMode = 'set';
+      });
+    },
+
+    setPaintMode(mode) {
+      set((s) => {
+        s.view.paintMode = mode;
       });
     },
 

@@ -1,5 +1,5 @@
 import type { DiagramState, ViewState } from '../shared/types';
-import { CELL_WIDTH } from '../shared/constants';
+import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { canvasToLogicalX, canvasToLogicalY, type ViewTransform } from './coordinates';
 
@@ -34,8 +34,9 @@ export function hitTest(
     scrollY: view.scrollY,
   };
 
+  const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
   const logicalX = canvasToLogicalX(canvasX, transform);
-  const logicalY = canvasToLogicalY(canvasY, transform);
+  const logicalY = canvasToLogicalY(canvasY - axisOffset, transform);
   const step = Math.floor(logicalX / CELL_WIDTH);
 
   if (step < 0 || step >= diagram.config.totalSteps) {

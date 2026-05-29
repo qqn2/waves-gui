@@ -14,6 +14,22 @@ You are the **lead orchestrator** for building the WaveDrom GUI Editor in this r
 
 **Out of scope unless the user explicitly asks:** VCD import/export, TXT/CSV export, Load Example gallery, Debug Panel (see reference UX parity table in `agent.md`).
 
+**Architecture fork (locked):** **A — client-only, solo engineer at desk.** No database, no `backend/` implementation, no auth/collab. Persistence = files on disk + optional `localStorage` crash draft. See **Solo desk scope** in `agent.md` and `README.md`.
+
+---
+
+## Phase 2 — Solo desk polish (after CP0–CP5)
+
+Parallel batches for the locked fork. Orchestrator owns `App.tsx` integration only.
+
+| Track | Owns | Delivers |
+|-------|------|----------|
+| **SOLO-J** | `src/shell/soloDesk/**` | `localStorage` draft autosave, restore prompt, `beforeunload` guard, recent file names |
+| **SOLO-K** | `src/wavedromBridge/goldenRoundTrip.test.ts`, `public/golden/**` | Golden round-trip tests on fixture JSON |
+| **SOLO-L** | `src/shell/Toolbar.tsx`, `src/signalPanel/SignalPanel.tsx`, `src/signalPanel/SignalContextMenu.tsx` | Hide vector “add” until canvas vector edit exists |
+
+**Batch (parallel, background):** SOLO-J + SOLO-K + SOLO-L → orchestrator wires `useSoloDeskPersistence` in `App.tsx` → `npm test` + `npm run build` → commit `Phase 2: solo desk polish`.
+
 ---
 
 ## Cursor Multitask Mode (required behavior)

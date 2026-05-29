@@ -1,0 +1,9 @@
+{
+  "signal": [
+    ["Control", { "name": "clk", "wave": "p...." }, { "name": "rst", "wave": "10..." }],
+    {},
+    ["Datapath", { "name": "load", "wave": "0.1.0." }, { "name": "done", "wave": "0...1.0" }]
+  ],
+  "config": { "hscale": 1 },
+  "head": { "text": "Grouped signals" }
+}

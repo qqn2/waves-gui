@@ -31,6 +31,7 @@ export function erasePointerDown(
     startStep: hit.step,
     endStep: hit.step,
     bitState: '0',
+    apply: 'set',
     mode: 'erase',
   });
   capturePointer(canvas, e);

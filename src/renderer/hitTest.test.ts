@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { BitState, DiagramState, ViewState } from '../shared/types';
-import { CELL_WIDTH, ROW_HEIGHT } from '../shared/constants';
+import { CELL_WIDTH, ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { hitTest } from './hitTest';
 
 function bitDiagram(steps = 20): DiagramState {
@@ -29,6 +29,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     scrollX: 0,
     scrollY: 0,
     selectedTool: 'paint',
+    paintMode: 'toggle',
     activeBitState: '1',
     activeSignalIds: [],
     showCodePanel: false,
@@ -44,7 +45,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
 describe('hitTest', () => {
   it('maps CSS coords to signal step and top half', () => {
     const diagram = bitDiagram();
-    const hit = hitTest(CELL_WIDTH * 5 + 10, 10, diagram, defaultView());
+    const y = TIME_AXIS_HEIGHT + 10;
+    const hit = hitTest(CELL_WIDTH * 5 + 10, y, diagram, defaultView());
     expect(hit.signalId).toBe('sig1');
     expect(hit.step).toBe(5);
     expect(hit.half).toBe('top');
@@ -53,7 +55,7 @@ describe('hitTest', () => {
 
   it('maps bottom half of row', () => {
     const diagram = bitDiagram();
-    const hit = hitTest(CELL_WIDTH * 3 + 5, 30, diagram, defaultView());
+    const hit = hitTest(CELL_WIDTH * 3 + 5, TIME_AXIS_HEIGHT + 30, diagram, defaultView());
     expect(hit.step).toBe(3);
     expect(hit.half).toBe('bottom');
   });
@@ -61,13 +63,13 @@ describe('hitTest', () => {
   it('respects zoom and scroll for step index', () => {
     const diagram = bitDiagram();
     const view = defaultView({ zoom: 2, scrollX: 0 });
-    const hit = hitTest(CELL_WIDTH * 2 * 2 + 20, 20, diagram, view);
+    const hit = hitTest(CELL_WIDTH * 2 * 2 + 20, TIME_AXIS_HEIGHT + 20, diagram, view);
     expect(hit.step).toBe(2);
   });
 
   it('returns null outside step columns', () => {
     const diagram = bitDiagram(10);
-    const hit = hitTest(CELL_WIDTH * 12, 10, diagram, defaultView());
+    const hit = hitTest(CELL_WIDTH * 12, TIME_AXIS_HEIGHT + 10, diagram, defaultView());
     expect(hit.signalId).toBeNull();
     expect(hit.step).toBeNull();
   });
@@ -97,7 +99,7 @@ describe('hitTest', () => {
         },
       ],
     };
-    const yInChild = 28 + 10;
+    const yInChild = TIME_AXIS_HEIGHT + 28 + 10;
     const hit = hitTest(CELL_WIDTH + 5, yInChild, diagram, defaultView());
     expect(hit.signalId).toBe('inner');
     expect(hit.step).toBe(1);

@@ -1,75 +1,54 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AppLayout,
-  MenuBar,
   StatusBar,
   Toolbar,
   type AppLayoutPaneContext,
 } from './shell';
 import { SignalPanel } from './signalPanel';
-import { WaveformCanvas } from './renderer';
+import { WaveformCanvas, PointerMarker } from './renderer';
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
-import { AnnotationLayer, useAnnotationTools } from './annotations';
 import { CodePanel } from './codePanel';
 import { ExportDialog } from './exportEngine';
 import { useStore } from './shared/store';
-import type { Tool } from './shared/types';
+import { useSoloDeskPersistence } from './shell/soloDesk';
 import './App.css';
-
-const ANNOTATION_TOOLS: Tool[] = ['arrow', 'timespan', 'marker', 'text'];
 
 function IntegratedCanvas({
   scrollSync,
+  onHoverHit,
 }: {
   scrollSync: AppLayoutPaneContext['scrollSync'];
+  onHoverHit: (hit: HitTestResult | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [viewport, setViewport] = useState({ width: 0, height: 0 });
-  const tool = useStore((s) => s.view.selectedTool);
-  const useAnnTool = ANNOTATION_TOOLS.includes(tool);
-
   const {
-    onPointerDown: drawDown,
-    onPointerMove: drawMove,
-    onPointerUp: drawUp,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
     onContextMenu,
     selectionOverlay,
   } = useToolHandler(canvasRef);
 
-  const {
-    creationDraft,
-    onPointerDown: annDown,
-    onPointerMove: annMove,
-    onPointerUp: annUp,
-  } = useAnnotationTools(canvasRef);
+  const onPointerEvent = useCallback(
+    (phase: 'down' | 'move' | 'up', e: PointerEvent, hit: HitTestResult) => {
+      if (phase === 'move') onHoverHit(hit.signalId ? hit : null);
+      if (phase === 'down') onPointerDown(e, hit);
+      else if (phase === 'move') onPointerMove(e, hit);
+      else onPointerUp(e, hit);
+    },
+    [onHoverHit, onPointerDown, onPointerMove, onPointerUp],
+  );
 
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => {
-      setViewport({ width: el.clientWidth, height: el.clientHeight });
-    });
-    ro.observe(el);
-    setViewport({ width: el.clientWidth, height: el.clientHeight });
-    return () => ro.disconnect();
-  }, []);
-
-  const onPointerEvent = useCallback(
-    (phase: 'down' | 'move' | 'up', e: PointerEvent, hit: HitTestResult) => {
-      if (useAnnTool) {
-        if (phase === 'down') annDown(e, hit);
-        else if (phase === 'move') annMove(e, hit);
-        else annUp(e, hit);
-      } else {
-        if (phase === 'down') drawDown(e, hit);
-        else if (phase === 'move') drawMove(e, hit);
-        else drawUp(e, hit);
-      }
-    },
-    [useAnnTool, annDown, annMove, annUp, drawDown, drawMove, drawUp],
-  );
+    const leave = () => onHoverHit(null);
+    el.addEventListener('pointerleave', leave);
+    return () => el.removeEventListener('pointerleave', leave);
+  }, [onHoverHit]);
 
   return (
     <div ref={wrapRef} className="canvasWrap">
@@ -79,13 +58,6 @@ function IntegratedCanvas({
         onPointerEvent={onPointerEvent}
         onContextMenu={onContextMenu}
       />
-      {viewport.width > 0 && viewport.height > 0 ? (
-        <AnnotationLayer
-          width={viewport.width}
-          height={viewport.height}
-          creationDraft={creationDraft}
-        />
-      ) : null}
       {selectionOverlay ? (
         <div
           className="selectionOverlay"
@@ -101,12 +73,44 @@ function IntegratedCanvas({
   );
 }
 
+function CanvasWithMarker({
+  scrollSync,
+  onHoverHit,
+}: {
+  scrollSync: AppLayoutPaneContext['scrollSync'];
+  onHoverHit: (hit: HitTestResult | null) => void;
+}) {
+  const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
+  const diagram = useStore((s) => s.diagram);
+  const view = useStore((s) => s.view);
+
+  const handleHover = useCallback(
+    (hit: HitTestResult | null) => {
+      setHoverHit(hit);
+      onHoverHit(hit);
+    },
+    [onHoverHit],
+  );
+
+  const displayHit = view.paintDraft ? null : hoverHit;
+
+  return (
+    <div className="canvasWrapOuter">
+      <IntegratedCanvas scrollSync={scrollSync} onHoverHit={handleHover} />
+      <PointerMarker hit={displayHit} diagram={diagram} view={view} />
+    </div>
+  );
+}
+
 function App() {
+  useSoloDeskPersistence();
+
   const showCodePanel = useStore((s) => s.view.showCodePanel);
   const theme = useStore((s) => s.view.theme);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const [exportOpen, setExportOpen] = useState(false);
+  const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -114,20 +118,23 @@ function App() {
 
   return (
     <div className="appRoot" data-theme={theme}>
-      <MenuBar onExport={() => setExportOpen(true)} />
       <Toolbar onExport={() => setExportOpen(true)} />
-      <AppLayout
-        showCodePanel={showCodePanel}
-        signalPanel={(ctx) => (
-          <SignalPanel
-            scrollSync={ctx.scrollSync}
-            panelScrollRef={ctx.panelScrollRef}
-          />
-        )}
-        canvas={(ctx) => <IntegratedCanvas scrollSync={ctx.scrollSync} />}
-        codePanel={<CodePanel />}
-      />
-      <StatusBar />
+      <div className="mainArea">
+        <AppLayout
+          showCodePanel={showCodePanel}
+          signalPanel={(ctx) => (
+            <SignalPanel
+              scrollSync={ctx.scrollSync}
+              panelScrollRef={ctx.panelScrollRef}
+            />
+          )}
+          canvas={(ctx) => (
+            <CanvasWithMarker scrollSync={ctx.scrollSync} onHoverHit={setHoverHit} />
+          )}
+          codePanel={<CodePanel />}
+        />
+      </div>
+      <StatusBar pointerHit={hoverHit} />
       <ExportDialog
         open={exportOpen}
         onClose={() => setExportOpen(false)}
