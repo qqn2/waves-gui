@@ -13,6 +13,7 @@ import { CodePanel } from './codePanel';
 import { ExportDialog } from './exportEngine';
 import { useStore } from './shared/store';
 import { useSoloDeskPersistence } from './shell/soloDesk';
+import { HeadFootFields } from './shell/HeadFootFields';
 import './App.css';
 
 function IntegratedCanvas({
@@ -118,7 +119,10 @@ function App() {
 
   return (
     <div className="appRoot" data-theme={theme}>
-      <Toolbar onExport={() => setExportOpen(true)} />
+      <header className="shellHeader">
+        <Toolbar onExport={() => setExportOpen(true)} />
+        <HeadFootFields />
+      </header>
       <div className="mainArea">
         <AppLayout
           showCodePanel={showCodePanel}

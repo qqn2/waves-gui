@@ -6,6 +6,7 @@ import { renderGrid } from './renderGrid';
 import { renderTimeAxis } from './renderTimeAxis';
 import { renderBitSignal } from './renderBitSignal';
 import { renderVectorSignal } from './renderVectorSignal';
+import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
 
 export class CanvasRenderer {
@@ -27,6 +28,8 @@ export class CanvasRenderer {
     const rows = buildRowLayout(diagram.signals);
     const contentH = totalContentHeight(rows);
     const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+    const { headHeight, footHeight } = measureHeadFoot(diagram.config);
+    const waveformTop = axisOffset + headHeight;
 
     this.ctx.save();
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -41,7 +44,7 @@ export class CanvasRenderer {
     }
 
     this.ctx.save();
-    this.ctx.translate(0, axisOffset);
+    this.ctx.translate(0, waveformTop);
     renderGrid(
       this.ctx,
       diagram.config.totalSteps,
@@ -96,6 +99,19 @@ export class CanvasRenderer {
 
     walkDraw(diagram.signals);
     this.ctx.restore();
+
+    if (headHeight > 0 || footHeight > 0) {
+      renderHeadFoot(
+        this.ctx,
+        diagram.config,
+        transform,
+        diagram.config.totalSteps,
+        canvasWidth,
+        axisOffset,
+        waveformTop + contentH * transform.zoom,
+      );
+    }
+
     this.ctx.restore();
   }
 }

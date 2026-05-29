@@ -247,3 +247,55 @@
 .dirty {
   color: var(--accent);
 }
+
+.headFootRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 2px 6px 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  flex-shrink: 0;
+}
+
+.headFootField {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.headFootLabel {
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.headFootInput {
+  width: min(12rem, 28vw);
+  padding: 2px 6px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+}
+
+.headFootNum {
+  width: 3rem;
+  padding: 2px 4px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.headFootSep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+}
