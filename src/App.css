@@ -8,6 +8,14 @@
   overflow: hidden;
 }
 
+.shellHeader {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
 .mainArea {
   flex: 1;
   min-height: 0;

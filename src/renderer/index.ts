@@ -6,3 +6,5 @@ export type { HitTestResult } from './hitTest';
 export { buildRowLayout, totalContentHeight } from './rowLayout';
 export type { RowLayoutEntry } from './rowLayout';
 export { CanvasRenderer } from './CanvasRenderer';
+export { renderHeadFoot, measureHeadFoot, buildStepLabels } from './renderHeadFoot';
+export type { HeadFootLayout } from './renderHeadFoot';

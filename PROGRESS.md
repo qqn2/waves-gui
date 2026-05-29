@@ -27,13 +27,13 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 | Track | Status | Commit | Notes |
 |-------|--------|--------|-------|
 | P3-STORE | pending | — | Extend types/store for `edge[]`, `node` (orchestrator gate) |
-| P3-HF | pending | — | Head/foot UI + canvas render |
+| P3-HF | done | (this commit) | Head/foot render + `HeadFootFields` in shell; hitTest aligned |
+| P3-GOLD | done | (this commit) | `upstreamGolden.test.ts` (5 tests) |
 | P3-DATA | pending | — | Bus `data` label editor |
-| P3-EDGE | pending | — | `edge` + `node` round-trip + render |
+| P3-EDGE | pending | — | `edge` + `node` round-trip + render (needs P3-STORE) |
 | P3-VEC | pending | — | Vector add + canvas tools |
 | P3-TIMING | pending | — | `period` / `phase` UI |
-| P3-GOLD | pending | — | Upstream JSON5 golden import tests |
-| Docs | pending | — | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` (uncommitted) |
+| Docs | done | 223dac2 | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` |
 
 ## Known gaps (see FUTURE_FEATURES.md)
 

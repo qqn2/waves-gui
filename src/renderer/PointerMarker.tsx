@@ -1,6 +1,7 @@
 import type { DiagramState, ViewState } from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
+import { measureHeadFoot } from './renderHeadFoot';
 import { canvasCellWidth } from './coordinates';
 import type { HitTestResult } from './hitTest';
 import { findSignal } from '../shared/store';
@@ -22,8 +23,10 @@ export function PointerMarker({ hit, diagram, view }: PointerMarkerProps) {
 
   const cellW = canvasCellWidth(diagram.config.hscale, view.zoom);
   const axis = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+  const { headHeight } = measureHeadFoot(diagram.config);
+  const waveformTop = axis + headHeight;
   const left = hit.step * cellW - view.scrollX;
-  const top = row.y * view.zoom - view.scrollY + axis;
+  const top = row.y * view.zoom - view.scrollY + waveformTop;
   const height = row.height * view.zoom;
 
   let signalName = hit.signalId;
@@ -44,7 +47,7 @@ export function PointerMarker({ hit, diagram, view }: PointerMarkerProps) {
     <>
       <div
         className="pointerMarkerCol"
-        style={{ left, width: cellW, top: axis }}
+        style={{ left, width: cellW, top: waveformTop }}
         aria-hidden
       />
       <div
