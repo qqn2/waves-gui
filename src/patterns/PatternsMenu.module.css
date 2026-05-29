@@ -1,0 +1,138 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  max-width: 360px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+  overflow: hidden;
+}
+
+.header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.body {
+  display: flex;
+  min-height: 200px;
+}
+
+.list {
+  flex: 0 0 140px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: 320px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.listItem:hover {
+  background: var(--bg-hover);
+}
+
+.listItemActive {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  gap: 10px;
+  min-width: 0;
+}
+
+.desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.field input,
+.field select {
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-canvas);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.preview {
+  flex: 1;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-canvas);
+  padding: 4px;
+}
+
+.previewSvg {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.insertBtn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.insertBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.insertBtn:not(:disabled):hover {
+  filter: brightness(1.08);
+}

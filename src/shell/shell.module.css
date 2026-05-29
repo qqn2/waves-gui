@@ -1,0 +1,48 @@
+.appLayout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.signalPane {
+  flex: 0 0 auto;
+  border-right: 1px solid var(--border);
+  background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.canvasPane {
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+  background: var(--bg-canvas);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.resizeHandle {
+  flex: 0 0 4px;
+  cursor: col-resize;
+  background: var(--border);
+  touch-action: none;
+}
+
+.resizeHandle:hover {
+  background: var(--accent);
+}
+
+.codePane {
+  flex: 0 0 auto;
+  border-left: 1px solid var(--border);
+  background: var(--bg-panel);
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

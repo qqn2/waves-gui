@@ -1,0 +1,105 @@
+import { describe, expect, it } from 'vitest';
+import type { BitState, DiagramState, ViewState } from '../shared/types';
+import { CELL_WIDTH, ROW_HEIGHT } from '../shared/constants';
+import { hitTest } from './hitTest';
+
+function bitDiagram(steps = 20): DiagramState {
+  const states = Array<BitState>(steps).fill('0');
+  return {
+    version: 1,
+    config: { totalSteps: steps, hscale: 1 },
+    annotations: [],
+    signals: [
+      {
+        id: 'sig1',
+        name: 'a',
+        type: 'bit',
+        states,
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: ROW_HEIGHT,
+      },
+    ],
+  };
+}
+
+function defaultView(overrides: Partial<ViewState> = {}): ViewState {
+  return {
+    zoom: 1,
+    scrollX: 0,
+    scrollY: 0,
+    selectedTool: 'paint',
+    activeBitState: '1',
+    activeSignalIds: [],
+    showCodePanel: false,
+    showTimeAxis: true,
+    theme: 'dark',
+    isDirty: false,
+    fileName: null,
+    paintDraft: null,
+    ...overrides,
+  };
+}
+
+describe('hitTest', () => {
+  it('maps CSS coords to signal step and top half', () => {
+    const diagram = bitDiagram();
+    const hit = hitTest(CELL_WIDTH * 5 + 10, 10, diagram, defaultView());
+    expect(hit.signalId).toBe('sig1');
+    expect(hit.step).toBe(5);
+    expect(hit.half).toBe('top');
+    expect(hit.signalType).toBe('bit');
+  });
+
+  it('maps bottom half of row', () => {
+    const diagram = bitDiagram();
+    const hit = hitTest(CELL_WIDTH * 3 + 5, 30, diagram, defaultView());
+    expect(hit.step).toBe(3);
+    expect(hit.half).toBe('bottom');
+  });
+
+  it('respects zoom and scroll for step index', () => {
+    const diagram = bitDiagram();
+    const view = defaultView({ zoom: 2, scrollX: 0 });
+    const hit = hitTest(CELL_WIDTH * 2 * 2 + 20, 20, diagram, view);
+    expect(hit.step).toBe(2);
+  });
+
+  it('returns null outside step columns', () => {
+    const diagram = bitDiagram(10);
+    const hit = hitTest(CELL_WIDTH * 12, 10, diagram, defaultView());
+    expect(hit.signalId).toBeNull();
+    expect(hit.step).toBeNull();
+  });
+
+  it('walks nested groups for row Y', () => {
+    const diagram: DiagramState = {
+      version: 1,
+      config: { totalSteps: 10, hscale: 1 },
+      annotations: [],
+      signals: [
+        {
+          id: 'g1',
+          name: 'grp',
+          type: 'group',
+          collapsed: false,
+          children: [
+            {
+              id: 'inner',
+              name: 'b',
+              type: 'bit',
+              states: Array(10).fill('0'),
+              segments: [],
+              color: '#4A9EFF',
+              rowHeight: ROW_HEIGHT,
+            },
+          ],
+        },
+      ],
+    };
+    const yInChild = 28 + 10;
+    const hit = hitTest(CELL_WIDTH + 5, yInChild, diagram, defaultView());
+    expect(hit.signalId).toBe('inner');
+    expect(hit.step).toBe(1);
+  });
+});
