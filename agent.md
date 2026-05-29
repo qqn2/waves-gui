@@ -25,7 +25,43 @@
 
 ---
 
+## Project status
+
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| Phase 0 (`src/shared/`) | **Done** | Store, types, constants |
+| Tracks A–I + CP1–CP5 | **Done** | Canvas, tools, bridge, code panel, export, shell |
+| Phase 2 solo desk | **Done** | `9307f59` — draft recovery, golden tests, toggle paint, compact UI |
+| Phase 3 WaveDrom fidelity | **Active** | See below + `docs/FUTURE_FEATURES.md` |
+
+**Verify:** `make test` (64 tests), `make build`, `make dev` → http://localhost:5173
+
+**Reference material:** vendored WaveJSON notes and upstream fixtures in `docs/wavedrom-ref/` (see `SOURCES.md`).
+
+---
+
+## Phase 3 — WaveDrom fidelity (orchestrator tracks)
+
+Post-MVP work stays **client-only** and **timing-diagram (`signal[]`) only**. Full capability matrix: [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md).
+
+**Priority order (do not reorder without user approval):**
+
+1. **P3-HF** — `config.head` / `config.foot` UI + canvas render (title, ticks).
+2. **P3-DATA** — Bus segment **labels** (`data[]` on vector lanes); panel or inline edit.
+3. **P3-EDGE** — Import/export `edge[]` + `node` on signals; render dependency arrows (WaveDrom-compatible).
+4. **P3-VEC** — Re-enable vector add + canvas segment tools (reverses SOLO-L hide).
+5. **P3-TIMING** — `period` / `phase` per-lane UI; golden from `signal-step4.json5`.
+6. **P3-GOLD** — Expand golden tests with `docs/wavedrom-ref/upstream-tests/` timing fixtures.
+
+**Out of scope for Phase 3:** `reg[]`, `assign[]`, database/backend, non-exportable annotation UI.
+
+**Store changes:** Phase 0 types may be **extended** for `edge[]` and `node` strings (orchestrator-owned `src/shared/types.ts` + `store.ts` in a dedicated **P3-STORE** gate before parallel tracks that need them).
+
+---
+
 ## How to Use This Document
+
+**Greenfield:** Phase 0 must complete before tracks A–I. **Brownfield (current repo):** skip to Phase 3 tracks in `ORCHESTRATOR_PROMPT.md` unless fixing regressions.
 
 **Phase 0** must be completed (or at least the TypeScript interfaces agreed upon) before any tracks begin.
 **Tracks A–I** are independent and can run in parallel once Phase 0 is done.
