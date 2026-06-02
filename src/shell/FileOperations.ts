@@ -1,5 +1,6 @@
 import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { toWavedromJSON } from '../wavedromBridge';
+import { createDefaultDiagram } from '../shared/defaultDiagram';
 import type { DiagramState } from '../shared/types';
 import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
@@ -124,15 +125,9 @@ export async function saveDiagramFile(
 }
 
 export function newDiagramFile(): void {
-  const { view, loadDiagram, diagram } = useStore.getState();
+  const { view, loadDiagram } = useStore.getState();
   if (view.isDirty && !window.confirm('Discard unsaved changes?')) return;
-  loadDiagram({
-    version: 1,
-    signals: [],
-    config: { ...diagram.config, totalSteps: diagram.config.totalSteps },
-    edges: [],
-    annotations: [],
-  });
+  loadDiagram(createDefaultDiagram());
   clearDraft();
   useStore.setState((s) => {
     s.view.fileName = null;

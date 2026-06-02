@@ -21,6 +21,9 @@ function validateSignalEntry(entry: unknown): string | null {
   const sig = entry as { wave?: string };
   if (sig.wave !== undefined) {
     if (typeof sig.wave !== 'string') return 'wave must be a string';
+    if (sig.wave.includes('<') || sig.wave.includes('>')) {
+      return 'Sub-cycle wave syntax (<n|>) is not supported; use wavedrom.com editor and import JSON';
+    }
     if (!WAVE_CHARS.test(sig.wave)) {
       return `Invalid wave characters: ${sig.wave}`;
     }

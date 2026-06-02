@@ -70,8 +70,14 @@ export function setNodeCharAt(
   if (allPad) delete signal.node;
 }
 
-export function formatArrowEdge(fromChar: string, toChar: string, label?: string): string {
-  const path = `${fromChar}->${toChar}`;
+export function formatArrowEdge(
+  fromChar: string,
+  toChar: string,
+  label?: string,
+  shape = '',
+): string {
+  const path =
+    shape === '' ? `${fromChar}->${toChar}` : `${fromChar}${shape}>${toChar}`;
   const trimmed = label?.trim();
   return trimmed ? `${path} ${trimmed}` : path;
 }

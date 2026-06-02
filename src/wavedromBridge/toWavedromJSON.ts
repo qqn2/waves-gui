@@ -12,7 +12,7 @@ function signalToEntry(
   if (sig.type === 'bit') {
     const entry: WdSignal = {
       name: sig.name,
-      wave: encodeWaveString(sig.states, sig.stepGaps),
+      wave: encodeWaveString(sig.states, sig.stepGaps, sig.stepGlitches),
     };
     if (sig.phase !== undefined) entry.phase = sig.phase;
     if (sig.period !== undefined) entry.period = sig.period;
