@@ -1,4 +1,6 @@
-import type { StorageLike } from './localDraft';
+import { getSafeStorage, type StorageLike } from './safeStorage';
+
+export { type StorageLike } from './safeStorage';
 
 export const RECENT_FILES_STORAGE_KEY = 'wavedrom-gui-recent-files';
 
@@ -14,13 +16,6 @@ export interface RecentFileEntry {
 interface RecentFilesEnvelope {
   version: typeof RECENT_FILES_ENVELOPE_VERSION;
   files: RecentFileEntry[];
-}
-
-function defaultStorage(): StorageLike {
-  if (typeof localStorage !== 'undefined') {
-    return localStorage;
-  }
-  throw new Error('localStorage is not available');
 }
 
 function isRecentFilesEnvelope(value: unknown): value is RecentFilesEnvelope {
@@ -44,26 +39,27 @@ function isRecentFilesEnvelope(value: unknown): value is RecentFilesEnvelope {
 }
 
 export function loadRecentFiles(
-  storage: StorageLike = defaultStorage(),
+  storage: StorageLike = getSafeStorage(),
 ): RecentFileEntry[] {
-  const raw = storage.getItem(RECENT_FILES_STORAGE_KEY);
-  if (!raw) {
-    return [];
-  }
   try {
+    const raw = storage.getItem(RECENT_FILES_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
     const parsed: unknown = JSON.parse(raw);
     if (!isRecentFilesEnvelope(parsed)) {
       return [];
     }
     return parsed.files;
-  } catch {
+  } catch (err) {
+    console.warn('[soloDesk] loadRecentFiles failed', err);
     return [];
   }
 }
 
 export function recordRecentFile(
   name: string,
-  storage: StorageLike = defaultStorage(),
+  storage: StorageLike = getSafeStorage(),
   openedAt = Date.now(),
 ): void {
   const trimmed = name.trim();
@@ -71,19 +67,29 @@ export function recordRecentFile(
     return;
   }
 
-  const withoutDuplicate = loadRecentFiles(storage).filter((entry) => entry.name !== trimmed);
-  const files: RecentFileEntry[] = [
-    { name: trimmed, openedAt },
-    ...withoutDuplicate,
-  ].slice(0, RECENT_FILES_MAX);
+  try {
+    const withoutDuplicate = loadRecentFiles(storage).filter(
+      (entry) => entry.name !== trimmed,
+    );
+    const files: RecentFileEntry[] = [
+      { name: trimmed, openedAt },
+      ...withoutDuplicate,
+    ].slice(0, RECENT_FILES_MAX);
 
-  const envelope: RecentFilesEnvelope = {
-    version: RECENT_FILES_ENVELOPE_VERSION,
-    files,
-  };
-  storage.setItem(RECENT_FILES_STORAGE_KEY, JSON.stringify(envelope));
+    const envelope: RecentFilesEnvelope = {
+      version: RECENT_FILES_ENVELOPE_VERSION,
+      files,
+    };
+    storage.setItem(RECENT_FILES_STORAGE_KEY, JSON.stringify(envelope));
+  } catch (err) {
+    console.warn('[soloDesk] recordRecentFile failed', err);
+  }
 }
 
-export function clearRecentFiles(storage: StorageLike = defaultStorage()): void {
-  storage.removeItem(RECENT_FILES_STORAGE_KEY);
+export function clearRecentFiles(storage: StorageLike = getSafeStorage()): void {
+  try {
+    storage.removeItem(RECENT_FILES_STORAGE_KEY);
+  } catch (err) {
+    console.warn('[soloDesk] clearRecentFiles failed', err);
+  }
 }

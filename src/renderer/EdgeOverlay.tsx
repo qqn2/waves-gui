@@ -26,7 +26,7 @@ export function EdgeOverlay() {
       labelY: number;
     }> = [];
 
-    diagram.edges.forEach((edgeStr, i) => {
+    (diagram.edges ?? []).forEach((edgeStr, i) => {
       const parsed = parseEdge(edgeStr);
       if (!parsed) return;
       const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
