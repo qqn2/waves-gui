@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ShortcutHelp } from './ShortcutHelp';
 import {
   ArrowRight,
   Eraser,
@@ -24,11 +25,48 @@ import { loadRecentFiles } from './soloDesk/recentFiles';
 import { ThemeMenu } from './ThemeMenu';
 import styles from './shell.module.css';
 
-const BIT_STATES: BitState[] = ['1', '0', 'p', 'z', 'x'];
+/** Shown by default on the paint toolbar. */
+const PRIMARY_BIT_STATES: BitState[] = ['1', '0', 'P', 'N', 'z', 'x'];
+
+/** Extra WaveDrom values behind “More”. */
+const MORE_BIT_STATES: BitState[] = ['p', 'n', 'u', 'd'];
 
 const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
-  p: 'Clock rising edge (WaveDrom p); toggle flips to n',
+  p: 'Clock rising edge (p)',
+  P: 'Clock rising edge with arrow (P)',
+  n: 'Clock falling edge (n); toggle (¬) inverts phase (→p)',
+  N: 'Clock falling edge with arrow (N)',
+  u: 'Weak pull-up (u)',
+  d: 'Weak pull-down (d)',
+  z: 'High impedance (z)',
+  x: 'Unknown (x)',
 };
+
+function bitStateButtonLabel(st: BitState): string {
+  return st;
+}
+
+function BitStateButton({
+  st,
+  active,
+  onSelect,
+}: {
+  st: BitState;
+  active: boolean;
+  onSelect: (st: BitState) => void;
+}) {
+  return (
+    <button
+      type="button"
+      title={BIT_STATE_TITLES[st] ?? `Draw ${st}`}
+      className={`${styles.toolBtn} ${active ? styles.toolActive : ''}`}
+      onClick={() => onSelect(st)}
+      aria-pressed={active}
+    >
+      {bitStateButtonLabel(st)}
+    </button>
+  );
+}
 
 export interface ToolbarProps {
   onExport: () => void;
@@ -42,6 +80,10 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
   const setActiveTimespanLabel = useStore((s) => s.setActiveTimespanLabel);
+  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
+  const setActiveEdgeShape = useStore((s) => s.setActiveEdgeShape);
+  const showAnchorLetters = useStore((s) => s.view.showAnchorLetters);
+  const setShowAnchorLetters = useStore((s) => s.setShowAnchorLetters);
   const activeBusColorIndex = useStore((s) => s.view.activeBusColorIndex);
   const setActiveBusColorIndex = useStore((s) => s.setActiveBusColorIndex);
   const setHscale = useStore((s) => s.setHscale);
@@ -63,6 +105,18 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const recentFiles = fileOpen ? loadRecentFiles() : [];
   const [addOpen, setAddOpen] = useState(false);
   const [patternsOpen, setPatternsOpen] = useState(false);
+  const [shortcutOpen, setShortcutOpen] = useState(false);
+  const [moreBitsOpen, setMoreBitsOpen] = useState(false);
+
+  const EDGE_SHAPES = ['', '-', '-~', '~', '-|', '|-', '-|-'] as const;
+
+  const selectBitValue = (st: BitState) => {
+    setActiveBitState(st);
+    setPaintMode('set');
+  };
+
+  const moreBitsActive =
+    MORE_BIT_STATES.includes(activeBit) || paintMode === 'toggle';
 
   return (
     <div className={styles.toolbar}>
@@ -192,6 +246,34 @@ export function Toolbar({ onExport }: ToolbarProps) {
       >
         <MoveHorizontal size={15} aria-hidden />
       </button>
+      {tool === 'arrow' ? (
+        <>
+          <label className={styles.hscaleWrap} title="Path shape between anchors (before >)">
+            <span className={styles.hscaleLabel}>shape</span>
+            <select
+              className={styles.hscaleSelect}
+              value={activeEdgeShape}
+              onChange={(e) => setActiveEdgeShape(e.target.value)}
+              aria-label="Arrow edge shape"
+            >
+              {EDGE_SHAPES.map((sh) => (
+                <option key={sh || 'default'} value={sh}>
+                  {sh === '' ? '→' : sh}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            title="Show A–Z anchor letters on canvas while placing edges"
+            className={`${styles.toolBtn} ${showAnchorLetters ? styles.toolActive : ''}`}
+            onClick={() => setShowAnchorLetters(!showAnchorLetters)}
+            aria-pressed={showAnchorLetters}
+          >
+            ABC
+          </button>
+        </>
+      ) : null}
       {tool === 'timespan' ? (
         <label
           className={styles.busLabelWrap}
@@ -213,33 +295,63 @@ export function Toolbar({ onExport }: ToolbarProps) {
           <span className={styles.toolGroupLabel}>Value</span>
           <button
             type="button"
-            title="Toggle (NOT) — 0↔1, clock p↔n; x/z unchanged"
-            className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
-            onClick={() => setPaintMode('toggle')}
-            aria-pressed={paintMode === 'toggle'}
+            title="Glitch — spurious same-level transition (WaveDrom 00 / 0.0)"
+            className={`${styles.toolBtn} ${paintMode === 'glitch' ? styles.toolActive : ''}`}
+            onClick={() => setPaintMode('glitch')}
+            aria-pressed={paintMode === 'glitch'}
           >
-            ¬
+            ⌢
           </button>
+          {PRIMARY_BIT_STATES.map((st) => (
+            <BitStateButton
+              key={st}
+              st={st}
+              active={paintMode === 'set' && activeBit === st}
+              onSelect={selectBitValue}
+            />
+          ))}
           <button
             type="button"
-            title="Set — apply the selected value (0, 1, p, …)"
-            className={`${styles.toolBtn} ${paintMode === 'set' ? styles.toolActive : ''}`}
-            onClick={() => setPaintMode('set')}
-            aria-pressed={paintMode === 'set'}
+            title="More values — p, n, weak pull-up/down (u, d)"
+            className={`${styles.toolBtn} ${
+              moreBitsOpen || moreBitsActive ? styles.toolActive : ''
+            }`}
+            onClick={() => setMoreBitsOpen((o) => !o)}
+            aria-pressed={moreBitsOpen}
+            aria-expanded={moreBitsOpen}
           >
-            Set
+            More{moreBitsActive && !moreBitsOpen ? ` (${activeBit})` : ''} ▾
           </button>
-          {BIT_STATES.map((st) => (
-            <button
-              key={st}
-              type="button"
-              title={BIT_STATE_TITLES[st] ?? `Draw ${st}`}
-              className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
-              onClick={() => setActiveBitState(st)}
-            >
-              {st.toUpperCase()}
-            </button>
-          ))}
+          {moreBitsOpen ? (
+            <span className={styles.paintMoreGroup}>
+              {MORE_BIT_STATES.map((st) => (
+                <BitStateButton
+                  key={st}
+                  st={st}
+                  active={paintMode === 'set' && activeBit === st}
+                  onSelect={selectBitValue}
+                />
+              ))}
+              <button
+                type="button"
+                title="Toggle (NOT) — 0↔1; clock rise↔fall (p/P→n, n/N→p); x/z unchanged"
+                className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
+                onClick={() => setPaintMode('toggle')}
+                aria-pressed={paintMode === 'toggle'}
+              >
+                ¬
+              </button>
+              <button
+                type="button"
+                title="Set — apply the selected value"
+                className={`${styles.toolBtn} ${paintMode === 'set' ? styles.toolActive : ''}`}
+                onClick={() => setPaintMode('set')}
+                aria-pressed={paintMode === 'set'}
+              >
+                Set
+              </button>
+            </span>
+          ) : null}
           <label
             className={styles.busLabelWrap}
             title="Label for bus rows (= span)"
@@ -372,6 +484,15 @@ export function Toolbar({ onExport }: ToolbarProps) {
         {view.showTimeAxis ? '✓ ' : ''}Axis
       </button>
       <ThemeMenu />
+      <button
+        type="button"
+        className={styles.toolBtn}
+        title="Keyboard shortcuts"
+        onClick={() => setShortcutOpen(true)}
+      >
+        ?
+      </button>
+      <ShortcutHelp open={shortcutOpen} onClose={() => setShortcutOpen(false)} />
     </div>
   );
 }

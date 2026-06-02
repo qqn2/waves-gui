@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStore, findSignal } from '../shared/store';
 import { edgeToolHint } from '../tools/edgeToolHint';
 import type { HitTestResult } from '../renderer/hitTest';
@@ -42,6 +43,9 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   const diagram = useStore((s) => s.diagram);
   const edges = diagram.edges ?? [];
   const removeDiagramEdge = useStore((s) => s.removeDiagramEdge);
+  const updateDiagramEdge = useStore((s) => s.updateDiagramEdge);
+  const [editingEdge, setEditingEdge] = useState<number | null>(null);
+  const [edgeDraft, setEdgeDraft] = useState('');
 
   const signalCount = countSignals(signals);
 
@@ -57,7 +61,9 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
       findSignal(diagram.signals, pointerHit.signalId, (s) => {
         if (s.type === 'bit') cur = s.states[pointerHit.step!] ?? null;
       });
-      if (paintMode === 'toggle' && cur !== null) {
+      if (paintMode === 'glitch') {
+        pointerLabel += ' · glitch';
+      } else if (paintMode === 'toggle' && cur !== null) {
         pointerLabel += ` · ¬ ${cur}→${toggleBinaryBitState(cur)}`;
       } else {
         pointerLabel += ` · set ${activeBit}`;
@@ -87,9 +93,39 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
           <ul className={styles.edgeChipList}>
             {edges.map((edge, i) => (
               <li key={`${i}-${edge}`} className={styles.edgeChip}>
-                <span className={styles.edgeChipText} title={edge}>
-                  {edge}
-                </span>
+                {editingEdge === i ? (
+                  <input
+                    type="text"
+                    className={styles.edgeChipInput}
+                    value={edgeDraft}
+                    onChange={(e) => setEdgeDraft(e.target.value)}
+                    onBlur={() => {
+                      const trimmed = edgeDraft.trim();
+                      if (trimmed && trimmed !== edge) {
+                        updateDiagramEdge(i, trimmed);
+                      }
+                      setEditingEdge(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                      if (e.key === 'Escape') setEditingEdge(null);
+                    }}
+                    autoFocus
+                    aria-label="Edit edge string"
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.edgeChipText}
+                    title="Click to edit edge string"
+                    onClick={() => {
+                      setEditingEdge(i);
+                      setEdgeDraft(edge);
+                    }}
+                  >
+                    {edge}
+                  </button>
+                )}
                 <button
                   type="button"
                   className={styles.edgeChipDelete}

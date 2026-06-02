@@ -51,9 +51,11 @@ export function PointerMarker({
 
   const paintHint =
     hit.signalType === 'bit' && current !== null
-      ? view.paintMode === 'set'
-        ? ` → ${view.activeBitState}`
-        : ` ${current}→${toggleBinaryBitState(current)}`
+      ? view.paintMode === 'glitch'
+        ? ' · glitch'
+        : view.paintMode === 'set'
+          ? ` → ${view.activeBitState}`
+          : ` ${current}→${toggleBinaryBitState(current)}`
       : '';
 
   let edgeHint = '';
