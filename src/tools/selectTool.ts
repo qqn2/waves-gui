@@ -164,15 +164,40 @@ export function selectAllSignals(): void {
 }
 
 export function deleteSelection(): void {
-  const { view } = useStore.getState();
+  const { view, diagram } = useStore.getState();
   const steps = toolState.getStepSelection();
-  if (!steps || view.activeSignalIds.length === 0) return;
+  const { eraseSignalStateRange, removeSignal } = useStore.getState();
 
-  const lo = Math.min(steps.start, steps.end);
-  const hi = Math.max(steps.start, steps.end);
-  const { eraseSignalStateRange } = useStore.getState();
-  for (const signalId of view.activeSignalIds) {
-    eraseSignalStateRange(signalId, lo, hi);
+  if (steps && view.activeSignalIds.length > 0) {
+    const lo = Math.min(steps.start, steps.end);
+    const hi = Math.max(steps.start, steps.end);
+    for (const signalId of view.activeSignalIds) {
+      eraseSignalStateRange(signalId, lo, hi);
+    }
+    return;
+  }
+
+  if (view.activeSignalIds.length > 0) {
+    const ids = [...view.activeSignalIds];
+    const msg =
+      ids.length === 1
+        ? 'Remove selected signal?'
+        : `Remove ${ids.length} selected signals?`;
+    if (!window.confirm(msg)) return;
+    for (const signalId of ids) {
+      removeSignal(signalId);
+    }
+    clearSelection();
+    return;
+  }
+
+  if (steps) {
+    const lo = Math.min(steps.start, steps.end);
+    const hi = Math.max(steps.start, steps.end);
+    const allIds = collectSignalIds(diagram.signals);
+    for (const signalId of allIds) {
+      eraseSignalStateRange(signalId, lo, hi);
+    }
   }
 }
 

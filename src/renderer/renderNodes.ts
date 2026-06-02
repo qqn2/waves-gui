@@ -1,5 +1,8 @@
 import type { DiagramState } from '../shared/types';
-import { isVisibleNodeChar } from '../wavedromBridge/nodeVisibility';
+import {
+  isInvisibleNodeChar,
+  isVisibleNodeChar,
+} from '../wavedromBridge/nodeVisibility';
 import { NODE_PAD_CHAR } from '../wavedromBridge/nodeString';
 import { stepLogicalCenter } from './laneTiming';
 import type { ViewTransform } from './coordinates';
@@ -14,6 +17,7 @@ export function renderSignalNodes(
   transform: ViewTransform,
   totalSteps: number,
   nodeStr: string | undefined,
+  showInvisibleAnchors = false,
 ): void {
   if (!nodeStr) return;
 
@@ -46,10 +50,19 @@ export function renderSignalNodes(
 
   for (let step = 0; step < totalSteps && step < nodeStr.length; step++) {
     const ch = nodeStr[step]!;
-    if (ch === NODE_PAD_CHAR || ch === ' ' || !isVisibleNodeChar(ch)) continue;
+    if (ch === NODE_PAD_CHAR || ch === ' ') continue;
+    if (!showInvisibleAnchors && !isVisibleNodeChar(ch)) continue;
+    if (showInvisibleAnchors && !isVisibleNodeChar(ch) && !isInvisibleNodeChar(ch)) {
+      continue;
+    }
     const x = stepLogicalCenter(signal, step) * scale - transform.scrollX;
     if (x + 8 < 0) continue;
+    if (isInvisibleNodeChar(ch)) {
+      ctx.globalAlpha = 0.55;
+      ctx.font = `600 ${Math.max(9, 10 * transform.zoom)}px ui-monospace, monospace`;
+    }
     ctx.fillText(ch, x, y);
+    ctx.globalAlpha = 1;
   }
   ctx.restore();
 }
