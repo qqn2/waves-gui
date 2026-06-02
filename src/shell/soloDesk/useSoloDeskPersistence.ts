@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useStore } from '../../shared/store';
-import { isDiagramEmpty, loadDraft, saveDraft } from './localDraft';
+import { clearDraft, isDiagramEmpty, loadDraft, saveDraft } from './localDraft';
 
 const DRAFT_DEBOUNCE_MS = 1000;
 
@@ -29,13 +29,22 @@ export function useSoloDeskPersistence(): void {
     }
     restoreCheckedRef.current = true;
 
-    const draft = loadDraft();
-    if (draft) {
-      const current = useStore.getState().diagram;
-      const shouldRestore =
-        isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
-      if (shouldRestore) {
-        loadDiagram(draft);
+    try {
+      const draft = loadDraft();
+      if (draft) {
+        const current = useStore.getState().diagram;
+        const shouldRestore =
+          isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
+        if (shouldRestore) {
+          loadDiagram(draft);
+        }
+      }
+    } catch (err) {
+      console.warn('[soloDesk] draft restore failed', err);
+      try {
+        clearDraft();
+      } catch {
+        /* storage may be unavailable */
       }
     }
 

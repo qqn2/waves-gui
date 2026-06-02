@@ -64,8 +64,9 @@ export function toWavedromJSON(diagram: DiagramState): WdRoot {
   };
   if (root.config?.head === undefined) delete root.config?.head;
   if (root.config?.foot === undefined) delete root.config?.foot;
-  if (diagram.edges.length > 0) {
-    root.edge = [...diagram.edges];
+  const edges = diagram.edges ?? [];
+  if (edges.length > 0) {
+    root.edge = [...edges];
   }
   return root;
 }

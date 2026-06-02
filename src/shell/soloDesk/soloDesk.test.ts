@@ -115,6 +115,23 @@ describe('localDraft', () => {
     clearDraft(storage);
     expect(storage.getItem(DRAFT_STORAGE_KEY)).toBeNull();
   });
+
+  it('does not throw when storage getItem/setItem fails', () => {
+    const broken: StorageLike = {
+      getItem: () => {
+        throw new DOMException('NS_ERROR_STORAGE_BUSY', 'SecurityError');
+      },
+      setItem: () => {
+        throw new DOMException('NS_ERROR_STORAGE_BUSY', 'SecurityError');
+      },
+      removeItem: () => {
+        throw new DOMException('NS_ERROR_STORAGE_BUSY', 'SecurityError');
+      },
+    };
+    expect(() => saveDraft(sampleDiagram(), broken)).not.toThrow();
+    expect(loadDraft(broken)).toBeNull();
+    expect(() => clearDraft(broken)).not.toThrow();
+  });
 });
 
 describe('recentFiles', () => {

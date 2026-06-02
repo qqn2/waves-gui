@@ -1,4 +1,8 @@
 import type { DiagramState } from '../../shared/types';
+import { normalizeDiagram } from '../../shared/normalizeDiagram';
+import { getSafeStorage, type StorageLike } from './safeStorage';
+
+export { type StorageLike } from './safeStorage';
 
 export const DRAFT_STORAGE_KEY = 'wavedrom-gui-draft';
 
@@ -8,15 +12,6 @@ export interface DraftEnvelope {
   version: typeof DRAFT_ENVELOPE_VERSION;
   savedAt: number;
   diagram: DiagramState;
-}
-
-export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
-
-function defaultStorage(): StorageLike {
-  if (typeof localStorage !== 'undefined') {
-    return localStorage;
-  }
-  throw new Error('localStorage is not available');
 }
 
 export function isDiagramEmpty(diagram: DiagramState): boolean {
@@ -49,34 +44,43 @@ function isDraftEnvelope(value: unknown): value is DraftEnvelope {
 
 export function saveDraft(
   diagram: DiagramState,
-  storage: StorageLike = defaultStorage(),
+  storage: StorageLike = getSafeStorage(),
 ): void {
-  const envelope: DraftEnvelope = {
-    version: DRAFT_ENVELOPE_VERSION,
-    savedAt: Date.now(),
-    diagram,
-  };
-  storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(envelope));
+  try {
+    const envelope: DraftEnvelope = {
+      version: DRAFT_ENVELOPE_VERSION,
+      savedAt: Date.now(),
+      diagram: normalizeDiagram(diagram),
+    };
+    storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(envelope));
+  } catch (err) {
+    console.warn('[soloDesk] saveDraft failed', err);
+  }
 }
 
-export function loadDraft(storage: StorageLike = defaultStorage()): DiagramState | null {
-  const raw = storage.getItem(DRAFT_STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
+export function loadDraft(storage: StorageLike = getSafeStorage()): DiagramState | null {
   try {
+    const raw = storage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
     const parsed: unknown = JSON.parse(raw);
     if (!isDraftEnvelope(parsed)) {
       return null;
     }
-    return parsed.diagram;
-  } catch {
+    return normalizeDiagram(parsed.diagram);
+  } catch (err) {
+    console.warn('[soloDesk] loadDraft failed', err);
     return null;
   }
 }
 
-export function clearDraft(storage: StorageLike = defaultStorage()): void {
-  storage.removeItem(DRAFT_STORAGE_KEY);
+export function clearDraft(storage: StorageLike = getSafeStorage()): void {
+  try {
+    storage.removeItem(DRAFT_STORAGE_KEY);
+  } catch (err) {
+    console.warn('[soloDesk] clearDraft failed', err);
+  }
 }
 
 /** Serialize draft envelope for tests and debugging. */
