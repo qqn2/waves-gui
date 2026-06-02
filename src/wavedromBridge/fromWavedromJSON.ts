@@ -7,6 +7,7 @@ import type {
   VectorSegment,
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
+import { ensureClockLaneFormat } from './clockWave';
 import { decodeWaveDetail } from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
@@ -37,10 +38,10 @@ function parseVectorSegments(
   const segments: VectorSegment[] = [];
   let dataIdx = 0;
   let segStart = 0;
-  let segValue = '0';
+  let segValue = '';
   let segColor: string | undefined;
   const flushSegment = (endStep: number) => {
-    if (endStep > segStart) {
+    if (endStep > segStart && segValue !== '') {
       segments.push({
         id: nanoid(),
         startStep: segStart,
@@ -72,7 +73,10 @@ function parseVectorSegments(
       if (ch === '=' || (ch >= '2' && ch <= '9')) {
         segValue = data[dataIdx++] ?? '';
       } else {
-        segValue = '0';
+        flushSegment(i);
+        segStart = i + 1;
+        segColor = undefined;
+        continue;
       }
     }
   }
@@ -133,7 +137,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
   }
-  const { states, stepGaps } = decodeWaveDetail(wave);
+  const { states, stepGaps, stepGlitches } = decodeWaveDetail(wave);
   return {
     id: nanoid(),
     name: sig.name ?? 'sig',
@@ -145,6 +149,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     phase: sig.phase,
     period: sig.period,
     ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
+    ...(stepGlitches.some(Boolean) ? { stepGlitches } : {}),
     ...(sig.node !== undefined ? { node: sig.node } : {}),
   };
 }
@@ -182,12 +187,18 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       const last = s.states[s.states.length - 1] ?? '0';
       while (s.states.length < totalSteps) s.states.push(last);
       if (s.states.length > totalSteps) s.states.length = totalSteps;
+      const maxBoundaries = Math.max(0, s.states.length - 1);
       if (s.stepGaps) {
-        const maxGaps = Math.max(0, s.states.length - 1);
-        while (s.stepGaps.length < maxGaps) s.stepGaps.push(false);
-        if (s.stepGaps.length > maxGaps) s.stepGaps.length = maxGaps;
+        while (s.stepGaps.length < maxBoundaries) s.stepGaps.push(false);
+        if (s.stepGaps.length > maxBoundaries) s.stepGaps.length = maxBoundaries;
         if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
       }
+      if (s.stepGlitches) {
+        while (s.stepGlitches.length < maxBoundaries) s.stepGlitches.push(false);
+        if (s.stepGlitches.length > maxBoundaries) s.stepGlitches.length = maxBoundaries;
+        if (!s.stepGlitches.some(Boolean)) delete s.stepGlitches;
+      }
+      ensureClockLaneFormat(s.states);
       return;
     }
     if (s.type === 'vector') {

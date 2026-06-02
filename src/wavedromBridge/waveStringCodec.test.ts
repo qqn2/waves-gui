@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { encodeWaveString, decodeWaveString } from './waveStringCodec';
+import {
+  encodeWaveString,
+  decodeWaveString,
+  decodeWaveDetail,
+  normalizeWaveString,
+} from './waveStringCodec';
 import {
   toWavedromJSON,
   fromWavedromJSON,
@@ -26,12 +31,18 @@ function canonicalWave(wave: string): string {
 
 describe('encodeWaveString / decodeWaveString', () => {
   it('encodes run-length per WaveDrom convention', () => {
-    expect(encodeWaveString(['1', '1', '1', '0', '0'])).toBe('1..00');
+    expect(encodeWaveString(['1', '1', '1', '0', '0'])).toBe('1..0.');
     expect(encodeWaveString(['1', '0', '1', '0', '1'])).toBe('10101');
   });
 
   it('decodes continuation dots', () => {
+    expect(decodeWaveString('1..0.')).toEqual(['1', '1', '1', '0', '0']);
     expect(decodeWaveString('1..00')).toEqual(['1', '1', '1', '0', '0']);
+  });
+
+  it('normalizes redundant explicit repeats after a dot', () => {
+    expect(normalizeWaveString('0.1..0.0')).toBe('0.1..0.');
+    expect(normalizeWaveString('1..00')).toBe('1..0.');
   });
 
   it('round-trips arbitrary bit patterns', () => {
@@ -44,11 +55,48 @@ describe('encodeWaveString / decodeWaveString', () => {
   });
 
   it('handles case-insensitive wave chars', () => {
-    expect(decodeWaveString('XzP')).toEqual(['x', 'z', 'p']);
+    expect(decodeWaveString('XzP')).toEqual(['x', 'z', 'P']);
+  });
+
+  it('never encodes clock as per-step pnPn spam', () => {
+    expect(encodeWaveString(['P', 'n', 'P', 'n'])).toBe('P...');
+    expect(encodeWaveString(['p', 'n', 'p', 'n'])).toBe('p...');
+    expect(encodeWaveString(['n', 'p', 'n', 'p', 'p', 'n', 'p', 'n'])).toBe(
+      'n...p...',
+    );
+    expect(decodeWaveString('pnpn')).toEqual(['p', 'n', 'p', 'n']);
+    expect(encodeWaveString(decodeWaveString('pnpn'))).toBe('p...');
   });
 
   it('returns empty string for empty states', () => {
     expect(encodeWaveString([])).toBe('');
+  });
+
+  it('decodes explicit same-level repeats as glitches', () => {
+    const d00 = decodeWaveDetail('00');
+    expect(d00.states).toEqual(['0', '0']);
+    expect(d00.stepGlitches[0]).toBe(true);
+
+    const dHoldGlitch = decodeWaveDetail('0.0');
+    expect(dHoldGlitch.states).toEqual(['0', '0']);
+    expect(dHoldGlitch.stepGlitches[0]).toBe(true);
+  });
+
+  it('encodes glitches with explicit repeat chars, not dots', () => {
+    expect(
+      encodeWaveString(['1', '1', '1', '0', '0'], undefined, [false, false, false, true]),
+    ).toBe('1..00');
+    expect(
+      encodeWaveString(['0', '0'], undefined, [true]),
+    ).toBe('00');
+  });
+
+  it('round-trips waves that carry explicit glitches', () => {
+    const wave = '1..00';
+    const detail = decodeWaveDetail(wave);
+    expect(
+      encodeWaveString(detail.states, detail.stepGaps, detail.stepGlitches),
+    ).toBe(wave);
   });
 });
 
