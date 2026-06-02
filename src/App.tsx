@@ -14,7 +14,10 @@ import { ExportDialog } from './exportEngine';
 import { useStore } from './shared/store';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { HeadFootFields } from './shell/HeadFootFields';
+import { DiagramStepsControl } from './shell/DiagramStepsControl';
 import { SignalTimingBar } from './shell/SignalTimingBar';
+import { LABEL_WIDTH } from './shared/constants';
+import shellStyles from './shell/shell.module.css';
 import './App.css';
 
 function IntegratedCanvas({
@@ -124,7 +127,17 @@ function App() {
       <header className="shellHeader">
         <Toolbar onExport={() => setExportOpen(true)} />
         <HeadFootFields />
-        <SignalTimingBar />
+        <div className={shellStyles.shellHeaderGrid}>
+          <div
+            className={shellStyles.shellHeaderLabelCol}
+            style={{ width: LABEL_WIDTH, minWidth: LABEL_WIDTH }}
+          >
+            <DiagramStepsControl />
+          </div>
+          <div className={shellStyles.shellHeaderWaveCol}>
+            <SignalTimingBar />
+          </div>
+        </div>
       </header>
       <div className="mainArea">
         <AppLayout

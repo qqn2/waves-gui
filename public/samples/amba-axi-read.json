@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AXI4 single read (AR + R)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AR channel",
+      { "name": "ACLK", "wave": "p......." },
+      { "name": "ARADDR", "wave": "x..=x..", "data": ["0x07000100"] },
+      { "name": "ARVALID", "wave": "0..1..0." },
+      { "name": "ARREADY", "wave": "0...1..0" }
+    ],
+    {},
+    [
+      "R channel",
+      { "name": "RDATA", "wave": "x.....=x", "data": ["0x07000100"] },
+      { "name": "RLAST", "wave": "0.....1.0" },
+      { "name": "RVALID", "wave": "0.....1.0" },
+      { "name": "RREADY", "wave": "0.....0.1" }
+    ]
+  ],
+  "foot": { "text": "ARLEN=0; RLAST=1 with RVALID; gist.github.com/2878346 style" }
+}

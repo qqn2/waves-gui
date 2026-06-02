@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AHB single write (NONSEQ, HBURST=SINGLE)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address phase",
+      { "name": "HCLK", "wave": "p......." },
+      { "name": "HSEL", "wave": "0.1..0.." },
+      { "name": "HTRANS", "wave": "x.=x..", "data": ["NONSEQ"] },
+      { "name": "HADDR", "wave": "x.=x..", "data": ["0xA0000000"] },
+      { "name": "HWRITE", "wave": "0.1..0.." },
+      { "name": "HBURST", "wave": "x.=x..", "data": ["SINGLE"] }
+    ],
+    {},
+    [
+      "Data phase",
+      { "name": "HWDATA", "wave": "x...=x.", "data": ["0xDEADBEEF"] },
+      { "name": "HREADY", "wave": "1......." },
+      { "name": "HRESP", "wave": "0......." }
+    ]
+  ],
+  "foot": { "text": "Address then data phase; HREADY=1, no wait; IHI0033C-style" }
+}

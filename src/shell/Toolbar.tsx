@@ -3,13 +3,18 @@ import { Eraser, Paintbrush, Plus, Square, ZoomIn, ZoomOut } from 'lucide-react'
 import { useStore } from '../shared/store';
 import type { BitState } from '../shared/types';
 import { PatternsMenu } from '../patterns/PatternsMenu';
-import { loadSampleDiagram, SAMPLE_DIAGRAMS } from './samples';
+import { loadSampleDiagram, samplesByCategory } from './samples';
 import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
 import { loadRecentFiles } from './soloDesk/recentFiles';
 import { BUS_SEGMENT_EDIT_HINT } from '../tools/vectorPaintTool';
+import { ThemeMenu } from './ThemeMenu';
 import styles from './shell.module.css';
 
-const BIT_STATES: BitState[] = ['1', '0', 'z', 'x'];
+const BIT_STATES: BitState[] = ['1', '0', 'p', 'z', 'x'];
+
+const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
+  p: 'Clock rising edge (WaveDrom p); toggle flips to n',
+};
 
 export interface ToolbarProps {
   onExport: () => void;
@@ -28,7 +33,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setZoom = useStore((s) => s.setZoom);
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
   const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
-  const setTheme = useStore((s) => s.setTheme);
   const addSignal = useStore((s) => s.addSignal);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
@@ -87,10 +91,25 @@ export function Toolbar({ onExport }: ToolbarProps) {
               </>
             ) : null}
             <div className={styles.menuSubheading}>Samples</div>
-            {SAMPLE_DIAGRAMS.map((s) => (
+            {samplesByCategory('general').map((s) => (
               <button
                 key={s.id}
                 type="button"
+                title={s.description}
+                onClick={() => {
+                  void loadSampleDiagram(s.id);
+                  setFileOpen(false);
+                }}
+              >
+                {s.title}
+              </button>
+            ))}
+            <div className={styles.menuSubheading}>AMBA templates</div>
+            {samplesByCategory('amba').map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                title={s.description}
                 onClick={() => {
                   void loadSampleDiagram(s.id);
                   setFileOpen(false);
@@ -139,7 +158,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
 
       <button
         type="button"
-        title="Toggle (NOT) — click flips 0/1"
+        title="Toggle (NOT) — 0↔1, clock p↔n; x/z unchanged"
         className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
         onClick={() => setPaintMode('toggle')}
       >
@@ -149,6 +168,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
         <button
           key={st}
           type="button"
+          title={BIT_STATE_TITLES[st]}
           className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
           onClick={() => setActiveBitState(st)}
         >
@@ -229,12 +249,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       <button type="button" className={styles.toolBtn} onClick={() => toggleTimeAxis()}>
         {view.showTimeAxis ? '✓ ' : ''}Axis
       </button>
-      <button type="button" className={styles.toolBtn} onClick={() => setTheme('light')}>
-        Light
-      </button>
-      <button type="button" className={styles.toolBtn} onClick={() => setTheme('dark')}>
-        Dark
-      </button>
+      <ThemeMenu />
     </div>
   );
 }

@@ -27,6 +27,8 @@ export const MAX_HISTORY = 100;
 
 export const DEFAULT_SIGNAL_COLOR = '#4A9EFF';
 export const DEFAULT_STEPS = 20;
+export const MIN_TOTAL_STEPS = 1;
+export const MAX_TOTAL_STEPS = 512;
 export const DEFAULT_HSCALE = 1;
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 4.0;

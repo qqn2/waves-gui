@@ -293,7 +293,7 @@ export function exportSVG(diagram: DiagramState, view: ViewState): void {
   const rows = buildRowLayout(diagram.signals);
   const contentH = totalContentHeight(rows);
   const bg = themeColor('--bg-canvas', '#111111');
-  const labelBg = view.theme === 'light' ? '#ffffff' : '#242424';
+  const labelBg = themeColor('--bg-panel', '#242424');
   const textColor = themeColor('--text-primary', '#e8e8e8');
   const gridColor = themeColor('--grid-line', '#333333');
   const panelBg = themeColor('--bg-panel', '#242424');

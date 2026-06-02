@@ -99,7 +99,7 @@ export function SignalTimingBar() {
   return (
     <div
       className={styles.timingBarRow}
-      title="WaveDrom signal phase and period"
+      title="Selected lane only: WaveDrom phase (shift) and period (clock cycles per column). Diagram length: Steps (left column)."
       data-signal-id={id}
     >
       <span className={styles.timingBarSignal} title={signal.name}>

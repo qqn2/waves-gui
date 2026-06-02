@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '../shared/store';
+import { isDarkTheme } from '../shared/theme';
 import { validateCodeString } from './codeSync';
 import styles from './CodePanel.module.css';
 
@@ -26,7 +27,7 @@ export function WavedromPreview({ code }: WavedromPreviewProps) {
         const parsed = JSON.parse(code) as unknown;
         const WaveDrom = await import('wavedrom');
         let skin = WaveDrom.waveSkin;
-        if (theme === 'dark') {
+        if (isDarkTheme(theme)) {
           try {
             const darkModule = await import('wavedrom/skins/dark.js');
             skin = darkModule.default?.dark ?? skin;

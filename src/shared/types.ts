@@ -132,7 +132,8 @@ export type Tool =
   | 'text'
   | 'cursor';
 
-export type Theme = 'dark' | 'light';
+import type { Theme } from './theme';
+export type { Theme } from './theme';
 
 /** Paint tool: toggle clicked cells (NOT) vs apply a fixed bit state */
 export type PaintMode = 'toggle' | 'set';

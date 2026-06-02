@@ -22,7 +22,7 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 | SOLO-L | done | 9307f59 | Vector add disabled until bus canvas edit |
 | Integrate | done | 9307f59 | `App.tsx`, `FileOperations`, toggle paint, pointer marker — **64/64** tests, build OK |
 
-## Phase 3 — WaveDrom fidelity (active)
+## Phase 3 — WaveDrom fidelity
 
 | Track | Status | Commit | Notes |
 |-------|--------|--------|-------|
@@ -34,6 +34,18 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 | P3-VEC | done | 323a5ee | Bus add re-enabled; segment paint still JSON-only |
 | P3-TIMING | done | 2b20416 | `SignalTimingBar` phase/period; bridge `timingRoundTrip.test.ts` |
 | Docs | done | 223dac2 | `docs/wavedrom-ref/`, `docs/FUTURE_FEATURES.md` |
+
+## Phase 4 — Polish (in progress)
+
+| Track | Status | Commit | Notes |
+|-------|--------|--------|-------|
+| P4-STABILITY | done | (this batch) | `normalizeDiagram`, `safeStorage`, `AppErrorBoundary`, happy-dom tests |
+| P4-UX | done | (this batch) | Steps control, panel/canvas alignment, toggle p/x/z, clock P paint, themes HC |
+| P4-AMBA | done | (this batch) | `public/samples/amba-*.json` — APB/AHB/AXI templates |
+| P4-VEC | open | — | Canvas segment paint |
+| P4-EXPORT | open | — | Bus `data[]` round-trip |
+
+**Verify:** `npm test` — **107/107** tests, build OK
 
 ## Known gaps (see FUTURE_FEATURES.md)
 

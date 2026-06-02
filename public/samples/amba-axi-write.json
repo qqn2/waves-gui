@@ -1,0 +1,30 @@
+{
+  "head": { "text": "AXI4 single write (AW + W + B)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AW channel",
+      { "name": "ACLK", "wave": "p..........." },
+      { "name": "AWADDR", "wave": "x..=x..", "data": ["0x40001000"] },
+      { "name": "AWLEN", "wave": "x..2x..", "data": ["0"] },
+      { "name": "AWVALID", "wave": "0..1..0..." },
+      { "name": "AWREADY", "wave": "0...1..0.." }
+    ],
+    {},
+    [
+      "W channel",
+      { "name": "WDATA", "wave": "x....=x..", "data": ["0xCAFEBABE"] },
+      { "name": "WLAST", "wave": "0....1.0.." },
+      { "name": "WVALID", "wave": "0....1.0.." },
+      { "name": "WREADY", "wave": "0....0.1.." }
+    ],
+    {},
+    [
+      "B channel",
+      { "name": "BRESP", "wave": "x......=x.", "data": ["OKAY"] },
+      { "name": "BVALID", "wave": "0......1.0" },
+      { "name": "BREADY", "wave": "0......0.1" }
+    ]
+  ],
+  "foot": { "text": "AWLEN=0, WLAST=1; channels may overlap; AXI4 write" }
+}

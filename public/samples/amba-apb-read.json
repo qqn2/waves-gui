@@ -1,0 +1,14 @@
+{
+  "head": { "text": "APB read — no wait states" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "PCLK", "wave": "p......." },
+    { "name": "PSEL", "wave": "0.1..0.." },
+    { "name": "PENABLE", "wave": "0..1.0.." },
+    { "name": "PWRITE", "wave": "0......." },
+    { "name": "PADDR", "wave": "x.=x..", "data": ["0x2000"] },
+    { "name": "PRDATA", "wave": "x..=x..", "data": ["0x5A5A5A5A"] },
+    { "name": "PREADY", "wave": "1......." }
+  ],
+  "foot": { "text": "PWRITE=0; PRDATA driven in ACCESS; ARM IHI0024E Fig 3-4" }
+}

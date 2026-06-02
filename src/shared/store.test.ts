@@ -101,6 +101,35 @@ describe('useStore', () => {
     expect(after.states[2]).toBe('1');
   });
 
+  it('setTotalSteps resizes bit states and skips no-op', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().setSignalState(id, 19, '1');
+    const beforeHist = useStore.getState().history.length;
+    useStore.getState().setTotalSteps(24);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(24);
+    const sig = useStore.getState().diagram.signals[0] as { states: BitState[] };
+    expect(sig.states).toHaveLength(24);
+    expect(sig.states[23]).toBe('1');
+    useStore.getState().setTotalSteps(24);
+    expect(useStore.getState().history.length).toBe(beforeHist + 1);
+  });
+
+  it('toggleSignalStateRange leaves x/z and flips p/n', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().setSignalState(id, 0, 'x');
+    useStore.getState().setSignalState(id, 1, 'z');
+    useStore.getState().setSignalState(id, 2, 'p');
+    useStore.getState().setSignalState(id, 3, 'n');
+    useStore.getState().toggleSignalStateRange(id, 0, 3);
+    const sig = useStore.getState().diagram.signals[0] as { states: BitState[] };
+    expect(sig.states[0]).toBe('x');
+    expect(sig.states[1]).toBe('z');
+    expect(sig.states[2]).toBe('n');
+    expect(sig.states[3]).toBe('p');
+  });
+
   it('paintDraft does not grow history length', () => {
     useStore.getState().addSignal('bit');
     const signalId = useStore.getState().diagram.signals[0]!.id;
