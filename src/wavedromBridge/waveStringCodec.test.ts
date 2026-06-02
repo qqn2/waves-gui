@@ -137,6 +137,16 @@ describe('fromWavedromJSON / toWavedromJSON round-trip', () => {
     expect(outer).toHaveLength(3);
   });
 
+  it('does not assign per-segment colors from wave digits 2-9', () => {
+    const diagram = fromWavedromJSON({
+      signal: [{ name: 'bus', wave: '234', data: ['A', 'B', 'C'] }],
+    });
+    const bus = diagram.signals[0];
+    if (bus?.type === 'vector') {
+      expect(bus.segments.every((s) => s.color === undefined)).toBe(true);
+    }
+  });
+
   it('round-trips vector bus with data', () => {
     const wd: WdRoot = {
       signal: [{ name: 'data', wave: '=..=..', data: ['AA', 'BB'] }],
@@ -151,8 +161,8 @@ describe('fromWavedromJSON / toWavedromJSON round-trip', () => {
     }
     const back = toWavedromJSON(diagram);
     const sig = back.signal[0] as WdSignal;
-    expect(sig.wave).toBe('=..=..');
     expect(sig.data).toEqual(['AA', 'BB']);
+    expect(sig.wave).toBe('=..=..');
   });
 
   it('round-trips diagram export then import', () => {

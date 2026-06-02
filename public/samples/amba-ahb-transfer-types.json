@@ -1,0 +1,20 @@
+{
+  "head": {
+    "text": "Figure 3-6 Transfer type examples (AHB, IHI0033C-style)",
+    "tick": 0,
+    "every": 1
+  },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "HCLK", "wave": "p........" },
+    { "name": "HTRANS[1:0]", "wave": "x.=2.3..", "data": ["NONSEQ", "BUSY", "SEQ", "SEQ"] },
+    { "name": "HADDR[31:0]", "wave": "x.=x.=3.", "data": ["0x20", "0x24", "0x28", "0x2C"] },
+    { "name": "HWRITE", "wave": "1.0..1.." },
+    { "name": "HBURST[2:0]", "wave": "x.6..", "data": ["INCR"] },
+    { "name": "HREADY", "wave": "1..0.1.." },
+    { "name": "HRDATA[31:0]", "wave": "x...=x..", "data": ["Data (0x20)", "Data (0x24)", "Data (0x28)", "Data (0x2C)"] }
+  ],
+  "foot": {
+    "text": "Use Preview in JSON panel for WaveDrom rendering; edit bus labels in panel or paint with Bus field"
+  }
+}

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import JSON5 from 'json5';
 import { describe, expect, it } from 'vitest';
 import { fromWavedromJSON, toWavedromJSON } from './index';
+import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import type { WdRoot } from './wdTypes';
 
 const step4Path = join(
@@ -39,7 +40,9 @@ describe('phase and period bridge', () => {
     if (data?.type !== 'vector') return;
 
     const labels = new Set(
-      data.segments.map((s) => s.value).filter((v) => v !== '0'),
+      data.segments
+        .map((s) => s.value)
+        .filter((v) => v !== '0' && v !== VECTOR_UNKNOWN_LABEL),
     );
     expect(labels).toEqual(new Set(['head', 'body', 'tail', 'data']));
   });

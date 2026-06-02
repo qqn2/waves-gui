@@ -8,7 +8,7 @@ import type {
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
 import { decodeWaveString } from './waveStringCodec';
-import { SEGMENT_COLOR_PALETTE } from './segmentColors';
+import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 
 function isGroup(entry: WdSignalEntry): entry is WdGroup {
@@ -37,8 +37,6 @@ function parseVectorSegments(
   let dataIdx = 0;
   let segStart = 0;
   let segValue = '0';
-  let segColor: string | undefined;
-
   const flushSegment = (endStep: number) => {
     if (endStep > segStart) {
       segments.push({
@@ -46,25 +44,30 @@ function parseVectorSegments(
         startStep: segStart,
         endStep,
         value: segValue,
-        ...(segColor !== undefined ? { color: segColor } : {}),
       });
     }
   };
 
   for (let i = 0; i < wave.length; i++) {
     const ch = wave[i];
+    if (ch === 'x' || ch === 'X') {
+      flushSegment(i);
+      segments.push({
+        id: nanoid(),
+        startStep: i,
+        endStep: i + 1,
+        value: VECTOR_UNKNOWN_LABEL,
+      });
+      segStart = i + 1;
+      continue;
+    }
     if (ch !== '.') {
       flushSegment(i);
       segStart = i;
-      if (ch === '=') {
+      if (ch === '=' || (ch >= '2' && ch <= '9')) {
         segValue = data[dataIdx++] ?? '';
-        segColor = undefined;
-      } else if (ch >= '2' && ch <= '9') {
-        segValue = data[dataIdx++] ?? '';
-        segColor = SEGMENT_COLOR_PALETTE[ch];
       } else {
         segValue = '0';
-        segColor = undefined;
       }
     }
   }
@@ -214,8 +217,8 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
   const config = {
     totalSteps,
     hscale: wd.config?.hscale ?? DEFAULT_HSCALE,
-    head: wd.config?.head ?? wd.head,
-    foot: wd.config?.foot ?? wd.foot,
+    head: wd.head ?? wd.config?.head,
+    foot: wd.foot ?? wd.config?.foot,
   };
   return {
     version: 1,
