@@ -2,7 +2,7 @@
 
 This checklist maps **official WaveJSON / WaveDrom** capabilities (see `docs/wavedrom-ref/WaveJSON.md` and the [tutorial](http://wavedrom.com/tutorial.html)) to this **solo-desk timing editor**. Status keys: **Yes** = usable in GUI today; **Bridge** = import/export JSON only; **Partial** = incomplete; **No** = not implemented; **N/A** = different diagram type (not timing).
 
-Last reviewed against commit `9307f59` and upstream docs fetched 2026-05-29.
+Last reviewed after Phase 5 backlog (2026-06-02). Tests: **148/148**.
 
 ## Diagram kinds (root object)
 
@@ -28,55 +28,56 @@ Last reviewed against commit `9307f59` and upstream docs fetched 2026-05-29.
 |------|-------------------|--------|---------------|------------|
 | `0` `1` | Low / high | Yes | Yes | **Yes** (toggle / set) |
 | `.` | Continue previous | Yes | Yes | Via drag ranges |
-| `x` | Unknown | Yes | Yes | Toolbar Z/X modes → set `x` |
+| `x` | Unknown | Yes | Yes | Toolbar → set `x` |
 | `z` | High-Z | Yes | Yes | Set mode |
-| `u` `d` | Weak pull-up/down | Yes | Partial styling | Set mode |
-| `p` `n` | Clock (+ / − edge) | Yes | Yes (dedicated draw) | Set / pattern |
-| `P` `N` | Clock with arrow | Yes | **Partial** (decoded as `p`/`n`) | Low |
-| `=` `2`–`9` | Bus value + color | Vector path | Vector row | **No** (use JSON) |
-| `\|` | Gap over previous | Spec | **No** | Low |
+| `u` `d` | Weak pull-up/down | Yes | **Yes** (dashed/lighter stroke) | Set mode |
+| `p` `n` | Clock (+ / − edge) | Yes | Yes | Set / patterns |
+| `P` `N` | Clock with arrow | Yes | **Yes** (arrow glyph canvas + export) | `P`/`N` keys + toggle |
+| `=` `2`–`9` | Bus value + color | Yes | Yes (vector lanes) | **Yes** (paint tool + color swatches) |
+| `\|` | Gap over previous | Yes | Yes (`drawStepGap`) | Low |
 
 ## Bus / vector lanes (`data` + `=`/`2`–`9`)
 
 | Feature | WaveDrom | This editor | Priority |
 |---------|----------|-------------|----------|
-| Import vector wave + `data[]` labels | Yes | **Bridge** | — |
-| Export vector + labels | Yes | **Bridge** | — |
-| Canvas paint / segment editor | Editor | **No** | **High** — re-enable when ready |
-| Per-segment colors (`2`–`9`) | Yes | **Bridge** | Medium |
+| Import vector wave + `data[]` labels | Yes | **Yes** | — |
+| Export vector + labels | Yes | **Yes** | `busDataRoundTrip.test.ts` |
+| Canvas paint / segment editor | Editor | **Yes** | Paint drag on bus rows; `VectorSegmentEditor` in panel |
+| Per-segment colors (`2`–`9`) | Yes | **Yes** | Toolbar swatches + segment editor |
 | Multi-word `data` (string or array) | Yes | **Bridge** | — |
 
 ## Per-signal fields (besides `wave`)
 
 | Field | WaveDrom | This editor | Priority |
 |-------|----------|-------------|----------|
-| `data[]` — value **labels** on bus slots | Yes | **Bridge** | **High** for bus UX (edit label text on segment) |
-| `period` — cycles per step | Yes | **No** | Medium — stretch column width per lane |
-| `phase` — horizontal shift | Yes | **Bridge** | Medium — clock alignment UI |
-| `node` — anchor letters for `edge` | Yes | **No** | **High** if implementing `edge` |
+| `data[]` — value **labels** on bus slots | Yes | **Yes** | Panel editor + paint label field |
+| `period` — cycles per step | Yes | **Yes** | `SignalTimingBar` + per-lane column width on canvas |
+| `phase` — horizontal shift | Yes | **Yes** | `SignalTimingBar` + `laneHitTest` / render |
+| `node` — anchor letters for `edge` | Yes | **Yes** | Tools + optional **ABC** toggle; dim letters while edge tool active |
 | `skin` on signal | Ignored | **No** | Low |
 
 ## Global `config` and header/footer
 
 | Field | WaveDrom | This editor | Priority |
 |-------|----------|-------------|----------|
-| `config.hscale` | Yes | **Yes** | Store + export; zoom is separate view zoom |
-| `config.skin` | Yes | **No** | Low (theme CSS replaces for solo desk) |
-| `head.text` + `tick` + `every` | Yes | **Bridge** | **High** — title + tick marks above diagram |
-| `foot.text` + `tock` + `every` | Yes | **Bridge** | **High** — figure caption below |
+| `config.hscale` | Yes | **Yes** | Toolbar number input; fractional values (e.g. `1.5`) |
+| `config.skin` | Yes | **No** | Low (app themes replace for solo desk) |
+| `head.text` + `tick` + `every` | Yes | **Yes** | `HeadFootFields` + canvas render |
+| `foot.text` + `tock` + `every` | Yes | **Yes** | Same |
 | Root-level `head` / `foot` (not only in `config`) | Yes | **Bridge** | Import merges into `config` |
 
 > [!TIP]
-> “Labels” in WaveDrom usually means **bus `data` labels** (hex/text on colored blocks) or **head/foot figure text**, not arbitrary canvas stickers. Our old annotation layer (arrows, text) was **not** WaveDrom-exportable and stays out of scope unless mapped to `edge` / official fields.
+> “Labels” in WaveDrom usually means **bus `data` labels** (text on colored blocks) or **head/foot figure text**, not arbitrary canvas stickers. The legacy annotation layer was **not** WaveDrom-exportable and stays out of scope unless mapped to `edge` or official fields.
 
 ## Dependency arrows (`edge[]`)
 
 | Feature | WaveDrom | This editor | Priority |
 |---------|----------|-------------|----------|
-| `edge: ["a~>b label", …]` | Yes | **No** | **High** — needs `node` on signals + SVG overlay or WaveDrom render |
-| Arrow shapes `-`, `\|`, `~`, `/`, `#` | Yes | **No** | With `edge` |
-| Import `edge` from JSON | Yes | **No** (dropped on import) | **High** |
-| Export `edge` to JSON | Yes | **No** | **High** |
+| `edge: ["a->b label", …]` | Yes | **Partial** | Arrow + timespan tools; status bar list + delete |
+| Arrow shapes `-`, `\|`, `~`, `/`, `#` | Yes | **Yes** | Sequential routing; toolbar shape preset + status edit |
+| Import `edge` from JSON | Yes | **Yes** | — |
+| Export `edge` to JSON | Yes | **Yes** | — |
+| Live placement preview | Editor | **Yes** | `EdgeToolOverlay` — dashed path, span band, anchor badges |
 
 See upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
 
@@ -87,14 +88,14 @@ See upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
 | Live JSON panel | Yes | **Yes** | — |
 | Undo / redo | — | **Yes** | — |
 | Open / Save file | Yes | **Yes** | — |
-| Export PNG / SVG | CLI / editor | **Yes** | — |
+| Export PNG / SVG | CLI / editor | **Yes** | Includes edges |
 | Patterns (clock, pulse, …) | Partial | **Yes** | More patterns optional |
-| Step count editor | Yes | **Partial** | Medium — UI for `totalSteps` |
-| Sub-steps / `period` | Yes | **No** | Medium |
+| Step count editor | Yes | **Yes** | `DiagramStepsControl` in shell header |
+| Sub-cycle / compressed steps | Yes | **No** | Deferred — `docs/wavedrom-ref/SUBCYCLE.md`; validator rejects `<`/`>` |
 | Rename signal inline | Yes | **Yes** | — |
-| Select + delete signals | Yes | **Partial** | Medium |
-| Keyboard shortcut sheet | — | **No** | Low |
-| Collapsible WaveDrom preview | Yes | **No** (removed for space) | Low — optional “render check” |
+| Select + delete signals | Yes | **Yes** | Del: step erase vs row delete (confirm multi) |
+| Keyboard shortcut sheet | — | **Yes** | `?` in toolbar → `ShortcutHelp` |
+| Collapsible WaveDrom preview | Yes | **Yes** | Code panel **Preview** (default on); bundled `wavedrom` npm |
 
 ## Explicitly out of scope (solo desk fork A)
 
@@ -106,14 +107,12 @@ See upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
 | `reg` / `assign` diagram editing | Different product surface |
 | Real-time collaboration | Solo desk |
 
-## Suggested implementation order
+## Suggested next work (priority)
 
-1. **Head / foot** — small form + render text/ticks on canvas (data already in `DiagramState.config`).
-2. **Bus labels (`data`)** — vector segment value editor (panel or click on bus).
-3. **`edge` + `node`** — parse/store `edge[]`; place nodes from context menu; render via WaveDrom overlay or custom SVG matching spec.
-4. **Vector canvas tools** — re-enable bus add + segment paint (SOLO-L hide).
-5. **`period` / `phase`** UI — align with `signal-step4.json5` upstream test.
-6. **Golden expansion** — add `upstream-tests/*.json5` to CI as import targets (timing only).
+1. **Sub-cycle wave syntax** — spike only if needed; see `docs/wavedrom-ref/SUBCYCLE.md`.
+2. **Upstream pixel parity** — extend `upstreamSvgGolden.test.ts` beyond structural smoke.
+3. **Edge UX** — optional drag mid-point for `~` curves.
+4. **Compare split** — canvas vs WaveDrom preview side-by-side (medium effort).
 
 ## Related files in this repo
 
@@ -123,3 +122,8 @@ See upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
 | `docs/wavedrom-ref/upstream-tests/` | Upstream JSON5 examples |
 | `public/golden/` | Project round-trip fixtures |
 | `src/wavedromBridge/` | Import/export implementation |
+| `src/renderer/EdgeToolOverlay.tsx` | Edge tool live preview |
+| `src/tools/useEdgeTools.ts` | Arrow / timespan placement |
+| `src/wavedromBridge/renderWavedromSvg.ts` | Vitest upstream SVG smoke |
+| `src/shell/ShortcutHelp.tsx` | Keyboard shortcut modal |
+| `docs/wavedrom-ref/SUBCYCLE.md` | Sub-cycle syntax notes (deferred) |
