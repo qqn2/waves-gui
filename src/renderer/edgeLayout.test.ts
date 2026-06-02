@@ -122,9 +122,13 @@ describe('resolveEdgeAnchors', () => {
 });
 
 describe('buildEdgePathD', () => {
-  it('emits valid path commands', () => {
+  it('emits WaveDrom-style cubic curve for ~', () => {
     const d = buildEdgePathD({ x: 0, y: 0 }, { x: 100, y: 50 }, '~');
-    expect(d).toMatch(/^M /);
-    expect(d).toContain('Q');
+    expect(d).toMatch(/^M 0 0 C /);
+  });
+
+  it('emits Manhattan path for -|>', () => {
+    const d = buildEdgePathD({ x: 10, y: 20 }, { x: 110, y: 80 }, '-|>');
+    expect(d).toBe('M 10 20 l 100 0 0 60');
   });
 });

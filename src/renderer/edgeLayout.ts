@@ -130,7 +130,9 @@ export function resolveEdgeAnchors(
   return { from, to };
 }
 
-/** SVG path `d` from anchors using a simple Manhattan / curve heuristic. */
+/**
+ * SVG path `d` aligned with WaveDrom `lib/arc-shape.js` (shape = middle of edge word).
+ */
 export function buildEdgePathD(
   from: CanvasAnchor,
   to: CanvasAnchor,
@@ -138,34 +140,49 @@ export function buildEdgePathD(
 ): string {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
+  const key = shape.length > 0 ? shape : '-';
 
-  if (shape.includes('~')) {
-    const mx = (from.x + to.x) / 2;
-    const my = (from.y + to.y) / 2;
-    const k = 0.35;
-    const cx = mx - dy * k;
-    const cy = my + dx * k;
-    return `M ${from.x} ${from.y} Q ${cx} ${cy} ${to.x} ${to.y}`;
+  switch (key) {
+    case '~':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+    case '-~':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+    case '~-':
+      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+    case '-|':
+      return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
+    case '|-':
+      return `M ${from.x} ${from.y} l 0 ${dy} ${dx} 0`;
+    case '-|-':
+      return `M ${from.x} ${from.y} l ${dx / 2} 0 0 ${dy} ${dx / 2} 0`;
+    case '~>':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+    case '-~>':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+    case '~->':
+      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+    case '-|>':
+      return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
+    case '|->':
+      return `M ${from.x} ${from.y} l 0 ${dy} ${dx} 0`;
+    case '-|->':
+      return `M ${from.x} ${from.y} l ${dx / 2} 0 0 ${dy} ${dx / 2} 0`;
+    case '<~>':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+    case '<-~>':
+      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+    case '<-|>':
+      return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
+    case '<-|->':
+      return `M ${from.x} ${from.y} l ${dx / 2} 0 0 ${dy} ${dx / 2} 0`;
+    case '+':
+      return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+    case '-':
+    case '->':
+    case '<->':
+    default:
+      return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
   }
-
-  if (shape.includes('/')) {
-    return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-  }
-
-  const verticalFirst = shape.includes('|') && !shape.includes('-');
-  const horizontalFirst = shape.includes('-') && !shape.includes('|');
-
-  if (verticalFirst) {
-    return `M ${from.x} ${from.y} L ${from.x} ${to.y} L ${to.x} ${to.y}`;
-  }
-
-  if (horizontalFirst || shape.length === 0) {
-    const midX = from.x + dx / 2;
-    return `M ${from.x} ${from.y} L ${midX} ${from.y} L ${midX} ${to.y} L ${to.x} ${to.y}`;
-  }
-
-  const midY = from.y + dy / 2;
-  return `M ${from.x} ${from.y} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${to.y}`;
 }
 
 export function labelPositionOnPath(
@@ -173,10 +190,18 @@ export function labelPositionOnPath(
   to: CanvasAnchor,
   shape: string,
 ): CanvasAnchor {
-  if (shape.includes('#')) {
-    return { x: (from.x * 2 + to.x) / 3, y: (from.y * 2 + to.y) / 3 };
-  }
-  return { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
+  const dx = to.x - from.x;
+  const key = shape.length > 0 ? shape : '-';
+  let lx = (from.x + to.x) / 2;
+  const ly = (from.y + to.y) / 2;
+
+  if (key === '-~>' || key === '-~') lx = from.x + dx * 0.75;
+  else if (key === '~->' || key === '~-') lx = from.x + dx * 0.25;
+  else if (key === '-|>' || key === '-|') lx = to.x;
+  else if (key === '|->' || key === '|-') lx = from.x;
+  else if (shape.includes('#')) lx = from.x + dx / 3;
+
+  return { x: lx, y: ly };
 }
 
 export function waveformLogicalWidth(diagram: DiagramState): number {

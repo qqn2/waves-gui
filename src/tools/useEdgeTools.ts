@@ -31,6 +31,7 @@ export function useEdgeTools(): {
   const setSignalNodeAt = useStore((s) => s.setSignalNodeAt);
   const addDiagramEdge = useStore((s) => s.addDiagramEdge);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
+  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
 
   const cancelEdgeEdit = useCallback(() => {
     setEdgeAnchorPending(null);
@@ -93,7 +94,12 @@ export function useEdgeTools(): {
       const toChar = placeAnchor(hit.signalId, hit.step);
       if (!toChar) return;
       addDiagramEdge(
-        formatArrowEdge(edgeAnchorPending.char, toChar),
+        formatArrowEdge(
+          edgeAnchorPending.char,
+          toChar,
+          undefined,
+          activeEdgeShape,
+        ),
       );
       cancelEdgeEdit();
     },
@@ -166,6 +172,7 @@ export function useEdgeTools(): {
       addDiagramEdge,
       cancelEdgeEdit,
       activeTimespanLabel,
+      activeEdgeShape,
     ],
   );
 
