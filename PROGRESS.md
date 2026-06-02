@@ -39,9 +39,9 @@ Orchestrator tracking: [`ORCHESTRATOR_PROMPT.md`](ORCHESTRATOR_PROMPT.md) · Spe
 
 | Track | Status | Commit | Notes |
 |-------|--------|--------|-------|
-| P4-STABILITY | done | (this batch) | `normalizeDiagram`, `safeStorage`, `AppErrorBoundary`, happy-dom tests |
-| P4-UX | done | (this batch) | Steps control, panel/canvas alignment, toggle p/x/z, clock P paint, themes HC |
-| P4-AMBA | done | (this batch) | `public/samples/amba-*.json` — APB/AHB/AXI templates |
+| P4-STABILITY | done | e46e0ce | `normalizeDiagram`, `safeStorage`, `AppErrorBoundary`, happy-dom tests |
+| P4-UX | done | 2039635 | Steps control, panel/canvas alignment, toggle p/x/z, clock P paint, themes HC |
+| P4-AMBA | done | 2039635 | `public/samples/amba-*.json` — APB/AHB/AXI templates |
 | P4-VEC | open | — | Canvas segment paint |
 | P4-EXPORT | open | — | Bus `data[]` round-trip |
 
