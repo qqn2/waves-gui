@@ -29,7 +29,7 @@ export function CodePanel({ hideTitle = false }: CodePanelProps) {
   const splitResizeBase = useRef(CODE_PANEL_PREVIEW_SPLIT_DEFAULT);
   const splitAreaSize = useRef(0);
   const [code, setCode] = useState(() => diagramToCodeString(diagram));
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const { debouncedApply, isEditorDrivenRef } = useCodeToDiagram();
 
   const error = useMemo(() => validateCodeString(code), [code]);
