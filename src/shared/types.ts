@@ -1,7 +1,7 @@
 // ─── Signal states ────────────────────────────────────────────────────────────
 
 /** All possible states for a single bit signal at one time step */
-export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n';
+export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N';
 
 /** Map to WaveDrom wave characters */
 export const BIT_STATE_CHARS: Record<BitState, string> = {
@@ -13,6 +13,8 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'd': 'd',
   'p': 'p',
   'n': 'n',
+  'P': 'P',
+  'N': 'N',
 };
 
 // ─── Signal types ─────────────────────────────────────────────────────────────
@@ -43,6 +45,8 @@ export interface Signal {
   node?: string;
   /** Gap before step i+1 when stepGaps[i] is true (WaveDrom `|` in wave) */
   stepGaps?: boolean[];
+  /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
+  stepGlitches?: boolean[];
 }
 
 export interface SignalGroup {
@@ -138,8 +142,8 @@ import type { WavedromColorIndex } from '../wavedromBridge/wavedromColors';
 import type { Theme } from './theme';
 export type { Theme } from './theme';
 
-/** Paint tool: toggle clicked cells (NOT) vs apply a fixed bit state */
-export type PaintMode = 'toggle' | 'set';
+/** Paint tool: set value, toggle (NOT), or insert explicit glitch between steps */
+export type PaintMode = 'toggle' | 'set' | 'glitch';
 
 export interface ViewState {
   zoom: number; // 0.25–4.0, default 1.0
@@ -168,6 +172,10 @@ export interface ViewState {
   edgeAnchorPending: EdgeAnchorPending | null;
   /** Hover step while arrow / timespan tool is active (live preview) */
   edgeToolHover: { signalId: string; step: number } | null;
+  /** Middle shape for new arrow edges (WaveDrom path between node letters, before `>`) */
+  activeEdgeShape: string;
+  /** Show A–Z anchor letters on canvas (WaveDrom invisible nodes) */
+  showAnchorLetters: boolean;
 }
 
 export type EdgeAnchorPending =
@@ -186,7 +194,7 @@ export interface PaintDraft {
   endStep: number; // inclusive; grows during drag
   lane: 'bit' | 'vector';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
-  apply: 'toggle' | 'set'; // paint only; erase ignores
+  apply: 'toggle' | 'set' | 'glitch'; // paint only; erase ignores
   busLabel?: string; // vector paint: WaveDrom data[] label
   busColorFill?: string; // vector paint: WaveDrom bus fill hex
   mode: 'paint' | 'erase';

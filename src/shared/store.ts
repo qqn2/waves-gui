@@ -18,11 +18,13 @@ import type {
   EdgeAnchorPending,
 } from './types';
 import { setNodeCharAt } from '../wavedromBridge/nodeString';
-import { toggleBinaryBitState } from './bitToggle';
+import { toggleBinaryBitState, isClockBitState } from './bitToggle';
 import {
-  DEFAULT_STEPS,
+  applyClockBrushToRange,
+  ensureClockLaneFormat,
+} from '../wavedromBridge/clockWave';
+import {
   clampHscale,
-  DEFAULT_HSCALE,
   DEFAULT_SIGNAL_COLOR,
   MAX_HISTORY,
   MAX_TOTAL_STEPS,
@@ -40,6 +42,7 @@ import {
   loadLabelColumnWidth,
   saveLabelColumnWidth,
 } from '../shell/labelColumnLayout';
+import { createDefaultDiagram } from './defaultDiagram';
 
 export interface Actions {
   // Signals
@@ -56,6 +59,8 @@ export interface Actions {
     bitState: BitState,
   ): void;
   toggleSignalStateRange(signalId: string, startStep: number, endStep: number): void;
+  /** Toggle spurious-transition markers between steps lo..hi (boundaries lo..hi-1). */
+  toggleStepGlitchRange(signalId: string, startStep: number, endStep: number): void;
   eraseSignalState(signalId: string, step: number): void;
   eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
@@ -79,7 +84,10 @@ export interface Actions {
     color: string | undefined,
   ): void;
   addDiagramEdge(edge: string): void;
+  updateDiagramEdge(index: number, edge: string): void;
   removeDiagramEdge(index: number): void;
+  setActiveEdgeShape(shape: string): void;
+  setShowAnchorLetters(show: boolean): void;
   setSignalNodeAt(signalId: string, step: number, char: string | null): void;
   setEdgeAnchorPending(pending: EdgeAnchorPending | null): void;
   setSignalPhase(signalId: string, phase: number | undefined): void;
@@ -119,13 +127,7 @@ export interface Actions {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function defaultDiagram(): DiagramState {
-  return {
-    version: 1,
-    signals: [],
-    config: { totalSteps: DEFAULT_STEPS, hscale: DEFAULT_HSCALE },
-    edges: [],
-    annotations: [],
-  };
+  return createDefaultDiagram();
 }
 
 function defaultView(): ViewState {
@@ -149,6 +151,8 @@ function defaultView(): ViewState {
     paintDraft: null,
     edgeAnchorPending: null,
     edgeToolHover: null,
+    activeEdgeShape: '',
+    showAnchorLetters: false,
   };
 }
 
@@ -390,12 +394,33 @@ export const useStore = create<AppState & Actions>()(
       });
     },
 
+    updateDiagramEdge(index, edge) {
+      set((s) => {
+        if (!s.diagram.edges?.[index]) return;
+        pushHistory(s);
+        s.diagram.edges[index] = edge;
+        s.view.isDirty = true;
+      });
+    },
+
     removeDiagramEdge(index) {
       set((s) => {
         if (!s.diagram.edges?.[index]) return;
         pushHistory(s);
         s.diagram.edges.splice(index, 1);
         s.view.isDirty = true;
+      });
+    },
+
+    setActiveEdgeShape(shape) {
+      set((s) => {
+        s.view.activeEdgeShape = shape;
+      });
+    },
+
+    setShowAnchorLetters(show) {
+      set((s) => {
+        s.view.showAnchorLetters = show;
       });
     },
 
@@ -447,7 +472,8 @@ export const useStore = create<AppState & Actions>()(
       set((s) => {
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type === 'bit') sig.states[step] = bitState;
+          if (sig.type !== 'bit') return;
+          sig.states[step] = bitState;
         });
       });
     },
@@ -458,7 +484,12 @@ export const useStore = create<AppState & Actions>()(
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type === 'bit') {
+          if (sig.type !== 'bit') return;
+          if (isClockBitState(bitState) && lo < hi) {
+            applyClockBrushToRange(sig.states, lo, hi, bitState);
+          } else if (isClockBitState(bitState)) {
+            sig.states[lo] = bitState;
+          } else {
             for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
           }
         });
@@ -471,11 +502,36 @@ export const useStore = create<AppState & Actions>()(
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type === 'bit') {
-            for (let i = lo; i <= hi; i++) {
-              sig.states[i] = toggleBinaryBitState(sig.states[i]);
-            }
+          if (sig.type !== 'bit') return;
+          for (let i = lo; i <= hi; i++) {
+            sig.states[i] = toggleBinaryBitState(sig.states[i]);
           }
+          if (sig.states.every(isClockBitState)) {
+            ensureClockLaneFormat(sig.states);
+          }
+        });
+      });
+    },
+
+    toggleStepGlitchRange(signalId, startStep, endStep) {
+      set((s) => {
+        pushHistory(s);
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type !== 'bit' || sig.states.length < 2) return;
+          const maxBoundaries = sig.states.length - 1;
+          if (!sig.stepGlitches) sig.stepGlitches = [];
+          while (sig.stepGlitches.length < maxBoundaries) {
+            sig.stepGlitches.push(false);
+          }
+          if (sig.stepGlitches.length > maxBoundaries) {
+            sig.stepGlitches.length = maxBoundaries;
+          }
+          for (let i = lo; i < hi && i < maxBoundaries; i++) {
+            sig.stepGlitches[i] = !sig.stepGlitches[i];
+          }
+          if (!sig.stepGlitches.some(Boolean)) delete sig.stepGlitches;
         });
       });
     },

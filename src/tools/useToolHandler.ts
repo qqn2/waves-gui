@@ -90,23 +90,51 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setTool('paint');
       } else if (e.key === 'e' || e.key === 'E') {
         setTool('erase');
-      } else if (e.key === 'n' || e.key === 'N') {
+      } else if (e.key === 'N' && e.shiftKey) {
+        setActiveBitState('N');
+        setPaintMode('set');
+        setTool('paint');
+      } else if (e.key === 'g' || e.key === 'G') {
+        setTool('paint');
+        setPaintMode('glitch');
+      } else if (e.key === 't' || e.key === 'T') {
         setTool('paint');
         setPaintMode('toggle');
+      } else if (e.key === 'n') {
+        setActiveBitState('n');
+        setPaintMode('set');
+        setTool('paint');
+      } else if (e.key === 'N') {
+        setActiveBitState('N');
+        setPaintMode('set');
+        setTool('paint');
       } else if (e.key === '1') {
         setActiveBitState('1');
+        setPaintMode('set');
         setTool('paint');
       } else if (e.key === '0') {
         setActiveBitState('0');
+        setPaintMode('set');
         setTool('paint');
-      } else if (e.key === 'p' || e.key === 'P') {
+      } else if (e.key === 'p') {
         setActiveBitState('p');
+        setPaintMode('set');
+        setTool('paint');
+      } else if (e.key === 'P') {
+        setActiveBitState('P');
+        setPaintMode('set');
         setTool('paint');
       } else if (e.key === 'z' && !e.ctrlKey) {
         setActiveBitState('z');
+        setPaintMode('set');
         setTool('paint');
       } else if (e.key === 'x' || e.key === 'X') {
         setActiveBitState('x');
+        setPaintMode('set');
+        setTool('paint');
+      } else if (e.key === 'u' || e.key === 'U') {
+        setActiveBitState('u');
+        setPaintMode('set');
         setTool('paint');
       } else if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
         e.preventDefault();
