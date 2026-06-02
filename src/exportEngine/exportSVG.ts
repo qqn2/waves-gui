@@ -20,6 +20,13 @@ import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
+import { clockStepEndY, clockStepSvg } from '../renderer/drawClock';
+import { svgStepGap } from '../renderer/drawStepGap';
+import {
+  appendGlitchToSvgPath,
+  canDrawGlitch,
+  glitchOppositeY,
+} from '../renderer/drawStepGlitch';
 
 function esc(s: string): string {
   return s
@@ -73,6 +80,7 @@ function svgBitSignal(
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
   const yMid = axisOffset + rowY + rowH / 2;
   const states = signal.states;
+  const glitches = signal.stepGlitches ?? [];
   const parts: string[] = [];
   let pathD = '';
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
@@ -94,17 +102,10 @@ function svgBitSignal(
     const x = i * cellW;
     const nextX = (i + 1) * cellW;
 
-    if (st === 'p' || st === 'n') {
+    if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
-      const xMid = (x + nextX) / 2;
-      const d =
-        st === 'p'
-          ? `M${x},${yHigh} L${xMid},${yHigh} L${xMid},${yLow} L${nextX},${yLow}`
-          : `M${x},${yLow} L${xMid},${yLow} L${xMid},${yHigh} L${nextX},${yHigh}`;
-      parts.push(
-        `<path d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
-      );
-      prevY = st === 'p' ? yLow : yHigh;
+      parts.push(...clockStepSvg(st, x, nextX, yHigh, yLow, color));
+      prevY = clockStepEndY(st, yHigh, yLow);
       continue;
     }
 
@@ -128,6 +129,16 @@ function svgBitSignal(
       continue;
     }
 
+    if (st === 'u' || st === 'd') {
+      flushPath();
+      const y = bitY(st, yHigh, yLow, yMid);
+      parts.push(
+        `<path d="M${x},${y} L${nextX},${y}" fill="none" stroke="${esc(color)}99" stroke-width="2" stroke-dasharray="3,3"/>`,
+      );
+      prevY = y;
+      continue;
+    }
+
     const y = bitY(st, yHigh, yLow, yMid);
     if (!pathOpen) {
       pathD = `M${x},${prevY}`;
@@ -136,10 +147,28 @@ function svgBitSignal(
     if (y !== prevY) {
       pathD += ` L${x + tw / 2},${prevY} L${x + tw},${y}`;
     }
-    pathD += ` L${nextX},${y}`;
+    if (glitches[i] && canDrawGlitch(st)) {
+      pathD = appendGlitchToSvgPath(
+        pathD,
+        nextX,
+        y,
+        glitchOppositeY(st, yHigh, yLow, yMid),
+        tw,
+      );
+    } else {
+      pathD += ` L${nextX},${y}`;
+    }
     prevY = y;
   }
   flushPath();
+
+  const gapStroke = esc(themeColor('--text-muted', '#888'));
+  const gaps = signal.stepGaps ?? [];
+  for (let i = 0; i < gaps.length; i++) {
+    if (!gaps[i]) continue;
+    parts.push(svgStepGap(i * cellW + tw, (i + 1) * cellW, yHigh, yLow, gapStroke));
+  }
+
   return parts.join('\n');
 }
 
