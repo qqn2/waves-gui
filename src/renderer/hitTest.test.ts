@@ -45,6 +45,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     edgeAnchorPending: null,
     edgeToolHover: null,
     activeTimespanLabel: '5 ms',
+    activeEdgeShape: '',
+    showAnchorLetters: false,
     ...overrides,
   };
 }
