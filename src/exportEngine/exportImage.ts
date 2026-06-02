@@ -51,6 +51,7 @@ export async function exportImage(
     drawSignalLabels(
       ctx,
       diagram,
+      dims.labelWidth,
       dims.axisOffset,
       dims.totalHeight,
       labelBg,

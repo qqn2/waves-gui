@@ -6,6 +6,27 @@ export interface VisibleRow {
   parentId?: string;
 }
 
+export interface GroupRef {
+  id: string;
+  name: string;
+  depth: number;
+}
+
+/** All section (group) headers for "move to section" menus. */
+export function collectAllGroups(
+  items: SignalOrGroup[],
+  depth = 0,
+): GroupRef[] {
+  const out: GroupRef[] = [];
+  for (const item of items) {
+    if (item.type === 'group') {
+      out.push({ id: item.id, name: item.name || 'Section', depth });
+      out.push(...collectAllGroups(item.children, depth + 1));
+    }
+  }
+  return out;
+}
+
 export function collectVisibleRows(
   items: SignalOrGroup[],
   parentId?: string,

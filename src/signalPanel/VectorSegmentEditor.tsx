@@ -114,6 +114,9 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
     <section className={styles.segmentEditor} aria-label="Bus segment labels">
       <div className={styles.segmentEditorHeader}>
         <span className={styles.segmentEditorTitle}>Bus labels</span>
+        <span className={styles.segmentEditorHint} title="Paint tool + Bus field sets spans on canvas">
+          paint to edit spans
+        </span>
         <span className={styles.segmentEditorSignal} title={signalName}>
           {signalName || '(unnamed)'}
         </span>

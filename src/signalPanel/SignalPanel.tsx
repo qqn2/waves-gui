@@ -1,12 +1,12 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type RefObject,
 } from 'react';
 import { useStore } from '../shared/store';
-import { LABEL_WIDTH } from '../shared/constants';
 import { getWaveformTopInsetPx } from '../renderer/waveformLayout';
 import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
@@ -16,6 +16,7 @@ import { SignalContextMenu } from './SignalContextMenu';
 import { VectorSegmentEditor } from './VectorSegmentEditor';
 import { findSignal } from '../shared/store';
 import {
+  collectAllGroups,
   collectVisibleRows,
   getSiblingIds,
   reorderSiblingIds,
@@ -107,8 +108,11 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const waveformTopInset = getWaveformTopInsetPx(config, showTimeAxis);
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const addSignal = useStore((s) => s.addSignal);
+  const addGroup = useStore((s) => s.addGroup);
   const removeSignal = useStore((s) => s.removeSignal);
   const reorderSignals = useStore((s) => s.reorderSignals);
+  const moveSignalToParent = useStore((s) => s.moveSignalToParent);
+  const labelWidth = useStore((s) => s.view.labelWidth);
   const setSignalStateRange = useStore((s) => s.setSignalStateRange);
   const setActiveSignalIds = useStore((s) => s.setActiveSignalIds);
 
@@ -176,7 +180,13 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   const onDragOver = (e: React.DragEvent, targetId: string) => {
     if (!drag || drag.id === targetId) return;
-    if (parentForId(targetId) !== drag.parentId) return;
+    const rows = collectVisibleRows(signals);
+    const dragRow = rows.find((r) => r.id === drag.id);
+    const targetRow = rows.find((r) => r.id === targetId);
+    if (!dragRow || !targetRow) return;
+    if (dragRow.kind === 'group' && parentForId(targetId) !== drag.parentId) {
+      return;
+    }
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     setDropTargetId(targetId);
@@ -185,8 +195,30 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const onDrop = (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
     if (!drag) return;
+    const rows = collectVisibleRows(signals);
+    const dragRow = rows.find((r) => r.id === drag.id);
+    const targetRow = rows.find((r) => r.id === targetId);
+    if (!dragRow || !targetRow) return;
+
+    if (dragRow.kind === 'signal') {
+      if (targetRow.kind === 'group') {
+        moveSignalToParent(drag.id, targetId);
+        onDragEnd();
+        return;
+      }
+      const targetParent = targetRow.parentId;
+      if (drag.parentId !== targetParent) {
+        moveSignalToParent(drag.id, targetParent, targetId);
+        onDragEnd();
+        return;
+      }
+    }
+
     const parentId = drag.parentId;
-    if (parentForId(targetId) !== parentId) return;
+    if (parentForId(targetId) !== parentId) {
+      onDragEnd();
+      return;
+    }
     const siblings = getSiblingIds(signals, parentId);
     if (!siblings) return;
     const ordered = reorderSiblingIds(siblings, drag.id, targetId);
@@ -200,6 +232,10 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   };
 
   const menuSignalId = menuSignal?.id;
+  const sectionOptions = useMemo(() => collectAllGroups(signals), [signals]);
+  const menuParentId = menuSignalId
+    ? collectVisibleRows(signals).find((r) => r.id === menuSignalId)?.parentId
+    : undefined;
   const selectedVectorId =
     activeIds.length > 0
       ? (() => {
@@ -213,7 +249,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
       : null;
 
   return (
-    <div className={styles.panel} style={{ width: LABEL_WIDTH }}>
+    <div className={styles.panel} style={{ width: labelWidth, minWidth: labelWidth }}>
       <div
         ref={scrollRef}
         className={styles.scroll}
@@ -292,6 +328,16 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
               >
                 Blank row
               </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  addGroup();
+                  setAddOpen(false);
+                }}
+              >
+                Section (group)
+              </button>
             </div>
           )}
         </div>
@@ -335,6 +381,16 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
               state,
             );
           }
+          closeMenu();
+        }}
+        parentGroupId={menuParentId}
+        groups={sectionOptions}
+        onMoveToGroup={(groupId) => {
+          if (menuSignalId) moveSignalToParent(menuSignalId, groupId);
+          closeMenu();
+        }}
+        onRemoveFromGroup={() => {
+          if (menuSignalId) moveSignalToParent(menuSignalId, undefined);
           closeMenu();
         }}
       />

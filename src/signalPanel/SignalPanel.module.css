@@ -10,9 +10,9 @@
 .scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   min-height: 0;
-  scrollbar-width: none;
+  scrollbar-width: thin;
 }
 
 .scrollInner {
@@ -58,30 +58,6 @@
   border-radius: 3px;
   background: var(--border, #444);
   flex-shrink: 0;
-}
-
-.swatchBtn {
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.swatch {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--text-primary, #fff) 25%, transparent);
-}
-
-.colorInput {
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .dragHandle {
@@ -218,6 +194,20 @@
   background: var(--border, #444);
 }
 
+.menuSubheading {
+  padding: 6px 12px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.menuIndent {
+  text-align: left;
+}
+
 .menuHint {
   margin: 4px 12px;
   font-size: 10px;
@@ -255,6 +245,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.segmentEditorHint {
+  font-size: 10px;
+  color: var(--text-muted, #888);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .segmentEditorEmpty {
