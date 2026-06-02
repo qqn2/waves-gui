@@ -3,8 +3,21 @@ import { TRACE_PADDING, TRANSITION_WIDTH } from '../shared/constants';
 import type { ViewTransform } from './coordinates';
 import { logicalToCanvasY } from './coordinates';
 import { drawStepGap } from './drawStepGap';
+import {
+  appendGlitchToCanvasPath,
+  canDrawGlitch,
+  drawGlitchBoundaryMarker,
+  glitchOppositeY,
+} from './drawStepGlitch';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
-import { stateStrokeColor, X_FILL, X_STROKE, zStrokeColor } from './stateColors';
+import {
+  stateLineDash,
+  stateStrokeColor,
+  X_FILL,
+  X_STROKE,
+  zStrokeColor,
+} from './stateColors';
+import { clockStepEndY, strokeClockStep } from './drawClock';
 
 function stateToY(
   bitState: BitState,
@@ -23,6 +36,12 @@ function stateToY(
       return yHigh + 4;
     case 'd':
       return yLow - 4;
+    case 'p':
+    case 'P':
+      return yHigh;
+    case 'n':
+    case 'N':
+      return yLow;
     default:
       return yMid;
   }
@@ -43,30 +62,6 @@ function createXHatchPattern(ctx: CanvasRenderingContext2D): CanvasPattern | nul
   return ctx.createPattern(tile, 'repeat');
 }
 
-function drawClockStep(
-  ctx: CanvasRenderingContext2D,
-  st: 'p' | 'n',
-  x0: number,
-  x1: number,
-  yHigh: number,
-  yLow: number,
-): void {
-  const xMid = (x0 + x1) / 2;
-  ctx.beginPath();
-  if (st === 'p') {
-    ctx.moveTo(x0, yHigh);
-    ctx.lineTo(xMid, yHigh);
-    ctx.lineTo(xMid, yLow);
-    ctx.lineTo(x1, yLow);
-  } else {
-    ctx.moveTo(x0, yLow);
-    ctx.lineTo(xMid, yLow);
-    ctx.lineTo(xMid, yHigh);
-    ctx.lineTo(x1, yHigh);
-  }
-  ctx.stroke();
-}
-
 export function renderBitSignal(
   ctx: CanvasRenderingContext2D,
   signal: Signal,
@@ -75,8 +70,10 @@ export function renderBitSignal(
   transform: ViewTransform,
   totalSteps: number,
   draftStates?: BitState[] | null,
+  options?: { highlightGlitchBoundaries?: boolean },
 ): void {
   const states = draftStates ?? signal.states;
+  const glitches = signal.stepGlitches ?? [];
   const scale = transform.zoom * transform.hscale;
   const tw = TRANSITION_WIDTH * scale;
   const gapStroke =
@@ -105,14 +102,14 @@ export function renderBitSignal(
     const x = stepLogicalX(signal, i) * scale - transform.scrollX;
     const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
 
-    if (st === 'p' || st === 'n') {
+    if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       if (pathOpen) {
         ctx.stroke();
         pathOpen = false;
       }
       ctx.strokeStyle = signal.color;
-      drawClockStep(ctx, st, x, nextX, yHigh, yLow);
-      prevY = st === 'p' ? yLow : yHigh;
+      strokeClockStep(ctx, st, x, nextX, yHigh, yLow, ctx.lineWidth);
+      prevY = clockStepEndY(st, yHigh, yLow);
       continue;
     }
 
@@ -147,6 +144,8 @@ export function renderBitSignal(
       ctx.moveTo(x, prevY);
       pathOpen = true;
       ctx.strokeStyle = stateStrokeColor(st, signal.color);
+      const dash = stateLineDash(st);
+      ctx.setLineDash(dash ?? []);
     }
 
     const y = stateToY(st, yHigh, yLow, yMid);
@@ -154,7 +153,17 @@ export function renderBitSignal(
       ctx.lineTo(x + tw / 2, prevY);
       ctx.lineTo(x + tw, y);
     }
-    ctx.lineTo(nextX, y);
+    if (glitches[i] && canDrawGlitch(st)) {
+      appendGlitchToCanvasPath(
+        ctx,
+        nextX,
+        y,
+        glitchOppositeY(st, yHigh, yLow, yMid),
+        tw,
+      );
+    } else {
+      ctx.lineTo(nextX, y);
+    }
     prevY = y;
   }
 
@@ -166,6 +175,14 @@ export function renderBitSignal(
     const x1 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
     const x2 = stepLogicalX(signal, i + 1) * scale - transform.scrollX;
     drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke);
+  }
+
+  if (options?.highlightGlitchBoundaries) {
+    for (let i = 0; i < glitches.length; i++) {
+      if (!glitches[i]) continue;
+      const xEdge = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+      drawGlitchBoundaryMarker(ctx, xEdge, yHigh, yLow, true);
+    }
   }
 
   for (let i = 0; i < totalSteps; i++) {

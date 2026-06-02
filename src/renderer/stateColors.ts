@@ -28,7 +28,15 @@ export function vectorUnknownStroke(): string {
 
 export function stateStrokeColor(bitState: BitState, signalColor: string): string {
   if (bitState === 'z') return Z_STROKE;
+  if (bitState === 'u' || bitState === 'd') {
+    return cssVar('--weak-drive-stroke', `${signalColor}99`);
+  }
   return signalColor;
+}
+
+export function stateLineDash(bitState: BitState): number[] | null {
+  if (bitState === 'u' || bitState === 'd') return [3, 3];
+  return null;
 }
 
 export function zStrokeColor(signalColor: string): string {
