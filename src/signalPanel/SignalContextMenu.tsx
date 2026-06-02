@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Signal } from '../shared/types';
+import type { GroupRef } from './panelTree';
 import styles from './SignalPanel.module.css';
 
 export interface MenuAnchor {
@@ -17,6 +18,10 @@ export interface SignalContextMenuProps {
   onAddAbove: (type: Signal['type']) => void;
   onAddBelow: (type: Signal['type']) => void;
   onSetAll: (state: '0' | '1') => void;
+  parentGroupId?: string;
+  groups: GroupRef[];
+  onMoveToGroup: (groupId: string) => void;
+  onRemoveFromGroup: () => void;
 }
 
 export function SignalContextMenu({
@@ -29,6 +34,10 @@ export function SignalContextMenu({
   onAddAbove,
   onAddBelow,
   onSetAll,
+  parentGroupId,
+  groups,
+  onMoveToGroup,
+  onRemoveFromGroup,
 }: SignalContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +62,8 @@ export function SignalContextMenu({
 
   const isBit = signal.type === 'bit';
   const isSpacer = signal.type === 'spacer';
+  const inSection = parentGroupId !== undefined;
+  const moveTargets = groups.filter((g) => g.id !== parentGroupId);
 
   return (
     <div
@@ -101,22 +112,30 @@ export function SignalContextMenu({
         Add bus below
       </button>
       <div className={styles.menuSep} />
-      <button
-        type="button"
-        role="menuitem"
-        disabled
-        title="Requires store group actions (not implemented)"
-      >
-        Add to group…
-      </button>
-      <button
-        type="button"
-        role="menuitem"
-        disabled
-        title="Requires store group actions (not implemented)"
-      >
-        Remove from group
-      </button>
+      {moveTargets.length > 0 ? (
+        <>
+          <div className={styles.menuSubheading}>Move to section</div>
+          {moveTargets.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              role="menuitem"
+              className={styles.menuIndent}
+              style={{ paddingLeft: 12 + g.depth * 10 }}
+              onClick={() => onMoveToGroup(g.id)}
+            >
+              {g.name}
+            </button>
+          ))}
+        </>
+      ) : (
+        <p className={styles.menuHint}>Add a section from + Add signal</p>
+      )}
+      {inSection ? (
+        <button type="button" role="menuitem" onClick={onRemoveFromGroup}>
+          Remove from section
+        </button>
+      ) : null}
       {isBit && (
         <>
           <div className={styles.menuSep} />

@@ -1,5 +1,4 @@
 import type { DiagramState, SignalOrGroup } from '../shared/types';
-import { LABEL_WIDTH } from '../shared/constants';
 import { buildRowLayout } from '../renderer/rowLayout';
 
 export interface LabelEntry {
@@ -48,6 +47,7 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
 export function drawSignalLabels(
   ctx: CanvasRenderingContext2D,
   diagram: DiagramState,
+  labelWidth: number,
   axisOffset: number,
   totalHeight: number,
   labelBg: string,
@@ -55,7 +55,7 @@ export function drawSignalLabels(
 ): void {
   const entries = buildLabelEntries(diagram.signals);
   ctx.fillStyle = labelBg;
-  ctx.fillRect(0, 0, LABEL_WIDTH, totalHeight);
+  ctx.fillRect(0, 0, labelWidth, totalHeight);
 
   ctx.fillStyle = textColor;
   ctx.textBaseline = 'middle';
@@ -64,7 +64,7 @@ export function drawSignalLabels(
   for (const entry of entries) {
     const x = 8 + entry.depth * 12;
     const y = axisOffset + entry.y + entry.height / 2;
-    const maxW = LABEL_WIDTH - x - 4;
+    const maxW = labelWidth - x - 4;
     ctx.font = entry.isGroup ? '600 11px sans-serif' : '12px sans-serif';
     ctx.fillText(entry.name, x, y, maxW);
   }

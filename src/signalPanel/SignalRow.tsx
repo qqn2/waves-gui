@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import type { Signal } from '../shared/types';
 import { useStore } from '../shared/store';
@@ -44,9 +44,7 @@ export function SignalRow({
   onSelect,
 }: SignalRowProps) {
   const renameSignal = useStore((s) => s.renameSignal);
-  const updateSignalColor = useStore((s) => s.updateSignalColor);
   const [editing, setEditing] = useState(false);
-  const colorInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (forceEdit) setEditing(true);
@@ -103,28 +101,6 @@ export function SignalRow({
         >
           {signal.name || '(unnamed)'}
         </span>
-      )}
-      {signal.type !== 'spacer' && (
-        <>
-          <button
-            type="button"
-            className={styles.swatchBtn}
-            aria-label="Signal color"
-            onClick={() => colorInputRef.current?.click()}
-          >
-            <span
-              className={styles.swatch}
-              style={{ background: signal.color }}
-            />
-          </button>
-          <input
-            ref={colorInputRef}
-            type="color"
-            className={styles.colorInput}
-            value={signal.color}
-            onChange={(e) => updateSignalColor(signal.id, e.target.value)}
-          />
-        </>
       )}
       <button
         type="button"
