@@ -30,5 +30,14 @@ export const DEFAULT_STEPS = 20;
 export const MIN_TOTAL_STEPS = 1;
 export const MAX_TOTAL_STEPS = 512;
 export const DEFAULT_HSCALE = 1;
+/** WaveDrom config.hscale lower bound (fractional values allowed, e.g. 1.5). */
+export const MIN_HSCALE = 1;
+export const MAX_HSCALE = 4;
+export const HSCALE_STEP = 0.1;
+
+export function clampHscale(h: number): number {
+  if (!Number.isFinite(h)) return DEFAULT_HSCALE;
+  return Math.max(MIN_HSCALE, Math.min(MAX_HSCALE, h));
+}
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 4.0;

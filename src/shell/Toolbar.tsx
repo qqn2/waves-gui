@@ -1,8 +1,23 @@
 import { useState } from 'react';
-import { Eraser, MousePointer2, Paintbrush, Plus, ZoomIn, ZoomOut } from 'lucide-react';
+import {
+  ArrowRight,
+  Eraser,
+  MousePointer2,
+  MoveHorizontal,
+  Paintbrush,
+  Plus,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { BitState } from '../shared/types';
+import {
+  fillHexForColorIndex,
+  WAVEDROM_COLOR_INDEXES,
+  type WavedromColorIndex,
+} from '../wavedromBridge/wavedromColors';
 import { PatternsMenu } from '../patterns/PatternsMenu';
+import { HSCALE_STEP, MAX_HSCALE, MIN_HSCALE } from '../shared/constants';
 import { loadSampleDiagram, samplesByCategory } from './samples';
 import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
 import { loadRecentFiles } from './soloDesk/recentFiles';
@@ -25,6 +40,11 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const activeBit = useStore((s) => s.view.activeBitState);
   const activeBusLabel = useStore((s) => s.view.activeBusLabel);
   const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
+  const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
+  const setActiveTimespanLabel = useStore((s) => s.setActiveTimespanLabel);
+  const activeBusColorIndex = useStore((s) => s.view.activeBusColorIndex);
+  const setActiveBusColorIndex = useStore((s) => s.setActiveBusColorIndex);
+  const setHscale = useStore((s) => s.setHscale);
   const zoom = useStore((s) => s.view.zoom);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
@@ -134,14 +154,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
 
       <button
         type="button"
-        title="Pointer (V) — click a row to select; drag for area select"
-        className={`${styles.toolBtn} ${tool === 'cursor' || tool === 'select' ? styles.toolActive : ''}`}
-        onClick={() => setTool('cursor')}
-      >
-        <MousePointer2 size={15} aria-hidden />
-      </button>
-      <button
-        type="button"
         title="Draw (D) — drag along a row to fill time steps with the value below"
         className={`${styles.toolBtn} ${tool === 'paint' ? styles.toolActive : ''}`}
         onClick={() => setTool('paint')}
@@ -156,6 +168,46 @@ export function Toolbar({ onExport }: ToolbarProps) {
       >
         <Eraser size={15} aria-hidden />
       </button>
+      <button
+        type="button"
+        title="Pointer (V) — click a row to select; drag for area select"
+        className={`${styles.toolBtn} ${tool === 'cursor' || tool === 'select' ? styles.toolActive : ''}`}
+        onClick={() => setTool('cursor')}
+      >
+        <MousePointer2 size={15} aria-hidden />
+      </button>
+      <button
+        type="button"
+        title="WaveDrom edge arrow — click start node, then end node"
+        className={`${styles.toolBtn} ${tool === 'arrow' ? styles.toolActive : ''}`}
+        onClick={() => setTool('arrow')}
+      >
+        <ArrowRight size={15} aria-hidden />
+      </button>
+      <button
+        type="button"
+        title="WaveDrom timespan edge — drag on one row between two steps"
+        className={`${styles.toolBtn} ${tool === 'timespan' ? styles.toolActive : ''}`}
+        onClick={() => setTool('timespan')}
+      >
+        <MoveHorizontal size={15} aria-hidden />
+      </button>
+      {tool === 'timespan' ? (
+        <label
+          className={styles.busLabelWrap}
+          title="Label on new timespan edges (WaveDrom edge[] text)"
+        >
+          <span className={styles.busLabelTag}>Span</span>
+          <input
+            type="text"
+            className={styles.busLabelInput}
+            value={activeTimespanLabel}
+            onChange={(e) => setActiveTimespanLabel(e.target.value)}
+            placeholder="5 ms"
+            aria-label="Timespan label"
+          />
+        </label>
+      ) : null}
       {tool === 'paint' ? (
         <>
           <span className={styles.toolGroupLabel}>Value</span>
@@ -202,6 +254,22 @@ export function Toolbar({ onExport }: ToolbarProps) {
               aria-label="Bus label"
             />
           </label>
+          <span className={styles.busColorGroup} title="WaveDrom bus fill (wave digits 2–9)">
+            {WAVEDROM_COLOR_INDEXES.map((idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`${styles.busColorSwatch} ${
+                  activeBusColorIndex === idx ? styles.busColorSwatchActive : ''
+                }`}
+                style={{ background: fillHexForColorIndex(idx) }}
+                title={`Bus color ${idx}`}
+                aria-label={`Bus color ${idx}`}
+                aria-pressed={activeBusColorIndex === idx}
+                onClick={() => setActiveBusColorIndex(idx as WavedromColorIndex)}
+              />
+            ))}
+          </span>
         </>
       ) : null}
       <span className={styles.divider} />
@@ -273,6 +341,22 @@ export function Toolbar({ onExport }: ToolbarProps) {
       <button type="button" className={styles.toolBtn} onClick={() => setZoom(zoom * 1.25)}>
         <ZoomIn size={15} />
       </button>
+      <label
+        className={styles.hscaleWrap}
+        title="WaveDrom config.hscale (≥ 1, fractional OK e.g. 1.5)"
+      >
+        <span className={styles.hscaleLabel}>hscale</span>
+        <input
+          type="number"
+          className={styles.hscaleInput}
+          min={MIN_HSCALE}
+          max={MAX_HSCALE}
+          step={HSCALE_STEP}
+          value={diagram.config.hscale}
+          onChange={(e) => setHscale(Number(e.target.value))}
+          aria-label="WaveDrom horizontal scale"
+        />
+      </label>
 
       <span className={styles.toolbarSpacer} />
 

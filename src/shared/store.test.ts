@@ -26,6 +26,15 @@ describe('useStore', () => {
     resetStore();
   });
 
+  it('setHscale keeps fractional values in range', () => {
+    useStore.getState().setHscale(1.5);
+    expect(useStore.getState().diagram.config.hscale).toBe(1.5);
+    useStore.getState().setHscale(4.2);
+    expect(useStore.getState().diagram.config.hscale).toBe(4);
+    useStore.getState().setHscale(0.5);
+    expect(useStore.getState().diagram.config.hscale).toBe(1);
+  });
+
   it('addSignal, setSignalState, undo, redo', () => {
     useStore.getState().addSignal('bit');
     const signalId = useStore.getState().diagram.signals[0]!.id;

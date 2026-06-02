@@ -433,6 +433,55 @@
   color: var(--accent);
 }
 
+.edgeListLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.edgeChipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 40vw;
+}
+
+.edgeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-canvas);
+  max-width: 14rem;
+}
+
+.edgeChipText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+}
+
+.edgeChipDelete {
+  padding: 0 2px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.edgeChipDelete:hover {
+  color: var(--accent);
+}
+
 .toolGroupLabel {
   font-size: 10px;
   font-weight: 600;
@@ -466,6 +515,52 @@
   width: 6.5rem;
   padding: 2px 6px;
   font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+}
+
+.busColorGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 4px;
+}
+
+.busColorSwatch {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.busColorSwatchActive {
+  outline: 2px solid var(--accent, #4a9eff);
+  outline-offset: 1px;
+}
+
+.hscaleWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+
+.hscaleLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.hscaleInput {
+  width: 3.25rem;
+  font-size: 12px;
+  padding: 2px 4px;
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg-canvas);

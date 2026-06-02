@@ -6,7 +6,9 @@ import { renderGrid } from './renderGrid';
 import { renderTimeAxis } from './renderTimeAxis';
 import { renderBitSignal } from './renderBitSignal';
 import { renderVectorSignal } from './renderVectorSignal';
+import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import { applyVectorSpan } from '../shared/vectorSegments';
+import { renderSignalNodes } from './renderNodes';
 import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
 
@@ -88,6 +90,18 @@ export class CanvasRenderer {
             diagram.config.totalSteps,
             draft,
           );
+          if (item.node) {
+            renderSignalNodes(
+              this.ctx,
+              diagram,
+              item.id,
+              row.y,
+              row.height,
+              transform,
+              diagram.config.totalSteps,
+              item.node,
+            );
+          }
           rowIndex++;
         } else if (item.type === 'vector') {
           let drawSignal = item;
@@ -97,6 +111,11 @@ export class CanvasRenderer {
             const hi = Math.max(draft.startStep, draft.endStep);
             const value =
               draft.mode === 'paint' ? (draft.busLabel ?? 'data') : null;
+            const busFill =
+              draft.mode === 'paint'
+                ? (draft.busColorFill ??
+                  fillHexForColorIndex(view.activeBusColorIndex))
+                : undefined;
             drawSignal = {
               ...item,
               segments: applyVectorSpan(
@@ -105,10 +124,23 @@ export class CanvasRenderer {
                 hi,
                 value,
                 diagram.config.totalSteps,
+                busFill,
               ),
             };
           }
           renderVectorSignal(this.ctx, drawSignal, row.y, row.height, transform);
+          if (drawSignal.node) {
+            renderSignalNodes(
+              this.ctx,
+              diagram,
+              drawSignal.id,
+              row.y,
+              row.height,
+              transform,
+              diagram.config.totalSteps,
+              drawSignal.node,
+            );
+          }
           rowIndex++;
         } else {
           rowIndex++;
