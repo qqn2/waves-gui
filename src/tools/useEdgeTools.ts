@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
 import type { HitTestResult } from '../renderer/hitTest';
@@ -8,18 +8,9 @@ import {
   formatTimespanEdge,
 } from '../wavedromBridge/nodeString';
 import { flushPendingCodeToDiagram } from './codeFlush';
+import { edgeToolHint } from './edgeToolHint';
 
 const EDGE_TOOLS: Tool[] = ['arrow', 'timespan'];
-
-export interface EdgeAnchorPending {
-  char: string;
-  signalId: string;
-  step: number;
-}
-
-export interface EdgePreview {
-  edgeStr: string;
-}
 
 function isEdgeTool(tool: Tool): boolean {
   return EDGE_TOOLS.includes(tool);
@@ -27,29 +18,24 @@ function isEdgeTool(tool: Tool): boolean {
 
 export function useEdgeTools(): {
   isEdgeToolActive: boolean;
-  edgePending: EdgeAnchorPending | null;
-  edgePreview: EdgePreview | null;
+  edgeHint: string | null;
   cancelEdgeEdit: () => void;
   onPointerDown: (e: PointerEvent, hit: HitTestResult) => void;
-  onPointerMove: (e: PointerEvent, hit: HitTestResult) => void;
+  onPointerMove: (_e: PointerEvent, _hit: HitTestResult) => void;
   onPointerUp: (e: PointerEvent, hit: HitTestResult) => void;
 } {
   const tool = useStore((s) => s.view.selectedTool);
+  const edgeAnchorPending = useStore((s) => s.view.edgeAnchorPending);
+  const setEdgeAnchorPending = useStore((s) => s.setEdgeAnchorPending);
+  const setEdgeToolHover = useStore((s) => s.setEdgeToolHover);
   const setSignalNodeAt = useStore((s) => s.setSignalNodeAt);
   const addDiagramEdge = useStore((s) => s.addDiagramEdge);
-
-  const [edgePending, setEdgePending] = useState<EdgeAnchorPending | null>(null);
-  const [edgePreview, setEdgePreview] = useState<EdgePreview | null>(null);
-  const timespanDragRef = useRef<{
-    signalId: string;
-    startStep: number;
-  } | null>(null);
+  const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
 
   const cancelEdgeEdit = useCallback(() => {
-    setEdgePending(null);
-    setEdgePreview(null);
-    timespanDragRef.current = null;
-  }, []);
+    setEdgeAnchorPending(null);
+    setEdgeToolHover(null);
+  }, [setEdgeAnchorPending, setEdgeToolHover]);
 
   const placeAnchor = useCallback(
     (signalId: string, step: number): string | null => {
@@ -67,66 +53,120 @@ export function useEdgeTools(): {
       if (!isEdgeTool(tool)) return;
       flushPendingCodeToDiagram();
       if (!hit.signalId || hit.signalType === 'group' || hit.step === null) return;
+      if (e.button === 2) return;
 
       if (tool === 'timespan') {
-        timespanDragRef.current = { signalId: hit.signalId, startStep: hit.step };
+        if (hit.signalType !== 'bit' && hit.signalType !== 'vector') return;
+        const fromChar = placeAnchor(hit.signalId, hit.step);
+        if (!fromChar) return;
+        setEdgeAnchorPending({
+          kind: 'timespan',
+          signalId: hit.signalId,
+          startStep: hit.step,
+          fromChar,
+        });
         return;
       }
 
-      if (e.shiftKey && edgePending) {
-        setSignalNodeAt(edgePending.signalId, edgePending.step, null);
+      if (e.shiftKey && edgeAnchorPending?.kind === 'arrow') {
+        setSignalNodeAt(
+          edgeAnchorPending.signalId,
+          edgeAnchorPending.step,
+          null,
+        );
         cancelEdgeEdit();
         return;
       }
 
-      if (!edgePending) {
+      if (!edgeAnchorPending || edgeAnchorPending.kind !== 'arrow') {
         const ch = placeAnchor(hit.signalId, hit.step);
         if (!ch) return;
-        setEdgePending({ char: ch, signalId: hit.signalId, step: hit.step });
+        setEdgeAnchorPending({
+          kind: 'arrow',
+          char: ch,
+          signalId: hit.signalId,
+          step: hit.step,
+        });
         return;
       }
 
       const toChar = placeAnchor(hit.signalId, hit.step);
       if (!toChar) return;
-      addDiagramEdge(formatArrowEdge(edgePending.char, toChar));
+      addDiagramEdge(
+        formatArrowEdge(edgeAnchorPending.char, toChar),
+      );
       cancelEdgeEdit();
     },
-    [tool, edgePending, placeAnchor, setSignalNodeAt, addDiagramEdge, cancelEdgeEdit],
+    [
+      tool,
+      edgeAnchorPending,
+      placeAnchor,
+      setSignalNodeAt,
+      addDiagramEdge,
+      cancelEdgeEdit,
+      setEdgeAnchorPending,
+    ],
   );
 
-  const onPointerMove = useCallback(() => {
-    setEdgePreview(null);
-  }, []);
+  const onPointerMove = useCallback(
+    (_e: PointerEvent, hit: HitTestResult) => {
+      if (!isEdgeTool(tool)) return;
+      if (!hit.signalId || hit.step === null || hit.signalType === 'group') {
+        setEdgeToolHover(null);
+        return;
+      }
+      if (tool === 'timespan' && hit.signalType !== 'bit' && hit.signalType !== 'vector') {
+        setEdgeToolHover(null);
+        return;
+      }
+      setEdgeToolHover({ signalId: hit.signalId, step: hit.step });
+    },
+    [tool, setEdgeToolHover],
+  );
 
   const onPointerUp = useCallback(
     (_e: PointerEvent, hit: HitTestResult) => {
       if (tool !== 'timespan') return;
-      const drag = timespanDragRef.current;
-      timespanDragRef.current = null;
-      setEdgePreview(null);
-      if (!drag || !hit.signalId || hit.step === null) return;
-
-      const lo = Math.min(drag.startStep, hit.step);
-      const hi = Math.max(drag.startStep, hit.step);
-      if (lo === hi) return;
-
-      const signalId = drag.signalId;
-      const fromChar = placeAnchor(signalId, lo);
-      const toChar = placeAnchor(signalId, hi);
-      if (!fromChar || !toChar) return;
-
-      const label =
-        typeof window !== 'undefined'
-          ? window.prompt('Timespan label (WaveDrom edge label, e.g. "5 ms"):', '5 ms')
-          : '5 ms';
-      if (label === null) {
-        setSignalNodeAt(signalId, lo, null);
-        setSignalNodeAt(signalId, hi, null);
+      const pending = useStore.getState().view.edgeAnchorPending;
+      if (!pending || pending.kind !== 'timespan') return;
+      if (!hit.signalId || hit.step === null) {
+        setSignalNodeAt(pending.signalId, pending.startStep, null);
+        cancelEdgeEdit();
         return;
       }
-      addDiagramEdge(formatTimespanEdge(fromChar, toChar, label));
+      if (hit.signalId !== pending.signalId) {
+        setSignalNodeAt(pending.signalId, pending.startStep, null);
+        cancelEdgeEdit();
+        return;
+      }
+
+      const lo = Math.min(pending.startStep, hit.step);
+      const hi = Math.max(pending.startStep, hit.step);
+      if (lo === hi) {
+        setSignalNodeAt(pending.signalId, pending.startStep, null);
+        cancelEdgeEdit();
+        return;
+      }
+
+      const toChar = placeAnchor(pending.signalId, hi);
+      if (!toChar) {
+        setSignalNodeAt(pending.signalId, pending.startStep, null);
+        cancelEdgeEdit();
+        return;
+      }
+
+      const label = activeTimespanLabel.trim() || '5 ms';
+      addDiagramEdge(formatTimespanEdge(pending.fromChar, toChar, label));
+      cancelEdgeEdit();
     },
-    [tool, placeAnchor, setSignalNodeAt, addDiagramEdge],
+    [
+      tool,
+      placeAnchor,
+      setSignalNodeAt,
+      addDiagramEdge,
+      cancelEdgeEdit,
+      activeTimespanLabel,
+    ],
   );
 
   useEffect(() => {
@@ -135,8 +175,7 @@ export function useEdgeTools(): {
 
   return {
     isEdgeToolActive: isEdgeTool(tool),
-    edgePending,
-    edgePreview,
+    edgeHint: edgeToolHint(tool, edgeAnchorPending, activeTimespanLabel),
     cancelEdgeEdit,
     onPointerDown,
     onPointerMove,

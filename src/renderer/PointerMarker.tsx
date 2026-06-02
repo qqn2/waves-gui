@@ -1,4 +1,9 @@
-import type { DiagramState, ViewState } from '../shared/types';
+import type {
+  DiagramState,
+  EdgeAnchorPending,
+  Tool,
+  ViewState,
+} from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
@@ -12,9 +17,17 @@ export interface PointerMarkerProps {
   hit: HitTestResult | null;
   diagram: DiagramState;
   view: ViewState;
+  tool?: Tool;
+  edgePending?: EdgeAnchorPending | null;
 }
 
-export function PointerMarker({ hit, diagram, view }: PointerMarkerProps) {
+export function PointerMarker({
+  hit,
+  diagram,
+  view,
+  tool = 'cursor',
+  edgePending = null,
+}: PointerMarkerProps) {
   if (!hit?.signalId || hit.step === null) return null;
 
   const rows = buildRowLayout(diagram.signals);
@@ -43,6 +56,30 @@ export function PointerMarker({ hit, diagram, view }: PointerMarkerProps) {
         : ` ${current}→${toggleBinaryBitState(current)}`
       : '';
 
+  let edgeHint = '';
+  if (tool === 'arrow') {
+    if (edgePending?.kind === 'arrow') {
+      const same =
+        hit.signalId === edgePending.signalId && hit.step === edgePending.step;
+      edgeHint = same
+        ? ` · anchor ${edgePending.char}`
+        : hit.step !== null
+          ? ` · → T${hit.step}`
+          : '';
+    } else {
+      edgeHint = ' · click start';
+    }
+  } else if (tool === 'timespan') {
+    if (edgePending?.kind === 'timespan') {
+      const sameRow = hit.signalId === edgePending.signalId;
+      edgeHint = sameRow
+        ? ` · T${edgePending.startStep}→T${hit.step}`
+        : ' · wrong row';
+    } else {
+      edgeHint = ' · press start';
+    }
+  }
+
   return (
     <>
       <div
@@ -58,6 +95,7 @@ export function PointerMarker({ hit, diagram, view }: PointerMarkerProps) {
       <div className="pointerMarkerLabel" style={{ left: left + 4, top: top + 2 }}>
         t{hit.step} · {signalName}
         {paintHint}
+        {edgeHint}
       </div>
     </>
   );

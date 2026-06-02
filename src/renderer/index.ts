@@ -1,5 +1,6 @@
 export { WaveformCanvas } from './WaveformCanvas';
 export { EdgeOverlay } from './EdgeOverlay';
+export { EdgeToolOverlay } from './EdgeToolOverlay';
 export { PointerMarker } from './PointerMarker';
 export type { WaveformCanvasProps, CanvasScrollSync } from './WaveformCanvas';
 export { hitTest } from './hitTest';
