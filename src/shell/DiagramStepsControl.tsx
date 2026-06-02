@@ -43,7 +43,7 @@ export function DiagramStepsControl() {
   );
 
   return (
-    <div className={styles.stepsRowCompact} title={STEPS_TITLE}>
+    <div className={styles.stepsInline} title={STEPS_TITLE}>
       <span className={styles.stepsLabel}>Steps</span>
       <button
         type="button"

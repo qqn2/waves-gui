@@ -48,6 +48,7 @@ function applyPeriod(signalId: string, period: number | undefined): void {
 export function SignalTimingBar() {
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const signals = useStore((s) => s.diagram.signals);
+  const labelWidth = useStore((s) => s.view.labelWidth);
 
   const target = useMemo(() => {
     if (activeIds.length !== 1) return null;
@@ -98,55 +99,60 @@ export function SignalTimingBar() {
 
   return (
     <div
-      className={styles.timingBarRow}
-      title="Selected lane only: WaveDrom phase (shift) and period (clock cycles per column). Diagram length: Steps (left column)."
-      data-signal-id={id}
+      className={styles.shellHeaderWaveRow}
+      style={{ paddingLeft: labelWidth }}
     >
-      <span className={styles.timingBarSignal} title={signal.name}>
-        {signal.name}
-      </span>
-      <label className={styles.timingBarField}>
-        <span className={styles.timingBarLabel}>phase</span>
-        <input
-          type="text"
-          className={styles.timingBarNum}
-          value={formatOptionalNumber(signal.phase)}
-          onChange={(e) => onPhaseChange(e.target.value)}
-          placeholder="0"
-          inputMode="decimal"
-          spellCheck={false}
-        />
-        <button
-          type="button"
-          className={styles.timingBarClear}
-          onClick={clearPhase}
-          title="Clear phase"
-          disabled={signal.phase === undefined}
-        >
-          ×
-        </button>
-      </label>
-      <label className={styles.timingBarField}>
-        <span className={styles.timingBarLabel}>period</span>
-        <input
-          type="text"
-          className={styles.timingBarNum}
-          value={formatOptionalNumber(signal.period)}
-          onChange={(e) => onPeriodChange(e.target.value)}
-          placeholder="—"
-          inputMode="numeric"
-          spellCheck={false}
-        />
-        <button
-          type="button"
-          className={styles.timingBarClear}
-          onClick={clearPeriod}
-          title="Clear period"
-          disabled={signal.period === undefined}
-        >
-          ×
-        </button>
-      </label>
+      <div
+        className={styles.timingBarRow}
+        title="Selected lane only: WaveDrom phase (shift) and period (clock cycles per column). Diagram length: Steps (left column)."
+        data-signal-id={id}
+      >
+        <span className={styles.timingBarSignal} title={signal.name}>
+          {signal.name}
+        </span>
+        <label className={styles.timingBarField}>
+          <span className={styles.timingBarLabel}>phase</span>
+          <input
+            type="text"
+            className={styles.timingBarNum}
+            value={formatOptionalNumber(signal.phase)}
+            onChange={(e) => onPhaseChange(e.target.value)}
+            placeholder="0"
+            inputMode="decimal"
+            spellCheck={false}
+          />
+          <button
+            type="button"
+            className={styles.timingBarClear}
+            onClick={clearPhase}
+            title="Clear phase"
+            disabled={signal.phase === undefined}
+          >
+            ×
+          </button>
+        </label>
+        <label className={styles.timingBarField}>
+          <span className={styles.timingBarLabel}>period</span>
+          <input
+            type="text"
+            className={styles.timingBarNum}
+            value={formatOptionalNumber(signal.period)}
+            onChange={(e) => onPeriodChange(e.target.value)}
+            placeholder="—"
+            inputMode="numeric"
+            spellCheck={false}
+          />
+          <button
+            type="button"
+            className={styles.timingBarClear}
+            onClick={clearPeriod}
+            title="Clear period"
+            disabled={signal.period === undefined}
+          >
+            ×
+          </button>
+        </label>
+      </div>
     </div>
   );
 }

@@ -16,4 +16,3 @@ export {
   sampleAssetUrl,
 } from './samples';
 export type { SampleCategory, SampleDiagram } from './samples';
-export type { SampleDiagram } from './samples';
