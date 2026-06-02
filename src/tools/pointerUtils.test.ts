@@ -33,6 +33,8 @@ function minimal(overrides?: Partial<ViewState>): {
     edgeAnchorPending: null,
     edgeToolHover: null,
     activeTimespanLabel: '5 ms',
+    activeEdgeShape: '',
+    showAnchorLetters: false,
     ...overrides,
   };
   return { diagram, view };

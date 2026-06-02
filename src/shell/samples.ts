@@ -18,7 +18,7 @@ export const SAMPLE_DIAGRAMS: SampleDiagram[] = [
   {
     id: 'clock-reset',
     title: 'Clock and reset',
-    description: 'Clock (p), active-low reset, enable',
+    description: 'Clock (P, arrow), active-low reset, enable',
     file: 'clock-reset.json',
     category: 'general',
   },

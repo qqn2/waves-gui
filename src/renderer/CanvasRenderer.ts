@@ -1,5 +1,6 @@
 import type { DiagramState, ViewState, BitState } from '../shared/types';
-import { toggleBinaryBitState } from '../shared/bitToggle';
+import { toggleBinaryBitState, isClockBitState } from '../shared/bitToggle';
+import { applyClockBrushToRange } from '../wavedromBridge/clockWave';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from './rowLayout';
 import { renderGrid } from './renderGrid';
@@ -33,6 +34,10 @@ export class CanvasRenderer {
     const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
     const { headHeight, footHeight } = measureHeadFoot(diagram.config);
     const waveformTop = axisOffset + headHeight;
+    const showAnchorLetters =
+      view.showAnchorLetters ||
+      view.selectedTool === 'arrow' ||
+      view.selectedTool === 'timespan';
 
     this.ctx.save();
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -65,30 +70,62 @@ export class CanvasRenderer {
           rowIndex++;
           if (!item.collapsed) walkDraw(item.children);
         } else if (item.type === 'bit') {
+          let drawSignal = item;
           let draft: BitState[] | null = null;
           if (view.paintDraft && view.paintDraft.signalId === item.id) {
-            draft = [...item.states];
             const lo = Math.min(view.paintDraft.startStep, view.paintDraft.endStep);
             const hi = Math.max(view.paintDraft.startStep, view.paintDraft.endStep);
-            for (let s = lo; s <= hi; s++) {
-              if (view.paintDraft.mode === 'paint') {
-                draft[s] =
-                  view.paintDraft.apply === 'toggle'
-                    ? toggleBinaryBitState(item.states[s])
-                    : view.paintDraft.bitState;
+            if (
+              view.paintDraft.mode === 'paint' &&
+              view.paintDraft.apply === 'glitch'
+            ) {
+              const glitches = [...(item.stepGlitches ?? [])];
+              const maxBoundaries = Math.max(0, item.states.length - 1);
+              while (glitches.length < maxBoundaries) glitches.push(false);
+              for (let i = lo; i < hi && i < maxBoundaries; i++) {
+                glitches[i] = !glitches[i];
+              }
+              drawSignal = { ...item, stepGlitches: glitches };
+            } else {
+              draft = [...item.states];
+              if (
+                view.paintDraft.mode === 'paint' &&
+                view.paintDraft.apply === 'set' &&
+                isClockBitState(view.paintDraft.bitState) &&
+                lo < hi
+              ) {
+                applyClockBrushToRange(
+                  draft,
+                  lo,
+                  hi,
+                  view.paintDraft.bitState,
+                );
               } else {
-                draft[s] = s > 0 ? draft[s - 1] : '0';
+                for (let s = lo; s <= hi; s++) {
+                  if (view.paintDraft.mode === 'paint') {
+                    draft[s] =
+                      view.paintDraft.apply === 'toggle'
+                        ? toggleBinaryBitState(item.states[s])
+                        : view.paintDraft.bitState;
+                  } else {
+                    draft[s] = s > 0 ? draft[s - 1] : '0';
+                  }
+                }
               }
             }
           }
           renderBitSignal(
             this.ctx,
-            item,
+            drawSignal,
             row.y,
             row.height,
             transform,
             diagram.config.totalSteps,
             draft,
+            {
+              highlightGlitchBoundaries:
+                view.selectedTool === 'paint' && view.paintMode === 'glitch',
+            },
           );
           if (item.node) {
             renderSignalNodes(
@@ -100,6 +137,7 @@ export class CanvasRenderer {
               transform,
               diagram.config.totalSteps,
               item.node,
+              showAnchorLetters,
             );
           }
           rowIndex++;
@@ -139,6 +177,7 @@ export class CanvasRenderer {
               transform,
               diagram.config.totalSteps,
               drawSignal.node,
+              showAnchorLetters,
             );
           }
           rowIndex++;
