@@ -9,6 +9,7 @@ import * as erase from './eraseTool';
 import * as select from './selectTool';
 import * as cursor from './cursorTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
+import { useEdgeTools } from './useEdgeTools';
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -24,6 +25,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   onPointerUp: (e: PointerEvent, hit: HitTestResult) => void;
   onContextMenu: (e: MouseEvent, hit: HitTestResult) => void;
   selectionOverlay: SelectOverlayRect | null;
+  edgeHint: string | null;
 } {
   const tool = useStore((s) => s.view.selectedTool);
   const setTool = useStore((s) => s.setTool);
@@ -34,6 +36,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   const setZoom = useStore((s) => s.setZoom);
   const zoom = useStore((s) => s.view.zoom);
   const clearPaintDraft = useStore((s) => s.clearPaintDraft);
+  const edge = useEdgeTools();
 
   const [selectionOverlay, setSelectionOverlay] = useState<SelectOverlayRect | null>(
     null,
@@ -44,10 +47,11 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     paint.paintCancel(el);
     erase.eraseCancel(el);
     select.selectCancel(el);
+    edge.cancelEdgeEdit();
     clearPaintDraft();
     toolState.cancelAll();
     setSelectionOverlay(null);
-  }, [clearPaintDraft, canvasRef]);
+  }, [clearPaintDraft, canvasRef, edge]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -135,7 +139,10 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
-      else if (tool === 'cursor' || tool === 'select') {
+      else if (tool === 'arrow' || tool === 'timespan') {
+        el?.setPointerCapture(e.pointerId);
+        edge.onPointerDown(e, hit);
+      } else if (tool === 'cursor' || tool === 'select') {
         if (hit.annotationId) {
           cursor.cursorPointerDown(hit);
         } else {
@@ -143,32 +150,38 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         }
       }
     },
-    [tool, canvasRef],
+    [tool, canvasRef, edge],
   );
 
   const onPointerMove = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
       if (tool === 'paint') paint.paintPointerMove(e, hit);
       else if (tool === 'erase') erase.erasePointerMove(e, hit);
+      else if (tool === 'arrow' || tool === 'timespan') edge.onPointerMove(e, hit);
       else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerMove(e);
         setSelectionOverlay(toolState.getSelectOverlay());
       }
     },
-    [tool],
+    [tool, edge],
   );
 
   const onPointerUp = useCallback(
-    (e: PointerEvent, _hit: HitTestResult) => {
+    (e: PointerEvent, hit: HitTestResult) => {
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
-      else if (tool === 'cursor' || tool === 'select') {
+      else if (tool === 'arrow' || tool === 'timespan') {
+        if (el?.hasPointerCapture(e.pointerId)) {
+          el.releasePointerCapture(e.pointerId);
+        }
+        edge.onPointerUp(e, hit);
+      } else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerUp(e, el);
         setSelectionOverlay(null);
       }
     },
-    [tool, canvasRef],
+    [tool, canvasRef, edge],
   );
 
   const onContextMenu = useCallback(
@@ -180,5 +193,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     [tool],
   );
 
-  return { onPointerDown, onPointerMove, onPointerUp, onContextMenu, selectionOverlay };
+  return {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onContextMenu,
+    selectionOverlay,
+    edgeHint: edge.edgeHint,
+  };
 }

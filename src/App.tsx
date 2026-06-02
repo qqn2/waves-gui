@@ -6,7 +6,12 @@ import {
   type AppLayoutPaneContext,
 } from './shell';
 import { SignalPanel } from './signalPanel';
-import { WaveformCanvas, PointerMarker, EdgeOverlay } from './renderer';
+import {
+  WaveformCanvas,
+  PointerMarker,
+  EdgeOverlay,
+  EdgeToolOverlay,
+} from './renderer';
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
 import { CodePanel } from './codePanel';
@@ -95,11 +100,25 @@ function CanvasWithMarker({
   );
 
   const displayHit = view.paintDraft ? null : hoverHit;
+  const edgeTool =
+    view.selectedTool === 'arrow' || view.selectedTool === 'timespan'
+      ? view.selectedTool
+      : null;
 
   return (
-    <div className="canvasWrapOuter">
+    <div
+      className="canvasWrapOuter"
+      data-edge-tool={edgeTool ?? undefined}
+    >
       <IntegratedCanvas scrollSync={scrollSync} onHoverHit={handleHover} />
-      <PointerMarker hit={displayHit} diagram={diagram} view={view} />
+      <PointerMarker
+        hit={displayHit}
+        diagram={diagram}
+        view={view}
+        tool={view.selectedTool}
+        edgePending={view.edgeAnchorPending}
+      />
+      <EdgeToolOverlay />
       <EdgeOverlay />
     </div>
   );
