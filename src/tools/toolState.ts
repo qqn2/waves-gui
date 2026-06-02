@@ -1,4 +1,5 @@
 import { useStore } from '../shared/store';
+import type { HitTestResult } from './hitTestStub';
 
 /** Ephemeral pointer-drag and selection state shared across tool modules */
 
@@ -22,6 +23,9 @@ let selectOverlay: SelectOverlayRect | null = null;
 let stepSelection: StepSelection | null = null;
 let capturedPointerId: number | null = null;
 let selectedAnnotationId: string | null = null;
+let selectClickHit: HitTestResult | null = null;
+
+export const SELECT_DRAG_THRESHOLD_PX = 5;
 
 export const toolState = {
   isPaintDragging(): boolean {
@@ -100,6 +104,13 @@ export const toolState = {
     return selectedAnnotationId;
   },
 
+  setSelectClickHit(hit: HitTestResult | null): void {
+    selectClickHit = hit;
+  },
+  getSelectClickHit(): HitTestResult | null {
+    return selectClickHit;
+  },
+
   cancelAll(): void {
     paintDragging = false;
     eraseDragging = false;
@@ -109,6 +120,7 @@ export const toolState = {
     stepSelection = null;
     capturedPointerId = null;
     selectedAnnotationId = null;
+    selectClickHit = null;
   },
 };
 

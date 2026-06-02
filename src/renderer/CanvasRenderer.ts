@@ -6,6 +6,7 @@ import { renderGrid } from './renderGrid';
 import { renderTimeAxis } from './renderTimeAxis';
 import { renderBitSignal } from './renderBitSignal';
 import { renderVectorSignal } from './renderVectorSignal';
+import { applyVectorSpan } from '../shared/vectorSegments';
 import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
 
@@ -89,7 +90,25 @@ export class CanvasRenderer {
           );
           rowIndex++;
         } else if (item.type === 'vector') {
-          renderVectorSignal(this.ctx, item, row.y, row.height, transform);
+          let drawSignal = item;
+          const draft = view.paintDraft;
+          if (draft && draft.signalId === item.id && draft.lane === 'vector') {
+            const lo = Math.min(draft.startStep, draft.endStep);
+            const hi = Math.max(draft.startStep, draft.endStep);
+            const value =
+              draft.mode === 'paint' ? (draft.busLabel ?? 'data') : null;
+            drawSignal = {
+              ...item,
+              segments: applyVectorSpan(
+                item.segments,
+                lo,
+                hi,
+                value,
+                diagram.config.totalSteps,
+              ),
+            };
+          }
+          renderVectorSignal(this.ctx, drawSignal, row.y, row.height, transform);
           rowIndex++;
         } else {
           rowIndex++;

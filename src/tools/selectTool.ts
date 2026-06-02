@@ -8,7 +8,8 @@ import {
   type ViewTransform,
 } from '../renderer/coordinates';
 import { flushPendingCodeToDiagram } from './codeFlush';
-import { setActiveSignalIds, toolState } from './toolState';
+import { setActiveSignalIds, toolState, SELECT_DRAG_THRESHOLD_PX } from './toolState';
+import type { HitTestResult } from './hitTestStub';
 
 function viewTransform(diagram: DiagramState, view: ViewState): ViewTransform {
   return {
@@ -74,11 +75,29 @@ function applyRectSelection(
   );
 }
 
+function applyClickSelection(hit: HitTestResult, diagram: DiagramState): void {
+  if (hit.signalId && hit.signalType !== 'group' && hit.signalType !== null) {
+    setActiveSignalIds([hit.signalId]);
+    if (hit.step !== null) {
+      toolState.setStepSelection({ start: hit.step, end: hit.step });
+    } else {
+      toolState.setStepSelection({
+        start: 0,
+        end: diagram.config.totalSteps - 1,
+      });
+    }
+    return;
+  }
+  clearSelection();
+}
+
 export function selectPointerDown(
   e: PointerEvent,
   canvas: HTMLCanvasElement | null,
+  hit: HitTestResult,
 ): void {
   flushPendingCodeToDiagram();
+  toolState.setSelectClickHit(hit);
   const x = e.offsetX;
   const y = e.offsetY;
   toolState.beginSelectDrag(x, y, e.pointerId);
@@ -99,8 +118,16 @@ export function selectPointerUp(
   toolState.endSelectDrag();
 
   const overlay = toolState.getSelectOverlay();
-  if (overlay && (overlay.width > 2 || overlay.height > 2)) {
-    const diagram = useStore.getState().diagram;
+  const clickHit = toolState.getSelectClickHit();
+  toolState.setSelectClickHit(null);
+  const diagram = useStore.getState().diagram;
+
+  const isDrag =
+    overlay &&
+    (overlay.width > SELECT_DRAG_THRESHOLD_PX ||
+      overlay.height > SELECT_DRAG_THRESHOLD_PX);
+
+  if (isDrag && overlay) {
     applyRectSelection(
       diagram,
       overlay.left,
@@ -108,7 +135,10 @@ export function selectPointerUp(
       overlay.left + overlay.width,
       overlay.top + overlay.height,
     );
+  } else if (clickHit) {
+    applyClickSelection(clickHit, diagram);
   }
+
   toolState.clearSelectOverlay();
 }
 
@@ -119,6 +149,7 @@ export function selectCancel(canvas: HTMLCanvasElement | null): void {
     canvas.releasePointerCapture(pid);
   }
   toolState.endSelectDrag();
+  toolState.setSelectClickHit(null);
   toolState.clearSelectOverlay();
 }
 
