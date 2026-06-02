@@ -1,0 +1,14 @@
+{
+  "head": { "text": "APB write — no wait states" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "PCLK", "wave": "p......." },
+    { "name": "PSEL", "wave": "0.1..0.." },
+    { "name": "PENABLE", "wave": "0..1.0.." },
+    { "name": "PWRITE", "wave": "0.1..0.." },
+    { "name": "PADDR", "wave": "x.=x..", "data": ["0x1000"] },
+    { "name": "PWDATA", "wave": "x.=x..", "data": ["0xDEADBEEF"] },
+    { "name": "PREADY", "wave": "1......." }
+  ],
+  "foot": { "text": "SETUP (PENABLE=0) then ACCESS (PENABLE=1); ARM IHI0024E Fig 3-1" }
+}

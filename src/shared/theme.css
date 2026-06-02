@@ -1,22 +1,48 @@
+/* ── Dark (default) — clearer panel vs canvas than pure gray mash ─────────── */
+
 :root[data-theme='dark'] {
-  --bg-app: #1a1a1a;
-  --bg-panel: #242424;
-  --bg-canvas: #111111;
-  --border: #333333;
-  --text-primary: #e8e8e8;
-  --text-secondary: #999999;
-  --accent: #4a9eff;
-  --signal-default: #4a9eff;
+  --bg-app: #141414;
+  --bg-panel: #262626;
+  --bg-canvas: #080808;
+  --border: #4a4a4a;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --accent: #5cadff;
+  --signal-default: #5cadff;
   --signal-high: var(--signal-default);
-  --signal-x-fill: #ff6b6b40;
-  --signal-x-stroke: #ff6b6b;
-  --signal-z-stroke: #aaaaaa;
-  --grid-line: #333333;
-  --selection-fill: #4a9eff20;
-  --selection-stroke: #4a9eff;
-  --pointer-marker: #4a9eff88;
-  --pointer-marker-row: #4a9eff22;
+  --signal-x-fill: #ff6b6b50;
+  --signal-x-stroke: #ff8585;
+  --signal-z-stroke: #c0c0c0;
+  --grid-line: #3d3d3d;
+  --selection-fill: #5cadff28;
+  --selection-stroke: #5cadff;
+  --pointer-marker: #5cadff99;
+  --pointer-marker-row: #5cadff30;
 }
+
+/* ── Dark high contrast — TN-friendly: black/white, visible grid & chrome ─── */
+
+:root[data-theme='dark-hc'] {
+  --bg-app: #000000;
+  --bg-panel: #121212;
+  --bg-canvas: #000000;
+  --border: #9a9a9a;
+  --text-primary: #ffffff;
+  --text-secondary: #d8d8d8;
+  --accent: #7ec8ff;
+  --signal-default: #7ec8ff;
+  --signal-high: var(--signal-default);
+  --signal-x-fill: #ff888850;
+  --signal-x-stroke: #ffaaaa;
+  --signal-z-stroke: #e0e0e0;
+  --grid-line: #6a6a6a;
+  --selection-fill: #7ec8ff40;
+  --selection-stroke: #7ec8ff;
+  --pointer-marker: #7ec8ffcc;
+  --pointer-marker-row: #7ec8ff44;
+}
+
+/* ── Light ───────────────────────────────────────────────────────────────── */
 
 :root[data-theme='light'] {
   --bg-app: #ececec;
@@ -36,4 +62,26 @@
   --selection-stroke: #2563eb;
   --pointer-marker: #2563eb55;
   --pointer-marker-row: #2563eb18;
+}
+
+/* ── Light high contrast ─────────────────────────────────────────────────── */
+
+:root[data-theme='light-hc'] {
+  --bg-app: #d8d8d8;
+  --bg-panel: #ffffff;
+  --bg-canvas: #ffffff;
+  --border: #1a1a1a;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --accent: #0047c7;
+  --signal-default: #0047c7;
+  --signal-high: var(--signal-default);
+  --signal-x-fill: #cc000040;
+  --signal-x-stroke: #b00000;
+  --signal-z-stroke: #404040;
+  --grid-line: #666666;
+  --selection-fill: #0047c722;
+  --selection-stroke: #0047c7;
+  --pointer-marker: #0047c766;
+  --pointer-marker-row: #0047c722;
 }

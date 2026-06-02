@@ -1,6 +1,7 @@
 import { useStore } from '../shared/store';
 import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
-import { loadSampleDiagram, SAMPLE_DIAGRAMS } from './samples';
+import { loadSampleDiagram, samplesByCategory } from './samples';
+import { THEME_OPTIONS } from '../shared/theme';
 import styles from './shell.module.css';
 
 export interface MenuBarProps {
@@ -28,8 +29,19 @@ export function MenuBar({ onExport }: MenuBarProps) {
           <button type="button" onClick={() => void openDiagramFile()}>
             Open…
           </button>
-          <div className={styles.menuSubheading}>Open sample</div>
-          {SAMPLE_DIAGRAMS.map((sample) => (
+          <div className={styles.menuSubheading}>Samples</div>
+          {samplesByCategory('general').map((sample) => (
+            <button
+              key={sample.id}
+              type="button"
+              title={sample.description}
+              onClick={() => void loadSampleDiagram(sample.id)}
+            >
+              {sample.title}
+            </button>
+          ))}
+          <div className={styles.menuSubheading}>AMBA templates</div>
+          {samplesByCategory('amba').map((sample) => (
             <button
               key={sample.id}
               type="button"
@@ -72,12 +84,17 @@ export function MenuBar({ onExport }: MenuBarProps) {
       <div className={styles.menuGroup}>
         <span className={styles.menuLabel}>View</span>
         <div className={styles.menuDropdown}>
-          <button type="button" onClick={() => setTheme('dark')}>
-            Dark theme
-          </button>
-          <button type="button" onClick={() => setTheme('light')}>
-            Light theme
-          </button>
+          <div className={styles.menuSubheading}>Appearance</div>
+          {THEME_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              title={opt.description}
+              onClick={() => setTheme(opt.id)}
+            >
+              {opt.label}
+            </button>
+          ))}
           <button type="button" onClick={() => toggleTimeAxis()}>
             {view.showTimeAxis ? '✓ ' : ''}Time axis
           </button>

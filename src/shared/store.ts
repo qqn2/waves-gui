@@ -22,10 +22,14 @@ import {
   DEFAULT_HSCALE,
   DEFAULT_SIGNAL_COLOR,
   MAX_HISTORY,
+  MAX_TOTAL_STEPS,
+  MIN_TOTAL_STEPS,
   MIN_ZOOM,
   MAX_ZOOM,
   ROW_HEIGHT,
 } from './constants';
+import { normalizeDiagram } from './normalizeDiagram';
+import { saveStoredTheme } from './theme';
 
 export interface Actions {
   // Signals
@@ -158,7 +162,7 @@ function removeFromTree(signals: SignalOrGroup[], id: string): SignalOrGroup[] {
     });
 }
 
-/** After totalSteps changes, resize all bit signal state arrays. */
+/** After totalSteps changes, resize bit lanes and clamp vector segment spans. */
 function resizeAllStates(
   signals: SignalOrGroup[],
   newLen: number,
@@ -176,6 +180,13 @@ function resizeAllStates(
       } else if (newLen < oldLen) {
         sg.states.length = newLen;
       }
+    } else if (sg.type === 'vector') {
+      for (const seg of sg.segments) {
+        if (seg.endStep > newLen) seg.endStep = newLen;
+        if (seg.startStep >= newLen) seg.startStep = Math.max(0, newLen - 1);
+      }
+      const last = sg.segments[sg.segments.length - 1];
+      if (last && last.endStep < newLen) last.endStep = newLen;
     }
   }
 }
@@ -388,10 +399,16 @@ export const useStore = create<AppState & Actions>()(
 
     setTotalSteps(steps) {
       set((s) => {
-        pushHistory(s);
+        const next = Math.max(
+          MIN_TOTAL_STEPS,
+          Math.min(MAX_TOTAL_STEPS, Math.floor(steps)),
+        );
         const old = s.diagram.config.totalSteps;
-        s.diagram.config.totalSteps = steps;
-        resizeAllStates(s.diagram.signals, steps, old);
+        if (next === old) return;
+        pushHistory(s);
+        s.diagram.config.totalSteps = next;
+        resizeAllStates(s.diagram.signals, next, old);
+        s.view.isDirty = true;
       });
     },
 
@@ -432,7 +449,7 @@ export const useStore = create<AppState & Actions>()(
       set((s) => {
         s.history = [];
         s.future = [];
-        s.diagram = diagram;
+        s.diagram = normalizeDiagram(diagram);
         s.view.isDirty = false;
         s.view.scrollX = 0;
         s.view.scrollY = 0;
@@ -461,7 +478,7 @@ export const useStore = create<AppState & Actions>()(
       set((s) => {
         if (s.history.length === 0) return;
         s.future.push(current(s.diagram));
-        s.diagram = s.history.pop()!;
+        s.diagram = normalizeDiagram(s.history.pop()!);
         s.view.paintDraft = null;
       });
     },
@@ -470,7 +487,7 @@ export const useStore = create<AppState & Actions>()(
       set((s) => {
         if (s.future.length === 0) return;
         s.history.push(current(s.diagram));
-        s.diagram = s.future.pop()!;
+        s.diagram = normalizeDiagram(s.future.pop()!);
         s.view.paintDraft = null;
       });
     },
@@ -534,6 +551,7 @@ export const useStore = create<AppState & Actions>()(
     },
 
     setTheme(theme) {
+      saveStoredTheme(theme);
       set((s) => {
         s.view.theme = theme;
       });

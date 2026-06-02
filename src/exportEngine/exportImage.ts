@@ -24,8 +24,8 @@ function themeColor(varName: string, fallback: string): string {
   return v || fallback;
 }
 
-function labelPanelBg(theme: ViewState['theme']): string {
-  return theme === 'light' ? '#ffffff' : '#242424';
+function labelPanelBg(): string {
+  return themeColor('--bg-panel', '#242424');
 }
 
 export async function exportImage(
@@ -46,7 +46,7 @@ export async function exportImage(
     ctx.fillStyle = options.background;
     ctx.fillRect(0, 0, dims.totalWidth, dims.totalHeight);
 
-    const labelBg = labelPanelBg(view.theme);
+    const labelBg = labelPanelBg();
     const textColor = themeColor('--text-primary', '#e8e8e8');
     drawSignalLabels(
       ctx,

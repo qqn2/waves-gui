@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { useStore } from '../shared/store';
 import { LABEL_WIDTH } from '../shared/constants';
+import { getWaveformTopInsetPx } from '../renderer/waveformLayout';
 import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
@@ -100,7 +101,10 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const signals = useStore((s) => s.diagram.signals);
   const zoom = useStore((s) => s.view.zoom);
   const scrollY = useStore((s) => s.view.scrollY);
-  const totalSteps = useStore((s) => s.diagram.config.totalSteps);
+  const config = useStore((s) => s.diagram.config);
+  const showTimeAxis = useStore((s) => s.view.showTimeAxis);
+  const totalSteps = config.totalSteps;
+  const waveformTopInset = getWaveformTopInsetPx(config, showTimeAxis);
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const addSignal = useStore((s) => s.addSignal);
   const removeSignal = useStore((s) => s.removeSignal);
@@ -215,6 +219,10 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
         className={styles.scroll}
         onScroll={onScroll}
       >
+        <div
+          className={styles.scrollInner}
+          style={{ paddingTop: waveformTopInset }}
+        >
         {renderTree(
           signals,
           zoom,
@@ -235,6 +243,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           renameId,
           () => setRenameId(null),
         )}
+        </div>
       </div>
 
       {selectedVectorId && (
