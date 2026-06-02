@@ -7,7 +7,7 @@ import type {
   VectorSegment,
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
-import { decodeWaveString } from './waveStringCodec';
+import { decodeWaveDetail } from './waveStringCodec';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 
@@ -128,7 +128,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
   }
-  const states = decodeWaveString(wave);
+  const { states, stepGaps } = decodeWaveDetail(wave);
   return {
     id: nanoid(),
     name: sig.name ?? 'sig',
@@ -139,6 +139,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     rowHeight: ROW_HEIGHT,
     phase: sig.phase,
     period: sig.period,
+    ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
     ...(sig.node !== undefined ? { node: sig.node } : {}),
   };
 }
@@ -176,6 +177,12 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       const last = s.states[s.states.length - 1] ?? '0';
       while (s.states.length < totalSteps) s.states.push(last);
       if (s.states.length > totalSteps) s.states.length = totalSteps;
+      if (s.stepGaps) {
+        const maxGaps = Math.max(0, s.states.length - 1);
+        while (s.stepGaps.length < maxGaps) s.stepGaps.push(false);
+        if (s.stepGaps.length > maxGaps) s.stepGaps.length = maxGaps;
+        if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
+      }
       return;
     }
     if (s.type === 'vector') {

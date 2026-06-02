@@ -41,6 +41,8 @@ export interface Signal {
   period?: number;
   /** WaveDrom node string — one character per step; anchors for edge[] */
   node?: string;
+  /** Gap before step i+1 when stepGaps[i] is true (WaveDrom `|` in wave) */
+  stepGaps?: boolean[];
 }
 
 export interface SignalGroup {
