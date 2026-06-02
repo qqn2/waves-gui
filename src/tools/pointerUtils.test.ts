@@ -21,6 +21,7 @@ function minimal(overrides?: Partial<ViewState>): {
     paintMode: 'set',
     activeBitState: '1',
     activeBusLabel: 'data',
+    activeBusColorIndex: 2,
     activeSignalIds: [],
     showCodePanel: true,
     labelWidth: 160,
@@ -29,6 +30,9 @@ function minimal(overrides?: Partial<ViewState>): {
     isDirty: false,
     fileName: null,
     paintDraft: null,
+    edgeAnchorPending: null,
+    edgeToolHover: null,
+    activeTimespanLabel: '5 ms',
     ...overrides,
   };
   return { diagram, view };

@@ -43,8 +43,8 @@ export function validateWavedromJSON(json: unknown): string | null {
   }
   if (root.config?.hscale !== undefined) {
     const h = root.config.hscale;
-    if (typeof h !== 'number' || h < 1 || h > 4) {
-      return 'config.hscale must be 1–4';
+    if (typeof h !== 'number' || !Number.isFinite(h) || h < 1 || h > 4) {
+      return 'config.hscale must be a number from 1 to 4';
     }
   }
   return null;

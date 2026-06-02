@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import {
   applyVectorSpan,
   segmentsToWaveAndData,
@@ -7,17 +8,36 @@ import {
 import type { VectorSegment } from './types';
 
 describe('vectorSegments', () => {
-  it('segmentsToWaveAndData uses = and . for multi-cycle spans (no color digits)', () => {
+  it('segmentsToWaveAndData emits WaveDrom color digits per segment', () => {
     const segments: VectorSegment[] = [
-      { id: 'a', startStep: 0, endStep: 1, value: 'NONSEQ' },
-      { id: 'b', startStep: 1, endStep: 2, value: 'BUSY' },
-      { id: 'c', startStep: 2, endStep: 4, value: 'SEQ' },
-      { id: 'd', startStep: 4, endStep: 7, value: 'SEQ-long' },
+      {
+        id: 'a',
+        startStep: 0,
+        endStep: 1,
+        value: 'NONSEQ',
+        color: fillHexForColorIndex(3),
+      },
+      {
+        id: 'b',
+        startStep: 1,
+        endStep: 2,
+        value: 'BUSY',
+        color: fillHexForColorIndex(4),
+      },
+      {
+        id: 'c',
+        startStep: 2,
+        endStep: 4,
+        value: 'SEQ',
+        color: fillHexForColorIndex(5),
+      },
     ];
     const { wave, data } = segmentsToWaveAndData(segments, 8);
-    expect(data).toEqual(['NONSEQ', 'BUSY', 'SEQ', 'SEQ-long']);
-    expect(wave).not.toMatch(/[2-9]/);
-    expect(wave).toContain('=..');
+    expect(data).toEqual(['NONSEQ', 'BUSY', 'SEQ']);
+    expect(wave[0]).toBe('3');
+    expect(wave[1]).toBe('4');
+    expect(wave[2]).toBe('5');
+    expect(wave[3]).toBe('.');
   });
 
   it('segmentsToWaveAndData emits x without data entry', () => {

@@ -14,11 +14,9 @@ import {
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import {
-  isVectorUnknownValue,
-  X_STROKE,
-  zStrokeColor,
-} from '../renderer/stateColors';
+import { isVectorUnknownValue, X_STROKE, zStrokeColor } from '../renderer/stateColors';
+import { segmentBusFill, segmentBusStroke } from '../renderer/vectorBusStyle';
+import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
@@ -166,14 +164,8 @@ function svgVectorSignal(
     const x2 = seg.endStep * cellW;
     const span = x2 - x1;
     const unknown = isVectorUnknownValue(seg.value);
-    const stroke = esc(
-      unknown ? themeColor('--bus-x-stroke', '#a0a0a0') : signal.color,
-    );
-    const fill = esc(
-      unknown
-        ? themeColor('--bus-x-fill', 'rgba(140, 140, 140, 0.35)')
-        : (signal.fillColor ?? `${signal.color}30`),
-    );
+    const stroke = esc(segmentBusStroke(seg, signal));
+    const fill = esc(segmentBusFill(seg, signal));
 
     if (span < d * 3) {
       parts.push(
@@ -334,6 +326,8 @@ export function exportSVG(diagram: DiagramState, view: ViewState): void {
   waveformParts.push(
     walkSignalSvg(diagram.signals, rows, diagram, dims.axisOffset, { i: 0 }),
   );
+  const edgeSvg = svgEdges(diagram, view, 0);
+  if (edgeSvg) waveformParts.push(edgeSvg);
 
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${dims.totalWidth}" height="${dims.totalHeight}" viewBox="0 0 ${dims.totalWidth} ${dims.totalHeight}">

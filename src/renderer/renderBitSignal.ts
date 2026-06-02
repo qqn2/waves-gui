@@ -1,11 +1,9 @@
 import type { BitState, Signal } from '../shared/types';
 import { TRACE_PADDING, TRANSITION_WIDTH } from '../shared/constants';
 import type { ViewTransform } from './coordinates';
-import {
-  canvasCellWidth,
-  logicalToCanvasX,
-  logicalToCanvasY,
-} from './coordinates';
+import { logicalToCanvasY } from './coordinates';
+import { drawStepGap } from './drawStepGap';
+import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import { stateStrokeColor, X_FILL, X_STROKE, zStrokeColor } from './stateColors';
 
 function stateToY(
@@ -79,8 +77,11 @@ export function renderBitSignal(
   draftStates?: BitState[] | null,
 ): void {
   const states = draftStates ?? signal.states;
-  const cellWidth = canvasCellWidth(transform.hscale, transform.zoom);
-  const tw = TRANSITION_WIDTH * transform.zoom * transform.hscale;
+  const scale = transform.zoom * transform.hscale;
+  const tw = TRANSITION_WIDTH * scale;
+  const gapStroke =
+    getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() ||
+    '#888';
 
   const rowY = logicalToCanvasY(rowYLogical, transform);
   const rowH = rowHeightLogical * transform.zoom;
@@ -97,12 +98,12 @@ export function renderBitSignal(
 
   let prevY = stateToY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = true;
-  ctx.moveTo(logicalToCanvasX(0, transform), prevY);
+  ctx.moveTo(stepLogicalX(signal, 0) * scale - transform.scrollX, prevY);
 
   for (let i = 0; i < totalSteps; i++) {
     const st = states[i] ?? '0';
-    const x = i * cellWidth - transform.scrollX;
-    const nextX = (i + 1) * cellWidth - transform.scrollX;
+    const x = stepLogicalX(signal, i) * scale - transform.scrollX;
+    const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
 
     if (st === 'p' || st === 'n') {
       if (pathOpen) {
@@ -159,10 +160,18 @@ export function renderBitSignal(
 
   if (pathOpen) ctx.stroke();
 
+  const gaps = signal.stepGaps ?? [];
+  for (let i = 0; i < gaps.length; i++) {
+    if (!gaps[i]) continue;
+    const x1 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    const x2 = stepLogicalX(signal, i + 1) * scale - transform.scrollX;
+    drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke);
+  }
+
   for (let i = 0; i < totalSteps; i++) {
     if ((states[i] ?? '0') !== 'x') continue;
-    const x1 = i * cellWidth - transform.scrollX;
-    const x2 = (i + 1) * cellWidth - transform.scrollX;
+    const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
+    const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
     ctx.fillStyle = hatch ?? X_FILL;
     ctx.fillRect(x1, yHigh, x2 - x1, yLow - yHigh);
     ctx.strokeStyle = X_STROKE;

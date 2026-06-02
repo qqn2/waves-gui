@@ -1,8 +1,9 @@
-import type { DiagramState, ViewState } from '../shared/types';
+import type { DiagramState, Signal, SignalOrGroup, ViewState } from '../shared/types';
 import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import { canvasToLogicalX, canvasToLogicalY, type ViewTransform } from './coordinates';
+import { stepAtLogicalXForSignal } from './laneHitTest';
 
 export interface HitTestResult {
   signalId: string | null;
@@ -22,6 +23,18 @@ const MISS: HitTestResult = {
   annotationId: null,
 };
 
+function buildSignalById(signals: SignalOrGroup[]): Map<string, Signal> {
+  const map = new Map<string, Signal>();
+  const walk = (list: SignalOrGroup[]) => {
+    for (const item of list) {
+      if (item.type === 'group') walk(item.children);
+      else map.set(item.id, item);
+    }
+  };
+  walk(signals);
+  return map;
+}
+
 export function hitTest(
   canvasX: number,
   canvasY: number,
@@ -40,23 +53,34 @@ export function hitTest(
   const waveformTop = axisOffset + headHeight;
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
-  const step = Math.floor(logicalX / CELL_WIDTH);
-
-  if (step < 0 || step >= diagram.config.totalSteps) {
-    return MISS;
-  }
 
   const rows = buildRowLayout(diagram.signals);
+  const signalById = buildSignalById(diagram.signals);
+  const totalSteps = diagram.config.totalSteps;
+
   for (const row of rows) {
     if (logicalY < row.y || logicalY >= row.y + row.height) continue;
 
     if (row.type === 'group') {
+      const raw = Math.floor(logicalX / CELL_WIDTH);
+      const step =
+        raw >= 0 && raw < totalSteps ? raw : null;
       return {
         ...MISS,
         signalId: row.id,
         signalType: 'group',
         step,
       };
+    }
+
+    const signal = signalById.get(row.id);
+    const step =
+      signal !== undefined
+        ? stepAtLogicalXForSignal(logicalX, signal, totalSteps)
+        : null;
+
+    if (step === null) {
+      return MISS;
     }
 
     let half: 'top' | 'bottom' | null = null;

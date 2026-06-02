@@ -15,10 +15,13 @@ import type {
   ViewState,
   PaintDraft,
   PaintMode,
+  EdgeAnchorPending,
 } from './types';
+import { setNodeCharAt } from '../wavedromBridge/nodeString';
 import { toggleBinaryBitState } from './bitToggle';
 import {
   DEFAULT_STEPS,
+  clampHscale,
   DEFAULT_HSCALE,
   DEFAULT_SIGNAL_COLOR,
   MAX_HISTORY,
@@ -29,6 +32,7 @@ import {
   ROW_HEIGHT,
 } from './constants';
 import { normalizeDiagram } from './normalizeDiagram';
+import type { WavedromColorIndex } from '../wavedromBridge/wavedromColors';
 import { applyVectorSpan } from './vectorSegments';
 import { saveStoredTheme } from './theme';
 import {
@@ -67,7 +71,17 @@ export interface Actions {
     startStep: number,
     endStepInclusive: number,
     value: string | null,
+    busColorFill?: string,
   ): void;
+  updateVectorSegmentColor(
+    signalId: string,
+    segmentId: string,
+    color: string | undefined,
+  ): void;
+  addDiagramEdge(edge: string): void;
+  removeDiagramEdge(index: number): void;
+  setSignalNodeAt(signalId: string, step: number, char: string | null): void;
+  setEdgeAnchorPending(pending: EdgeAnchorPending | null): void;
   setSignalPhase(signalId: string, phase: number | undefined): void;
   setSignalPeriod(signalId: string, period: number | undefined): void;
   setActiveSignalIds(ids: string[]): void;
@@ -92,6 +106,9 @@ export interface Actions {
   setTool(tool: Tool): void;
   setActiveBitState(state: BitState): void;
   setActiveBusLabel(label: string): void;
+  setActiveTimespanLabel(label: string): void;
+  setActiveBusColorIndex(index: WavedromColorIndex): void;
+  setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
   setPaintMode(mode: PaintMode): void;
   toggleCodePanel(): void;
   setLabelWidth(width: number): void;
@@ -116,10 +133,12 @@ function defaultView(): ViewState {
     zoom: 1,
     scrollX: 0,
     scrollY: 0,
-    selectedTool: 'cursor',
+    selectedTool: 'paint',
     paintMode: 'set',
     activeBitState: '1',
     activeBusLabel: 'data',
+    activeTimespanLabel: '5 ms',
+    activeBusColorIndex: 2,
     activeSignalIds: [],
     showCodePanel: true,
     labelWidth: loadLabelColumnWidth(),
@@ -128,6 +147,8 @@ function defaultView(): ViewState {
     isDirty: false,
     fileName: null,
     paintDraft: null,
+    edgeAnchorPending: null,
+    edgeToolHover: null,
   };
 }
 
@@ -328,7 +349,7 @@ export const useStore = create<AppState & Actions>()(
       });
     },
 
-    setVectorSpanRange(signalId, startStep, endStepInclusive, value) {
+    setVectorSpanRange(signalId, startStep, endStepInclusive, value, busColorFill) {
       set((s) => {
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
@@ -339,9 +360,58 @@ export const useStore = create<AppState & Actions>()(
             endStepInclusive,
             value,
             s.diagram.config.totalSteps,
+            busColorFill,
           );
         });
         s.view.isDirty = true;
+      });
+    },
+
+    updateVectorSegmentColor(signalId, segmentId, color) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type !== 'vector') return;
+          const seg = sig.segments.find((x) => x.id === segmentId);
+          if (!seg) return;
+          if (color === undefined) delete seg.color;
+          else seg.color = color;
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    addDiagramEdge(edge) {
+      set((s) => {
+        pushHistory(s);
+        if (!s.diagram.edges) s.diagram.edges = [];
+        s.diagram.edges.push(edge);
+        s.view.isDirty = true;
+      });
+    },
+
+    removeDiagramEdge(index) {
+      set((s) => {
+        if (!s.diagram.edges?.[index]) return;
+        pushHistory(s);
+        s.diagram.edges.splice(index, 1);
+        s.view.isDirty = true;
+      });
+    },
+
+    setSignalNodeAt(signalId, step, char) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          setNodeCharAt(sig, step, char, s.diagram.config.totalSteps);
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    setEdgeAnchorPending(pending) {
+      set((s) => {
+        s.view.edgeAnchorPending = pending;
       });
     },
 
@@ -524,7 +594,10 @@ export const useStore = create<AppState & Actions>()(
 
     setHscale(hscale) {
       set((s) => {
-        s.diagram.config.hscale = Math.max(1, Math.min(4, hscale));
+        const next = clampHscale(hscale);
+        if (s.diagram.config.hscale === next) return;
+        pushHistory(s);
+        s.diagram.config.hscale = next;
         s.view.isDirty = true;
       });
     },
@@ -564,6 +637,8 @@ export const useStore = create<AppState & Actions>()(
         s.view.scrollX = 0;
         s.view.scrollY = 0;
         s.view.paintDraft = null;
+        s.view.edgeAnchorPending = null;
+        s.view.edgeToolHover = null;
       });
     },
 
@@ -645,6 +720,24 @@ export const useStore = create<AppState & Actions>()(
     setActiveBusLabel(label) {
       set((s) => {
         s.view.activeBusLabel = label;
+      });
+    },
+
+    setActiveTimespanLabel(label) {
+      set((s) => {
+        s.view.activeTimespanLabel = label;
+      });
+    },
+
+    setEdgeToolHover(hover) {
+      set((s) => {
+        s.view.edgeToolHover = hover;
+      });
+    },
+
+    setActiveBusColorIndex(index) {
+      set((s) => {
+        s.view.activeBusColorIndex = index;
       });
     },
 

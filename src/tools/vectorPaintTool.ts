@@ -1,3 +1,4 @@
+import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import { useStore } from '../shared/store';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
@@ -33,6 +34,10 @@ function busLabelForPaint(): string {
   return label.length > 0 ? label : 'data';
 }
 
+function busColorForPaint(): string {
+  return fillHexForColorIndex(useStore.getState().view.activeBusColorIndex);
+}
+
 export function vectorPaintPointerDown(
   e: PointerEvent,
   hit: HitTestResult,
@@ -51,6 +56,7 @@ export function vectorPaintPointerDown(
     bitState: '0',
     apply: 'set',
     busLabel: busLabelForPaint(),
+    busColorFill: busColorForPaint(),
     mode: 'paint',
   });
   capturePointer(canvas, e, 'paint');
@@ -61,7 +67,7 @@ export function vectorPaintPointerMove(e: PointerEvent): void {
   const draft = useStore.getState().view.paintDraft;
   if (!draft || draft.lane !== 'vector') return;
   const { diagram, view } = useStore.getState();
-  const step = stepAtCanvasX(e.offsetX, diagram, view);
+  const step = stepAtCanvasX(e.offsetX, diagram, view, draft.signalId);
   if (step === draft.endStep) return;
   useStore.getState().setPaintDraft({ ...draft, endStep: step });
 }
@@ -77,7 +83,15 @@ export function vectorPaintPointerUp(
   if (!draft || draft.lane !== 'vector') return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
-  useStore.getState().setVectorSpanRange(draft.signalId, lo, hi, draft.busLabel ?? 'data');
+  useStore
+    .getState()
+    .setVectorSpanRange(
+      draft.signalId,
+      lo,
+      hi,
+      draft.busLabel ?? 'data',
+      draft.busColorFill,
+    );
   useStore.getState().clearPaintDraft();
 }
 
@@ -117,7 +131,7 @@ export function vectorErasePointerMove(e: PointerEvent): void {
   const draft = useStore.getState().view.paintDraft;
   if (!draft || draft.lane !== 'vector') return;
   const { diagram, view } = useStore.getState();
-  const step = stepAtCanvasX(e.offsetX, diagram, view);
+  const step = stepAtCanvasX(e.offsetX, diagram, view, draft.signalId);
   if (step === draft.endStep) return;
   useStore.getState().setPaintDraft({ ...draft, endStep: step });
 }

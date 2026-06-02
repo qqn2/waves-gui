@@ -60,7 +60,7 @@ export type SignalOrGroup = Signal | SignalGroup;
 
 export interface DiagramConfig {
   totalSteps: number; // number of time step columns
-  hscale: number; // 1–4, multiplier applied to CELL_WIDTH
+  hscale: number; // 1–4 (fractional OK), multiplier applied to CELL_WIDTH
   head?: { text?: string; tick?: number; every?: number };
   foot?: { text?: string; tock?: number; every?: number };
 }
@@ -134,6 +134,7 @@ export type Tool =
   | 'text'
   | 'cursor';
 
+import type { WavedromColorIndex } from '../wavedromBridge/wavedromColors';
 import type { Theme } from './theme';
 export type { Theme } from './theme';
 
@@ -149,6 +150,10 @@ export interface ViewState {
   activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
   /** Label written on bus lanes when painting with the paint tool (= span) */
   activeBusLabel: string;
+  /** Label for new timespan edges (WaveDrom edge[] text after path) */
+  activeTimespanLabel: string;
+  /** WaveDrom bus fill palette index (2–9) for new vector spans */
+  activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
   showCodePanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
@@ -159,7 +164,20 @@ export interface ViewState {
   fileName: string | null;
   /** Ephemeral paint/erase preview during pointer drag — never pushed to undo history */
   paintDraft: PaintDraft | null;
+  /** In-progress WaveDrom edge[] anchor placement (arrow / timespan tools) */
+  edgeAnchorPending: EdgeAnchorPending | null;
+  /** Hover step while arrow / timespan tool is active (live preview) */
+  edgeToolHover: { signalId: string; step: number } | null;
 }
+
+export type EdgeAnchorPending =
+  | { kind: 'arrow'; char: string; signalId: string; step: number }
+  | {
+      kind: 'timespan';
+      fromChar: string;
+      signalId: string;
+      startStep: number;
+    };
 
 /** In-progress stroke from the paint or erase tool; cleared on pointer up */
 export interface PaintDraft {
@@ -170,6 +188,7 @@ export interface PaintDraft {
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set'; // paint only; erase ignores
   busLabel?: string; // vector paint: WaveDrom data[] label
+  busColorFill?: string; // vector paint: WaveDrom bus fill hex
   mode: 'paint' | 'erase';
 }
 

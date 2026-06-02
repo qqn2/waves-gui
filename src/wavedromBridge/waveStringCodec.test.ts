@@ -85,7 +85,13 @@ describe('validateWavedromJSON', () => {
   it('rejects hscale out of range', () => {
     expect(
       validateWavedromJSON({ signal: [], config: { hscale: 5 } }),
-    ).toBe('config.hscale must be 1–4');
+    ).toBe('config.hscale must be a number from 1 to 4');
+  });
+
+  it('accepts fractional hscale', () => {
+    expect(
+      validateWavedromJSON({ signal: [], config: { hscale: 1.5 } }),
+    ).toBeNull();
   });
 
   it('validates nested group entries', () => {
@@ -137,13 +143,18 @@ describe('fromWavedromJSON / toWavedromJSON round-trip', () => {
     expect(outer).toHaveLength(3);
   });
 
-  it('does not assign per-segment colors from wave digits 2-9', () => {
+  it('assigns per-segment colors from wave digits 2-9', () => {
     const diagram = fromWavedromJSON({
       signal: [{ name: 'bus', wave: '234', data: ['A', 'B', 'C'] }],
     });
     const bus = diagram.signals[0];
     if (bus?.type === 'vector') {
-      expect(bus.segments.every((s) => s.color === undefined)).toBe(true);
+      expect(bus.segments).toHaveLength(3);
+      expect(bus.segments.map((s) => s.color)).toEqual([
+        '#ffffff',
+        '#ffffb4',
+        '#ffe0b9',
+      ]);
     }
   });
 

@@ -1,6 +1,12 @@
 import { nanoid } from 'nanoid';
 import type { DiagramState, Signal, SignalGroup, SignalOrGroup } from './types';
-import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, DEFAULT_STEPS, ROW_HEIGHT } from './constants';
+import {
+  clampHscale,
+  DEFAULT_HSCALE,
+  DEFAULT_SIGNAL_COLOR,
+  DEFAULT_STEPS,
+  ROW_HEIGHT,
+} from './constants';
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -17,9 +23,6 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
   if (signal.type === 'vector') {
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
-    }
-    for (const seg of signal.segments) {
-      delete seg.color;
     }
     if (signal.segments.length === 0) {
       signal.segments = [
@@ -94,7 +97,7 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
   d.config = {
     ...d.config,
     totalSteps,
-    hscale: d.config?.hscale ?? DEFAULT_HSCALE,
+    hscale: clampHscale(d.config?.hscale ?? DEFAULT_HSCALE),
   };
 
   walkSignals(d.signals, totalSteps);

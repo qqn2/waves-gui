@@ -62,7 +62,7 @@ export function paintPointerMove(e: PointerEvent, _hit: HitTestResult): void {
   }
 
   const { diagram, view } = useStore.getState();
-  const step = stepAtCanvasX(e.offsetX, diagram, view);
+  const step = stepAtCanvasX(e.offsetX, diagram, view, draft.signalId);
   if (step === draft.endStep) return;
   useStore.getState().setPaintDraft({ ...draft, endStep: step });
 }

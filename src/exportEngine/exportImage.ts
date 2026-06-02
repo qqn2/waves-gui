@@ -9,6 +9,7 @@ import {
   exportCanvasToBlob,
 } from './exportCanvas';
 import { exportBaseName } from './fileName';
+import { drawEdgesOnCanvas } from './exportEdges';
 
 export interface ImageExportOptions {
   format: 'png' | 'jpg';
@@ -74,6 +75,7 @@ export async function exportImage(
       dims.waveformWidth,
       dims.totalHeight,
     );
+    drawEdgesOnCanvas(ctx, diagram, exportView, 0);
     ctx.restore();
 
     const mime =

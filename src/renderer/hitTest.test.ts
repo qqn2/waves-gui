@@ -33,6 +33,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     paintMode: 'set',
     activeBitState: '1',
     activeBusLabel: 'data',
+    activeBusColorIndex: 2,
     activeSignalIds: [],
     showCodePanel: false,
     labelWidth: 160,
@@ -41,6 +42,9 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     isDirty: false,
     fileName: null,
     paintDraft: null,
+    edgeAnchorPending: null,
+    edgeToolHover: null,
+    activeTimespanLabel: '5 ms',
     ...overrides,
   };
 }
@@ -75,6 +79,34 @@ describe('hitTest', () => {
     const hit = hitTest(CELL_WIDTH * 12, TIME_AXIS_HEIGHT + 10, diagram, defaultView());
     expect(hit.signalId).toBeNull();
     expect(hit.step).toBeNull();
+  });
+
+  it('respects lane period when mapping step index', () => {
+    const diagram: DiagramState = {
+      version: 1,
+      config: { totalSteps: 2, hscale: 1 },
+      edges: [],
+      annotations: [],
+      signals: [
+        {
+          id: 'wide',
+          name: 'clk',
+          type: 'bit',
+          states: Array(2).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: ROW_HEIGHT,
+          period: 2,
+        },
+      ],
+    };
+    const y = TIME_AXIS_HEIGHT + 10;
+    const hitStep1 = hitTest(CELL_WIDTH * 2 + 10, y, diagram, defaultView());
+    expect(hitStep1.step).toBe(1);
+    const hitStep0 = hitTest(CELL_WIDTH * 0 + 10, y, diagram, defaultView());
+    expect(hitStep0.step).toBe(0);
+    const hitPastLane = hitTest(CELL_WIDTH * 4 + 10, y, diagram, defaultView());
+    expect(hitPastLane.signalId).toBeNull();
   });
 
   it('walks nested groups for row Y', () => {

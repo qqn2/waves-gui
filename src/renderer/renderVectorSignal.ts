@@ -1,12 +1,10 @@
 import type { Signal } from '../shared/types';
 import { BUS_DIAGONAL, TRACE_PADDING } from '../shared/constants';
 import type { ViewTransform } from './coordinates';
-import { canvasCellWidth, logicalToCanvasY } from './coordinates';
-import {
-  isVectorUnknownValue,
-  vectorUnknownFill,
-  vectorUnknownStroke,
-} from './stateColors';
+import { logicalToCanvasY } from './coordinates';
+import { isVectorUnknownValue } from './stateColors';
+import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
+import { segmentBusFill, segmentBusStroke } from './vectorBusStyle';
 
 export function renderVectorSignal(
   ctx: CanvasRenderingContext2D,
@@ -15,8 +13,8 @@ export function renderVectorSignal(
   rowHeightLogical: number,
   transform: ViewTransform,
 ): void {
-  const cellWidth = canvasCellWidth(transform.hscale, transform.zoom);
-  const d = BUS_DIAGONAL * transform.zoom * transform.hscale;
+  const scale = transform.zoom * transform.hscale;
+  const d = BUS_DIAGONAL * scale;
 
   const rowY = logicalToCanvasY(rowYLogical, transform);
   const rowH = rowHeightLogical * transform.zoom;
@@ -36,15 +34,13 @@ export function renderVectorSignal(
 
   for (const seg of signal.segments) {
     const unknown = isVectorUnknownValue(seg.value);
-    const fill = unknown
-      ? vectorUnknownFill()
-      : (signal.fillColor ?? `${signal.color}30`);
-    const stroke = unknown ? vectorUnknownStroke() : signal.color;
+    const fill = segmentBusFill(seg, signal);
+    const stroke = segmentBusStroke(seg, signal);
     ctx.fillStyle = fill;
     ctx.strokeStyle = stroke;
 
-    const x1 = seg.startStep * cellWidth - transform.scrollX;
-    const x2 = seg.endStep * cellWidth - transform.scrollX;
+    const x1 = stepLogicalX(signal, seg.startStep) * scale - transform.scrollX;
+    const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * scale - transform.scrollX;
     const span = x2 - x1;
 
     if (span < d * 3) {

@@ -4,6 +4,17 @@ import type { DiagramState } from './types';
 import { normalizeDiagram } from './normalizeDiagram';
 
 describe('normalizeDiagram', () => {
+  it('preserves fractional hscale within 1–4', () => {
+    const d = normalizeDiagram({
+      version: 1,
+      signals: [],
+      config: { totalSteps: 8, hscale: 1.5 },
+      edges: [],
+      annotations: [],
+    });
+    expect(d.config.hscale).toBe(1.5);
+  });
+
   it('adds edges[] when missing from legacy drafts', () => {
     const legacy = {
       version: 1,

@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  colorIndexFromFillHex,
+  fillHexForColorIndex,
+  WAVEDROM_COLOR_INDEXES,
+} from '../wavedromBridge/wavedromColors';
 import { useStore } from '../shared/store';
 import type { Signal, SignalOrGroup, VectorSegment } from '../shared/types';
 import styles from './SignalPanel.module.css';
@@ -29,9 +34,10 @@ function sortedSegments(segments: VectorSegment[]): VectorSegment[] {
 interface SegmentValueRowProps {
   segment: VectorSegment;
   onCommit: (segmentId: string, value: string) => void;
+  onColor: (segmentId: string, fillHex: string) => void;
 }
 
-function SegmentValueRow({ segment, onCommit }: SegmentValueRowProps) {
+function SegmentValueRow({ segment, onCommit, onColor }: SegmentValueRowProps) {
   const [draft, setDraft] = useState(segment.value);
 
   useEffect(() => {
@@ -47,10 +53,29 @@ function SegmentValueRow({ segment, onCommit }: SegmentValueRowProps) {
     setDraft(next);
   }, [draft, onCommit, segment.id, segment.value]);
 
+  const activeColorIndex = colorIndexFromFillHex(segment.color);
+
   return (
     <li className={styles.segmentRow}>
       <span className={styles.segmentRange} title="Step range (start inclusive, end exclusive)">
         [{segment.startStep}, {segment.endStep})
+      </span>
+      <span className={styles.segmentColorGroup} title="WaveDrom bus fill">
+        {WAVEDROM_COLOR_INDEXES.map((idx) => (
+          <button
+            key={idx}
+            type="button"
+            className={`${styles.segmentColorSwatch} ${
+              activeColorIndex === idx ? styles.segmentColorSwatchActive : ''
+            }`}
+            style={{ background: fillHexForColorIndex(idx) }}
+            aria-label={`Segment color ${idx}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onColor(segment.id, fillHexForColorIndex(idx));
+            }}
+          />
+        ))}
       </span>
       <input
         type="text"
@@ -87,6 +112,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
   });
 
   const updateVectorSegmentValue = useStore((s) => s.updateVectorSegmentValue);
+  const updateVectorSegmentColor = useStore((s) => s.updateVectorSegmentColor);
 
   const ordered = useMemo(() => sortedSegments(segments), [segments]);
 
@@ -105,6 +131,13 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
       });
     },
     [signalId, updateVectorSegmentValue],
+  );
+
+  const onColor = useCallback(
+    (segmentId: string, fillHex: string) => {
+      updateVectorSegmentColor(signalId, segmentId, fillHex);
+    },
+    [signalId, updateVectorSegmentColor],
   );
 
   const sig = findSignalInTree(signals, signalId);
@@ -126,7 +159,12 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
       ) : (
         <ul className={styles.segmentList}>
           {ordered.map((seg) => (
-            <SegmentValueRow key={seg.id} segment={seg} onCommit={onCommit} />
+            <SegmentValueRow
+              key={seg.id}
+              segment={seg}
+              onCommit={onCommit}
+              onColor={onColor}
+            />
           ))}
         </ul>
       )}
