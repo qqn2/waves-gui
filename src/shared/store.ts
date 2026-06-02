@@ -29,11 +29,19 @@ import {
   ROW_HEIGHT,
 } from './constants';
 import { normalizeDiagram } from './normalizeDiagram';
+import { applyVectorSpan } from './vectorSegments';
 import { saveStoredTheme } from './theme';
+import {
+  clampLabelColumnWidth,
+  loadLabelColumnWidth,
+  saveLabelColumnWidth,
+} from '../shell/labelColumnLayout';
 
 export interface Actions {
   // Signals
   addSignal(type: Signal['type'], afterId?: string): void;
+  /** WaveDrom group bracket — empty section; add signals via drag or import */
+  addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;
   setSignalState(signalId: string, step: number, bitState: BitState): void;
@@ -47,8 +55,19 @@ export interface Actions {
   eraseSignalState(signalId: string, step: number): void;
   eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
-  updateSignalColor(id: string, color: string): void;
+  /** Move a bit/vector/spacer lane into a section (group) or back to the root list */
+  moveSignalToParent(
+    signalId: string,
+    parentId?: string,
+    beforeId?: string,
+  ): void;
   updateVectorSegmentValue(signalId: string, segmentId: string, value: string): void;
+  setVectorSpanRange(
+    signalId: string,
+    startStep: number,
+    endStepInclusive: number,
+    value: string | null,
+  ): void;
   setSignalPhase(signalId: string, phase: number | undefined): void;
   setSignalPeriod(signalId: string, period: number | undefined): void;
   setActiveSignalIds(ids: string[]): void;
@@ -72,8 +91,10 @@ export interface Actions {
   setScroll(x: number, y: number): void;
   setTool(tool: Tool): void;
   setActiveBitState(state: BitState): void;
+  setActiveBusLabel(label: string): void;
   setPaintMode(mode: PaintMode): void;
   toggleCodePanel(): void;
+  setLabelWidth(width: number): void;
   toggleTimeAxis(): void;
   setTheme(theme: Theme): void;
 }
@@ -95,11 +116,13 @@ function defaultView(): ViewState {
     zoom: 1,
     scrollX: 0,
     scrollY: 0,
-    selectedTool: 'paint',
-    paintMode: 'toggle',
+    selectedTool: 'cursor',
+    paintMode: 'set',
     activeBitState: '1',
+    activeBusLabel: 'data',
     activeSignalIds: [],
     showCodePanel: true,
+    labelWidth: loadLabelColumnWidth(),
     showTimeAxis: true,
     theme: 'light',
     isDirty: false,
@@ -254,6 +277,26 @@ export const useStore = create<AppState & Actions>()(
       });
     },
 
+    addGroup(afterId, name = 'Section') {
+      set((s) => {
+        pushHistory(s);
+        const group: SignalGroup = {
+          id: nanoid(),
+          name,
+          type: 'group',
+          children: [],
+          collapsed: false,
+        };
+        const idx = afterId
+          ? (() => {
+              const i = s.diagram.signals.findIndex((sg) => sg.id === afterId);
+              return i === -1 ? s.diagram.signals.length : i + 1;
+            })()
+          : s.diagram.signals.length;
+        s.diagram.signals.splice(idx, 0, group);
+      });
+    },
+
     removeSignal(id) {
       set((s) => {
         pushHistory(s);
@@ -280,6 +323,23 @@ export const useStore = create<AppState & Actions>()(
           if (sig.type !== 'vector') return;
           const seg = sig.segments.find((x) => x.id === segmentId);
           if (seg) seg.value = value;
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    setVectorSpanRange(signalId, startStep, endStepInclusive, value) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type !== 'vector') return;
+          sig.segments = applyVectorSpan(
+            sig.segments,
+            startStep,
+            endStepInclusive,
+            value,
+            s.diagram.config.totalSteps,
+          );
         });
         s.view.isDirty = true;
       });
@@ -388,11 +448,61 @@ export const useStore = create<AppState & Actions>()(
       });
     },
 
-    updateSignalColor(id, color) {
+    moveSignalToParent(signalId, parentId, beforeId) {
       set((s) => {
-        findSignal(s.diagram.signals, id, (sig) => {
-          sig.color = color;
+        let isSignal = false;
+        findSignal(s.diagram.signals, signalId, () => {
+          isSignal = true;
         });
+        if (!isSignal) return;
+
+        pushHistory(s);
+        let removed: Signal | null = null;
+
+        const extract = (items: SignalOrGroup[]): SignalOrGroup[] => {
+          const out: SignalOrGroup[] = [];
+          for (const item of items) {
+            if (item.id === signalId && item.type !== 'group') {
+              removed = item;
+              continue;
+            }
+            if (item.type === 'group') {
+              item.children = extract(item.children);
+            }
+            out.push(item);
+          }
+          return out;
+        };
+
+        const insertAt = (items: SignalOrGroup[], parent?: string): boolean => {
+          if (!removed) return false;
+          if (parent === undefined) {
+            const idx = beforeId
+              ? items.findIndex((sg) => sg.id === beforeId)
+              : items.length;
+            items.splice(idx === -1 ? items.length : idx, 0, removed);
+            return true;
+          }
+          for (const item of items) {
+            if (item.type === 'group' && item.id === parent) {
+              const idx = beforeId
+                ? item.children.findIndex((c) => c.id === beforeId)
+                : item.children.length;
+              item.children.splice(idx === -1 ? item.children.length : idx, 0, removed);
+              return true;
+            }
+            if (item.type === 'group' && insertAt(item.children, parent)) {
+              return true;
+            }
+          }
+          return false;
+        };
+
+        s.diagram.signals = extract(s.diagram.signals);
+        if (!removed) return;
+        if (!insertAt(s.diagram.signals, parentId)) {
+          s.diagram.signals.push(removed);
+        }
         s.view.isDirty = true;
       });
     },
@@ -532,6 +642,12 @@ export const useStore = create<AppState & Actions>()(
       });
     },
 
+    setActiveBusLabel(label) {
+      set((s) => {
+        s.view.activeBusLabel = label;
+      });
+    },
+
     setPaintMode(mode) {
       set((s) => {
         s.view.paintMode = mode;
@@ -542,6 +658,14 @@ export const useStore = create<AppState & Actions>()(
       set((s) => {
         s.view.showCodePanel = !s.view.showCodePanel;
       });
+    },
+
+    setLabelWidth(width) {
+      const next = clampLabelColumnWidth(width);
+      set((s) => {
+        s.view.labelWidth = next;
+      });
+      saveLabelColumnWidth(next);
     },
 
     toggleTimeAxis() {

@@ -18,6 +18,9 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
     }
+    for (const seg of signal.segments) {
+      delete seg.color;
+    }
     if (signal.segments.length === 0) {
       signal.segments = [
         {
