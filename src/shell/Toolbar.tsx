@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Eraser, Paintbrush, Plus, Square, ZoomIn, ZoomOut } from 'lucide-react';
+import { Eraser, MousePointer2, Paintbrush, Plus, ZoomIn, ZoomOut } from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { BitState } from '../shared/types';
 import { PatternsMenu } from '../patterns/PatternsMenu';
 import { loadSampleDiagram, samplesByCategory } from './samples';
 import { newDiagramFile, openDiagramFile, saveDiagramFile } from './FileOperations';
 import { loadRecentFiles } from './soloDesk/recentFiles';
-import { BUS_SEGMENT_EDIT_HINT } from '../tools/vectorPaintTool';
 import { ThemeMenu } from './ThemeMenu';
 import styles from './shell.module.css';
 
@@ -24,6 +23,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const paintMode = useStore((s) => s.view.paintMode);
   const activeBit = useStore((s) => s.view.activeBitState);
+  const activeBusLabel = useStore((s) => s.view.activeBusLabel);
+  const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
   const zoom = useStore((s) => s.view.zoom);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
@@ -34,6 +35,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
   const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
   const addSignal = useStore((s) => s.addSignal);
+  const addGroup = useStore((s) => s.addGroup);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
 
@@ -132,49 +134,76 @@ export function Toolbar({ onExport }: ToolbarProps) {
 
       <button
         type="button"
-        title="Paint"
+        title="Pointer (V) — click a row to select; drag for area select"
+        className={`${styles.toolBtn} ${tool === 'cursor' || tool === 'select' ? styles.toolActive : ''}`}
+        onClick={() => setTool('cursor')}
+      >
+        <MousePointer2 size={15} aria-hidden />
+      </button>
+      <button
+        type="button"
+        title="Draw (D) — drag along a row to fill time steps with the value below"
         className={`${styles.toolBtn} ${tool === 'paint' ? styles.toolActive : ''}`}
         onClick={() => setTool('paint')}
       >
-        <Paintbrush size={15} />
+        <Paintbrush size={15} aria-hidden />
       </button>
       <button
         type="button"
-        title="Erase"
+        title="Erase (E) — drag to clear cells (hold previous level)"
         className={`${styles.toolBtn} ${tool === 'erase' ? styles.toolActive : ''}`}
         onClick={() => setTool('erase')}
       >
-        <Eraser size={15} />
+        <Eraser size={15} aria-hidden />
       </button>
-      <button
-        type="button"
-        title="Select"
-        className={`${styles.toolBtn} ${tool === 'select' ? styles.toolActive : ''}`}
-        onClick={() => setTool('select')}
-      >
-        <Square size={15} />
-      </button>
-      <span className={styles.divider} />
-
-      <button
-        type="button"
-        title="Toggle (NOT) — 0↔1, clock p↔n; x/z unchanged"
-        className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
-        onClick={() => setPaintMode('toggle')}
-      >
-        ¬
-      </button>
-      {BIT_STATES.map((st) => (
-        <button
-          key={st}
-          type="button"
-          title={BIT_STATE_TITLES[st]}
-          className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
-          onClick={() => setActiveBitState(st)}
-        >
-          {st.toUpperCase()}
-        </button>
-      ))}
+      {tool === 'paint' ? (
+        <>
+          <span className={styles.toolGroupLabel}>Value</span>
+          <button
+            type="button"
+            title="Toggle (NOT) — 0↔1, clock p↔n; x/z unchanged"
+            className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
+            onClick={() => setPaintMode('toggle')}
+            aria-pressed={paintMode === 'toggle'}
+          >
+            ¬
+          </button>
+          <button
+            type="button"
+            title="Set — apply the selected value (0, 1, p, …)"
+            className={`${styles.toolBtn} ${paintMode === 'set' ? styles.toolActive : ''}`}
+            onClick={() => setPaintMode('set')}
+            aria-pressed={paintMode === 'set'}
+          >
+            Set
+          </button>
+          {BIT_STATES.map((st) => (
+            <button
+              key={st}
+              type="button"
+              title={BIT_STATE_TITLES[st] ?? `Draw ${st}`}
+              className={`${styles.toolBtn} ${activeBit === st ? styles.toolActive : ''}`}
+              onClick={() => setActiveBitState(st)}
+            >
+              {st.toUpperCase()}
+            </button>
+          ))}
+          <label
+            className={styles.busLabelWrap}
+            title="Label for bus rows (= span)"
+          >
+            <span className={styles.busLabelTag}>Bus</span>
+            <input
+              type="text"
+              className={styles.busLabelInput}
+              value={activeBusLabel}
+              onChange={(e) => setActiveBusLabel(e.target.value)}
+              placeholder="data"
+              aria-label="Bus label"
+            />
+          </label>
+        </>
+      ) : null}
       <span className={styles.divider} />
 
       <div className={styles.addWrap}>
@@ -195,7 +224,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
             </button>
             <button
               type="button"
-              title={BUS_SEGMENT_EDIT_HINT}
+              title="Vector / bus lane — paint spans with the paint tool"
               onClick={() => {
                 addSignal('vector');
                 setAddOpen(false);
@@ -205,6 +234,15 @@ export function Toolbar({ onExport }: ToolbarProps) {
             </button>
             <button type="button" onClick={() => { addSignal('spacer'); setAddOpen(false); }}>
               Blank
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                addGroup();
+                setAddOpen(false);
+              }}
+            >
+              Section
             </button>
             <button
               type="button"

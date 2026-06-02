@@ -72,6 +72,13 @@ export const SAMPLE_DIAGRAMS: SampleDiagram[] = [
     category: 'amba',
   },
   {
+    id: 'amba-ahb-transfer-types',
+    title: 'AHB transfer types',
+    description: 'Fig 3-6 style: NONSEQ, BUSY, SEQ, INCR, wait states',
+    file: 'amba-ahb-transfer-types.json',
+    category: 'amba',
+  },
+  {
     id: 'amba-axi-write',
     title: 'AXI4 write',
     description: 'AW + W + B channels, AWLEN=0, WLAST=1',
