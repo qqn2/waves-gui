@@ -2,6 +2,11 @@ import type { Signal } from '../shared/types';
 import { BUS_DIAGONAL, TRACE_PADDING } from '../shared/constants';
 import type { ViewTransform } from './coordinates';
 import { canvasCellWidth, logicalToCanvasY } from './coordinates';
+import {
+  isVectorUnknownValue,
+  vectorUnknownFill,
+  vectorUnknownStroke,
+} from './stateColors';
 
 export function renderVectorSignal(
   ctx: CanvasRenderingContext2D,
@@ -19,14 +24,24 @@ export function renderVectorSignal(
   const yHigh = rowY + TRACE_PADDING * transform.zoom;
   const yLow = rowY + rowH - TRACE_PADDING * transform.zoom;
 
-  ctx.strokeStyle = signal.color;
-  ctx.fillStyle = signal.fillColor ?? `${signal.color}30`;
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
 
+  const textPrimary =
+    getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
+    '#e8e8e8';
+  const textSecondary =
+    getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() ||
+    '#b0b0b0';
+
   for (const seg of signal.segments) {
-    const fill = seg.color ?? signal.fillColor ?? `${signal.color}30`;
+    const unknown = isVectorUnknownValue(seg.value);
+    const fill = unknown
+      ? vectorUnknownFill()
+      : (signal.fillColor ?? `${signal.color}30`);
+    const stroke = unknown ? vectorUnknownStroke() : signal.color;
     ctx.fillStyle = fill;
+    ctx.strokeStyle = stroke;
 
     const x1 = seg.startStep * cellWidth - transform.scrollX;
     const x2 = seg.endStep * cellWidth - transform.scrollX;
@@ -53,9 +68,7 @@ export function renderVectorSignal(
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle =
-      getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
-      '#e8e8e8';
+    ctx.fillStyle = unknown ? textSecondary : textPrimary;
     ctx.font = `${Math.max(10, rowH * 0.35)}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

@@ -9,13 +9,16 @@ import type {
 import {
   BUS_DIAGONAL,
   CELL_WIDTH,
-  LABEL_WIDTH,
   TIME_AXIS_HEIGHT,
   TRACE_PADDING,
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import { X_STROKE, zStrokeColor } from '../renderer/stateColors';
+import {
+  isVectorUnknownValue,
+  X_STROKE,
+  zStrokeColor,
+} from '../renderer/stateColors';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
@@ -154,15 +157,23 @@ function svgVectorSignal(
   const yMid = axisOffset + rowY + rowH / 2;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
-  const stroke = esc(signal.color);
   const textFill = esc(themeColor('--text-primary', '#e8e8e8'));
+  const textMuted = esc(themeColor('--text-secondary', '#b0b0b0'));
   const parts: string[] = [];
 
   for (const seg of signal.segments) {
     const x1 = seg.startStep * cellW;
     const x2 = seg.endStep * cellW;
     const span = x2 - x1;
-    const fill = esc(seg.color ?? signal.fillColor ?? `${signal.color}30`);
+    const unknown = isVectorUnknownValue(seg.value);
+    const stroke = esc(
+      unknown ? themeColor('--bus-x-stroke', '#a0a0a0') : signal.color,
+    );
+    const fill = esc(
+      unknown
+        ? themeColor('--bus-x-fill', 'rgba(140, 140, 140, 0.35)')
+        : (signal.fillColor ?? `${signal.color}30`),
+    );
 
     if (span < d * 3) {
       parts.push(
@@ -179,7 +190,7 @@ function svgVectorSignal(
     if (maxW > 4) {
       const fs = Math.max(10, rowH * 0.35);
       parts.push(
-        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${textFill}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
+        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${unknown ? textMuted : textFill}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
       );
     }
   }
@@ -226,6 +237,7 @@ function svgTimeAxis(
 
 function svgLabels(
   diagram: DiagramState,
+  labelWidth: number,
   axisOffset: number,
   labelBg: string,
   textColor: string,
@@ -233,7 +245,7 @@ function svgLabels(
 ): string {
   const entries = buildLabelEntries(diagram.signals);
   const parts = [
-    `<rect x="0" y="0" width="${LABEL_WIDTH}" height="${totalHeight}" fill="${esc(labelBg)}"/>`,
+    `<rect x="0" y="0" width="${labelWidth}" height="${totalHeight}" fill="${esc(labelBg)}"/>`,
   ];
   for (const entry of entries) {
     const x = 8 + entry.depth * 12;
@@ -331,8 +343,8 @@ export function exportSVG(diagram: DiagramState, view: ViewState): void {
     </pattern>
   </defs>
   <rect width="100%" height="100%" fill="${esc(bg)}"/>
-  ${svgLabels(diagram, dims.axisOffset, labelBg, textColor, dims.totalHeight)}
-  <g transform="translate(${LABEL_WIDTH}, 0)">
+  ${svgLabels(diagram, dims.labelWidth, dims.axisOffset, labelBg, textColor, dims.totalHeight)}
+  <g transform="translate(${dims.labelWidth}, 0)">
     ${waveformParts.join('\n')}
   </g>
 </svg>`;
