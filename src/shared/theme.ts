@@ -1,6 +1,6 @@
 import { getSafeStorage } from '../shell/soloDesk/safeStorage';
 
-export type Theme = 'dark' | 'light' | 'dark-hc' | 'light-hc';
+export type Theme = 'dark' | 'dark-grey' | 'light' | 'dark-hc' | 'light-hc';
 
 export const THEME_STORAGE_KEY = 'wavedrom-gui-theme';
 
@@ -24,7 +24,12 @@ export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: 'dark',
     label: 'Dark',
-    description: 'Balanced dark UI',
+    description: 'Darker canvas, moderate contrast',
+  },
+  {
+    id: 'dark-grey',
+    label: 'Dark (grey)',
+    description: 'Soft grey chrome — easy on TN / long sessions',
   },
   {
     id: 'dark-hc',
@@ -33,7 +38,7 @@ export const THEME_OPTIONS: ThemeOption[] = [
   },
 ];
 
-const VALID: Theme[] = ['dark', 'light', 'dark-hc', 'light-hc'];
+const VALID: Theme[] = ['dark', 'dark-grey', 'light', 'dark-hc', 'light-hc'];
 
 export function isLightTheme(theme: Theme): boolean {
   return theme === 'light' || theme === 'light-hc';

@@ -13,11 +13,37 @@
   --signal-x-fill: #ff6b6b50;
   --signal-x-stroke: #ff8585;
   --signal-z-stroke: #c0c0c0;
+  --bus-x-fill: #9a9a9a45;
+  --bus-x-stroke: #b0b0b0;
   --grid-line: #3d3d3d;
   --selection-fill: #5cadff28;
   --selection-stroke: #5cadff;
   --pointer-marker: #5cadff99;
   --pointer-marker-row: #5cadff30;
+}
+
+/* ── Dark grey — soft mid-tones (classic IDE-style), not near-black ─────── */
+
+:root[data-theme='dark-grey'] {
+  --bg-app: #2e2e2e;
+  --bg-panel: #3a3a3a;
+  --bg-canvas: #282828;
+  --border: #5c5c5c;
+  --text-primary: #e4e4e4;
+  --text-secondary: #a8a8a8;
+  --accent: #6eb0f5;
+  --signal-default: #6eb0f5;
+  --signal-high: var(--signal-default);
+  --signal-x-fill: #e0707048;
+  --signal-x-stroke: #f09090;
+  --signal-z-stroke: #b8b8b8;
+  --bus-x-fill: #a0a0a048;
+  --bus-x-stroke: #c0c0c0;
+  --grid-line: #484848;
+  --selection-fill: #6eb0f530;
+  --selection-stroke: #6eb0f5;
+  --pointer-marker: #6eb0f5a0;
+  --pointer-marker-row: #6eb0f528;
 }
 
 /* ── Dark high contrast — TN-friendly: black/white, visible grid & chrome ─── */
@@ -35,6 +61,8 @@
   --signal-x-fill: #ff888850;
   --signal-x-stroke: #ffaaaa;
   --signal-z-stroke: #e0e0e0;
+  --bus-x-fill: #b0b0b055;
+  --bus-x-stroke: #d0d0d0;
   --grid-line: #6a6a6a;
   --selection-fill: #7ec8ff40;
   --selection-stroke: #7ec8ff;
@@ -57,6 +85,8 @@
   --signal-x-fill: #ef444440;
   --signal-x-stroke: #dc2626;
   --signal-z-stroke: #6b7280;
+  --bus-x-fill: #6b728040;
+  --bus-x-stroke: #9ca3af;
   --grid-line: #d4d4d4;
   --selection-fill: #2563eb22;
   --selection-stroke: #2563eb;
@@ -79,6 +109,8 @@
   --signal-x-fill: #cc000040;
   --signal-x-stroke: #b00000;
   --signal-z-stroke: #404040;
+  --bus-x-fill: #66666650;
+  --bus-x-stroke: #555555;
   --grid-line: #666666;
   --selection-fill: #0047c722;
   --selection-stroke: #0047c7;

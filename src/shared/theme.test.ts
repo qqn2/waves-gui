@@ -17,6 +17,7 @@ describe('theme helpers', () => {
     expect(isLightTheme('light')).toBe(true);
     expect(isLightTheme('light-hc')).toBe(true);
     expect(isDarkTheme('dark')).toBe(true);
+    expect(isDarkTheme('dark-grey')).toBe(true);
     expect(isDarkTheme('dark-hc')).toBe(true);
     expect(isLightTheme('dark-hc')).toBe(false);
   });
