@@ -1,11 +1,20 @@
 import type { BitState } from '../shared/types';
 
-export function decodeWaveString(wave: string): BitState[] {
+export interface DecodedWave {
+  states: BitState[];
+  stepGaps: boolean[];
+}
+
+export function decodeWaveDetail(wave: string): DecodedWave {
   const states: BitState[] = [];
+  const stepGaps: boolean[] = [];
   let prev: BitState = '0';
 
   for (const char of wave) {
     switch (char) {
+      case '|':
+        if (states.length > 0) stepGaps[states.length - 1] = true;
+        break;
       case '.':
         states.push(prev);
         break;
@@ -59,21 +68,28 @@ export function decodeWaveString(wave: string): BitState[] {
         states.push('0');
         prev = '0';
         break;
-      case '|':
-        break;
       default:
         break;
     }
   }
 
-  return states;
+  return { states, stepGaps };
 }
 
-export function encodeWaveString(states: BitState[]): string {
+export function decodeWaveString(wave: string): BitState[] {
+  return decodeWaveDetail(wave).states;
+}
+
+export function encodeWaveString(
+  states: BitState[],
+  stepGaps?: boolean[],
+): string {
   if (states.length === 0) return '';
-  let wave = states[0];
+  let wave = states[0]!;
   for (let i = 1; i < states.length; i++) {
-    if (states[i] === states[i - 1]) {
+    if (stepGaps?.[i - 1]) {
+      wave += '|';
+    } else if (states[i] === states[i - 1]) {
       wave += i === states.length - 1 ? states[i] : '.';
     } else {
       wave += states[i];
