@@ -4,7 +4,7 @@
   "signal": [
     [
       "AW channel",
-      { "name": "ACLK", "wave": "p..........." },
+      { "name": "ACLK", "wave": "P..........." },
       { "name": "AWADDR", "wave": "x..=x..", "data": ["0x40001000"] },
       { "name": "AWLEN", "wave": "x..2x..", "data": ["0"] },
       { "name": "AWVALID", "wave": "0..1..0..." },

@@ -1,6 +1,6 @@
 {
   "signal": [
-    ["Control", { "name": "clk", "wave": "p...." }, { "name": "rst", "wave": "10..." }],
+    ["Control", { "name": "clk", "wave": "P...." }, { "name": "rst", "wave": "10..." }],
     {},
     ["Datapath", { "name": "load", "wave": "0.1.0." }, { "name": "done", "wave": "0...1.0" }]
   ],

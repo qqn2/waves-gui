@@ -1,6 +1,6 @@
 {
   "signal": [
-    { "name": "clk", "wave": "p......." },
+    { "name": "clk", "wave": "P......." },
     { "name": "data", "wave": "x.101.x." },
     { "name": "tri", "wave": "z.0.1.z." },
     { "name": "meta", "wave": "u..d..u." }
