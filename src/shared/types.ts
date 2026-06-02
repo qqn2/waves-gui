@@ -145,8 +145,12 @@ export interface ViewState {
   selectedTool: Tool;
   paintMode: PaintMode;
   activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
+  /** Label written on bus lanes when painting with the paint tool (= span) */
+  activeBusLabel: string;
   activeSignalIds: string[]; // selected for operations
   showCodePanel: boolean;
+  /** Signal name column width in px (DOM, not zoomed). */
+  labelWidth: number;
   showTimeAxis: boolean;
   theme: Theme;
   isDirty: boolean; // unsaved changes
@@ -160,8 +164,10 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
+  lane: 'bit' | 'vector';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set'; // paint only; erase ignores
+  busLabel?: string; // vector paint: WaveDrom data[] label
   mode: 'paint' | 'erase';
 }
 

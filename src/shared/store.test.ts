@@ -87,6 +87,57 @@ describe('useStore', () => {
     }
   });
 
+  it('setVectorSpanRange paints bus data across steps', () => {
+    useStore.getState().addSignal('vector');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().setVectorSpanRange(id, 1, 3, 'NONSEQ');
+    const sig = useStore.getState().diagram.signals[0];
+    expect(sig?.type).toBe('vector');
+    if (sig?.type === 'vector') {
+      const seg = sig.segments.find((s) => s.value === 'NONSEQ');
+      expect(seg?.startStep).toBe(1);
+      expect(seg?.endStep).toBe(4);
+    }
+  });
+
+  it('moveSignalToParent nests a signal inside a section', () => {
+    useStore.getState().addGroup(undefined, 'Datapath');
+    const groupId = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().addSignal('bit');
+    const signalId = useStore.getState().diagram.signals[1]!.id;
+    useStore.getState().moveSignalToParent(signalId, groupId);
+    const root = useStore.getState().diagram.signals;
+    expect(root).toHaveLength(1);
+    const group = root[0];
+    expect(group?.type).toBe('group');
+    if (group?.type === 'group') {
+      expect(group.children).toHaveLength(1);
+      expect(group.children[0]?.id).toBe(signalId);
+    }
+  });
+
+  it('moveSignalToParent returns signal to root', () => {
+    useStore.getState().addGroup(undefined, 'G');
+    const groupId = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().addSignal('bit');
+    const signalId = useStore.getState().diagram.signals[1]!.id;
+    useStore.getState().moveSignalToParent(signalId, groupId);
+    useStore.getState().moveSignalToParent(signalId, undefined);
+    expect(useStore.getState().diagram.signals).toHaveLength(2);
+    expect(useStore.getState().diagram.signals[1]?.id).toBe(signalId);
+  });
+
+  it('addGroup inserts an empty WaveDrom section', () => {
+    useStore.getState().addGroup();
+    const g = useStore.getState().diagram.signals[0];
+    expect(g?.type).toBe('group');
+    if (g?.type === 'group') {
+      expect(g.name).toBe('Section');
+      expect(g.children).toHaveLength(0);
+      expect(g.collapsed).toBe(false);
+    }
+  });
+
   it('toggleSignalStateRange flips each step', () => {
     useStore.getState().addSignal('bit');
     const id = useStore.getState().diagram.signals[0]!.id;
@@ -139,6 +190,7 @@ describe('useStore', () => {
       signalId,
       startStep: 0,
       endStep: 2,
+      lane: 'bit',
       bitState: '1',
       apply: 'set',
       mode: 'paint',
