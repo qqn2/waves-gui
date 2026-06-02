@@ -4,7 +4,7 @@
   "signal": [
     [
       "Address phase",
-      { "name": "HCLK", "wave": "p......." },
+      { "name": "HCLK", "wave": "P......." },
       { "name": "HSEL", "wave": "0.1..0.." },
       { "name": "HTRANS", "wave": "x.=x..", "data": ["NONSEQ"] },
       { "name": "HADDR", "wave": "x.=x..", "data": ["0xA0000000"] },

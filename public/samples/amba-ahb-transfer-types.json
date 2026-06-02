@@ -6,7 +6,7 @@
   },
   "config": { "hscale": 2 },
   "signal": [
-    { "name": "HCLK", "wave": "p........" },
+    { "name": "HCLK", "wave": "P........" },
     { "name": "HTRANS[1:0]", "wave": "x.=2.3..", "data": ["NONSEQ", "BUSY", "SEQ", "SEQ"] },
     { "name": "HADDR[31:0]", "wave": "x.=x.=3.", "data": ["0x20", "0x24", "0x28", "0x2C"] },
     { "name": "HWRITE", "wave": "1.0..1.." },

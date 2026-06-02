@@ -2,7 +2,7 @@
   "head": { "text": "APB read — no wait states" },
   "config": { "hscale": 2 },
   "signal": [
-    { "name": "PCLK", "wave": "p......." },
+    { "name": "PCLK", "wave": "P......." },
     { "name": "PSEL", "wave": "0.1..0.." },
     { "name": "PENABLE", "wave": "0..1.0.." },
     { "name": "PWRITE", "wave": "0......." },
