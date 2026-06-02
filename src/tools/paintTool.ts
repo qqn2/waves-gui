@@ -36,8 +36,12 @@ export function paintPointerDown(
   flushPendingCodeToDiagram();
 
   const { view } = useStore.getState();
-  const apply: 'toggle' | 'set' =
-    e.shiftKey || view.paintMode === 'toggle' ? 'toggle' : 'set';
+  const apply: 'toggle' | 'set' | 'glitch' =
+    view.paintMode === 'glitch'
+      ? 'glitch'
+      : e.shiftKey || view.paintMode === 'toggle'
+        ? 'toggle'
+        : 'set';
   const bitState: BitState = view.activeBitState;
 
   useStore.getState().setPaintDraft({
@@ -79,7 +83,9 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   if (!draft) return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
-  if (draft.apply === 'toggle') {
+  if (draft.apply === 'glitch') {
+    useStore.getState().toggleStepGlitchRange(draft.signalId, lo, hi);
+  } else if (draft.apply === 'toggle') {
     useStore.getState().toggleSignalStateRange(draft.signalId, lo, hi);
   } else {
     useStore.getState().setSignalStateRange(draft.signalId, lo, hi, draft.bitState);
