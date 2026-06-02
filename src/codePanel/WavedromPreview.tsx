@@ -1,21 +1,21 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '../shared/store';
 import { isDarkTheme } from '../shared/theme';
-import { validateCodeString } from './codeSync';
 import styles from './CodePanel.module.css';
 
 export interface WavedromPreviewProps {
   code: string;
+  error: string | null;
 }
 
-export function WavedromPreview({ code }: WavedromPreviewProps) {
+export function WavedromPreview({ code, error }: WavedromPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const theme = useStore((s) => s.view.theme);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    if (validateCodeString(code) !== null) {
+    if (error) {
       el.replaceChildren();
       return;
     }
@@ -36,6 +36,7 @@ export function WavedromPreview({ code }: WavedromPreviewProps) {
           }
         }
         if (cancelled) return;
+        el.replaceChildren();
         WaveDrom.renderWaveElement(0, parsed, el, skin, false);
       } catch {
         if (!cancelled) el.replaceChildren();
@@ -45,12 +46,18 @@ export function WavedromPreview({ code }: WavedromPreviewProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, theme]);
+  }, [code, error, theme]);
 
   return (
     <div className={styles.previewWrap}>
-      <div className={styles.previewLabel}>WaveDrom preview</div>
-      <div ref={containerRef} className={styles.preview} />
+      <div className={styles.previewLabel}>WaveDrom render (local)</div>
+      {error ? (
+        <div className={styles.preview}>
+          <p className={styles.previewError}>Fix JSON to preview: {error}</p>
+        </div>
+      ) : (
+        <div ref={containerRef} className={styles.preview} />
+      )}
     </div>
   );
 }
