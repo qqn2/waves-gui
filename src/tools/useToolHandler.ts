@@ -45,11 +45,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     erase.eraseCancel(el);
     select.selectCancel(el);
     clearPaintDraft();
-    select.clearSelection();
-    cursor.clearCursorSelection();
     toolState.cancelAll();
     setSelectionOverlay(null);
-  }, [clearPaintDraft]);
+  }, [clearPaintDraft, canvasRef]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -62,15 +60,14 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       }
 
       if (e.ctrlKey && e.key === 'a') {
-        if (tool === 'select') {
-          e.preventDefault();
-          select.selectAllSignals();
-        }
+        e.preventDefault();
+        select.selectAllSignals();
         return;
       }
 
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (tool === 'select') {
+        const t = useStore.getState().view.selectedTool;
+        if (t === 'cursor' || t === 'select') {
           e.preventDefault();
           select.deleteSelection();
         }
@@ -83,22 +80,30 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       } else if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
         e.preventDefault();
         redo();
+      } else if (e.key === 'v' || e.key === 'V') {
+        setTool('cursor');
       } else if (e.key === 'd' || e.key === 'D') {
         setTool('paint');
       } else if (e.key === 'e' || e.key === 'E') {
         setTool('erase');
-      } else if (e.key === 's' || e.key === 'S') {
-        setTool('select');
       } else if (e.key === 'n' || e.key === 'N') {
+        setTool('paint');
         setPaintMode('toggle');
       } else if (e.key === '1') {
         setActiveBitState('1');
+        setTool('paint');
       } else if (e.key === '0') {
         setActiveBitState('0');
-      } else if (e.key === 'z' || e.key === 'Z') {
-        if (!e.ctrlKey) setActiveBitState('z');
+        setTool('paint');
+      } else if (e.key === 'p' || e.key === 'P') {
+        setActiveBitState('p');
+        setTool('paint');
+      } else if (e.key === 'z' && !e.ctrlKey) {
+        setActiveBitState('z');
+        setTool('paint');
       } else if (e.key === 'x' || e.key === 'X') {
         setActiveBitState('x');
+        setTool('paint');
       } else if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
         e.preventDefault();
         setZoom(zoom * 1.25);
@@ -130,17 +135,22 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
-      else if (tool === 'select') select.selectPointerDown(e, el);
-      else if (tool === 'cursor') cursor.cursorPointerDown(hit);
+      else if (tool === 'cursor' || tool === 'select') {
+        if (hit.annotationId) {
+          cursor.cursorPointerDown(hit);
+        } else {
+          select.selectPointerDown(e, el, hit);
+        }
+      }
     },
     [tool, canvasRef],
   );
 
   const onPointerMove = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
-      if (tool === 'paint') paint.paintPointerMove(hit);
-      else if (tool === 'erase') erase.erasePointerMove(hit);
-      else if (tool === 'select') {
+      if (tool === 'paint') paint.paintPointerMove(e, hit);
+      else if (tool === 'erase') erase.erasePointerMove(e, hit);
+      else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerMove(e);
         setSelectionOverlay(toolState.getSelectOverlay());
       }
@@ -153,7 +163,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
-      else if (tool === 'select') {
+      else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerUp(e, el);
         setSelectionOverlay(null);
       }

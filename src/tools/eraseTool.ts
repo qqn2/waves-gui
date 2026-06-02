@@ -2,6 +2,8 @@ import { useStore } from '../shared/store';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
 import type { HitTestResult } from './hitTestStub';
+import { stepAtCanvasX } from './pointerUtils';
+import * as vectorPaint from './vectorPaintTool';
 
 function capturePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void {
   if (!canvas) return;
@@ -22,7 +24,13 @@ export function erasePointerDown(
   hit: HitTestResult,
   canvas: HTMLCanvasElement | null,
 ): void {
-  if (hit.signalId === null || hit.signalType !== 'bit' || hit.step === null) return;
+  if (hit.signalId === null || hit.step === null) return;
+
+  if (hit.signalType === 'vector') {
+    vectorPaint.vectorErasePointerDown(e, hit, canvas);
+    return;
+  }
+  if (hit.signalType !== 'bit') return;
 
   flushPendingCodeToDiagram();
 
@@ -30,6 +38,7 @@ export function erasePointerDown(
     signalId: hit.signalId,
     startStep: hit.step,
     endStep: hit.step,
+    lane: 'bit',
     bitState: '0',
     apply: 'set',
     mode: 'erase',
@@ -37,19 +46,30 @@ export function erasePointerDown(
   capturePointer(canvas, e);
 }
 
-export function erasePointerMove(hit: HitTestResult): void {
+export function erasePointerMove(e: PointerEvent, _hit: HitTestResult): void {
   if (!toolState.isEraseDragging()) return;
   const draft = useStore.getState().view.paintDraft;
-  if (!draft || hit.signalId !== draft.signalId || hit.step === null) return;
-  if (hit.step === draft.endStep) return;
-  useStore.getState().setPaintDraft({ ...draft, endStep: hit.step });
+  if (!draft) return;
+  if (draft.lane === 'vector') {
+    vectorPaint.vectorErasePointerMove(e);
+    return;
+  }
+
+  const { diagram, view } = useStore.getState();
+  const step = stepAtCanvasX(e.offsetX, diagram, view);
+  if (step === draft.endStep) return;
+  useStore.getState().setPaintDraft({ ...draft, endStep: step });
 }
 
 export function erasePointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null): void {
   if (!toolState.isEraseDragging()) return;
+  const draft = useStore.getState().view.paintDraft;
+  if (draft?.lane === 'vector') {
+    vectorPaint.vectorErasePointerUp(e, canvas);
+    return;
+  }
   releasePointer(canvas, e);
 
-  const draft = useStore.getState().view.paintDraft;
   if (!draft) return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
@@ -59,6 +79,11 @@ export function erasePointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
 
 export function eraseCancel(canvas: HTMLCanvasElement | null): void {
   if (!toolState.isEraseDragging()) return;
+  const draft = useStore.getState().view.paintDraft;
+  if (draft?.lane === 'vector') {
+    vectorPaint.vectorEraseCancel(canvas);
+    return;
+  }
   const pid = toolState.getCapturedPointerId();
   if (canvas && pid !== null && canvas.hasPointerCapture(pid)) {
     canvas.releasePointerCapture(pid);
