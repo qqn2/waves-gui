@@ -1,14 +1,13 @@
 # WaveDrom GUI Editor — Maintainer Guide
 
-This file replaces the old parallel-build spec (`agent.md` ~2000 lines), orchestrator prompt, and progress tracker. The app is **feature-complete for solo-desk timing diagrams**; use this doc for scope, coding rules, and history.
+This file replaces the old parallel-build spec, orchestrator prompt, and progress tracker. The app is **feature-complete for solo-desk timing diagrams**; use this doc for scope, WaveDrom parity, coding rules, and history.
 
 ## Documentation map
 
 | Document | When to read |
 |----------|--------------|
 | [`README.md`](README.md) | Quick start, architecture, project layout |
-| **This file** | Product scope, implementation rules, build history |
-| [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md) | WaveDrom capability matrix, gaps, suggested next work |
+| **This file** | Scope, WaveDrom checklist, implementation rules, build history |
 | [`docs/wavedrom-ref/`](docs/wavedrom-ref/) | Vendored WaveJSON notes + upstream test fixtures |
 
 ---
@@ -28,8 +27,9 @@ This file replaces the old parallel-build spec (`agent.md` ~2000 lines), orchest
 
 - `backend/`, Postgres/SQLite, team libraries, hosted storage.
 - VCD import/export.
-- Non-WaveDrom annotation overlay in the main UI — removed; use WaveDrom `edge[]` tools.
+- Non-WaveDrom annotation overlay — removed; use WaveDrom `edge[]` tools.
 - Register (`reg[]`) and logic (`assign[]`) diagram editing on canvas.
+- Real-time collaboration.
 - TXT/CSV export, Load Example gallery, Debug Panel.
 
 **Deployment:** static `dist/` (`make build`, `make preview`, or internal nginx).
@@ -47,13 +47,127 @@ This file replaces the old parallel-build spec (`agent.md` ~2000 lines), orchest
 
 **Verify:** `make test` (175 tests) · `make check` (test + build) · `make dev` → http://localhost:5173
 
-Full feature checklist: [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md).
+---
 
-### Known gaps (summary)
+## WaveDrom feature checklist
 
-- **Sub-cycle wave syntax** (`<5|>`, etc.) — deferred; validator rejects; see `docs/wavedrom-ref/SUBCYCLE.md`.
-- **Upstream SVG** — structural smoke only (`upstreamSvgGolden.test.ts`), not pixel parity vs official renderer.
-- **Edge mid-point drag** for `~` curves — optional future UX.
+Maps official WaveJSON / WaveDrom capabilities (see [`docs/wavedrom-ref/WaveJSON.md`](docs/wavedrom-ref/WaveJSON.md) and the [tutorial](http://wavedrom.com/tutorial.html)) to this editor. Status keys: **Yes** = usable in GUI today; **Bridge** = import/export JSON only; **Partial** = incomplete; **No** = not implemented; **N/A** = different diagram type (not timing).
+
+Last reviewed 2026-06-03.
+
+### Diagram kinds (root object)
+
+| Feature | WaveDrom | This editor | Notes |
+|---------|----------|-------------|-------|
+| Timing diagrams (`signal[]`) | Yes | **Yes** | Core product |
+| Register / bit-field (`reg[]`) | Yes | **N/A** | Render-only via `wavedrom` npm if ever needed; no canvas editor |
+| Logic circuits (`assign[]`) | Yes | **N/A** | Same |
+| Mixed roots in one file | Yes | **N/A** | We only edit `signal` diagrams |
+
+### Signal list structure
+
+| Feature | WaveDrom | This editor | Notes |
+|---------|----------|-------------|-------|
+| Signal `name` (label column) | Yes | **Yes** | — |
+| Nested groups `["Group", …]` | Yes | **Yes** | Collapse/expand in panel |
+| Blank row `{}` (spacer) | Yes | **Yes** | Add “Blank” in UI |
+| Signal reorder (drag) | Editor | **Yes** | Signal panel DnD |
+
+### Wave string (`wave`) — per-cycle characters
+
+| Char | Meaning (WaveDrom) | Decode | Canvas render | Paint tool |
+|------|-------------------|--------|---------------|------------|
+| `0` `1` | Low / high | Yes | Yes | **Yes** (toggle / set) |
+| `.` | Continue previous | Yes | Yes | Via drag ranges |
+| `x` | Unknown | Yes | Yes | Toolbar → set `x` |
+| `z` | High-Z | Yes | Yes | Set mode |
+| `u` `d` | Weak pull-up/down | Yes | **Yes** (dashed/lighter stroke) | Set mode |
+| `p` `n` | Clock (+ / − edge) | Yes | Yes | Set / patterns |
+| `P` `N` | Clock with arrow | Yes | **Yes** (arrow glyph canvas + export) | `P`/`N` keys + toggle |
+| `=` `2`–`9` | Bus value + color | Yes | Yes (vector lanes) | **Yes** (paint tool + color swatches) |
+| `\|` | Gap over previous | Yes | Yes (`drawStepGap`) | Low |
+
+### Bus / vector lanes (`data` + `=`/`2`–`9`)
+
+| Feature | WaveDrom | This editor | Notes |
+|---------|----------|-------------|-------|
+| Import vector wave + `data[]` labels | Yes | **Yes** | — |
+| Export vector + labels | Yes | **Yes** | `busDataRoundTrip.test.ts` |
+| Canvas paint / segment editor | Editor | **Yes** | Paint drag on bus rows; `VectorSegmentEditor` in panel |
+| Per-segment colors (`2`–`9`) | Yes | **Yes** | Toolbar swatches + segment editor |
+| Multi-word `data` (string or array) | Yes | **Bridge** | — |
+
+### Per-signal fields (besides `wave`)
+
+| Field | WaveDrom | This editor | Notes |
+|-------|----------|-------------|-------|
+| `data[]` — value **labels** on bus slots | Yes | **Yes** | Panel editor + paint label field |
+| `period` — cycles per step | Yes | **Yes** | `SignalTimingBar` + per-lane column width on canvas |
+| `phase` — horizontal shift | Yes | **Yes** | `SignalTimingBar` + `laneTiming` / render |
+| `node` — anchor letters for `edge` | Yes | **Yes** | Tools + optional **ABC** toggle |
+| `skin` on signal | Ignored | **No** | Low |
+
+### Global `config` and header/footer
+
+| Field | WaveDrom | This editor | Notes |
+|-------|----------|-------------|-------|
+| `config.hscale` | Yes | **Yes** | Toolbar number input; fractional values (e.g. `1.5`) |
+| `config.skin` | Yes | **No** | Low (app themes replace for solo desk) |
+| `head.text` + `tick` + `every` | Yes | **Yes** | `HeadFootFields` + canvas render |
+| `foot.text` + `tock` + `every` | Yes | **Yes** | Same |
+| Root-level `head` / `foot` (not only in `config`) | Yes | **Bridge** | Import merges into `config` |
+
+> [!TIP]
+> “Labels” in WaveDrom usually means **bus `data` labels** (text on colored blocks) or **head/foot figure text**, not arbitrary canvas stickers. Use WaveDrom `edge[]` tools for dependency arrows and span labels.
+
+### Dependency arrows (`edge[]`)
+
+| Feature | WaveDrom | This editor | Notes |
+|---------|----------|-------------|-------|
+| `edge: ["a->b label", …]` | Yes | **Partial** | Arrow + timespan tools; status bar list + delete |
+| Arrow shapes `-`, `\|`, `~`, `/`, `#` | Yes | **Yes** | Sequential routing; toolbar shape preset + status edit |
+| Import `edge` from JSON | Yes | **Yes** | — |
+| Export `edge` to JSON | Yes | **Yes** | — |
+| Live placement preview | Editor | **Yes** | `EdgeToolOverlay` — dashed path, span band, anchor badges |
+
+Upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
+
+### Editor / UX (visual canvas, WaveDrom-safe)
+
+| Feature | WaveDrom editor | This editor | Notes |
+|---------|-----------------|-------------|-------|
+| Live JSON panel | Yes | **Yes** | — |
+| Undo / redo | — | **Yes** | — |
+| Open / Save file | Yes | **Yes** | — |
+| Export PNG / SVG | CLI / editor | **Yes** | Includes edges |
+| Patterns (clock, pulse, …) | Partial | **Yes** | More patterns optional |
+| Step count editor | Yes | **Yes** | `DiagramStepsControl` in shell header |
+| Sub-cycle / compressed steps | Yes | **No** | Deferred — `docs/wavedrom-ref/SUBCYCLE.md`; validator rejects `<`/`>` |
+| Rename signal inline | Yes | **Yes** | — |
+| Select + delete signals | Yes | **Yes** | Del: step erase vs row delete (confirm multi) |
+| Keyboard shortcut sheet | — | **Yes** | `?` in toolbar → `ShortcutHelp` |
+| Collapsible WaveDrom preview | Yes | **Yes** | Code panel **Preview** (default on); bundled `wavedrom` npm |
+
+### Suggested next work
+
+1. **Sub-cycle wave syntax** — spike only if needed; see `docs/wavedrom-ref/SUBCYCLE.md`.
+2. **Upstream pixel parity** — extend `upstreamSvgGolden.test.ts` beyond structural smoke.
+3. **Edge UX** — optional drag mid-point for `~` curves.
+4. **Compare split** — canvas vs WaveDrom preview side-by-side (medium effort).
+
+### Reference files for WaveDrom work
+
+| Path | Role |
+|------|------|
+| `docs/wavedrom-ref/WaveJSON.md` | Vendored schema notes |
+| `docs/wavedrom-ref/upstream-tests/` | Upstream JSON5 examples |
+| `public/golden/` | Project round-trip fixtures |
+| `src/wavedromBridge/` | Import/export implementation |
+| `src/renderer/EdgeToolOverlay.tsx` | Edge tool live preview |
+| `src/tools/useEdgeTools.ts` | Arrow / timespan placement |
+| `src/wavedromBridge/renderWavedromSvg.ts` | Vitest upstream SVG smoke |
+| `src/shell/ShortcutHelp.tsx` | Keyboard shortcut modal |
+| `docs/wavedrom-ref/SUBCYCLE.md` | Sub-cycle syntax notes (deferred) |
 
 ---
 
@@ -156,23 +270,9 @@ The project was built in parallel Cursor tracks (Phase 0 → tracks A–I → in
 
 When extending or fixing this repo:
 
-1. Read [`README.md`](README.md) and [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md) before large changes.
-2. Stay within **solo desk scope** above unless the user explicitly expands it.
+1. Read [`README.md`](README.md) and the **WaveDrom feature checklist** in this file before large changes.
+2. Stay within **solo desk scope** unless the user explicitly expands it.
 3. Prefer minimal diffs; match existing module boundaries and naming.
 4. Run `make test` and `make check` (or `npm test` + `npm run build`) before declaring done.
 5. Changes to `shared/types.ts` or `shared/store/` usually require matching updates in `wavedromBridge/` and tests.
 6. Only commit when the user asks.
-
----
-
-## Reference UX parity (original target)
-
-| Feature | Status in this editor |
-|---------|----------------------|
-| Paint / erase / select, bit palette | **Yes** |
-| Vector/bus signals, patterns | **Yes** |
-| WaveDrom dependency arrows (`edge[]`) | **Yes** (arrow + timespan tools) |
-| Live JSON + WaveDrom preview | **Yes** |
-| PNG / SVG / JSON export | **Yes** |
-| Themes, zoom, undo/redo | **Yes** |
-| VCD, backend, collaboration | **Out of scope** |
