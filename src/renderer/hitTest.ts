@@ -4,6 +4,8 @@ import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import { canvasToLogicalX, canvasToLogicalY, type ViewTransform } from './coordinates';
 import { stepAtLogicalXForSignal } from './laneHitTest';
+import { hitTestDiagramEdge } from './edgeLayout';
+import { hitTestStepGlitchBoundary } from './glitchHitTest';
 
 export interface HitTestResult {
   signalId: string | null;
@@ -12,6 +14,7 @@ export interface HitTestResult {
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;
   annotationId: string | null;
+  edgeIndex: number | null;
 }
 
 const MISS: HitTestResult = {
@@ -21,6 +24,7 @@ const MISS: HitTestResult = {
   half: null,
   isLabelArea: false,
   annotationId: null,
+  edgeIndex: null,
 };
 
 function buildSignalById(signals: SignalOrGroup[]): Map<string, Signal> {
@@ -54,6 +58,11 @@ export function hitTest(
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
 
+  const edgeIndex = hitTestDiagramEdge(canvasX, canvasY, diagram, view);
+  if (edgeIndex !== null) {
+    return { ...MISS, edgeIndex };
+  }
+
   const rows = buildRowLayout(diagram.signals);
   const signalById = buildSignalById(diagram.signals);
   const totalSteps = diagram.config.totalSteps;
@@ -70,14 +79,22 @@ export function hitTest(
         signalId: row.id,
         signalType: 'group',
         step,
+        edgeIndex: null,
       };
     }
 
     const signal = signalById.get(row.id);
-    const step =
+    let step =
       signal !== undefined
         ? stepAtLogicalXForSignal(logicalX, signal, totalSteps)
         : null;
+
+    if (step === null && signal !== undefined) {
+      const glitch = hitTestStepGlitchBoundary(canvasX, canvasY, diagram, view);
+      if (glitch && glitch.signalId === row.id) {
+        step = glitch.boundaryIndex;
+      }
+    }
 
     if (step === null) {
       return MISS;
@@ -99,6 +116,7 @@ export function hitTest(
       half,
       isLabelArea: false,
       annotationId: null,
+      edgeIndex: null,
     };
   }
 

@@ -1,9 +1,15 @@
 import { BIT_STATE_CHARS, type BitState } from '../shared/types';
+import { isClockBitState } from '../shared/bitToggle';
 import {
   decodeClockWave,
   decodeExpandedClockWave,
   encodeClockWaveString,
+  ensureClockLaneFormat,
+  fallStateFor,
+  isClockFallStep,
+  isClockRiseStep,
   isClockWaveString,
+  riseStateFor,
 } from './clockWave';
 
 export interface DecodedWave {
@@ -164,6 +170,55 @@ export function encodeWaveString(
     } else {
       wave += ch;
     }
+  }
+  return wave;
+}
+
+/**
+ * Export a bit lane wave for `config.totalSteps`: pad states, collapse clock runs,
+ * then extend with `.` so wave length matches timeline (WaveDrom continuation).
+ */
+function padBitStatesToLength(states: BitState[], totalSteps: number): BitState[] {
+  if (totalSteps <= 0) return [];
+  const out = states.slice(0, totalSteps);
+  if (out.length === 0) {
+    return Array.from({ length: totalSteps }, () => '0' as BitState);
+  }
+  const clockLane = out.every(isClockBitState);
+  const head = out[0]!;
+  while (out.length < totalSteps) {
+    const i = out.length;
+    if (clockLane) {
+      const posedgeFirst = isClockRiseStep(head);
+      const riseChar = isClockRiseStep(head) ? head : riseStateFor(head);
+      const fallChar = isClockFallStep(head) ? head : fallStateFor(head);
+      const expectRise = posedgeFirst ? i % 2 === 0 : i % 2 === 1;
+      out.push(expectRise ? riseChar : fallChar);
+    } else {
+      out.push(out[out.length - 1]!);
+    }
+  }
+  ensureClockLaneFormat(out);
+  return out;
+}
+
+export function encodeWaveStringForDiagram(
+  states: BitState[],
+  totalSteps: number,
+  stepGaps?: boolean[],
+  stepGlitches?: boolean[],
+): string {
+  const n = Math.max(0, totalSteps);
+  if (n === 0) return '';
+
+  const padded = padBitStatesToLength(states, n);
+
+  let wave = encodeWaveString(padded, stepGaps, stepGlitches);
+  while (wave.length < n) {
+    wave += '.';
+  }
+  if (wave.length > n) {
+    wave = wave.slice(0, n);
   }
   return wave;
 }

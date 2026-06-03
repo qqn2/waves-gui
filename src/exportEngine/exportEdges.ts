@@ -1,4 +1,5 @@
 import type { DiagramState, ViewState } from '../shared/types';
+import { edgeArrowMarkerSvgDef } from '../renderer/edgeArrowMarker';
 import { buildEdgeDrawItems } from '../renderer/edgeLayout';
 
 function esc(s: string): string {
@@ -34,11 +35,7 @@ export function svgEdges(
   const items = buildEdgeDrawItems(diagram, exportView, edges);
   const stroke = esc(edgeStroke());
   const parts: string[] = [
-    `<defs>
-      <marker id="wd-export-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L8,4 L0,8 z" fill="${stroke}"/>
-      </marker>
-    </defs>`,
+    `<defs>${edgeArrowMarkerSvgDef('wd-export-arrow', stroke)}</defs>`,
   ];
 
   for (const item of items) {

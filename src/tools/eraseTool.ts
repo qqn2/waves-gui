@@ -24,6 +24,22 @@ export function erasePointerDown(
   hit: HitTestResult,
   canvas: HTMLCanvasElement | null,
 ): void {
+  if (hit.edgeIndex !== null) {
+    flushPendingCodeToDiagram();
+    useStore.getState().setPaintDraft({
+      signalId: '',
+      startStep: 0,
+      endStep: 0,
+      lane: 'bit',
+      bitState: '0',
+      apply: 'set',
+      mode: 'erase',
+      edgeIndex: hit.edgeIndex,
+    });
+    capturePointer(canvas, e);
+    return;
+  }
+
   if (hit.signalId === null || hit.step === null) return;
 
   if (hit.signalType === 'vector') {
@@ -71,6 +87,11 @@ export function erasePointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   releasePointer(canvas, e);
 
   if (!draft) return;
+  if (draft.edgeIndex !== undefined) {
+    useStore.getState().removeDiagramEdge(draft.edgeIndex);
+    useStore.getState().clearPaintDraft();
+    return;
+  }
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
   useStore.getState().eraseSignalStateRange(draft.signalId, lo, hi);
@@ -80,6 +101,15 @@ export function erasePointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
 export function eraseCancel(canvas: HTMLCanvasElement | null): void {
   if (!toolState.isEraseDragging()) return;
   const draft = useStore.getState().view.paintDraft;
+  if (draft?.edgeIndex !== undefined) {
+    const pid = toolState.getCapturedPointerId();
+    if (canvas && pid !== null && canvas.hasPointerCapture(pid)) {
+      canvas.releasePointerCapture(pid);
+    }
+    toolState.endEraseDrag();
+    useStore.getState().clearPaintDraft();
+    return;
+  }
   if (draft?.lane === 'vector') {
     vectorPaint.vectorEraseCancel(canvas);
     return;

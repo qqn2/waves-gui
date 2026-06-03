@@ -190,6 +190,24 @@ describe('useStore', () => {
     expect(sig.states[3]).toBe('p');
   });
 
+  it('eraseSignalStateRange clears step glitches on touched boundaries', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().setSignalState(id, 0, '0');
+    useStore.getState().setSignalState(id, 1, '0');
+    useStore.getState().toggleStepGlitchRange(id, 0, 1);
+    expect(
+      (useStore.getState().diagram.signals[0] as { stepGlitches?: boolean[] })
+        .stepGlitches?.[0],
+    ).toBe(true);
+
+    useStore.getState().eraseSignalStateRange(id, 1, 1);
+    const sig = useStore.getState().diagram.signals[0] as {
+      stepGlitches?: boolean[];
+    };
+    expect(sig.stepGlitches).toBeUndefined();
+  });
+
   it('paintDraft does not grow history length', () => {
     useStore.getState().addSignal('bit');
     const signalId = useStore.getState().diagram.signals[0]!.id;

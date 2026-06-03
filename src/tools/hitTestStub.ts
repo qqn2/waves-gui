@@ -14,6 +14,7 @@ export interface HitTestResult {
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;
   annotationId: string | null;
+  edgeIndex: number | null;
 }
 
 const MISS: HitTestResult = {
@@ -23,6 +24,7 @@ const MISS: HitTestResult = {
   half: null,
   isLabelArea: false,
   annotationId: null,
+  edgeIndex: null,
 };
 
 /** Plausible hit-test until consumers wire renderer `hitTest` */
@@ -71,6 +73,7 @@ export function hitTestStub(
       half,
       isLabelArea: false,
       annotationId: null,
+      edgeIndex: null,
     };
   }
 

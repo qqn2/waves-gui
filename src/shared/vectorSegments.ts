@@ -106,8 +106,13 @@ export function segmentsToWaveAndData(
       continue;
     }
     if (cell.value === VECTOR_UNKNOWN_LABEL) {
+      let j = i + 1;
+      while (j < totalSteps && steps[j]?.value === VECTOR_UNKNOWN_LABEL) {
+        j++;
+      }
       wave += 'x';
-      i++;
+      for (let k = i + 1; k < j; k++) wave += '.';
+      i = j;
       continue;
     }
     if (!isBusDataLabel(cell.value)) {

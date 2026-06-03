@@ -115,8 +115,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
     setPaintMode('set');
   };
 
-  const moreBitsActive =
-    MORE_BIT_STATES.includes(activeBit) || paintMode === 'toggle';
+  const moreBitsActive = MORE_BIT_STATES.includes(activeBit);
 
   return (
     <div className={styles.toolbar}>
@@ -302,6 +301,15 @@ export function Toolbar({ onExport }: ToolbarProps) {
           >
             ⌢
           </button>
+          <button
+            type="button"
+            title="Toggle (NOT) — 0↔1; clock rise↔fall (p/P→n, n/N→p); x/z unchanged"
+            className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
+            onClick={() => setPaintMode('toggle')}
+            aria-pressed={paintMode === 'toggle'}
+          >
+            ¬
+          </button>
           {PRIMARY_BIT_STATES.map((st) => (
             <BitStateButton
               key={st}
@@ -312,7 +320,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
           ))}
           <button
             type="button"
-            title="More values — p, n, weak pull-up/down (u, d)"
+            title="More values — p, n, weak pull-up/down (u, d), Set mode"
             className={`${styles.toolBtn} ${
               moreBitsOpen || moreBitsActive ? styles.toolActive : ''
             }`}
@@ -332,15 +340,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
                   onSelect={selectBitValue}
                 />
               ))}
-              <button
-                type="button"
-                title="Toggle (NOT) — 0↔1; clock rise↔fall (p/P→n, n/N→p); x/z unchanged"
-                className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
-                onClick={() => setPaintMode('toggle')}
-                aria-pressed={paintMode === 'toggle'}
-              >
-                ¬
-              </button>
               <button
                 type="button"
                 title="Set — apply the selected value"

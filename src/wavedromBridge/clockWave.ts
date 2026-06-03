@@ -58,7 +58,7 @@ export function fallStateFor(rise: BitState): BitState {
   return 'p';
 }
 
-function riseStateFor(fall: BitState): BitState {
+export function riseStateFor(fall: BitState): BitState {
   if (fall === 'N') return 'P';
   if (fall === 'n') return 'p';
   return 'p';

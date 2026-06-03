@@ -3,6 +3,7 @@ import type { DiagramState } from '../shared/types';
 import {
   buildEdgePathD,
   buildNodeIndex,
+  hitTestDiagramEdge,
   parseEdge,
   parseEdgePath,
   parseEdgeString,
@@ -118,6 +119,50 @@ describe('resolveEdgeAnchors', () => {
     const anchors = resolveEdgeAnchors(diagram, view, parsed, idx);
     expect(anchors).not.toBeNull();
     expect(anchors!.to.y).toBeGreaterThan(anchors!.from.y);
+  });
+});
+
+describe('hitTestDiagramEdge', () => {
+  it('returns index when pointer is on the edge path', () => {
+    const diagram = minimalDiagram({
+      config: { totalSteps: 8, hscale: 1 },
+      edges: ['a->b'],
+      signals: [
+        {
+          id: 's0',
+          name: 'A',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4af',
+          rowHeight: 40,
+          node: 'a.......',
+        },
+        {
+          id: 's1',
+          name: 'B',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4af',
+          rowHeight: 40,
+          node: '....b...',
+        },
+      ],
+    });
+    const parsed = parseEdge('a->b')!;
+    const idx = buildNodeIndex(diagram.signals);
+    const view = {
+      zoom: 1,
+      scrollX: 0,
+      scrollY: 0,
+      showTimeAxis: false,
+    } as import('../shared/types').ViewState;
+    const anchors = resolveEdgeAnchors(diagram, view, parsed, idx)!;
+    const mx = (anchors.from.x + anchors.to.x) / 2;
+    const my = (anchors.from.y + anchors.to.y) / 2;
+    expect(hitTestDiagramEdge(mx, my, diagram, view)).toBe(0);
+    expect(hitTestDiagramEdge(mx, my + 50, diagram, view)).toBeNull();
   });
 });
 

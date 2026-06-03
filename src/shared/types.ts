@@ -198,6 +198,8 @@ export interface PaintDraft {
   busLabel?: string; // vector paint: WaveDrom data[] label
   busColorFill?: string; // vector paint: WaveDrom bus fill hex
   mode: 'paint' | 'erase';
+  /** Erase tool: WaveDrom edge[] index to remove on pointer up */
+  edgeIndex?: number;
 }
 
 // ─── Full app store shape ─────────────────────────────────────────────────────
