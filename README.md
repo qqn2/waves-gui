@@ -16,18 +16,24 @@ See [`agent.md`](./agent.md) (Solo desk scope) and [`ORCHESTRATOR_PROMPT.md`](./
 
 ## Quick start
 
+From the project folder, run `make` to see commands. Typical flow:
+
 ```bash
-make install   # once
-make dev       # http://localhost:5173
+make install   # first time only
+make dev       # editor at http://localhost:5173 — stop with Ctrl+C
 ```
 
-SSH port forward if developing remotely. Production build: `make build` → serve `dist/` (`make preview`).
+To ship a static copy: `make build` (creates `dist/`). Try it locally with `make preview`.
+
+Before sharing changes: `make check` (runs tests and build).
+
+**Windows:** use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) and run the commands above, or use `npm install` / `npm run dev` / `npm test` / `npm run build` in PowerShell if Node is installed.
 
 ## Verify
 
 ```bash
 make test
-make check     # typecheck + test + build
+make check
 ```
 
 ## Project layout
