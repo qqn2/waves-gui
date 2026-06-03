@@ -2,7 +2,7 @@
 
 This checklist maps **official WaveJSON / WaveDrom** capabilities (see `docs/wavedrom-ref/WaveJSON.md` and the [tutorial](http://wavedrom.com/tutorial.html)) to this **solo-desk timing editor**. Status keys: **Yes** = usable in GUI today; **Bridge** = import/export JSON only; **Partial** = incomplete; **No** = not implemented; **N/A** = different diagram type (not timing).
 
-Last reviewed after Phase 5 backlog (2026-06-02). Tests: **148/148**.
+Last reviewed after Phase 5 backlog (2026-06-03). Tests: **175/175**.
 
 ## Diagram kinds (root object)
 
@@ -52,7 +52,7 @@ Last reviewed after Phase 5 backlog (2026-06-02). Tests: **148/148**.
 |-------|----------|-------------|----------|
 | `data[]` — value **labels** on bus slots | Yes | **Yes** | Panel editor + paint label field |
 | `period` — cycles per step | Yes | **Yes** | `SignalTimingBar` + per-lane column width on canvas |
-| `phase` — horizontal shift | Yes | **Yes** | `SignalTimingBar` + `laneHitTest` / render |
+| `phase` — horizontal shift | Yes | **Yes** | `SignalTimingBar` + `laneTiming` / render |
 | `node` — anchor letters for `edge` | Yes | **Yes** | Tools + optional **ABC** toggle; dim letters while edge tool active |
 | `skin` on signal | Ignored | **No** | Low |
 
@@ -67,7 +67,7 @@ Last reviewed after Phase 5 backlog (2026-06-02). Tests: **148/148**.
 | Root-level `head` / `foot` (not only in `config`) | Yes | **Bridge** | Import merges into `config` |
 
 > [!TIP]
-> “Labels” in WaveDrom usually means **bus `data` labels** (text on colored blocks) or **head/foot figure text**, not arbitrary canvas stickers. The legacy annotation layer was **not** WaveDrom-exportable and stays out of scope unless mapped to `edge` or official fields.
+> “Labels” in WaveDrom usually means **bus `data` labels** (text on colored blocks) or **head/foot figure text**, not arbitrary canvas stickers. Use WaveDrom `edge[]` tools for dependency arrows and span labels.
 
 ## Dependency arrows (`edge[]`)
 
@@ -102,8 +102,8 @@ See upstream example: `docs/wavedrom-ref/upstream-tests/signal-arcs.json5`.
 | Item | Reason |
 |------|--------|
 | `backend/`, database, auth | Locked in `agent.md` |
-| VCD import/export | `agent.md` / orchestrator |
-| Non-WaveDrom annotation layer in main UI | Does not round-trip |
+| VCD import/export | Out of scope — see `agent.md` |
+| Non-WaveDrom annotation overlay | Removed — use `edge[]` |
 | `reg` / `assign` diagram editing | Different product surface |
 | Real-time collaboration | Solo desk |
 
