@@ -50,7 +50,6 @@ function sampleDiagram(): DiagramState {
     ],
     config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
     edges: [],
-    annotations: [],
   };
 }
 
@@ -68,7 +67,6 @@ describe('localDraft', () => {
         signals: [],
         config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
         edges: [],
-        annotations: [],
       }),
     ).toBe(true);
     expect(isDiagramEmpty(sampleDiagram())).toBe(false);

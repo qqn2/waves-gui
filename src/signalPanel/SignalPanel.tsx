@@ -7,7 +7,7 @@ import {
   type RefObject,
 } from 'react';
 import { useStore } from '../shared/store';
-import { getWaveformTopInsetPx } from '../renderer/waveformLayout';
+import { getWaveformTopInsetPx } from '../renderer/renderHeadFoot';
 import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';

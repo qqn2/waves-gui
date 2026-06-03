@@ -11,7 +11,6 @@ function minimal(overrides?: Partial<ViewState>): {
     signals: [],
     config: { totalSteps: 10, hscale: 1 },
     edges: [],
-    annotations: [],
   };
   const view: ViewState = {
     zoom: 1,

@@ -243,6 +243,5 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
     signals,
     config,
     edges: wd.edge ? [...wd.edge] : [],
-    annotations: [],
   };
 }

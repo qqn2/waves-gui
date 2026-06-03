@@ -22,7 +22,6 @@ function diagramWithGlitch(): DiagramState {
     ],
     config: { totalSteps: 4, hscale: 1 },
     edges: [],
-    annotations: [],
   };
 }
 

@@ -10,7 +10,6 @@ describe('normalizeDiagram', () => {
       signals: [],
       config: { totalSteps: 8, hscale: 1.5 },
       edges: [],
-      annotations: [],
     });
     expect(d.config.hscale).toBe(1.5);
   });
@@ -20,7 +19,6 @@ describe('normalizeDiagram', () => {
       version: 1,
       signals: [],
       config: { totalSteps: 8, hscale: 1 },
-      annotations: [],
     } as unknown as DiagramState;
 
     const fixed = normalizeDiagram(legacy);
@@ -41,7 +39,6 @@ describe('normalizeDiagram', () => {
         },
       ],
       config: { totalSteps: 4, hscale: 1 },
-      annotations: [],
     } as unknown as DiagramState;
 
     expect(() => diagramToCodeString(normalizeDiagram(legacy))).not.toThrow();
@@ -59,7 +56,6 @@ describe('normalizeDiagram', () => {
       ],
       config: { totalSteps: 4, hscale: 1 },
       edges: [],
-      annotations: [],
     } as unknown as DiagramState;
 
     const fixed = normalizeDiagram(legacy);
@@ -84,7 +80,6 @@ describe('normalizeDiagram', () => {
         },
       ],
       config: { totalSteps: 4, hscale: 1 },
-      annotations: [],
     } as unknown as DiagramState;
 
     const fixed = normalizeDiagram(legacy);

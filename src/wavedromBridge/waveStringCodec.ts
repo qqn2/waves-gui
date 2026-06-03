@@ -1,3 +1,16 @@
+/**
+ * WaveDrom `wave` string codec — converts between JSON `wave` and internal arrays.
+ *
+ * Wave character cheat sheet (normal bit lanes):
+ *   0 1 x z u d  — logic levels (unknown, high-Z, pull-up/down)
+ *   p n P N      — clock rise/fall (see clockWave.ts for full clock encoding)
+ *   =            — start/end of a bus span (pairs with data[] label)
+ *   |            — gap before next column → stepGaps[]
+ *   2–9          — bus fill color index (WaveDrom palette)
+ *   repeated char — same level held; duplicate at boundary → stepGlitches[] (spurious transition)
+ *
+ * Decode order: clock shortcut strings first, then expanded clock, then generic scan.
+ */
 import { BIT_STATE_CHARS, type BitState } from '../shared/types';
 import { isClockBitState } from '../shared/bitToggle';
 import {

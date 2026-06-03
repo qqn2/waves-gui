@@ -2,7 +2,7 @@ import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import { useStore } from '../shared/store';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
-import type { HitTestResult } from './hitTestStub';
+import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX } from './pointerUtils';
 
 function capturePointer(

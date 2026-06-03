@@ -9,7 +9,7 @@ import {
 } from '../renderer/coordinates';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { setActiveSignalIds, toolState, SELECT_DRAG_THRESHOLD_PX } from './toolState';
-import type { HitTestResult } from './hitTestStub';
+import type { HitTestResult } from '../renderer/hitTest';
 
 function viewTransform(diagram: DiagramState, view: ViewState): ViewTransform {
   return {

@@ -24,7 +24,6 @@ function sampleDiagram(): DiagramState {
     signals: [signal],
     config: { totalSteps: 4, hscale: 1 },
     edges: [],
-    annotations: [],
   };
 }
 

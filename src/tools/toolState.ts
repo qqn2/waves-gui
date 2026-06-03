@@ -1,5 +1,5 @@
 import { useStore } from '../shared/store';
-import type { HitTestResult } from './hitTestStub';
+import type { HitTestResult } from '../renderer/hitTest';
 
 /** Ephemeral pointer-drag and selection state shared across tool modules */
 
@@ -22,7 +22,6 @@ let selectAnchor: { x: number; y: number } | null = null;
 let selectOverlay: SelectOverlayRect | null = null;
 let stepSelection: StepSelection | null = null;
 let capturedPointerId: number | null = null;
-let selectedAnnotationId: string | null = null;
 let selectClickHit: HitTestResult | null = null;
 
 export const SELECT_DRAG_THRESHOLD_PX = 5;
@@ -97,13 +96,6 @@ export const toolState = {
     return capturedPointerId;
   },
 
-  setSelectedAnnotationId(id: string | null): void {
-    selectedAnnotationId = id;
-  },
-  getSelectedAnnotationId(): string | null {
-    return selectedAnnotationId;
-  },
-
   setSelectClickHit(hit: HitTestResult | null): void {
     selectClickHit = hit;
   },
@@ -119,7 +111,6 @@ export const toolState = {
     selectOverlay = null;
     stepSelection = null;
     capturedPointerId = null;
-    selectedAnnotationId = null;
     selectClickHit = null;
   },
 };

@@ -16,7 +16,6 @@ function minimalDiagram(overrides: Partial<DiagramState> = {}): DiagramState {
     signals: [],
     config: { totalSteps: 20, hscale: 1 },
     edges: [],
-    annotations: [],
     ...overrides,
   };
 }

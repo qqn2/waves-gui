@@ -1,7 +1,7 @@
 import type { DiagramState, Signal, ViewState } from '../shared/types';
 import { findSignal } from '../shared/store';
 import { canvasToLogicalX, type ViewTransform } from '../renderer/coordinates';
-import { stepAtLogicalXForSignal } from '../renderer/laneHitTest';
+import { stepAtLogicalXForSignal } from '../renderer/laneTiming';
 import { stepFromLogicalX } from '../renderer/laneTiming';
 
 export function viewTransform(

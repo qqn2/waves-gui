@@ -1,3 +1,10 @@
+/**
+ * Browser draft recovery — NOT a substitute for File → Save.
+ *
+ * localDraft.ts  — autosave DiagramState to localStorage on change
+ * recentFiles.ts — remember last opened filenames (names only, not file contents)
+ * safeStorage.ts — localStorage wrapper with quota handling
+ */
 export {
   clearDraft,
   DRAFT_ENVELOPE_VERSION,

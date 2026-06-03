@@ -1,13 +1,21 @@
+/**
+ * Routes canvas pointer events to the active editing tool.
+ *
+ * Flow: WaveformCanvas hitTest(x,y) → onPointerDown/Move/Up here → tool module → store action
+ *       → CanvasRenderer redraw. flushPendingCodeToDiagram() runs before mutating edits.
+ *
+ * toolState (module singleton) holds drag-in-progress data; paintDraft in the store is the
+ * live preview overlay — both are cleared on pointer up.
+ */
 import { useCallback, useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import { useStore } from '../shared/store';
-import type { HitTestResult } from './hitTestStub';
+import type { HitTestResult } from '../renderer/hitTest';
 import type { SelectOverlayRect } from './toolState';
 import { toolState } from './toolState';
 import * as paint from './paintTool';
 import * as erase from './eraseTool';
 import * as select from './selectTool';
-import * as cursor from './cursorTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { useEdgeTools } from './useEdgeTools';
 
@@ -171,11 +179,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);
       } else if (tool === 'cursor' || tool === 'select') {
-        if (hit.annotationId) {
-          cursor.cursorPointerDown(hit);
-        } else {
-          select.selectPointerDown(e, el, hit);
-        }
+        select.selectPointerDown(e, el, hit);
       }
     },
     [tool, canvasRef, edge],
