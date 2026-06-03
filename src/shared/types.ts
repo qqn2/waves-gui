@@ -127,10 +127,17 @@ export interface ViewState {
   activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
   showCodePanel: boolean;
+  showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
   labelWidth: number;
   showTimeAxis: boolean;
   theme: Theme;
+  /** User accent override; null = preset default for active theme. */
+  accentColor: string | null;
+  /** User canvas background override; null = preset default. */
+  canvasColor: string | null;
+  /** Body font scale (0.9–1.15). */
+  uiFontScale: number;
   isDirty: boolean; // unsaved changes
   fileName: string | null;
   /** Ephemeral paint/erase preview during pointer drag — never pushed to undo history */

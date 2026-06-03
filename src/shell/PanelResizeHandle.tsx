@@ -3,7 +3,7 @@ import styles from './shell.module.css';
 
 export interface PanelResizeHandleProps {
   axis: 'x' | 'y';
-  /** Called with pixel delta since pointer down (positive = larger panel). */
+  /** Called with pixel delta since pointer down (positive = pointer moved down/right). */
   onResizeDelta: (delta: number) => void;
   onResizeStart?: () => void;
   onResizeEnd?: () => void;

@@ -3,19 +3,18 @@ import { createPortal } from 'react-dom';
 import {
   CODE_PANEL_FLOAT_MIN_H,
   CODE_PANEL_FLOAT_MIN_W,
-  type CodePanelLayoutState,
+  type DockPanelLayout,
 } from './codePanelLayout';
-import { CodePanelChrome } from './CodePanelChrome';
-import type { CodePanelPlacement } from './codePanelLayout';
 import styles from './shell.module.css';
 
 export interface FloatingCodePanelProps {
-  layout: CodePanelLayoutState;
-  onLayoutChange: (patch: Partial<CodePanelLayoutState>) => void;
+  layout: DockPanelLayout;
+  ariaLabel: string;
+  onLayoutChange: (patch: Partial<DockPanelLayout>) => void;
   children: ReactNode;
 }
 
-function clampFloatRect(rect: CodePanelLayoutState['floatRect']): CodePanelLayoutState['floatRect'] {
+function clampFloatRect(rect: DockPanelLayout['floatRect']): DockPanelLayout['floatRect'] {
   const w = Math.max(
     CODE_PANEL_FLOAT_MIN_W,
     Math.min(window.innerWidth - 24, rect.w),
@@ -31,17 +30,11 @@ function clampFloatRect(rect: CodePanelLayoutState['floatRect']): CodePanelLayou
 
 export function FloatingCodePanel({
   layout,
+  ariaLabel,
   onLayoutChange,
   children,
 }: FloatingCodePanelProps) {
   const { floatRect: rect } = layout;
-
-  const onPlacementChange = useCallback(
-    (placement: CodePanelPlacement) => {
-      onLayoutChange({ placement });
-    },
-    [onLayoutChange],
-  );
 
   const onFloatDragStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -118,12 +111,12 @@ export function FloatingCodePanel({
         height: rect.h,
       }}
       role="dialog"
-      aria-label="WaveDrom JSON panel"
+      aria-label={ariaLabel}
     >
-      <CodePanelChrome
-        layout={layout}
-        onPlacementChange={onPlacementChange}
-        onFloatDragStart={onFloatDragStart}
+      <div
+        className={styles.floatDragStrip}
+        onPointerDown={onFloatDragStart}
+        title="Drag to move"
       />
       <div className={styles.floatPanelBody}>{children}</div>
       <div

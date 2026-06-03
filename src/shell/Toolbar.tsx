@@ -48,6 +48,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setPaintMode = useStore((s) => s.setPaintMode);
   const setZoom = useStore((s) => s.setZoom);
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
+  const toggleRenderPanel = useStore((s) => s.toggleRenderPanel);
   const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
   const addSignal = useStore((s) => s.addSignal);
   const addGroup = useStore((s) => s.addGroup);
@@ -192,11 +193,19 @@ export function Toolbar({ onExport }: ToolbarProps) {
 
       <button
         type="button"
-        className={styles.toolBtn}
+        className={`${styles.toolBtn} ${view.showCodePanel ? styles.toolActive : ''}`}
         onClick={() => toggleCodePanel()}
-        title="WaveDrom JSON"
+        title="Show or hide WaveDrom JSON editor"
       >
         {view.showCodePanel ? '✓ ' : ''}JSON
+      </button>
+      <button
+        type="button"
+        className={`${styles.toolBtn} ${view.showRenderPanel ? styles.toolActive : ''}`}
+        onClick={() => toggleRenderPanel()}
+        title="Show or hide WaveDrom render preview"
+      >
+        {view.showRenderPanel ? '✓ ' : ''}Render
       </button>
       <button type="button" className={styles.toolBtn} onClick={() => toggleTimeAxis()}>
         {view.showTimeAxis ? '✓ ' : ''}Axis

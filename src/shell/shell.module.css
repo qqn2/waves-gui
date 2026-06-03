@@ -15,13 +15,49 @@
   overflow: hidden;
 }
 
+.codePane {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--bg-panel);
+  min-width: 280px;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .codeDock {
   flex: 0 0 auto;
-  min-height: 140px;
+  min-height: 160px;
   border-top: 1px solid var(--border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/** When one panel is right and one bottom, core column + full-height side column. */
+.workspaceRow {
+  display: flex;
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.workspaceCore {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.codePaneFullHeight {
+  align-self: stretch;
+  height: auto;
 }
 
 .appLayout {
@@ -76,6 +112,48 @@
   background: color-mix(in srgb, var(--accent) 55%, var(--border));
 }
 
+.sidePanelStack {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidePanelStackSplit {
+  min-height: 0;
+}
+
+.floatDragStrip {
+  flex-shrink: 0;
+  height: 6px;
+  cursor: grab;
+  background: color-mix(in srgb, var(--accent) 18%, var(--border));
+}
+
+.floatDragStrip:active {
+  cursor: grabbing;
+}
+
+.sidePanelSection {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidePanelSectionLabel {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-panel) 94%, var(--accent) 6%);
+}
+
 .codePanelStack {
   display: flex;
   flex-direction: column;
@@ -95,13 +173,15 @@
 .codePanelChrome {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   padding: 4px 8px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
   flex-shrink: 0;
   user-select: none;
+  flex-wrap: wrap;
+  min-height: 32px;
 }
 
 .codePanelChromeTitle {
@@ -110,12 +190,74 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.codePanelViewModeGroup {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.codePanelViewModeGroupToolbar {
+  margin-left: 2px;
+}
+
+.codePanelViewModeBtn {
+  padding: 3px 10px;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.codePanelViewModeGroupToolbar .codePanelViewModeBtn {
+  padding: 4px 11px;
+  font-size: 12px;
+}
+
+.codePanelViewModeBtn:last-child {
+  border-right: none;
+}
+
+.codePanelViewModeBtn:hover {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-app));
+}
+
+.codePanelViewModeBtnActive {
+  background: var(--selection-fill);
+  color: var(--accent);
 }
 
 .codePanelChromeActions {
   display: flex;
   align-items: center;
   gap: 2px;
+  margin-left: auto;
+}
+
+.codePanelOrderGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.codePanelChrome:has(.codePanelOrderGroup) .codePanelChromeActions {
+  margin-left: 0;
+}
+
+.codePanelLayoutBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .codePanelLayoutBtn {
@@ -195,69 +337,6 @@
   border-right: 2px solid var(--text-secondary);
   border-bottom: 2px solid var(--text-secondary);
   opacity: 0.7;
-}
-
-.codePane {
-  flex: 0 0 auto;
-  flex-shrink: 0;
-  border-left: 1px solid var(--border);
-  background: var(--bg-panel);
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.menuBar {
-  display: flex;
-  gap: 4px;
-  padding: 4px 8px;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.menuGroup {
-  position: relative;
-}
-
-.menuGroup:hover .menuDropdown {
-  display: block;
-}
-
-.menuLabel {
-  padding: 4px 10px;
-  font-size: 13px;
-  cursor: default;
-}
-
-.menuDropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 100;
-  min-width: 160px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.menuDropdown button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 6px 12px;
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.menuDropdown button:hover {
-  background: var(--selection-fill);
 }
 
 .menuSubheading {
@@ -359,52 +438,146 @@
   overflow: auto;
 }
 
-.themeDropdown {
+.themePopover {
   position: absolute;
   right: 0;
   top: calc(100% + 4px);
   z-index: 120;
-  min-width: 14rem;
-  max-width: min(20rem, 90vw);
-  display: flex;
-  flex-direction: column;
+  width: 15.5rem;
+  padding: 4px 0;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--bg-panel);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--text-primary) 20%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--text-primary) 16%, transparent);
 }
 
-.themeDropdown button {
+.themeRow {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  width: 100%;
-  text-align: left;
-  padding: 8px 10px;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+}
+
+.themeRowLabel {
+  flex: 0 0 3.25rem;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+.themeRowControls {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.themePillGroup {
+  display: inline-flex;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.themePill {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
   border: none;
-  background: transparent;
+  border-right: 1px solid var(--border);
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.themePill:last-child {
+  border-right: none;
+}
+
+.themePill:hover {
   color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-app));
+}
+
+.themePillActive {
+  background: var(--selection-fill);
+  color: var(--accent);
+}
+
+.themeColorSwatch {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.themeColorSwatch:hover {
+  border-color: var(--accent);
+}
+
+.themeColorSwatch[aria-pressed='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.themeColorSwatchDefault {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-panel),
+    var(--bg-panel) 3px,
+    var(--border) 3px,
+    var(--border) 4px
+  );
+}
+
+.themeColorCustom {
+  flex: 0 0 auto;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 3px;
   cursor: pointer;
 }
 
-.themeDropdown button:hover {
-  background: var(--selection-fill);
+.themeColorCustom input[type='color'] {
+  width: 150%;
+  height: 150%;
+  margin: -25%;
+  padding: 0;
+  border: none;
+  cursor: pointer;
 }
 
-.themeOptionActive {
-  background: var(--selection-fill);
-}
-
-.themeOptionLabel {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.themeOptionHint {
+.themeMiniBtn {
+  flex: 0 0 auto;
+  padding: 1px 5px;
   font-size: 10px;
-  color: var(--text-secondary);
   line-height: 1.3;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.themeMiniBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
 
 .statusBar {

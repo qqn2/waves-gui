@@ -14,6 +14,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { AppState } from '../types';
 import type { StoreActions } from './storeActions';
 import { defaultDiagram, defaultView } from './helpers';
+import { loadThemeSettings } from '../theme';
 import { createSignalActions } from './signalActions';
 import { createEdgeActions, createDocumentActions } from './documentActions';
 import { createViewActions } from './viewActions';
@@ -27,15 +28,24 @@ export {
 } from './helpers';
 
 export const useStore = create<AppState & StoreActions>()(
-  immer((set) => ({
-    diagram: defaultDiagram(),
-    view: defaultView(),
-    history: [],
-    future: [],
+  immer((set) => {
+    const storedTheme = loadThemeSettings();
+    return {
+      diagram: defaultDiagram(),
+      view: {
+        ...defaultView(),
+        theme: storedTheme.theme,
+        accentColor: storedTheme.accentColor,
+        canvasColor: storedTheme.canvasColor,
+        uiFontScale: storedTheme.uiFontScale,
+      },
+      history: [],
+      future: [],
 
-    ...createSignalActions(set),
-    ...createEdgeActions(set),
-    ...createDocumentActions(set),
-    ...createViewActions(set),
-  })),
+      ...createSignalActions(set),
+      ...createEdgeActions(set),
+      ...createDocumentActions(set),
+      ...createViewActions(set),
+    };
+  }),
 );

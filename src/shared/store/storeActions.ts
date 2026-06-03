@@ -79,9 +79,13 @@ export interface StoreActions {
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
   setPaintMode(mode: PaintMode): void;
   toggleCodePanel(): void;
+  toggleRenderPanel(): void;
   setLabelWidth(width: number): void;
   toggleTimeAxis(): void;
   setTheme(theme: Theme): void;
+  setAccentColor(color: string | null): void;
+  setCanvasColor(color: string | null): void;
+  setUiFontScale(scale: number): void;
 }
 
 /** @deprecated Use StoreActions */

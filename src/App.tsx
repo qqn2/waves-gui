@@ -14,10 +14,11 @@ import {
 } from './renderer';
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
-import { CodePanel } from './codePanel';
 import { ExportDialog } from './exportEngine';
 import { useStore } from './shared/store';
+import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
+import { CodePanelLayoutProvider } from './shell/codePanelLayout';
 import { HeadFootFields } from './shell/HeadFootFields';
 import { SignalTimingBar } from './shell/SignalTimingBar';
 import './App.css';
@@ -128,46 +129,54 @@ function App() {
   useSoloDeskPersistence();
 
   const showCodePanel = useStore((s) => s.view.showCodePanel);
+  const showRenderPanel = useStore((s) => s.view.showRenderPanel);
   const theme = useStore((s) => s.view.theme);
+  const accentColor = useStore((s) => s.view.accentColor);
+  const canvasColor = useStore((s) => s.view.canvasColor);
+  const uiFontScale = useStore((s) => s.view.uiFontScale);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const [exportOpen, setExportOpen] = useState(false);
   const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+    applyThemeSettings(
+      themeSettingsFromView({ theme, accentColor, canvasColor, uiFontScale }),
+    );
+  }, [theme, accentColor, canvasColor, uiFontScale]);
 
   return (
-    <div className="appRoot" data-theme={theme}>
-      <header className="shellHeader">
-        <Toolbar onExport={() => setExportOpen(true)} />
-        <HeadFootFields />
-        <SignalTimingBar />
-      </header>
-      <div className="mainArea">
-        <AppLayout
-          showCodePanel={showCodePanel}
-          signalPanel={(ctx) => (
-            <SignalPanel
-              scrollSync={ctx.scrollSync}
-              panelScrollRef={ctx.panelScrollRef}
-            />
-          )}
-          canvas={(ctx) => (
-            <CanvasWithMarker scrollSync={ctx.scrollSync} onHoverHit={setHoverHit} />
-          )}
-          codePanel={<CodePanel hideTitle />}
+    <CodePanelLayoutProvider>
+      <div className="appRoot" data-theme={theme}>
+        <header className="shellHeader">
+          <Toolbar onExport={() => setExportOpen(true)} />
+          <HeadFootFields />
+          <SignalTimingBar />
+        </header>
+        <div className="mainArea">
+          <AppLayout
+            showCodePanel={showCodePanel}
+            showRenderPanel={showRenderPanel}
+            signalPanel={(ctx) => (
+              <SignalPanel
+                scrollSync={ctx.scrollSync}
+                panelScrollRef={ctx.panelScrollRef}
+              />
+            )}
+            canvas={(ctx) => (
+              <CanvasWithMarker scrollSync={ctx.scrollSync} onHoverHit={setHoverHit} />
+            )}
+          />
+        </div>
+        <StatusBar pointerHit={hoverHit} />
+        <ExportDialog
+          open={exportOpen}
+          onClose={() => setExportOpen(false)}
+          diagram={diagram}
+          view={view}
         />
       </div>
-      <StatusBar pointerHit={hoverHit} />
-      <ExportDialog
-        open={exportOpen}
-        onClose={() => setExportOpen(false)}
-        diagram={diagram}
-        view={view}
-      />
-    </div>
+    </CodePanelLayoutProvider>
   );
 }
 

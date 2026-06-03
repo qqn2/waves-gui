@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useStore } from '../shared/store';
-import { isDarkTheme } from '../shared/theme';
 import styles from './CodePanel.module.css';
 
 export interface WavedromPreviewProps {
@@ -10,7 +8,6 @@ export interface WavedromPreviewProps {
 
 export function WavedromPreview({ code, error }: WavedromPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const theme = useStore((s) => s.view.theme);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -26,18 +23,9 @@ export function WavedromPreview({ code, error }: WavedromPreviewProps) {
       try {
         const parsed = JSON.parse(code) as unknown;
         const WaveDrom = await import('wavedrom');
-        let skin = WaveDrom.waveSkin;
-        if (isDarkTheme(theme)) {
-          try {
-            const darkModule = await import('wavedrom/skins/dark.js');
-            skin = darkModule.default?.dark ?? skin;
-          } catch {
-            // fall back to default skin
-          }
-        }
         if (cancelled) return;
         el.replaceChildren();
-        WaveDrom.renderWaveElement(0, parsed, el, skin, false);
+        WaveDrom.renderWaveElement(0, parsed, el, WaveDrom.waveSkin, false);
       } catch {
         if (!cancelled) el.replaceChildren();
       }
@@ -46,7 +34,7 @@ export function WavedromPreview({ code, error }: WavedromPreviewProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, error, theme]);
+  }, [code, error]);
 
   return (
     <div className={styles.previewWrap}>

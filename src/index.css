@@ -14,5 +14,5 @@ body,
 
 body {
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-font-scale, 1));
 }
