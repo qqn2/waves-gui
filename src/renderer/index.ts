@@ -18,5 +18,5 @@ export {
 } from './edgeLayout';
 export type { NodeAnchor, ParsedEdge, CanvasAnchor } from './edgeLayout';
 export { CanvasRenderer } from './CanvasRenderer';
-export { renderHeadFoot, measureHeadFoot, buildStepLabels } from './renderHeadFoot';
+export { renderHeadFoot, measureHeadFoot, buildStepLabels, getWaveformTopInsetPx } from './renderHeadFoot';
 export type { HeadFootLayout } from './renderHeadFoot';

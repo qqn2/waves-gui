@@ -83,9 +83,6 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
   if (!Array.isArray(d.edges)) {
     d.edges = [];
   }
-  if (!Array.isArray(d.annotations)) {
-    d.annotations = [];
-  }
   if (!Array.isArray(d.signals)) {
     d.signals = [];
   }

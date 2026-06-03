@@ -3,7 +3,7 @@ import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import { canvasToLogicalX, canvasToLogicalY, type ViewTransform } from './coordinates';
-import { stepAtLogicalXForSignal } from './laneHitTest';
+import { stepAtLogicalXForSignal } from './laneTiming';
 import { hitTestDiagramEdge } from './edgeLayout';
 import { hitTestStepGlitchBoundary } from './glitchHitTest';
 
@@ -13,7 +13,6 @@ export interface HitTestResult {
   step: number | null;
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;
-  annotationId: string | null;
   edgeIndex: number | null;
 }
 
@@ -23,7 +22,6 @@ const MISS: HitTestResult = {
   step: null,
   half: null,
   isLabelArea: false,
-  annotationId: null,
   edgeIndex: null,
 };
 
@@ -115,7 +113,6 @@ export function hitTest(
       step,
       half,
       isLabelArea: false,
-      annotationId: null,
       edgeIndex: null,
     };
   }

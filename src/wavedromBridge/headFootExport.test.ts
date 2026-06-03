@@ -12,7 +12,6 @@ describe('head/foot export', () => {
       foot: { text: 'Fig 1', tock: 1 },
     },
     edges: [],
-    annotations: [],
     signals: [{ id: '1', name: 'clk', type: 'bit', states: ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], segments: [], color: '#4A9EFF', rowHeight: 40 }],
   };
 

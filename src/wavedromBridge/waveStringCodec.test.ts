@@ -239,7 +239,6 @@ describe('fromWavedromJSON / toWavedromJSON round-trip', () => {
       version: 1,
       config: { totalSteps: 5, hscale: 2, head: { text: 't' } },
       edges: [],
-      annotations: [],
       signals: [
         {
           id: '1',

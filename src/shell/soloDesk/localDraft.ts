@@ -15,7 +15,7 @@ export interface DraftEnvelope {
 }
 
 export function isDiagramEmpty(diagram: DiagramState): boolean {
-  return diagram.signals.length === 0 && diagram.annotations.length === 0;
+  return diagram.signals.length === 0;
 }
 
 function isDraftEnvelope(value: unknown): value is DraftEnvelope {
@@ -37,8 +37,7 @@ function isDraftEnvelope(value: unknown): value is DraftEnvelope {
     diagram.version === 1 &&
     Array.isArray(diagram.signals) &&
     typeof diagram.config === 'object' &&
-    diagram.config !== null &&
-    Array.isArray(diagram.annotations)
+    diagram.config !== null
   );
 }
 

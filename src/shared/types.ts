@@ -1,3 +1,19 @@
+/**
+ * Domain model — internal representation of a WaveDrom timing diagram.
+ *
+ * WaveDrom JSON mapping (encode/decode lives in src/wavedromBridge/):
+ *
+ *   Signal.states[]     ↔  signal[i].wave     one char per time step (0,1,x,z,u,d,p,n,P,N,=,|,…)
+ *   Signal.segments[]   ↔  signal[i].data[]   bus label per '=' span in wave
+ *   Signal.node         ↔  signal[i].node     anchor letters for edge[] arrows
+ *   Signal.stepGaps[]   ↔  '|' in wave        vertical gap before next column
+ *   Signal.stepGlitches ↔  repeated char      spurious transition (e.g. "00" = glitch between steps)
+ *   Signal.period/phase ↔  .period / .phase   lane stretch and horizontal shift
+ *   DiagramState.edges  ↔  top-level edge[]   dependency paths (e.g. "a~>b  label")
+ *
+ * ViewState (zoom, tools, scroll) is NOT part of DiagramState — see store.ts.
+ */
+
 // ─── Signal states ────────────────────────────────────────────────────────────
 
 /** All possible states for a single bit signal at one time step */
@@ -69,52 +85,6 @@ export interface DiagramConfig {
   foot?: { text?: string; tock?: number; every?: number };
 }
 
-// ─── Annotations ──────────────────────────────────────────────────────────────
-
-export interface ArrowAnnotation {
-  id: string;
-  type: 'arrow';
-  fromSignalId: string;
-  fromStep: number;
-  toSignalId: string;
-  toStep: number;
-  label?: string;
-  color: string;
-}
-
-export interface TimeSpanAnnotation {
-  id: string;
-  type: 'timespan';
-  startStep: number;
-  endStep: number;
-  label?: string;
-  color: string;
-  row?: 'top' | 'bottom'; // position above or below all signals
-}
-
-export interface TimeMarkerAnnotation {
-  id: string;
-  type: 'marker';
-  step: number;
-  label?: string;
-  color: string;
-}
-
-export interface TextAnnotation {
-  id: string;
-  type: 'text';
-  signalId: string;
-  step: number;
-  text: string;
-  color: string;
-}
-
-export type Annotation =
-  | ArrowAnnotation
-  | TimeSpanAnnotation
-  | TimeMarkerAnnotation
-  | TextAnnotation;
-
 // ─── Diagram state (the saved document) ──────────────────────────────────────
 
 export interface DiagramState {
@@ -123,7 +93,6 @@ export interface DiagramState {
   config: DiagramConfig;
   /** WaveDrom edge[] dependency arrow strings */
   edges: string[];
-  annotations: Annotation[];
 }
 
 // ─── View/UI state ────────────────────────────────────────────────────────────
@@ -134,8 +103,6 @@ export type Tool =
   | 'select'
   | 'arrow'
   | 'timespan'
-  | 'marker'
-  | 'text'
   | 'cursor';
 
 import type { WavedromColorIndex } from '../wavedromBridge/wavedromColors';

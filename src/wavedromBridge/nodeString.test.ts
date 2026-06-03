@@ -13,7 +13,6 @@ function diagramWithNode(node: string): DiagramState {
     version: 1,
     config: { totalSteps: 8, hscale: 1 },
     edges: [],
-    annotations: [],
     signals: [
       {
         id: 's0',

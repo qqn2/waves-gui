@@ -1,3 +1,17 @@
+/**
+ * WaveDrom edge[] layout — dependency arrows between node anchors.
+ *
+ * Edge string format (one entry per edge[] element):
+ *   "<path> [<label>]"
+ *
+ * Path word:
+ *   First char  — from-node letter (must exist in some signal's `node` string at that step)
+ *   Last char   — to-node letter
+ *   ...~>...    — '>' before the to-node draws an arrowhead; chars between are the "shape"
+ *                 (e.g. "a~>b", "a~b", "a-b>c" for timespan-style paths)
+ *
+ * Canvas hit-test and SVG export both use parseEdgeString / resolveEdgeAnchors from here.
+ */
 import type { DiagramState, Signal, SignalOrGroup, ViewState } from '../shared/types';
 import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { stepLogicalCenter } from './laneTiming';
