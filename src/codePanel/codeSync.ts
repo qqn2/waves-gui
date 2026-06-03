@@ -3,7 +3,7 @@
  *
  * diagramToCodeString / parseCodeToDiagram go through wavedromBridge (validate + convert).
  *
- * Sync timing (see useCodeToDiagram / useDiagramToCode hooks):
+ * Sync timing (see useCodeToDiagram / useDiagramCode):
  *   - Typing in the JSON panel is debounced (CODE_DEBOUNCE_MS) before updating the store.
  *   - Canvas/tool edits must flush the editor first (flushRegistry + codeFlush.ts) so a
  *     pending debounced JSON write cannot overwrite a paint stroke.

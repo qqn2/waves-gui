@@ -1,12 +1,21 @@
 import type { BitState, PaintMode, Theme, Tool } from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
-import { saveStoredTheme } from '../theme';
+import { saveThemeSettings, themeSettingsFromView } from '../theme';
 import {
   clampLabelColumnWidth,
   saveLabelColumnWidth,
 } from '../../shell/labelColumnLayout';
 import type { ImmerSet, StoreActions } from './storeActions';
+
+function persistTheme(view: {
+  theme: Theme;
+  accentColor: string | null;
+  canvasColor: string | null;
+  uiFontScale: number;
+}): void {
+  saveThemeSettings(themeSettingsFromView(view));
+}
 
 export function createViewActions(set: ImmerSet): Pick<
   StoreActions,
@@ -20,9 +29,13 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setEdgeToolHover'
   | 'setPaintMode'
   | 'toggleCodePanel'
+  | 'toggleRenderPanel'
   | 'setLabelWidth'
   | 'toggleTimeAxis'
   | 'setTheme'
+  | 'setAccentColor'
+  | 'setCanvasColor'
+  | 'setUiFontScale'
 > {
   return {
     setZoom(zoom) {
@@ -87,6 +100,12 @@ export function createViewActions(set: ImmerSet): Pick<
       });
     },
 
+    toggleRenderPanel() {
+      set((s) => {
+        s.view.showRenderPanel = !s.view.showRenderPanel;
+      });
+    },
+
     setLabelWidth(width) {
       const next = clampLabelColumnWidth(width);
       set((s) => {
@@ -102,9 +121,30 @@ export function createViewActions(set: ImmerSet): Pick<
     },
 
     setTheme(theme: Theme) {
-      saveStoredTheme(theme);
       set((s) => {
         s.view.theme = theme;
+        persistTheme(s.view);
+      });
+    },
+
+    setAccentColor(color) {
+      set((s) => {
+        s.view.accentColor = color;
+        persistTheme(s.view);
+      });
+    },
+
+    setCanvasColor(color) {
+      set((s) => {
+        s.view.canvasColor = color;
+        persistTheme(s.view);
+      });
+    },
+
+    setUiFontScale(scale) {
+      set((s) => {
+        s.view.uiFontScale = Math.max(0.9, Math.min(1.15, scale));
+        persistTheme(s.view);
       });
     },
   };
