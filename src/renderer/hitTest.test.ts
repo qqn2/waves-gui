@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { BitState, DiagramState, ViewState } from '../shared/types';
 import { CELL_WIDTH, ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { hitTest } from './hitTest';
+import { buildNodeIndex, parseEdge, resolveEdgeAnchors } from './edgeLayout';
 
 function bitDiagram(steps = 20): DiagramState {
   const states = Array<BitState>(steps).fill('0');
@@ -141,5 +142,47 @@ describe('hitTest', () => {
     const hit = hitTest(CELL_WIDTH + 5, yInChild, diagram, defaultView());
     expect(hit.signalId).toBe('inner');
     expect(hit.step).toBe(1);
+  });
+
+  it('returns edgeIndex when pointer is on a WaveDrom edge', () => {
+    const diagram: DiagramState = {
+      ...bitDiagram(8),
+      edges: ['a->b'],
+      signals: [
+        {
+          id: 's0',
+          name: 'A',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: ROW_HEIGHT,
+          node: 'a.......',
+        },
+        {
+          id: 's1',
+          name: 'B',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: ROW_HEIGHT,
+          node: '....b...',
+        },
+      ],
+    };
+    const view = defaultView();
+    const parsed = parseEdge('a->b')!;
+    const anchors = resolveEdgeAnchors(
+      diagram,
+      view,
+      parsed,
+      buildNodeIndex(diagram.signals),
+    )!;
+    const mx = (anchors.from.x + anchors.to.x) / 2;
+    const my = (anchors.from.y + anchors.to.y) / 2;
+    const hit = hitTest(mx, my, diagram, view);
+    expect(hit.edgeIndex).toBe(0);
+    expect(hit.signalId).toBeNull();
   });
 });

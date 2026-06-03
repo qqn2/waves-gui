@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   encodeWaveString,
+  encodeWaveStringForDiagram,
   decodeWaveString,
   decodeWaveDetail,
   normalizeWaveString,
@@ -70,6 +71,15 @@ describe('encodeWaveString / decodeWaveString', () => {
 
   it('returns empty string for empty states', () => {
     expect(encodeWaveString([])).toBe('');
+  });
+
+  it('encodeWaveStringForDiagram pads wave to totalSteps with dots', () => {
+    expect(
+      encodeWaveStringForDiagram(['P', 'n', 'P', 'n'], 8),
+    ).toBe('P.......');
+    expect(
+      encodeWaveStringForDiagram(['0', '0', '1', '1'], 8),
+    ).toBe('0.1.....');
   });
 
   it('decodes explicit same-level repeats as glitches', () => {

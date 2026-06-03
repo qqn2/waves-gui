@@ -50,6 +50,16 @@ describe('vectorSegments', () => {
     expect(data).toEqual(['0x20']);
   });
 
+  it('segmentsToWaveAndData encodes multi-step unknown as x.', () => {
+    const segments: VectorSegment[] = [
+      { id: 'u', startStep: 0, endStep: 2, value: VECTOR_UNKNOWN_LABEL },
+      { id: 'd', startStep: 2, endStep: 3, value: '0x2000' },
+    ];
+    const { wave, data } = segmentsToWaveAndData(segments, 6);
+    expect(wave.startsWith('x.')).toBe(true);
+    expect(data).toEqual(['0x2000']);
+  });
+
   it('applyVectorSpan paints and erase clears', () => {
     const base: VectorSegment[] = [
       { id: '1', startStep: 0, endStep: 8, value: 'idle' },

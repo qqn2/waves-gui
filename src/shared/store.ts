@@ -165,6 +165,28 @@ function pushHistory(state: AppState): void {
 }
 
 /** Walk the signal tree to find a signal by id, call fn on it. Recurses into groups. */
+/** Clear `stepGlitches` on boundaries that touch erased steps `[lo, hi]`. */
+export function clearStepGlitchesTouchingRange(
+  sig: Signal,
+  lo: number,
+  hi: number,
+): void {
+  if (sig.type !== 'bit' || !sig.stepGlitches?.length) return;
+  const maxBoundaries = Math.max(0, sig.states.length - 1);
+  while (sig.stepGlitches.length < maxBoundaries) {
+    sig.stepGlitches.push(false);
+  }
+  if (sig.stepGlitches.length > maxBoundaries) {
+    sig.stepGlitches.length = maxBoundaries;
+  }
+  for (let b = 0; b < maxBoundaries; b++) {
+    if (b <= hi && b + 1 >= lo) {
+      sig.stepGlitches[b] = false;
+    }
+  }
+  if (!sig.stepGlitches.some(Boolean)) delete sig.stepGlitches;
+}
+
 export function findSignal(
   signals: SignalOrGroup[],
   id: string,
@@ -542,6 +564,7 @@ export const useStore = create<AppState & Actions>()(
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type === 'bit') {
             sig.states[step] = step > 0 ? sig.states[step - 1]! : '0';
+            clearStepGlitchesTouchingRange(sig, step, step);
           }
         });
       });
@@ -557,6 +580,7 @@ export const useStore = create<AppState & Actions>()(
           for (let i = lo; i <= hi; i++) {
             sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
           }
+          clearStepGlitchesTouchingRange(sig, lo, hi);
         });
       });
     },

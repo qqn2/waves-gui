@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useDebounce } from 'use-debounce';
 import { Copy, ExternalLink, Eye } from 'lucide-react';
 import { useStore } from '../shared/store';
 import { PanelResizeHandle } from '../shell/PanelResizeHandle';
@@ -12,6 +20,9 @@ import { diagramToCodeString, validateCodeString } from './codeSync';
 import { useCodeToDiagram } from './useCodeToDiagram';
 import styles from './CodePanel.module.css';
 
+/** WaveDrom preview is expensive; keep JSON editor on the fast path. */
+const PREVIEW_DEBOUNCE_MS = 300;
+
 function wavedromEditorUrl(code: string): string {
   return `https://wavedrom.com/editor.html?${encodeURIComponent(code)}`;
 }
@@ -24,25 +35,33 @@ export interface CodePanelProps {
 export function CodePanel({ hideTitle = false }: CodePanelProps) {
   const diagram = useStore((s) => s.diagram);
   const [codeLayout, updateCodeLayout] = useCodePanelLayout();
-  const isEditorFocusedRef = useRef(false);
   const editorAreaRef = useRef<HTMLDivElement>(null);
   const splitResizeBase = useRef(CODE_PANEL_PREVIEW_SPLIT_DEFAULT);
   const splitAreaSize = useRef(0);
   const [code, setCode] = useState(() => diagramToCodeString(diagram));
   const [showPreview, setShowPreview] = useState(true);
   const { debouncedApply, isEditorDrivenRef } = useCodeToDiagram();
+  const diagramSyncGenRef = useRef(0);
+  const [previewCode] = useDebounce(code, PREVIEW_DEBOUNCE_MS);
 
   const error = useMemo(() => validateCodeString(code), [code]);
   const splitAxis = codeLayout.placement === 'right' ? 'x' : 'y';
   const editorShare = `${codeLayout.previewSplit * 100}%`;
 
+  // GUI → JSON: export after paint (not in render). Skip one cycle after JSON → GUI.
   useEffect(() => {
     if (isEditorDrivenRef.current) {
       isEditorDrivenRef.current = false;
       return;
     }
-    if (isEditorFocusedRef.current) return;
-    setCode(diagramToCodeString(diagram));
+    const gen = ++diagramSyncGenRef.current;
+    queueMicrotask(() => {
+      if (gen !== diagramSyncGenRef.current) return;
+      const next = diagramToCodeString(useStore.getState().diagram);
+      startTransition(() => {
+        setCode((prev) => (prev === next ? prev : next));
+      });
+    });
   }, [diagram, isEditorDrivenRef]);
 
   const handleCodeChange = useCallback(
@@ -131,10 +150,8 @@ export function CodePanel({ hideTitle = false }: CodePanelProps) {
           <CodeEditor
             code={code}
             onChange={handleCodeChange}
+            onBlur={() => debouncedApply.flush()}
             error={error}
-            onFocusChange={(focused) => {
-              isEditorFocusedRef.current = focused;
-            }}
           />
         </div>
         {showPreview ? (
@@ -150,7 +167,7 @@ export function CodePanel({ hideTitle = false }: CodePanelProps) {
               onResizeDelta={onPreviewSplitResizeDelta}
             />
             <div className={styles.previewPane}>
-              <WavedromPreview code={code} error={error} />
+              <WavedromPreview code={previewCode} error={error} />
             </div>
           </>
         ) : null}

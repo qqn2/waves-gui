@@ -1,5 +1,5 @@
 import type { DiagramState, Signal, SignalGroup, SignalOrGroup } from '../shared/types';
-import { encodeWaveString } from './waveStringCodec';
+import { encodeWaveStringForDiagram } from './waveStringCodec';
 import { segmentsToWaveAndData } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 import { exportWdFoot, exportWdHead } from './headFootExport';
@@ -12,7 +12,12 @@ function signalToEntry(
   if (sig.type === 'bit') {
     const entry: WdSignal = {
       name: sig.name,
-      wave: encodeWaveString(sig.states, sig.stepGaps, sig.stepGlitches),
+      wave: encodeWaveStringForDiagram(
+        sig.states,
+        totalSteps,
+        sig.stepGaps,
+        sig.stepGlitches,
+      ),
     };
     if (sig.phase !== undefined) entry.phase = sig.phase;
     if (sig.period !== undefined) entry.period = sig.period;

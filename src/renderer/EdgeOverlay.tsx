@@ -7,6 +7,7 @@ import {
   parseEdge,
   resolveEdgeAnchors,
 } from './edgeLayout';
+import { EDGE_ARROW_PATH, edgeArrowMarkerProps } from './edgeArrowMarker';
 import styles from './EdgeOverlay.module.css';
 
 const ARROW_ID = 'wd-edge-arrowhead';
@@ -55,16 +56,8 @@ export function EdgeOverlay() {
   return (
     <svg className={styles.edgeOverlay} aria-hidden>
       <defs>
-        <marker
-          id={ARROW_ID}
-          markerWidth="8"
-          markerHeight="8"
-          refX="7"
-          refY="4"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M0,0 L8,4 L0,8 z" fill="var(--edge-stroke, #d4a84b)" />
+        <marker id={ARROW_ID} {...edgeArrowMarkerProps}>
+          <path d={EDGE_ARROW_PATH} fill="var(--edge-stroke, #d4a84b)" />
         </marker>
       </defs>
       {shapes.map((s) => (

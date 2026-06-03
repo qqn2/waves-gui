@@ -247,3 +247,139 @@ export function buildEdgeDrawItems(
 
   return items;
 }
+
+const EDGE_HIT_PX = 8;
+const CUBIC_SAMPLES = 12;
+
+function distToSegment(
+  px: number,
+  py: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+): number {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(px - x1, py - y1);
+  let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+}
+
+function distToPolyline(px: number, py: number, pts: CanvasAnchor[]): number {
+  let min = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i]!;
+    const b = pts[i + 1]!;
+    min = Math.min(min, distToSegment(px, py, a.x, a.y, b.x, b.y));
+  }
+  return min;
+}
+
+function cubicSamples(
+  p0: CanvasAnchor,
+  p1: CanvasAnchor,
+  p2: CanvasAnchor,
+  p3: CanvasAnchor,
+  n: number,
+): CanvasAnchor[] {
+  const out: CanvasAnchor[] = [];
+  for (let i = 1; i <= n; i++) {
+    const t = i / n;
+    const u = 1 - t;
+    out.push({
+      x: u * u * u * p0.x + 3 * u * u * t * p1.x + 3 * u * t * t * p2.x + t * t * t * p3.x,
+      y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y,
+    });
+  }
+  return out;
+}
+
+/** Polyline approximation of `buildEdgePathD` for pointer hit-testing. */
+export function edgePathPolyline(
+  from: CanvasAnchor,
+  to: CanvasAnchor,
+  shape: string,
+): CanvasAnchor[] {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const key = shape.length > 0 ? shape : '-';
+  const pts: CanvasAnchor[] = [{ ...from }];
+
+  const pushCubic = (c1x: number, c1y: number, c2x: number, c2y: number) => {
+    pts.push(
+      ...cubicSamples(
+        from,
+        { x: c1x, y: c1y },
+        { x: c2x, y: c2y },
+        to,
+        CUBIC_SAMPLES,
+      ),
+    );
+  };
+
+  switch (key) {
+    case '~':
+    case '~>':
+    case '<~>':
+      pushCubic(from.x + 0.7 * dx, from.y, from.x + 0.3 * dx, from.y + dy);
+      break;
+    case '-~':
+    case '-~>':
+    case '<-~>':
+      pushCubic(from.x + 0.7 * dx, from.y, to.x, from.y + dy);
+      break;
+    case '~-':
+    case '~->':
+    case '<-|>':
+      pushCubic(from.x, from.y, from.x + 0.3 * dx, from.y + dy);
+      break;
+    case '-|':
+    case '-|>':
+      pts.push({ x: to.x, y: from.y });
+      break;
+    case '|-':
+    case '|->':
+      pts.push({ x: from.x, y: to.y });
+      break;
+    case '-|-':
+    case '<-|->':
+      pts.push({ x: from.x + dx / 2, y: from.y });
+      pts.push({ x: from.x + dx / 2, y: to.y });
+      break;
+    case '+':
+    case '-':
+    case '->':
+    case '<->':
+    default:
+      break;
+  }
+
+  const last = pts[pts.length - 1]!;
+  if (last.x !== to.x || last.y !== to.y) pts.push({ ...to });
+  return pts;
+}
+
+/** Topmost WaveDrom edge[] index under a canvas point, or null. */
+export function hitTestDiagramEdge(
+  canvasX: number,
+  canvasY: number,
+  diagram: DiagramState,
+  view: ViewState,
+): number | null {
+  const edges = diagram.edges ?? [];
+  if (edges.length === 0) return null;
+
+  const nodeIndex = buildNodeIndex(diagram.signals);
+  for (let i = edges.length - 1; i >= 0; i--) {
+    const parsed = parseEdge(edges[i]!);
+    if (!parsed) continue;
+    const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
+    if (!anchors) continue;
+    const poly = edgePathPolyline(anchors.from, anchors.to, parsed.shape);
+    if (distToPolyline(canvasX, canvasY, poly) <= EDGE_HIT_PX) return i;
+  }
+  return null;
+}

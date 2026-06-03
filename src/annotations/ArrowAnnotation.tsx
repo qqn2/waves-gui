@@ -1,5 +1,6 @@
 import type { ArrowAnnotation as ArrowAnn } from '../shared/types';
 import type { SignalOrGroup } from '../shared/types';
+import { EDGE_ARROW_PATH, edgeArrowMarkerProps } from '../renderer/edgeArrowMarker';
 import { getSignalRowY, stepCenterX } from './annotationGeometry';
 
 const HANDLE_R = 5;
@@ -21,15 +22,8 @@ export function ArrowAnnotationEl({ annotation, signals, showHandles }: ArrowAnn
   return (
     <g className="ann-arrow" data-annotation-id={annotation.id}>
       <defs>
-        <marker
-          id={`arrowhead-${annotation.id}`}
-          markerWidth="8"
-          markerHeight="8"
-          refX="6"
-          refY="4"
-          orient="auto"
-        >
-          <path d="M0,0 L8,4 L0,8 z" fill={annotation.color} />
+        <marker id={`arrowhead-${annotation.id}`} {...edgeArrowMarkerProps}>
+          <path d={EDGE_ARROW_PATH} fill={annotation.color} />
         </marker>
       </defs>
       <line

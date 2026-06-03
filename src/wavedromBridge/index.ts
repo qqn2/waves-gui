@@ -3,6 +3,7 @@ export { fromWavedromJSON } from './fromWavedromJSON';
 export { validateWavedromJSON } from './validate';
 export {
   encodeWaveString,
+  encodeWaveStringForDiagram,
   decodeWaveString,
   normalizeWaveString,
 } from './waveStringCodec';

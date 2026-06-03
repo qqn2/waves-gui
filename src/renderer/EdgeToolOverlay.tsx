@@ -6,6 +6,7 @@ import { canvasCellWidth } from './coordinates';
 import { buildEdgePathD, labelPositionOnPath, resolveNodeAnchor } from './edgeLayout';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
+import { EDGE_ARROW_PATH, edgeArrowMarkerProps } from './edgeArrowMarker';
 import styles from './EdgeToolOverlay.module.css';
 
 const PREVIEW_ARROW_ID = 'wd-edge-preview-arrowhead';
@@ -194,16 +195,11 @@ export function EdgeToolOverlay() {
       {showSvg ? (
         <svg className={styles.edgeToolSvg} aria-hidden>
           <defs>
-            <marker
-              id={PREVIEW_ARROW_ID}
-              markerWidth="8"
-              markerHeight="8"
-              refX="7"
-              refY="4"
-              orient="auto"
-              markerUnits="strokeWidth"
-            >
-              <path d="M0,0 L8,4 L0,8 z" fill="var(--edge-preview-stroke, #7eb8ff)" />
+            <marker id={PREVIEW_ARROW_ID} {...edgeArrowMarkerProps}>
+              <path
+                d={EDGE_ARROW_PATH}
+                fill="var(--edge-preview-stroke, #7eb8ff)"
+              />
             </marker>
           </defs>
           <path

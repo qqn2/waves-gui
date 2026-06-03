@@ -56,13 +56,8 @@ function parseVectorSegments(
     const ch = wave[i];
     if (ch === 'x' || ch === 'X') {
       flushSegment(i);
-      segments.push({
-        id: nanoid(),
-        startStep: i,
-        endStep: i + 1,
-        value: VECTOR_UNKNOWN_LABEL,
-      });
-      segStart = i + 1;
+      segStart = i;
+      segValue = VECTOR_UNKNOWN_LABEL;
       segColor = undefined;
       continue;
     }

@@ -9,6 +9,37 @@ export function clockStepHasArrow(st: BitState): boolean {
   return st === 'P' || st === 'N';
 }
 
+/** Triangle on the vertical transition, centered and pointing along the edge (WaveDrom P/N). */
+export function clockArrowPoints(
+  rise: boolean,
+  x0: number,
+  yHigh: number,
+  yLow: number,
+  w: number,
+  h: number,
+): { tipX: number; tipY: number; x1: number; y1: number; x2: number; y2: number } {
+  const tipX = x0;
+  const yMid = (yHigh + yLow) / 2;
+  if (rise) {
+    return {
+      tipX,
+      tipY: yMid - h,
+      x1: tipX - w,
+      y1: yMid + h * 0.5,
+      x2: tipX + w,
+      y2: yMid + h * 0.5,
+    };
+  }
+  return {
+    tipX,
+    tipY: yMid + h,
+    x1: tipX - w,
+    y1: yMid - h * 0.5,
+    x2: tipX + w,
+    y2: yMid - h * 0.5,
+  };
+}
+
 /**
  * One timing step: vertical edge at x0, then hold to x1.
  * Arrow on P (posedge) or N (negedge) at the vertical edge only.
@@ -39,19 +70,21 @@ export function strokeClockStep(
   if (clockStepHasArrow(st)) {
     const prevFill = ctx.fillStyle;
     ctx.fillStyle = ctx.strokeStyle;
+    const span = yLow - yHigh;
     const w = Math.max(2, lineWidth * 1.5);
-    const h = Math.min(5, (yLow - yHigh) * 0.35);
-    const tipX = x0 + 1;
+    const h = Math.min(6, span * 0.22);
+    const { tipX, tipY, x1, y1, x2, y2 } = clockArrowPoints(
+      rise,
+      x0,
+      yHigh,
+      yLow,
+      w,
+      h,
+    );
     ctx.beginPath();
-    if (rise) {
-      ctx.moveTo(tipX, yHigh);
-      ctx.lineTo(tipX - w, yHigh + h);
-      ctx.lineTo(tipX + w, yHigh + h);
-    } else {
-      ctx.moveTo(tipX, yLow);
-      ctx.lineTo(tipX - w, yLow - h);
-      ctx.lineTo(tipX + w, yLow - h);
-    }
+    ctx.moveTo(tipX, tipY);
+    ctx.lineTo(x1, y1);
+    ctx.lineTo(x2, y2);
     ctx.closePath();
     ctx.fill();
     ctx.fillStyle = prevFill;
@@ -83,18 +116,20 @@ export function clockStepSvg(
     `<path d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
   );
   if (clockStepHasArrow(st)) {
+    const span = yLow - yHigh;
     const w = 3;
-    const h = 4;
-    const tipX = x + 1;
-    if (rise) {
-      parts.push(
-        `<polygon points="${tipX},${yHigh} ${tipX - w},${yHigh + h} ${tipX + w},${yHigh + h}" fill="${color}"/>`,
-      );
-    } else {
-      parts.push(
-        `<polygon points="${tipX},${yLow} ${tipX - w},${yLow - h} ${tipX + w},${yLow - h}" fill="${color}"/>`,
-      );
-    }
+    const h = Math.min(4, span * 0.22);
+    const { tipX, tipY, x1, y1, x2, y2 } = clockArrowPoints(
+      rise,
+      x,
+      yHigh,
+      yLow,
+      w,
+      h,
+    );
+    parts.push(
+      `<polygon points="${tipX},${tipY} ${x1},${y1} ${x2},${y2}" fill="${color}"/>`,
+    );
   }
   return parts;
 }

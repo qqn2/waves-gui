@@ -15,8 +15,9 @@ import styles from './CodePanel.module.css';
 export interface CodeEditorProps {
   code: string;
   onChange: (code: string) => void;
+  /** Flush pending debounced JSON → diagram apply (e.g. on blur). */
+  onBlur?: () => void;
   error: string | null;
-  onFocusChange?: (focused: boolean) => void;
 }
 
 function jsonLinter() {
@@ -66,15 +67,15 @@ function editorTheme(): Extension {
   );
 }
 
-export function CodeEditor({ code, onChange, error, onFocusChange }: CodeEditorProps) {
+export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
-  const onFocusRef = useRef(onFocusChange);
+  const onBlurRef = useRef(onBlur);
   const skipExternalSyncRef = useRef(false);
 
   onChangeRef.current = onChange;
-  onFocusRef.current = onFocusChange;
+  onBlurRef.current = onBlur;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -99,8 +100,7 @@ export function CodeEditor({ code, onChange, error, onFocusChange }: CodeEditorP
             }
           }),
           EditorView.domEventHandlers({
-            focus: () => onFocusRef.current?.(true),
-            blur: () => onFocusRef.current?.(false),
+            blur: () => onBlurRef.current?.(),
           }),
         ],
       }),
@@ -123,8 +123,10 @@ export function CodeEditor({ code, onChange, error, onFocusChange }: CodeEditorP
     }
     const current = view.state.doc.toString();
     if (current !== code) {
+      skipExternalSyncRef.current = true;
       view.dispatch({
         changes: { from: 0, to: current.length, insert: code },
+        selection: view.state.selection,
       });
     }
   }, [code]);
