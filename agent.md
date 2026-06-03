@@ -21,7 +21,7 @@
 - VCD import/export, annotation overlays in the main UI (not WaveDrom-exportable).
 - Extended reference-editor features listed as out of scope in `ORCHESTRATOR_PROMPT.md`.
 
-**Deployment:** static `dist/` (e.g. `make build`, `make preview`, or internal nginx). `make back-end` remains a no-op stub until a future *team* fork explicitly requests path B/C.
+**Deployment:** static `dist/` (`make build`, `make preview`, or internal nginx). Client-only — no backend in this repo.
 
 ---
 
@@ -34,7 +34,7 @@
 | Phase 2 solo desk | **Done** | `9307f59` — draft recovery, golden tests, toggle paint, compact UI |
 | Phase 3 WaveDrom fidelity | **Active** | See below + `docs/FUTURE_FEATURES.md` |
 
-**Verify:** `make test` (64 tests), `make build`, `make dev` → http://localhost:5173
+**Verify:** `make test` (175 tests), `make check`, `make dev` → http://localhost:5173
 
 **Reference material:** vendored WaveJSON notes and upstream fixtures in `docs/wavedrom-ref/` (see `SOURCES.md`).
 
