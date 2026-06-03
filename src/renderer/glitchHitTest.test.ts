@@ -40,7 +40,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     showCodePanel: false,
     labelWidth: 160,
     showTimeAxis: true,
-    theme: 'dark',
+    theme: 'light-grey',
     isDirty: false,
     fileName: null,
     paintDraft: null,

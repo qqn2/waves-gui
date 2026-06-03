@@ -16,6 +16,7 @@ import {
   X_FILL,
   X_STROKE,
   zStrokeColor,
+  resolveSignalColor,
 } from './stateColors';
 import { clockStepEndY, strokeClockStep } from './drawClock';
 
@@ -107,7 +108,7 @@ export function renderBitSignal(
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.strokeStyle = signal.color;
+      ctx.strokeStyle = resolveSignalColor(signal.color);
       strokeClockStep(ctx, st, x, nextX, yHigh, yLow, ctx.lineWidth);
       prevY = clockStepEndY(st, yHigh, yLow);
       continue;

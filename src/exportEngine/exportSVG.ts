@@ -14,7 +14,7 @@ import {
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import { isVectorUnknownValue, X_STROKE, zStrokeColor } from '../renderer/stateColors';
+import { isVectorUnknownValue, X_STROKE, zStrokeColor, resolveSignalColor } from '../renderer/stateColors';
 import { segmentBusFill, segmentBusStroke } from '../renderer/vectorBusStyle';
 import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
@@ -85,7 +85,7 @@ function svgBitSignal(
   let pathD = '';
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = false;
-  const color = esc(signal.color);
+  const color = esc(resolveSignalColor(signal.color));
 
   const flushPath = () => {
     if (pathOpen && pathD) {
