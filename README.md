@@ -102,6 +102,5 @@ Internal names vs WaveDrom JSON (encode/decode in `wavedromBridge/`):
 
 | Document | Purpose |
 |----------|---------|
-| [`agent.md`](./agent.md) | Product scope, coding rules, build history |
-| [`docs/FUTURE_FEATURES.md`](docs/FUTURE_FEATURES.md) | WaveDrom capability matrix and gaps |
+| [`agent.md`](./agent.md) | Scope, WaveDrom feature checklist, coding rules, build history |
 | [`docs/wavedrom-ref/`](docs/wavedrom-ref/) | Vendored WaveJSON notes and upstream fixtures |
