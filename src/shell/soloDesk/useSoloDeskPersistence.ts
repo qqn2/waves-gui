@@ -32,11 +32,15 @@ export function useSoloDeskPersistence(): void {
     try {
       const draft = loadDraft();
       if (draft) {
-        const current = useStore.getState().diagram;
-        const shouldRestore =
-          isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
-        if (shouldRestore) {
-          loadDiagram(draft);
+        if (isDiagramEmpty(draft)) {
+          clearDraft();
+        } else {
+          const current = useStore.getState().diagram;
+          const shouldRestore =
+            isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
+          if (shouldRestore) {
+            loadDiagram(draft);
+          }
         }
       }
     } catch (err) {
