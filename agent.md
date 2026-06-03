@@ -1,6 +1,6 @@
 # WaveDrom GUI Editor — Maintainer Guide
 
-This file replaces the old parallel-build spec, orchestrator prompt, and progress tracker. The app is **feature-complete for solo-desk timing diagrams**; use this doc for scope, WaveDrom parity, coding rules, and history.
+The app is **feature-complete for solo-desk timing diagrams**; use this doc for scope, WaveDrom parity, coding rules, and history.
 
 ## Documentation map
 
