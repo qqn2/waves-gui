@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { CELL_WIDTH, ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
-import type { DiagramState, ViewState } from '../shared/types';
+import { ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
+import type { DiagramState, Signal, ViewState } from '../shared/types';
 import { hitTest } from './hitTest';
 import { hitTestStepGlitchBoundary } from './glitchHitTest';
 import { stepLogicalXEnd } from './laneTiming';
@@ -26,34 +26,41 @@ function diagramWithGlitch(): DiagramState {
   };
 }
 
-function defaultView(): ViewState {
+function defaultView(overrides: Partial<ViewState> = {}): ViewState {
   return {
     zoom: 1,
     scrollX: 0,
     scrollY: 0,
     selectedTool: 'erase',
+    paintMode: 'set',
     activeBitState: '0',
     activeBusLabel: '',
     activeTimespanLabel: '',
-    activeBusColorIndex: 0,
-    paintMode: 'set',
-    showTimeAxis: true,
-    showWaveDromPreview: false,
-    labelColumnWidth: 120,
-    paintDraft: null,
+    activeBusColorIndex: 2,
     activeSignalIds: [],
-    edgeAnchorPending: null,
-    activeEdgeShape: '-',
-    showAnchorLetters: false,
-    edgeToolHover: null,
+    showCodePanel: false,
+    labelWidth: 160,
+    showTimeAxis: true,
     theme: 'dark',
+    isDirty: false,
+    fileName: null,
+    paintDraft: null,
+    edgeAnchorPending: null,
+    edgeToolHover: null,
+    activeEdgeShape: '',
+    showAnchorLetters: false,
+    ...overrides,
   };
+}
+
+function bitSignal(diagram: DiagramState): Signal {
+  return diagram.signals[0] as Signal;
 }
 
 describe('hitTestStepGlitchBoundary', () => {
   it('hits the notch between same-level steps', () => {
     const diagram = diagramWithGlitch();
-    const sig = diagram.signals[0]!;
+    const sig = bitSignal(diagram);
     const xEdge = stepLogicalXEnd(sig, 0);
     const y = TIME_AXIS_HEIGHT + 10;
     const hit = hitTestStepGlitchBoundary(xEdge + 2, y, diagram, defaultView());
@@ -64,7 +71,7 @@ describe('hitTestStepGlitchBoundary', () => {
 describe('hitTest glitch erase', () => {
   it('returns a step when clicking on a glitch boundary in a column gap', () => {
     const diagram = diagramWithGlitch();
-    const sig = diagram.signals[0]!;
+    const sig = bitSignal(diagram);
     const xEdge = stepLogicalXEnd(sig, 0);
     const y = TIME_AXIS_HEIGHT + 10;
     const hit = hitTest(xEdge, y, diagram, defaultView());
