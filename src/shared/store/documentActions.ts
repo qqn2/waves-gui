@@ -1,4 +1,6 @@
 import { current } from 'immer';
+import { cancelPendingCodeToDiagramDebounce } from '../../codePanel/flushRegistry';
+import { pruneUnusedNodeAnchorsAfterEdgeRemoval } from '../../wavedromBridge/nodeString';
 import type { DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
@@ -36,7 +38,9 @@ export function createEdgeActions(set: ImmerSet): Pick<
       set((s) => {
         if (!s.diagram.edges?.[index]) return;
         pushHistory(s);
+        const removed = s.diagram.edges[index]!;
         s.diagram.edges.splice(index, 1);
+        pruneUnusedNodeAnchorsAfterEdgeRemoval(s.diagram, removed);
         s.view.isDirty = true;
       });
     },
@@ -73,7 +77,9 @@ export function createDocumentActions(set: ImmerSet): Pick<
 > {
   return {
     loadDiagram(diagram: DiagramState) {
+      cancelPendingCodeToDiagramDebounce();
       set((s) => {
+        s.view.diagramRevision += 1;
         s.history = [];
         s.future = [];
         s.diagram = normalizeDiagram(diagram);
@@ -106,6 +112,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.future.push(current(s.diagram));
         s.diagram = normalizeDiagram(s.history.pop()!);
         s.view.paintDraft = null;
+        s.view.diagramRevision += 1;
       });
     },
 
@@ -115,6 +122,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.history.push(current(s.diagram));
         s.diagram = normalizeDiagram(s.future.pop()!);
         s.view.paintDraft = null;
+        s.view.diagramRevision += 1;
       });
     },
 

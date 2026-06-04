@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -29,28 +28,23 @@ export interface DiagramCodeContextValue {
 const DiagramCodeContext = createContext<DiagramCodeContextValue | null>(null);
 
 export function DiagramCodeProvider({ children }: { children: ReactNode }) {
-  const diagram = useStore((s) => s.diagram);
-  const [code, setCode] = useState(() => diagramToCodeString(diagram));
-  const { debouncedApply, isEditorDrivenRef } = useCodeToDiagram();
-  const diagramSyncGenRef = useRef(0);
+  const diagramRevision = useStore((s) => s.view.diagramRevision);
+  const [code, setCode] = useState(() => diagramToCodeString(useStore.getState().diagram));
+  const { debouncedApply, suppressDiagramToCodeSyncRef } = useCodeToDiagram();
   const [previewCode] = useDebounce(code, PREVIEW_DEBOUNCE_MS);
 
   const error = useMemo(() => validateCodeString(code), [code]);
 
   useEffect(() => {
-    if (isEditorDrivenRef.current) {
-      isEditorDrivenRef.current = false;
+    if (suppressDiagramToCodeSyncRef.current === diagramRevision) {
+      suppressDiagramToCodeSyncRef.current = null;
       return;
     }
-    const gen = ++diagramSyncGenRef.current;
-    queueMicrotask(() => {
-      if (gen !== diagramSyncGenRef.current) return;
-      const next = diagramToCodeString(useStore.getState().diagram);
-      startTransition(() => {
-        setCode((prev) => (prev === next ? prev : next));
-      });
+    const next = diagramToCodeString(useStore.getState().diagram);
+    startTransition(() => {
+      setCode((prev) => (prev === next ? prev : next));
     });
-  }, [diagram, isEditorDrivenRef]);
+  }, [diagramRevision, suppressDiagramToCodeSyncRef]);
 
   const onCodeChange = useCallback(
     (newCode: string) => {

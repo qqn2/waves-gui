@@ -12,6 +12,7 @@ export function pushHistory(state: AppState): void {
   if (state.history.length > MAX_HISTORY) state.history.shift();
   state.future = [];
   state.view.isDirty = true;
+  state.view.diagramRevision += 1;
 }
 
 export function defaultDiagram(): DiagramState {
@@ -45,6 +46,7 @@ export function defaultView(): ViewState {
     edgeToolHover: null,
     activeEdgeShape: '',
     showAnchorLetters: false,
+    diagramRevision: 0,
   };
 }
 
