@@ -36,9 +36,13 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     activeBusColorIndex: 2,
     activeSignalIds: [],
     showCodePanel: false,
+    showRenderPanel: false,
     labelWidth: 160,
     showTimeAxis: true,
     theme: 'light-grey',
+    accentColor: null,
+    canvasColor: null,
+    uiFontScale: 1,
     isDirty: false,
     fileName: null,
     paintDraft: null,
@@ -181,5 +185,48 @@ describe('hitTest', () => {
     const hit = hitTest(mx, my, diagram, view);
     expect(hit.edgeIndex).toBe(0);
     expect(hit.signalId).toBeNull();
+  });
+
+  it('prefers lane hits over edges while arrow tool is active', () => {
+    const diagram: DiagramState = {
+      ...bitDiagram(8),
+      edges: ['a->b'],
+      signals: [
+        {
+          id: 's0',
+          name: 'A',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: ROW_HEIGHT,
+          node: 'a.......',
+        },
+        {
+          id: 's1',
+          name: 'B',
+          type: 'bit',
+          states: Array(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: ROW_HEIGHT,
+          node: '....b...',
+        },
+      ],
+    };
+    const view = defaultView({ selectedTool: 'arrow' });
+    const parsed = parseEdge('a->b')!;
+    const anchors = resolveEdgeAnchors(
+      diagram,
+      view,
+      parsed,
+      buildNodeIndex(diagram.signals),
+    )!;
+    const mx = (anchors.from.x + anchors.to.x) / 2;
+    const my = anchors.from.y;
+    const hit = hitTest(mx, my, diagram, view);
+    expect(hit.edgeIndex).toBeNull();
+    expect(hit.signalId).toBe('s0');
+    expect(hit.step).not.toBeNull();
   });
 });
