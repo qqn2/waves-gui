@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   invertClockBitState,
   isClockBitState,
+  isHoldPaintValue,
+  resolvePaintValue,
   toggleBinaryBitState,
 } from './bitToggle';
 
@@ -24,10 +26,19 @@ describe('toggleBinaryBitState', () => {
     expect(after).toEqual(['n', 'p', 'n', 'p']);
   });
 
-  it('leaves x, z, u, d unchanged', () => {
-    for (const st of ['x', 'z', 'u', 'd'] as const) {
+  it('leaves x, z, u, d, and hold paint unchanged', () => {
+    for (const st of ['x', 'z', 'u', 'd', '.'] as const) {
       expect(toggleBinaryBitState(st)).toBe(st);
     }
+  });
+});
+
+describe('resolvePaintValue', () => {
+  it('copies the previous step for hold (.)', () => {
+    expect(isHoldPaintValue('.')).toBe(true);
+    expect(resolvePaintValue(['1', '0', '1'], 1, '.')).toBe('1');
+    expect(resolvePaintValue(['1', '0', '1'], 2, '.')).toBe('0');
+    expect(resolvePaintValue(['1', '0', '1'], 0, '.')).toBe('0');
   });
 });
 

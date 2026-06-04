@@ -4,9 +4,10 @@ import type { BitState } from '../../shared/types';
 export const PRIMARY_BIT_STATES: BitState[] = ['1', '0', 'P', 'N', 'z', 'x'];
 
 /** Extra WaveDrom values behind “More”. */
-export const MORE_BIT_STATES: BitState[] = ['p', 'n', 'u', 'd'];
+export const MORE_BIT_STATES: BitState[] = ['.', 'p', 'n', 'u', 'd'];
 
 export const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
+  '.': 'Hold previous step (WaveDrom continuation .)',
   p: 'Clock rising edge (p)',
   P: 'Clock rising edge with arrow (P)',
   n: 'Clock falling edge (n); toggle (¬) inverts phase (→p)',

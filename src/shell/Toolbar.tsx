@@ -112,7 +112,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       </button>
       <button
         type="button"
-        title="WaveDrom edge arrow — click start node, then end node"
+        title="WaveDrom edge arrow — click start, move to preview, click end"
         className={`${styles.toolBtn} ${tool === 'arrow' ? styles.toolActive : ''}`}
         onClick={() => setTool('arrow')}
       >
@@ -120,7 +120,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       </button>
       <button
         type="button"
-        title="WaveDrom timespan edge — drag on one row between two steps"
+        title="WaveDrom timespan — click start, move to preview, click end on same row"
         className={`${styles.toolBtn} ${tool === 'timespan' ? styles.toolActive : ''}`}
         onClick={() => setTool('timespan')}
       >
