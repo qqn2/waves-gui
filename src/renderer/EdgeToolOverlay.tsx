@@ -22,6 +22,7 @@ export function EdgeToolOverlay() {
   const pending = useStore((s) => s.view.edgeAnchorPending);
   const hover = useStore((s) => s.view.edgeToolHover);
   const timespanLabel = useStore((s) => s.view.activeTimespanLabel);
+  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
 
@@ -79,16 +80,19 @@ export function EdgeToolOverlay() {
       markers.push(
         anchorMarker(pending.signalId, pending.step, pending.char)!,
       );
-      if (hover?.signalId && hover.step !== null) {
+      if (hover) {
         const from = resolveNodeAnchor(
           diagram,
           view,
           pending.signalId,
           pending.step,
         );
-        const to = resolveNodeAnchor(diagram, view, hover.signalId, hover.step);
+        const to =
+          hover.signalId !== null && hover.step !== null
+            ? resolveNodeAnchor(diagram, view, hover.signalId, hover.step)
+            : { x: hover.canvasX, y: hover.canvasY };
         if (from && to) {
-          previewPath = buildEdgePathD(from, to, '-');
+          previewPath = buildEdgePathD(from, to, activeEdgeShape);
         }
       }
     }
@@ -141,7 +145,7 @@ export function EdgeToolOverlay() {
     );
 
     return { hoverCol, markers, previewPath, previewLabel, band };
-  }, [tool, pending, hover, timespanLabel, diagram, view]);
+  }, [tool, pending, hover, timespanLabel, activeEdgeShape, diagram, view]);
 
   if (!layout) return null;
 

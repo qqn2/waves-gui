@@ -56,9 +56,13 @@ export function hitTest(
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
 
-  const edgeIndex = hitTestDiagramEdge(canvasX, canvasY, diagram, view);
-  if (edgeIndex !== null) {
-    return { ...MISS, edgeIndex };
+  const edgeToolActive =
+    view.selectedTool === 'arrow' || view.selectedTool === 'timespan';
+  if (!edgeToolActive) {
+    const edgeIndex = hitTestDiagramEdge(canvasX, canvasY, diagram, view);
+    if (edgeIndex !== null) {
+      return { ...MISS, edgeIndex };
+    }
   }
 
   const rows = buildRowLayout(diagram.signals);

@@ -144,6 +144,10 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setActiveBitState('u');
         setPaintMode('set');
         setTool('paint');
+      } else if (e.key === '.') {
+        setActiveBitState('.');
+        setPaintMode('set');
+        setTool('paint');
       } else if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
         e.preventDefault();
         setZoom(zoom * 1.25);
@@ -176,7 +180,6 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
       else if (tool === 'arrow' || tool === 'timespan') {
-        el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);
       } else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerDown(e, el, hit);
@@ -203,12 +206,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
-      else if (tool === 'arrow' || tool === 'timespan') {
-        if (el?.hasPointerCapture(e.pointerId)) {
-          el.releasePointerCapture(e.pointerId);
-        }
-        edge.onPointerUp(e, hit);
-      } else if (tool === 'cursor' || tool === 'select') {
+      else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerUp(e, el);
         setSelectionOverlay(null);
       }

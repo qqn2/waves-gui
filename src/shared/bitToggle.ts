@@ -1,7 +1,26 @@
 import type { BitState } from '../shared/types';
 
 /** WaveDrom states that toggle (NOT) must not modify. */
-const TOGGLE_IMMUTABLE: ReadonlySet<BitState> = new Set(['x', 'z', 'u', 'd']);
+const TOGGLE_IMMUTABLE: ReadonlySet<BitState> = new Set(['x', 'z', 'u', 'd', '.']);
+
+/** Paint-only: WaveDrom continuation (hold previous step). */
+export function isHoldPaintValue(st: BitState): boolean {
+  return st === '.';
+}
+
+/** Resolve a paint brush value to a stored lane state. */
+export function resolvePaintValue(
+  states: BitState[],
+  step: number,
+  paint: BitState,
+): BitState {
+  if (!isHoldPaintValue(paint)) return paint;
+  for (let i = step - 1; i >= 0; i--) {
+    const prev = states[i];
+    if (prev !== undefined) return prev;
+  }
+  return '0';
+}
 
 export function isClockBitState(st: BitState): boolean {
   return st === 'p' || st === 'P' || st === 'n' || st === 'N';
