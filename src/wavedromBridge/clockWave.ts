@@ -1,3 +1,4 @@
+import { toggleBinaryBitState } from '../shared/bitToggle';
 import type { BitState } from '../shared/types';
 import type { DecodedWave } from './waveStringCodec';
 
@@ -147,6 +148,40 @@ export function applyClockBrushToRange(
     const expectRise = posedgeFirst ? i % 2 === 0 : i % 2 === 1;
     states[i] = expectRise ? riseChar : fallChar;
   }
+}
+
+/**
+ * Invert clock phase for every alternating run touched by [lo, hi].
+ * Per-step NOT on one edge would break rise/fall alternation and break `P...` export;
+ * inverting the whole run keeps WaveDrom clock encoding valid.
+ */
+export function applyClockToggleToRange(
+  states: BitState[],
+  lo: number,
+  hi: number,
+): void {
+  if (!states.every(isClockBit)) {
+    for (let i = lo; i <= hi; i++) {
+      states[i] = toggleBinaryBitState(states[i]!);
+    }
+    return;
+  }
+
+  const runs = scanClockRuns(states);
+  if (!runs) {
+    for (let i = lo; i <= hi; i++) {
+      states[i] = toggleBinaryBitState(states[i]!);
+    }
+    return;
+  }
+
+  for (const run of runs) {
+    if (run.end <= lo || run.start > hi) continue;
+    for (let i = run.start; i < run.end; i++) {
+      states[i] = toggleBinaryBitState(states[i]!);
+    }
+  }
+  ensureClockLaneFormat(states);
 }
 
 /** Repair uniform or alternating clock lanes after edits / import. */

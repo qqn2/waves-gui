@@ -9,7 +9,7 @@
  *   2–9          — bus fill color index (WaveDrom palette)
  *   repeated char — same level held; duplicate at boundary → stepGlitches[] (spurious transition)
  *
- * Decode order: clock shortcut strings first, then expanded clock, then generic scan.
+ * Decode order: pure clock string, expanded clock import, then mixed clock+binary scan.
  */
 import { BIT_STATE_CHARS, type BitState } from '../shared/types';
 import { isClockBitState } from '../shared/bitToggle';
@@ -17,12 +17,10 @@ import {
   decodeClockWave,
   decodeExpandedClockWave,
   encodeClockWaveString,
-  ensureClockLaneFormat,
-  fallStateFor,
   isClockFallStep,
   isClockRiseStep,
   isClockWaveString,
-  riseStateFor,
+  scanClockRuns,
 } from './clockWave';
 
 export interface DecodedWave {
@@ -58,28 +56,179 @@ function markGlitch(stepGlitches: boolean[], boundaryIndex: number): void {
   if (boundaryIndex >= 0) stepGlitches[boundaryIndex] = true;
 }
 
-export function decodeWaveDetail(wave: string): DecodedWave {
-  if (isClockWaveString(wave)) {
-    return decodeClockWave(wave);
+function isClockWaveHead(char: string): boolean {
+  return char === 'p' || char === 'P' || char === 'n' || char === 'N';
+}
+
+function isBinaryLevel(st: BitState): boolean {
+  return st === '0' || st === '1' || st === 'x' || st === 'z' || st === 'u' || st === 'd';
+}
+
+/**
+ * Replace redundant clock fall steps around explicit binary lows so export uses
+ * `P0..P...` instead of `Pn0..nPnPn`. Same step count — only re-labels edges.
+ */
+function normalizeMixedClockForExport(states: BitState[]): BitState[] {
+  const out = states.slice();
+  for (let i = 0; i < out.length; i++) {
+    const st = out[i]!;
+    const next = i + 1 < out.length ? out[i + 1]! : null;
+    const prev = i > 0 ? out[i - 1]! : null;
+
+    if (isClockFallStep(st) && next !== null && next === '0') {
+      out[i] = '0';
+    } else if (
+      isClockFallStep(st) &&
+      prev === '0' &&
+      next !== null &&
+      isClockRiseStep(next)
+    ) {
+      out[i] = '0';
+    }
   }
+  return out;
+}
 
-  const expanded = decodeExpandedClockWave(wave);
-  if (expanded) return expanded;
+/** Longest alternating clock run starting at `start` (inclusive). */
+function longestEncodableClockRun(states: BitState[], start: number): number {
+  for (let len = states.length - start; len >= 1; len--) {
+    const runs = scanClockRuns(states.slice(start, start + len));
+    if (runs?.length === 1 && runs[0]!.start === 0 && runs[0]!.end === len) {
+      return len;
+    }
+  }
+  return 0;
+}
 
-  const states: BitState[] = [];
-  const stepGaps: boolean[] = [];
-  const stepGlitches: boolean[] = [];
+function encodeGenericWaveSegment(
+  states: BitState[],
+  start: number,
+  end: number,
+  stepGaps?: boolean[],
+  stepGlitches?: boolean[],
+): string {
+  if (start >= end) return '';
+  let wave = BIT_STATE_CHARS[states[start]!];
+  for (let i = start + 1; i < end; i++) {
+    const ch = BIT_STATE_CHARS[states[i]!];
+    const prevCh = BIT_STATE_CHARS[states[i - 1]!];
+    const boundary = i - 1;
+    if (stepGaps?.[boundary]) {
+      wave += '|';
+    } else if (stepGlitches?.[boundary]) {
+      wave += ch;
+    } else if (ch === prevCh) {
+      wave += '.';
+    } else {
+      wave += ch;
+    }
+  }
+  return wave;
+}
+
+function encodeMixedWaveString(
+  states: BitState[],
+  stepGaps?: boolean[],
+  stepGlitches?: boolean[],
+): string {
+  let wave = '';
+  let i = 0;
+  while (i < states.length) {
+    let clockLen = isClockBitState(states[i]!)
+      ? longestEncodableClockRun(states, i)
+      : 0;
+    if (clockLen > 0) {
+      let encoded = false;
+      for (let len = clockLen; len >= 1; len--) {
+        const cw = encodeClockWaveString(
+          states.slice(i, i + len),
+          stepGaps?.slice(i, i + len - 1),
+          stepGlitches?.slice(i, i + len - 1),
+        );
+        if (cw !== null) {
+          wave += cw;
+          i += len;
+          encoded = true;
+          break;
+        }
+      }
+      if (encoded) continue;
+    }
+
+    let j = i + 1;
+    while (j < states.length) {
+      const nextClockLen = isClockBitState(states[j]!)
+        ? longestEncodableClockRun(states, j)
+        : 0;
+      if (nextClockLen > 0) break;
+      j++;
+    }
+    if (isClockBitState(states[i]!)) {
+      j = i + 1;
+    }
+    wave += encodeGenericWaveSegment(states, i, j, stepGaps, stepGlitches);
+    i = j;
+  }
+  return wave;
+}
+
+function mergeDecodedClockChunk(
+  target: DecodedWave,
+  chunk: DecodedWave,
+): void {
+  const offset = target.states.length;
+  for (const st of chunk.states) {
+    target.states.push(st);
+  }
+  for (let k = 0; k < chunk.stepGaps.length; k++) {
+    if (chunk.stepGaps[k]) target.stepGaps[offset + k] = true;
+  }
+  for (let k = 0; k < chunk.stepGlitches.length; k++) {
+    if (chunk.stepGlitches[k]) target.stepGlitches[offset + k] = true;
+  }
+}
+
+function readMixedClockChunk(wave: string, start: number): {
+  chunk: DecodedWave;
+  consumed: number;
+} {
+  let end = start + 1;
+  while (end < wave.length && (wave[end] === '.' || wave[end] === '|')) {
+    end++;
+  }
+  const chunk = decodeClockWave(wave.slice(start, end));
+  return { chunk, consumed: end - start };
+}
+
+/** Decode lanes that mix clock (`P...`) with binary (`0`, `1`, …). */
+function decodeMixedWaveDetail(wave: string): DecodedWave {
+  const result: DecodedWave = { states: [], stepGaps: [], stepGlitches: [] };
   let prev: BitState = '0';
   let lastWaveChar = '';
+  let i = 0;
 
-  for (const char of wave) {
+  while (i < wave.length) {
+    const char = wave[i]!;
+    if (isClockWaveHead(char)) {
+      const { chunk, consumed } = readMixedClockChunk(wave, i);
+      mergeDecodedClockChunk(result, chunk);
+      if (chunk.states.length > 0) {
+        prev = chunk.states[chunk.states.length - 1]!;
+      }
+      lastWaveChar = wave[i + consumed - 1]!;
+      i += consumed;
+      continue;
+    }
+
     switch (char) {
       case '|':
-        if (states.length > 0) stepGaps[states.length - 1] = true;
+        if (result.states.length > 0) {
+          result.stepGaps[result.states.length - 1] = true;
+        }
         lastWaveChar = char;
         break;
       case '.':
-        states.push(prev);
+        result.states.push(prev);
         lastWaveChar = char;
         break;
       case '0':
@@ -93,43 +242,23 @@ export function decodeWaveDetail(wave: string): DecodedWave {
       case 'd':
       case 'D': {
         const next = waveCharToBitState(char)!;
-        if (states.length === 0) {
-          states.push(next);
+        if (result.states.length === 0) {
+          result.states.push(next);
           prev = next;
         } else if (next === prev) {
           if (lastWaveChar === '.') {
-            markGlitch(stepGlitches, states.length - 2);
+            markGlitch(result.stepGlitches, result.states.length - 2);
           } else {
-            states.push(next);
-            markGlitch(stepGlitches, states.length - 2);
+            result.states.push(next);
+            markGlitch(result.stepGlitches, result.states.length - 2);
           }
         } else {
-          states.push(next);
+          result.states.push(next);
           prev = next;
         }
         lastWaveChar = char;
         break;
       }
-      case 'p':
-        states.push('p');
-        prev = 'p';
-        lastWaveChar = char;
-        break;
-      case 'P':
-        states.push('P');
-        prev = 'P';
-        lastWaveChar = char;
-        break;
-      case 'n':
-        states.push('n');
-        prev = 'n';
-        lastWaveChar = char;
-        break;
-      case 'N':
-        states.push('N');
-        prev = 'N';
-        lastWaveChar = char;
-        break;
       case '=':
       case '2':
       case '3':
@@ -139,16 +268,28 @@ export function decodeWaveDetail(wave: string): DecodedWave {
       case '7':
       case '8':
       case '9':
-        states.push('0');
+        result.states.push('0');
         prev = '0';
         lastWaveChar = char;
         break;
       default:
         break;
     }
+    i++;
   }
 
-  return { states, stepGaps, stepGlitches };
+  return result;
+}
+
+export function decodeWaveDetail(wave: string): DecodedWave {
+  if (isClockWaveString(wave)) {
+    return decodeClockWave(wave);
+  }
+
+  const expanded = decodeExpandedClockWave(wave);
+  if (expanded) return expanded;
+
+  return decodeMixedWaveDetail(wave);
 }
 
 export function decodeWaveString(wave: string): BitState[] {
@@ -167,52 +308,46 @@ export function encodeWaveString(
   stepGlitches?: boolean[],
 ): string {
   if (states.length === 0) return '';
-  const clockWave = encodeClockWaveString(states, stepGaps, stepGlitches);
+  const prepared =
+    states.some(isClockBitState) && states.some(isBinaryLevel)
+      ? normalizeMixedClockForExport(states)
+      : states;
+  const clockWave = encodeClockWaveString(prepared, stepGaps, stepGlitches);
   if (clockWave !== null) return clockWave;
 
-  let wave = BIT_STATE_CHARS[states[0]!];
-  for (let i = 1; i < states.length; i++) {
-    const ch = BIT_STATE_CHARS[states[i]!];
-    const prevCh = BIT_STATE_CHARS[states[i - 1]!];
-    if (stepGaps?.[i - 1]) {
-      wave += '|';
-    } else if (stepGlitches?.[i - 1]) {
-      wave += ch;
-    } else if (ch === prevCh) {
-      wave += '.';
-    } else {
-      wave += ch;
-    }
-  }
-  return wave;
+  return encodeMixedWaveString(prepared, stepGaps, stepGlitches);
 }
 
-/**
- * Export a bit lane wave for `config.totalSteps`: pad states, collapse clock runs,
- * then extend with `.` so wave length matches timeline (WaveDrom continuation).
- */
-function padBitStatesToLength(states: BitState[], totalSteps: number): BitState[] {
-  if (totalSteps <= 0) return [];
-  const out = states.slice(0, totalSteps);
-  if (out.length === 0) {
-    return Array.from({ length: totalSteps }, () => '0' as BitState);
+export function padDecodedWaveToLength(
+  decoded: DecodedWave,
+  totalSteps: number,
+): DecodedWave {
+  const n = Math.max(0, totalSteps);
+  if (n === 0) return { states: [], stepGaps: [], stepGlitches: [] };
+
+  let wave = encodeWaveString(
+    decoded.states,
+    decoded.stepGaps,
+    decoded.stepGlitches,
+  );
+  if (wave.length === 0) wave = '0';
+  if (wave.length < n) {
+    wave += '.'.repeat(n - wave.length);
+  } else if (wave.length > n) {
+    wave = wave.slice(0, n);
   }
-  const clockLane = out.every(isClockBitState);
-  const head = out[0]!;
-  while (out.length < totalSteps) {
-    const i = out.length;
-    if (clockLane) {
-      const posedgeFirst = isClockRiseStep(head);
-      const riseChar = isClockRiseStep(head) ? head : riseStateFor(head);
-      const fallChar = isClockFallStep(head) ? head : fallStateFor(head);
-      const expectRise = posedgeFirst ? i % 2 === 0 : i % 2 === 1;
-      out.push(expectRise ? riseChar : fallChar);
-    } else {
-      out.push(out[out.length - 1]!);
-    }
-  }
-  ensureClockLaneFormat(out);
-  return out;
+  return decodeWaveDetail(wave);
+}
+
+/** Pad or trim decoded bit states by applying WaveDrom `.` continuation semantics. */
+export function padBitStatesToLength(
+  states: BitState[],
+  totalSteps: number,
+): BitState[] {
+  return padDecodedWaveToLength(
+    { states, stepGaps: [], stepGlitches: [] },
+    totalSteps,
+  ).states;
 }
 
 export function encodeWaveStringForDiagram(
@@ -224,14 +359,13 @@ export function encodeWaveStringForDiagram(
   const n = Math.max(0, totalSteps);
   if (n === 0) return '';
 
-  const padded = padBitStatesToLength(states, n);
-
-  let wave = encodeWaveString(padded, stepGaps, stepGlitches);
-  while (wave.length < n) {
-    wave += '.';
-  }
-  if (wave.length > n) {
-    wave = wave.slice(0, n);
-  }
-  return wave;
+  const padded = padDecodedWaveToLength(
+    { states, stepGaps: stepGaps ?? [], stepGlitches: stepGlitches ?? [] },
+    n,
+  );
+  return encodeWaveString(
+    padded.states,
+    padded.stepGaps,
+    padded.stepGlitches,
+  );
 }

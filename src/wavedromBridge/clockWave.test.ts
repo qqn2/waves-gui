@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyClockToggleToRange,
   decodeClockWave,
   decodeExpandedClockWave,
   encodeClockWaveString,
@@ -8,7 +9,7 @@ import {
   isRepeatingClockWave,
   scanClockRuns,
 } from './clockWave';
-import { decodeWaveDetail, encodeWaveString } from './waveStringCodec';
+import { decodeWaveDetail, encodeWaveString, padBitStatesToLength } from './waveStringCodec';
 
 describe('clockWave', () => {
   it('detects clock wave strings', () => {
@@ -61,5 +62,31 @@ describe('clockWave', () => {
     const decoded = decodeExpandedClockWave('pnpnpnpn');
     expect(decoded?.states).toEqual(['p', 'n', 'p', 'n', 'p', 'n', 'p', 'n']);
     expect(encodeWaveString(decoded!.states)).toBe('p.......');
+  });
+
+  it('applyClockToggleToRange on one step inverts the whole run', () => {
+    const states = [...decodeClockWave('P........').states];
+    applyClockToggleToRange(states, 0, 0);
+    expect(states[0]).toBe('n');
+    expect(states[1]).toBe('p');
+    expect(encodeClockWaveString(states)).toBe('n........');
+  });
+
+  it('applyClockToggleToRange only toggles runs touched by the range', () => {
+    const states = [...decodeClockWave('n...p...').states];
+    const headBefore = states.slice(0, 4);
+    const tailBefore = states.slice(4, 8);
+    applyClockToggleToRange(states, 4, 5);
+    expect(states.slice(0, 4)).toEqual(headBefore);
+    expect(states.slice(4, 8)).not.toEqual(tailBefore);
+    expect(encodeClockWaveString(states)).not.toBe('n...p...');
+  });
+
+  it('padBitStatesToLength preserves toggled clock after applyClockToggleToRange', () => {
+    const states = [...decodeClockWave('P........').states];
+    applyClockToggleToRange(states, 0, 0);
+    const padded = padBitStatesToLength(states, states.length);
+    expect(padded[0]).toBe('n');
+    expect(encodeClockWaveString(padded)).toBe('n........');
   });
 });
