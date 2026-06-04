@@ -1,5 +1,5 @@
 import type { DiagramState, Signal, SignalOrGroup } from '../shared/types';
-import { buildNodeIndex } from '../renderer/edgeLayout';
+import { buildNodeIndex, collectEdgeEndpointChars, parseEdge } from '../renderer/edgeLayout';
 
 export const NODE_PAD_CHAR = '.' as const;
 
@@ -25,6 +25,35 @@ export function ensureNodeString(signal: Signal, totalSteps: number): string {
   }
   signal.node = NODE_PAD_CHAR.repeat(totalSteps);
   return signal.node;
+}
+
+export function findSignalInDiagram(
+  diagram: DiagramState,
+  signalId: string,
+): Signal | null {
+  let found: Signal | null = null;
+  const walk = (list: SignalOrGroup[]) => {
+    for (const item of list) {
+      if (item.type === 'group') walk(item.children);
+      else if (item.id === signalId) found = item;
+    }
+  };
+  walk(diagram.signals);
+  return found;
+}
+
+/** Visible anchor letter at `step`, or null when the cell is padding. */
+export function visibleNodeCharAt(
+  signal: Signal,
+  step: number,
+  totalSteps: number,
+): string | null {
+  if (step < 0 || step >= totalSteps) return null;
+  const padded = padNodeString(signal.node, totalSteps);
+  if (!padded) return null;
+  const ch = padded[step]!;
+  if (ch === NODE_PAD_CHAR || ch === ' ') return null;
+  return ch;
 }
 
 export function collectUsedNodeChars(signals: SignalOrGroup[]): Set<string> {
@@ -68,6 +97,42 @@ export function setNodeCharAt(
   signal.node = arr.join('');
   const allPad = signal.node.split('').every((c) => c === NODE_PAD_CHAR || c === ' ');
   if (allPad) delete signal.node;
+}
+
+/** Remove `char` from every signal node string in the diagram. */
+export function clearNodeCharFromDiagram(
+  diagram: DiagramState,
+  char: string,
+): void {
+  const totalSteps = diagram.config.totalSteps;
+  const walk = (list: SignalOrGroup[]) => {
+    for (const item of list) {
+      if (item.type === 'group') walk(item.children);
+      else if (item.node?.includes(char)) {
+        for (let step = 0; step < totalSteps; step++) {
+          if (!item.node) break;
+          if (item.node[step] === char) {
+            setNodeCharAt(item, step, null, totalSteps);
+          }
+        }
+      }
+    }
+  };
+  walk(diagram.signals);
+}
+
+/** Drop node letters from the removed edge when no other edge[] entry uses them. */
+export function pruneUnusedNodeAnchorsAfterEdgeRemoval(
+  diagram: DiagramState,
+  removedEdge: string,
+): void {
+  const parsed = parseEdge(removedEdge);
+  if (!parsed) return;
+  const stillUsed = collectEdgeEndpointChars(diagram.edges ?? []);
+  for (const ch of [parsed.fromNode, parsed.toNode]) {
+    if (stillUsed.has(ch)) continue;
+    clearNodeCharFromDiagram(diagram, ch);
+  }
 }
 
 export function formatArrowEdge(

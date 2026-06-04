@@ -5,6 +5,7 @@
  *
  * Sync timing (see useCodeToDiagram / useDiagramCode):
  *   - Typing in the JSON panel is debounced (CODE_DEBOUNCE_MS) before updating the store.
+ *   - loadDiagram cancels any pending debounced JSON apply (template / file load).
  *   - Canvas/tool edits must flush the editor first (flushRegistry + codeFlush.ts) so a
  *     pending debounced JSON write cannot overwrite a paint stroke.
  */

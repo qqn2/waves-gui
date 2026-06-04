@@ -6,7 +6,7 @@ import {
   validateCodeString,
   parseCodeToDiagram,
 } from './codeSync';
-import { flushPendingCodeToDiagram, registerCodeFlush } from './flushRegistry';
+import { flushPendingCodeToDiagram, registerCodeFlush, cancelPendingCodeToDiagramDebounce, registerCodeDebounceCancel } from './flushRegistry';
 import { toWavedromJSON } from '../wavedromBridge';
 
 function sampleDiagram(): DiagramState {
@@ -74,5 +74,22 @@ describe('flushRegistry', () => {
     flushed = false;
     flushPendingCodeToDiagram();
     expect(flushed).toBe(false);
+  });
+
+  it('cancelPendingCodeToDiagramDebounce is no-op when nothing registered', () => {
+    expect(() => cancelPendingCodeToDiagramDebounce()).not.toThrow();
+  });
+
+  it('cancelPendingCodeToDiagramDebounce calls registered cancel handler', () => {
+    let cancelled = false;
+    const unregister = registerCodeDebounceCancel(() => {
+      cancelled = true;
+    });
+    cancelPendingCodeToDiagramDebounce();
+    expect(cancelled).toBe(true);
+    unregister();
+    cancelled = false;
+    cancelPendingCodeToDiagramDebounce();
+    expect(cancelled).toBe(false);
   });
 });

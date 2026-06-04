@@ -70,6 +70,18 @@ export function parseEdge(edge: string): ParsedEdge | null {
   return { ...parseEdgePath(path), label };
 }
 
+/** Endpoint node letters referenced by edge[] (from/to path chars). */
+export function collectEdgeEndpointChars(edges: string[]): Set<string> {
+  const used = new Set<string>();
+  for (const edge of edges) {
+    const parsed = parseEdge(edge);
+    if (!parsed) continue;
+    used.add(parsed.fromNode);
+    used.add(parsed.toNode);
+  }
+  return used;
+}
+
 /** Map node letter → first signal/step occurrence in tree order. */
 export function buildNodeIndex(signals: SignalOrGroup[]): Map<string, NodeAnchor> {
   const map = new Map<string, NodeAnchor>();

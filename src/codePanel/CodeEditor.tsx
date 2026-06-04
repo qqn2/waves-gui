@@ -72,7 +72,6 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   const onBlurRef = useRef(onBlur);
-  const skipExternalSyncRef = useRef(false);
 
   onChangeRef.current = onChange;
   onBlurRef.current = onBlur;
@@ -95,7 +94,6 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
           keymap.of([...defaultKeymap, ...historyKeymap]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              skipExternalSyncRef.current = true;
               onChangeRef.current(update.state.doc.toString());
             }
           }),
@@ -117,13 +115,8 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   useEffect(() => {
     const view = viewRef.current;
     if (!view) return;
-    if (skipExternalSyncRef.current) {
-      skipExternalSyncRef.current = false;
-      return;
-    }
     const current = view.state.doc.toString();
     if (current !== code) {
-      skipExternalSyncRef.current = true;
       view.dispatch({
         changes: { from: 0, to: current.length, insert: code },
         selection: view.state.selection,
