@@ -17,9 +17,9 @@
 // ─── Signal states ────────────────────────────────────────────────────────────
 
 /** All possible states for a single bit signal at one time step */
-export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N';
+export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N' | '.';
 
-/** Map to WaveDrom wave characters */
+/** Map to WaveDrom wave characters (`.` is paint-only — resolved before storing in states[]) */
 export const BIT_STATE_CHARS: Record<BitState, string> = {
   '0': '0',
   '1': '1',
@@ -31,6 +31,7 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'n': 'n',
   'P': 'P',
   'N': 'N',
+  '.': '.',
 };
 
 // ─── Signal types ─────────────────────────────────────────────────────────────
@@ -144,12 +145,19 @@ export interface ViewState {
   paintDraft: PaintDraft | null;
   /** In-progress WaveDrom edge[] anchor placement (arrow / timespan tools) */
   edgeAnchorPending: EdgeAnchorPending | null;
-  /** Hover step while arrow / timespan tool is active (live preview) */
-  edgeToolHover: { signalId: string; step: number } | null;
+  /** Pointer position + optional lane snap while arrow / timespan tool is active */
+  edgeToolHover: {
+    signalId: string | null;
+    step: number | null;
+    canvasX: number;
+    canvasY: number;
+  } | null;
   /** Middle shape for new arrow edges (WaveDrom path between node letters, before `>`) */
   activeEdgeShape: string;
   /** Show A–Z anchor letters on canvas (WaveDrom invisible nodes) */
   showAnchorLetters: boolean;
+  /** Monotonic counter bumped on loadDiagram — drives JSON panel resync. */
+  diagramRevision: number;
 }
 
 export type EdgeAnchorPending =
