@@ -7,8 +7,7 @@ import type {
   VectorSegment,
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
-import { ensureClockLaneFormat } from './clockWave';
-import { decodeWaveDetail } from './waveStringCodec';
+import { decodeWaveDetail, padDecodedWaveToLength } from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
@@ -179,9 +178,19 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       s.node = padNode(s.node, totalSteps);
     }
     if (s.type === 'bit') {
-      const last = s.states[s.states.length - 1] ?? '0';
-      while (s.states.length < totalSteps) s.states.push(last);
-      if (s.states.length > totalSteps) s.states.length = totalSteps;
+      const padded = padDecodedWaveToLength(
+        {
+          states: s.states,
+          stepGaps: s.stepGaps ?? [],
+          stepGlitches: s.stepGlitches ?? [],
+        },
+        totalSteps,
+      );
+      s.states = padded.states;
+      if (padded.stepGaps.some(Boolean)) s.stepGaps = padded.stepGaps;
+      else delete s.stepGaps;
+      if (padded.stepGlitches.some(Boolean)) s.stepGlitches = padded.stepGlitches;
+      else delete s.stepGlitches;
       const maxBoundaries = Math.max(0, s.states.length - 1);
       if (s.stepGaps) {
         while (s.stepGaps.length < maxBoundaries) s.stepGaps.push(false);
@@ -193,7 +202,6 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
         if (s.stepGlitches.length > maxBoundaries) s.stepGlitches.length = maxBoundaries;
         if (!s.stepGlitches.some(Boolean)) delete s.stepGlitches;
       }
-      ensureClockLaneFormat(s.states);
       return;
     }
     if (s.type === 'vector') {

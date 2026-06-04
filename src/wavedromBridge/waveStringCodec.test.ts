@@ -11,7 +11,7 @@ import {
   fromWavedromJSON,
   validateWavedromJSON,
 } from './index';
-import type { DiagramState, Signal, SignalGroup } from '../shared/types';
+import type { BitState, DiagramState, Signal, SignalGroup } from '../shared/types';
 import type { WdRoot, WdSignal } from './wdTypes';
 
 function isBitSignal(s: DiagramState['signals'][number]): s is Signal {
@@ -67,6 +67,37 @@ describe('encodeWaveString / decodeWaveString', () => {
     );
     expect(decodeWaveString('pnpn')).toEqual(['p', 'n', 'p', 'n']);
     expect(encodeWaveString(decodeWaveString('pnpn'))).toBe('p...');
+  });
+
+  it('encodes clock mixed with 0/1 using dotted clock runs, not n/p spam', () => {
+    const states: BitState[] = ['P', '0', 'P', 'n', 'P', 'n', 'P', '1', 'P'];
+    const wave = encodeWaveString(states);
+    expect(wave).not.toMatch(/[pPnN]{2}/);
+    expect(wave).not.toMatch(/nP|pN|Pn|Np/);
+    expect(wave).toBe('P0P....1P');
+    expect(decodeWaveString(wave)).toEqual(states);
+  });
+
+  it('does not emit Pn0..nPnPn when a 0 is painted into a clock lane', () => {
+    const states: BitState[] = ['P', 'n', '0', 'P', 'n', 'P', 'n', 'P', 'n'];
+    const wave = encodeWaveString(states);
+    expect(wave).not.toMatch(/Pn|nP|pN|Np/);
+    expect(wave).not.toMatch(/[pPnN]{2}/);
+    expect(wave).toBe('P0.P.....');
+
+    const doubleZero: BitState[] = ['P', 'n', '0', '0', 'n', 'P', 'n', 'P', 'n'];
+    const wave2 = encodeWaveString(doubleZero);
+    expect(wave2).not.toMatch(/Pn|nP|pN|Np/);
+    expect(wave2).toBe('P0...P...');
+
+    const repaired = normalizeWaveString('Pn0..nPnPn');
+    expect(repaired).not.toMatch(/Pn|nP|pN|Np/);
+    expect(normalizeWaveString(repaired)).toBe(repaired);
+  });
+
+  it('round-trips mixed clock and binary wave strings', () => {
+    const wave = 'P0..P...1';
+    expect(encodeWaveString(decodeWaveString(wave))).toBe(wave);
   });
 
   it('returns empty string for empty states', () => {
@@ -162,6 +193,24 @@ describe('validateWavedromJSON', () => {
 });
 
 describe('fromWavedromJSON / toWavedromJSON round-trip', () => {
+  it('extends clock lanes with dots when padded to diagram length', () => {
+    const wd: WdRoot = {
+      signal: [
+        { name: 'clk', wave: 'P........' },
+        { name: 'reset_n', wave: '10........' },
+        { name: 'enable', wave: '0..1..0..1' },
+      ],
+      config: { hscale: 1 },
+      head: { text: 'Clock and reset' },
+    };
+    const diagram = fromWavedromJSON(wd);
+    expect(diagram.config.totalSteps).toBe(10);
+    const back = toWavedromJSON(diagram);
+    const clk = back.signal[0] as WdSignal;
+    expect(clk.wave).toBe('P.........');
+    expect(clk.wave).not.toMatch(/[pPnN]{2}/);
+  });
+
   it('round-trips bit signal states', () => {
     const wd: WdRoot = {
       signal: [{ name: 'clk', wave: '10101' }],

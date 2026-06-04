@@ -2,7 +2,9 @@ import { nanoid } from 'nanoid';
 import { setNodeCharAt } from '../../wavedromBridge/nodeString';
 import {
   applyClockBrushToRange,
-  ensureClockLaneFormat,
+  applyClockToggleToRange,
+  isClockFallStep,
+  isClockRiseStep,
 } from '../../wavedromBridge/clockWave';
 import {
   clampHscale,
@@ -11,7 +13,7 @@ import {
   MIN_TOTAL_STEPS,
   ROW_HEIGHT,
 } from '../constants';
-import { toggleBinaryBitState, isClockBitState } from '../bitToggle';
+import { toggleBinaryBitState, isClockBitState, resolvePaintValue, isHoldPaintValue } from '../bitToggle';
 import { applyVectorSpan } from '../vectorSegments';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import type { ImmerSet, StoreActions } from './storeActions';
@@ -25,6 +27,30 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
+
+/** Collapse redundant clock fall edges when painting explicit 0/1 into a clock lane. */
+function normalizeBinaryPaintOnClockLane(
+  states: BitState[],
+  lo: number,
+  hi: number,
+  bitState: BitState,
+): void {
+  if (bitState !== '0' && bitState !== '1') return;
+  for (let i = lo; i <= hi; i++) {
+    if (bitState === '0') {
+      if (i > 0 && isClockFallStep(states[i - 1]!)) {
+        states[i - 1] = '0';
+      }
+      if (
+        i + 2 < states.length &&
+        isClockFallStep(states[i + 1]!) &&
+        isClockRiseStep(states[i + 2]!)
+      ) {
+        states[i + 1] = '0';
+      }
+    }
+  }
+}
 
 export function createSignalActions(set: ImmerSet): Pick<
   StoreActions,
@@ -203,7 +229,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          sig.states[step] = bitState;
+          sig.states[step] = resolvePaintValue(sig.states, step, bitState);
         });
       });
     },
@@ -215,12 +241,19 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          if (isClockBitState(bitState) && lo < hi) {
+          if (isHoldPaintValue(bitState)) {
+            for (let i = lo; i <= hi; i++) {
+              sig.states[i] = resolvePaintValue(sig.states, i, bitState);
+            }
+          } else if (isClockBitState(bitState) && lo < hi) {
             applyClockBrushToRange(sig.states, lo, hi, bitState);
           } else if (isClockBitState(bitState)) {
             sig.states[lo] = bitState;
           } else {
             for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
+            if (sig.states.some(isClockBitState)) {
+              normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
+            }
           }
         });
       });
@@ -233,11 +266,12 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          for (let i = lo; i <= hi; i++) {
-            sig.states[i] = toggleBinaryBitState(sig.states[i]);
-          }
           if (sig.states.every(isClockBitState)) {
-            ensureClockLaneFormat(sig.states);
+            applyClockToggleToRange(sig.states, lo, hi);
+          } else {
+            for (let i = lo; i <= hi; i++) {
+              sig.states[i] = toggleBinaryBitState(sig.states[i]);
+            }
           }
         });
       });

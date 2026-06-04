@@ -1,6 +1,9 @@
 import type { DiagramState, ViewState, BitState } from '../shared/types';
-import { toggleBinaryBitState, isClockBitState } from '../shared/bitToggle';
-import { applyClockBrushToRange } from '../wavedromBridge/clockWave';
+import { toggleBinaryBitState, isClockBitState, resolvePaintValue, isHoldPaintValue } from '../shared/bitToggle';
+import {
+  applyClockBrushToRange,
+  applyClockToggleToRange,
+} from '../wavedromBridge/clockWave';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from './rowLayout';
 import { renderGrid } from './renderGrid';
@@ -100,6 +103,20 @@ export class CanvasRenderer {
                   hi,
                   view.paintDraft.bitState,
                 );
+              } else if (
+                view.paintDraft.mode === 'paint' &&
+                view.paintDraft.apply === 'set' &&
+                isHoldPaintValue(view.paintDraft.bitState)
+              ) {
+                for (let s = lo; s <= hi; s++) {
+                  draft[s] = resolvePaintValue(draft, s, view.paintDraft.bitState);
+                }
+              } else if (
+                view.paintDraft.mode === 'paint' &&
+                view.paintDraft.apply === 'toggle' &&
+                item.states.every(isClockBitState)
+              ) {
+                applyClockToggleToRange(draft, lo, hi);
               } else {
                 for (let s = lo; s <= hi; s++) {
                   if (view.paintDraft.mode === 'paint') {

@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import type { BitState, DiagramState } from './types';
 import { DEFAULT_STEPS } from './constants';
+import { createDefaultDiagram } from './defaultDiagram';
+import { toWavedromJSON } from '../wavedromBridge';
 import { useStore } from './store';
 
 function emptyDiagram(): DiagramState {
@@ -32,6 +34,16 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.hscale).toBe(4);
     useStore.getState().setHscale(0.5);
     expect(useStore.getState().diagram.config.hscale).toBe(1);
+  });
+
+  it('loadDiagram increments diagramRevision', () => {
+    const rev0 = useStore.getState().view.diagramRevision;
+    useStore.getState().addSignal('bit');
+    expect(useStore.getState().view.diagramRevision).toBeGreaterThan(rev0);
+
+    const revBeforeLoad = useStore.getState().view.diagramRevision;
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    expect(useStore.getState().view.diagramRevision).toBe(revBeforeLoad + 1);
   });
 
   it('addSignal, setSignalState, undo, redo', () => {
@@ -186,6 +198,23 @@ describe('useStore', () => {
     expect(sig.states[1]).toBe('z');
     expect(sig.states[2]).toBe('n');
     expect(sig.states[3]).toBe('p');
+  });
+
+  it('toggleSignalStateRange inverts clock-reset clk lane from one step', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const clk = useStore.getState().diagram.signals[0] as { id: string; states: BitState[] };
+    useStore.getState().toggleSignalStateRange(clk.id, 0, 0);
+    const after = (useStore.getState().diagram.signals[0] as { states: BitState[] }).states;
+    expect(after[0]).toBe('n');
+    expect(after[1]).toBe('p');
+  });
+
+  it('painting 0 into clk does not export Pn0..nPnPn spam', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const clk = useStore.getState().diagram.signals[0] as { id: string; states: BitState[] };
+    useStore.getState().setSignalStateRange(clk.id, 2, 2, '0');
+    const wave = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string }).wave;
+    expect(wave).not.toMatch(/Pn|nP|pN|Np/);
   });
 
   it('eraseSignalStateRange clears step glitches on touched boundaries', () => {

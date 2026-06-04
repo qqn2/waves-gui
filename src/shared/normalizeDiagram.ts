@@ -7,6 +7,7 @@ import {
   DEFAULT_STEPS,
   ROW_HEIGHT,
 } from './constants';
+import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -44,13 +45,7 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.states)) {
       signal.states = [];
     }
-    const fill: Signal['states'][number] = signal.states[signal.states.length - 1] ?? '0';
-    while (signal.states.length < totalSteps) {
-      signal.states.push(fill);
-    }
-    if (signal.states.length > totalSteps) {
-      signal.states.length = totalSteps;
-    }
+    signal.states = padBitStatesToLength(signal.states, totalSteps);
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
     }
