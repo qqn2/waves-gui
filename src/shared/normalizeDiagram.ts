@@ -31,7 +31,7 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
           id: nanoid(),
           startStep: 0,
           endStep: totalSteps,
-          value: '0',
+          value: '',
         },
       ];
     }

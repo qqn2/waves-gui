@@ -80,4 +80,19 @@ describe('bus data[] round-trip', () => {
     expect(data.every((d) => d !== '0' || d === '0')).toBe(true);
     expect(data.filter((d) => d === '0')).toHaveLength(0);
   });
+
+  it('fromWavedromJSON and toWavedromJSON round-trip empty/0 vector signals correctly', () => {
+    const wd: WdRoot = {
+      signal: [
+        { name: 'bus', wave: '=...=...', data: ['', '0'] }
+      ],
+      config: { totalSteps: 8 }
+    };
+    const diagram = fromWavedromJSON(wd);
+    expect(diagram.signals[0].type).toBe('vector');
+    const exported = toWavedromJSON(diagram);
+    const sig = exported.signal[0] as WdSignal;
+    expect(sig.wave).toBe('=...=...');
+    expect(sig.data).toEqual(['', '0']);
+  });
 });

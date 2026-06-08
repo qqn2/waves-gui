@@ -1,22 +1,17 @@
 # WaveDrom timing diagram editor — type `make` to list commands.
-
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PORT ?= 5173
 
-ifeq ($(OS),Windows_NT)
-GIT_BASH := $(firstword $(wildcard "C:/Program Files/Git/bin/bash.exe") $(wildcard "C:/Program Files (x86)/Git/bin/bash.exe"))
-ifneq ($(GIT_BASH),)
-SHELL := $(GIT_BASH)
-endif
-else
-SHELL := /bin/bash
-endif
-.SHELLFLAGS := -ec
 
-NPM := source "$$HOME/.nvm/nvm.sh" 2>/dev/null; cd "$(ROOT)" &&
+# ── npm wrapper ───────────────────────────────────────────────────────────────
+NPM = source "$$HOME/.nvm/nvm.sh" 2>/dev/null; cd "$(ROOT)" &&
 
+ifeq ($(shell $(NPM) command -v npm 2>/dev/null),)
+  $(error npm not found. Install Node.js from https://nodejs.org or use nvm, then retry.)
+endif
+
+# ── Targets ───────────────────────────────────────────────────────────────────
 .PHONY: help install dev test build preview check clean
-
 .DEFAULT_GOAL := help
 
 help:

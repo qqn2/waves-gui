@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
+import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
+import type { WdRoot, WdSignal } from '../wavedromBridge/wdTypes';
 import {
   applyVectorSpan,
   segmentsToWaveAndData,
@@ -69,5 +71,15 @@ describe('vectorSegments', () => {
     expect(data).toContain('SEQ');
     const cleared = applyVectorSpan(painted, 2, 4, null, 8);
     expect(segmentsToWaveAndData(cleared, 8).data).not.toContain('SEQ');
+  });
+
+  it('segmentsToWaveAndData serializes empty string and "0" as = and pushes to data', () => {
+    const segments: VectorSegment[] = [
+      { id: '1', startStep: 0, endStep: 2, value: '' },
+      { id: '2', startStep: 2, endStep: 4, value: '0' },
+    ];
+    const { wave, data } = segmentsToWaveAndData(segments, 4);
+    expect(wave).toBe('=.=.');
+    expect(data).toEqual(['', '0']);
   });
 });

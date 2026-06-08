@@ -10,13 +10,6 @@ import type { VectorSegment } from './types';
 /** Sentinel stored in segment.value — maps to WaveDrom bus `x` (no data[] entry). */
 export const VECTOR_UNKNOWN_LABEL = 'x';
 
-/** Placeholder segment values that map to idle wave `.` (no data[] entry). */
-const IDLE_BUS_VALUES = new Set(['0', '']);
-
-function isBusDataLabel(value: string): boolean {
-  return value !== VECTOR_UNKNOWN_LABEL && !IDLE_BUS_VALUES.has(value);
-}
-
 type StepCell = { value: string; color?: string } | null;
 
 function stepsFromSegments(
@@ -115,13 +108,13 @@ export function segmentsToWaveAndData(
       i = j;
       continue;
     }
-    if (!isBusDataLabel(cell.value)) {
-      wave += '.';
-      i++;
-      continue;
-    }
     let j = i + 1;
-    while (j < totalSteps && steps[j]?.value === cell.value && steps[j]?.color === cell.color) {
+    while (
+      j < totalSteps &&
+      steps[j] !== null &&
+      steps[j]!.value === cell.value &&
+      steps[j]!.color === cell.color
+    ) {
       j++;
     }
     const span = j - i;
