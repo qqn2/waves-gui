@@ -93,7 +93,7 @@ export function createSignalActions(set: ImmerSet): Pick<
                     id: nanoid(),
                     startStep: 0,
                     endStep: s.diagram.config.totalSteps,
-                    value: '0',
+                    value: '',
                   },
                 ]
               : [],

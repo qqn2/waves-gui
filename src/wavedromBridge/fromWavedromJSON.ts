@@ -36,11 +36,12 @@ function parseVectorSegments(
 ): VectorSegment[] {
   const segments: VectorSegment[] = [];
   let dataIdx = 0;
+
   let segStart = 0;
-  let segValue = '';
+  let segValue: string | null = null;
   let segColor: string | undefined;
   const flushSegment = (endStep: number) => {
-    if (endStep > segStart && segValue !== '') {
+    if (endStep > segStart && segValue !== null) {
       segments.push({
         id: nanoid(),
         startStep: segStart,
@@ -67,8 +68,8 @@ function parseVectorSegments(
       if (ch === '=' || (ch >= '2' && ch <= '9')) {
         segValue = data[dataIdx++] ?? '';
       } else {
-        flushSegment(i);
         segStart = i + 1;
+        segValue = null;
         segColor = undefined;
         continue;
       }
@@ -81,7 +82,7 @@ function parseVectorSegments(
       id: nanoid(),
       startStep: 0,
       endStep: totalSteps,
-      value: data[0] ?? '0',
+      value: data[0] ?? '',
     });
   }
   return segments;
@@ -213,7 +214,7 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
         const lastVal =
           s.segments.length > 0
             ? s.segments[s.segments.length - 1].value
-            : '0';
+            : '';
         s.segments.push({
           id: nanoid(),
           startStep: lastEnd,
