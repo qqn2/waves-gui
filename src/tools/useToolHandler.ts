@@ -71,9 +71,26 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         return;
       }
 
-      if (e.ctrlKey && e.key === 'a') {
-        e.preventDefault();
-        select.selectAllSignals();
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'a' || e.key === 'A') {
+          e.preventDefault();
+          select.selectAllSignals();
+        } else if (e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          undo();
+        } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+          e.preventDefault();
+          redo();
+        } else if (e.key === '+' || e.key === '=') {
+          e.preventDefault();
+          setZoom(zoom * 1.25);
+        } else if (e.key === '-') {
+          e.preventDefault();
+          setZoom(zoom / 1.25);
+        } else if (e.key === '0') {
+          e.preventDefault();
+          setZoom(1);
+        }
         return;
       }
 
@@ -86,22 +103,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         return;
       }
 
-      if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        undo();
-      } else if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-        e.preventDefault();
-        redo();
-      } else if (e.key === 'v' || e.key === 'V') {
+      if (e.key === 'v' || e.key === 'V') {
         setTool('cursor');
       } else if (e.key === 'd' || e.key === 'D') {
         setTool('paint');
       } else if (e.key === 'e' || e.key === 'E') {
         setTool('erase');
-      } else if (e.key === 'N' && e.shiftKey) {
-        setActiveBitState('N');
-        setPaintMode('set');
-        setTool('paint');
       } else if (e.key === 'g' || e.key === 'G') {
         setTool('paint');
         setPaintMode('glitch');
@@ -132,7 +139,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setActiveBitState('P');
         setPaintMode('set');
         setTool('paint');
-      } else if (e.key === 'z' && !e.ctrlKey) {
+      } else if (e.key === 'z') {
         setActiveBitState('z');
         setPaintMode('set');
         setTool('paint');
@@ -148,15 +155,6 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setActiveBitState('.');
         setPaintMode('set');
         setTool('paint');
-      } else if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
-        e.preventDefault();
-        setZoom(zoom * 1.25);
-      } else if (e.ctrlKey && e.key === '-') {
-        e.preventDefault();
-        setZoom(zoom / 1.25);
-      } else if (e.ctrlKey && e.key === '0') {
-        e.preventDefault();
-        setZoom(1);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -190,8 +188,8 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
 
   const onPointerMove = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
-      if (tool === 'paint') paint.paintPointerMove(e, hit);
-      else if (tool === 'erase') erase.erasePointerMove(e, hit);
+      if (tool === 'paint') paint.paintPointerMove(e);
+      else if (tool === 'erase') erase.erasePointerMove(e);
       else if (tool === 'arrow' || tool === 'timespan') edge.onPointerMove(e, hit);
       else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerMove(e);
@@ -202,7 +200,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   );
 
   const onPointerUp = useCallback(
-    (e: PointerEvent, hit: HitTestResult) => {
+    (e: PointerEvent) => {
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
@@ -211,7 +209,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setSelectionOverlay(null);
       }
     },
-    [tool, canvasRef, edge],
+    [tool, canvasRef],
   );
 
   const onContextMenu = useCallback(

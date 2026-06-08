@@ -1,7 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
-import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
-import type { WdRoot, WdSignal } from '../wavedromBridge/wdTypes';
 import {
   applyVectorSpan,
   segmentsToWaveAndData,

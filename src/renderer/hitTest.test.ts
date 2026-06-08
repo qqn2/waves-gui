@@ -51,6 +51,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     activeTimespanLabel: '5 ms',
     activeEdgeShape: '',
     showAnchorLetters: false,
+    diagramRevision: 0,
     ...overrides,
   };
 }

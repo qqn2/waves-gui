@@ -134,7 +134,7 @@ function encodeMixedWaveString(
   let wave = '';
   let i = 0;
   while (i < states.length) {
-    let clockLen = isClockBitState(states[i]!)
+    const clockLen = isClockBitState(states[i]!)
       ? longestEncodableClockRun(states, i)
       : 0;
     if (clockLen > 0) {

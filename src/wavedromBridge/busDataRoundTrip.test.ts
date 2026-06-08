@@ -85,8 +85,7 @@ describe('bus data[] round-trip', () => {
     const wd: WdRoot = {
       signal: [
         { name: 'bus', wave: '=...=...', data: ['', '0'] }
-      ],
-      config: { totalSteps: 8 }
+      ]
     };
     const diagram = fromWavedromJSON(wd);
     expect(diagram.signals[0].type).toBe('vector');
