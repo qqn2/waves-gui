@@ -256,4 +256,93 @@ describe('useStore', () => {
     expect(useStore.getState().history.length).toBe(historyAfterAdd);
     expect(useStore.getState().view.paintDraft).toBeNull();
   });
+
+  it('duplicateSignal clones a bit signal and inserts it after the original', () => {
+    useStore.getState().addSignal('bit');
+    const root = useStore.getState().diagram.signals;
+    expect(root).toHaveLength(1);
+    const orig = root[0]!;
+    useStore.getState().setSignalState(orig.id, 2, '1');
+
+    useStore.getState().duplicateSignal(orig.id);
+    const updated = useStore.getState().diagram.signals;
+    expect(updated).toHaveLength(2);
+    expect(updated[0]?.id).toBe(orig.id);
+    const clone = updated[1]!;
+    expect(clone.id).not.toBe(orig.id);
+    expect(clone.name).toBe(orig.name);
+    expect(clone.type).toBe('bit');
+    expect((clone as { states: BitState[] }).states[2]).toBe('1');
+  });
+
+  it('duplicateSignal clones a vector signal with segment IDs regenerated', () => {
+    useStore.getState().addSignal('vector');
+    const root = useStore.getState().diagram.signals;
+    expect(root).toHaveLength(1);
+    const orig = root[0]!;
+    useStore.getState().setVectorSpanRange(orig.id, 1, 3, 'SEQ');
+
+    useStore.getState().duplicateSignal(orig.id);
+    const updated = useStore.getState().diagram.signals;
+    expect(updated).toHaveLength(2);
+    const clone = updated[1]!;
+    expect(clone.id).not.toBe(orig.id);
+    expect(clone.type).toBe('vector');
+    
+    // segments should be copied and have different IDs
+    const origSig = updated[0] as { segments: { id: string; value: string }[] };
+    const cloneSig = clone as { segments: { id: string; value: string }[] };
+    expect(cloneSig.segments).toHaveLength(origSig.segments.length);
+    for (let i = 0; i < cloneSig.segments.length; i++) {
+      expect(cloneSig.segments[i]?.id).not.toBe(origSig.segments[i]?.id);
+      expect(cloneSig.segments[i]?.value).toBe(origSig.segments[i]?.value);
+    }
+  });
+
+  it('duplicateSignal duplicates a signal inside a group', () => {
+    useStore.getState().loadDiagram({
+      version: 1,
+      config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+      signals: [
+        {
+          id: 'group-1',
+          name: 'Group',
+          type: 'group',
+          collapsed: false,
+          children: [
+            {
+              id: 'nested-sig-1',
+              name: 'nested1',
+              type: 'bit',
+              states: bitStates(),
+              segments: [],
+              color: '#4A9EFF',
+              rowHeight: 40,
+            },
+            {
+              id: 'nested-sig-2',
+              name: 'nested2',
+              type: 'bit',
+              states: bitStates(),
+              segments: [],
+              color: '#4A9EFF',
+              rowHeight: 40,
+            },
+          ],
+        },
+      ],
+      edges: [],
+    });
+
+    useStore.getState().duplicateSignal('nested-sig-1');
+    const group = useStore.getState().diagram.signals[0];
+    expect(group?.type).toBe('group');
+    if (group?.type === 'group') {
+      expect(group.children).toHaveLength(3);
+      expect(group.children[0]?.id).toBe('nested-sig-1');
+      expect(group.children[1]?.id).not.toBe('nested-sig-1');
+      expect(group.children[1]?.name).toBe('nested1');
+      expect(group.children[2]?.id).toBe('nested-sig-2');
+    }
+  });
 });

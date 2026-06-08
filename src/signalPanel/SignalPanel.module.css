@@ -361,3 +361,47 @@
   background: var(--bg-app);
   color: var(--text-primary);
 }
+
+.filterBar {
+  display: flex;
+  position: relative;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border, #333);
+  background: var(--bg-panel);
+}
+
+.filterInput {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 4px 22px 4px 6px;
+  font-size: 12px;
+  border: 1px solid var(--border, #333);
+  border-radius: 3px;
+  background: var(--bg-app, #1a1a1a);
+  color: var(--text-primary, #e8e8e8);
+}
+
+.filterInput:focus {
+  outline: none;
+  border-color: var(--accent, #4a9eff);
+}
+
+.filterClear {
+  position: absolute;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #888);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterClear:hover {
+  color: var(--text-primary, #eee);
+}
+

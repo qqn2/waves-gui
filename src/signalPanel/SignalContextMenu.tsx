@@ -82,7 +82,6 @@ export function SignalContextMenu({
         type="button"
         role="menuitem"
         onClick={onDuplicate}
-        title="Requires store.duplicateSignal (not implemented)"
       >
         Duplicate
       </button>
