@@ -52,9 +52,39 @@ function normalizeBinaryPaintOnClockLane(
   }
 }
 
+function duplicateSignalInDraft(
+  signals: SignalOrGroup[],
+  id: string,
+): boolean {
+  for (let i = 0; i < signals.length; i++) {
+    const item = signals[i]!;
+    if (item.type !== 'group' && item.id === id) {
+      const clone: Signal = {
+        ...item,
+        id: nanoid(),
+        states: [...item.states],
+        segments: item.segments.map((seg) => ({
+          ...seg,
+          id: nanoid(),
+        })),
+        stepGaps: item.stepGaps ? [...item.stepGaps] : undefined,
+        stepGlitches: item.stepGlitches ? [...item.stepGlitches] : undefined,
+      };
+      signals.splice(i + 1, 0, clone);
+      return true;
+    } else if (item.type === 'group') {
+      if (duplicateSignalInDraft(item.children, id)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 export function createSignalActions(set: ImmerSet): Pick<
   StoreActions,
   | 'addSignal'
+  | 'duplicateSignal'
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
@@ -105,6 +135,13 @@ export function createSignalActions(set: ImmerSet): Pick<
           0,
           signal,
         );
+      });
+    },
+
+    duplicateSignal(id) {
+      set((s) => {
+        pushHistory(s);
+        duplicateSignalInDraft(s.diagram.signals, id);
       });
     },
 

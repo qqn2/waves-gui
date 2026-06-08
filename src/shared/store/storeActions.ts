@@ -15,6 +15,7 @@ import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 export interface StoreActions {
   // ── Signals ──
   addSignal(type: Signal['type'], afterId?: string): void;
+  duplicateSignal(id: string): void;
   addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;

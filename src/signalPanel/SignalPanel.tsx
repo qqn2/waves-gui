@@ -23,6 +23,7 @@ import {
 } from './panelTree';
 import styles from './SignalPanel.module.css';
 
+
 export type { ScrollSyncHandles } from './scrollSyncTypes';
 
 export interface SignalPanelProps {
@@ -98,6 +99,24 @@ function renderTree(
   return nodes;
 }
 
+function filterSignalTree(items: SignalOrGroup[], q: string): SignalOrGroup[] {
+  const lower = q.toLowerCase();
+  const result: SignalOrGroup[] = [];
+  for (const item of items) {
+    if (item.type === 'group') {
+      const children = filterSignalTree(item.children, q);
+      if (children.length > 0) {
+        result.push({ ...item, children, collapsed: false });
+      }
+    } else if (item.type !== 'spacer') {
+      if (item.name.toLowerCase().includes(lower)) {
+        result.push(item);
+      }
+    }
+  }
+  return result;
+}
+
 export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const signals = useStore((s) => s.diagram.signals);
   const zoom = useStore((s) => s.view.zoom);
@@ -108,6 +127,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const waveformTopInset = getWaveformTopInsetPx(config, showTimeAxis);
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const addSignal = useStore((s) => s.addSignal);
+  const duplicateSignal = useStore((s) => s.duplicateSignal);
   const addGroup = useStore((s) => s.addGroup);
   const removeSignal = useStore((s) => s.removeSignal);
   const reorderSignals = useStore((s) => s.reorderSignals);
@@ -124,7 +144,13 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   );
   const [addOpen, setAddOpen] = useState(false);
   const [renameId, setRenameId] = useState<string | null>(null);
+  const [filterText, setFilterText] = useState('');
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const filterInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredSignals = useMemo(() =>
+    filterText.trim() ? filterSignalTree(signals, filterText) : signals,
+  [signals, filterText]);
 
   const scrollRef = panelScrollRef;
 
@@ -255,12 +281,34 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
         className={styles.scroll}
         onScroll={onScroll}
       >
+        <div className={styles.filterBar}>
+          <input
+            ref={filterInputRef}
+            type="text"
+            className={styles.filterInput}
+            placeholder="Filter signals…"
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            aria-label="Filter signals by name"
+            spellCheck={false}
+          />
+          {filterText && (
+            <button
+              type="button"
+              className={styles.filterClear}
+              onClick={() => { setFilterText(''); filterInputRef.current?.focus(); }}
+              aria-label="Clear filter"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <div
           className={styles.scrollInner}
           style={{ paddingTop: waveformTopInset }}
         >
         {renderTree(
-          signals,
+          filteredSignals,
           zoom,
           0,
           activeIds,
@@ -356,6 +404,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           closeMenu();
         }}
         onDuplicate={() => {
+          if (menuSignalId) duplicateSignal(menuSignalId);
           closeMenu();
         }}
         onAddAbove={(type) => {
