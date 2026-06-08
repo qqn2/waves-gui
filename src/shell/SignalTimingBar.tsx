@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { useStore, findSignal } from '../shared/store';
 import type { Signal } from '../shared/types';
 import styles from './shell.module.css';
@@ -61,37 +61,54 @@ export function SignalTimingBar() {
     return { id, signal: found };
   }, [activeIds, signals]);
 
-  const onPhaseChange = useCallback(
-    (raw: string) => {
-      if (!target) return;
-      applyPhase(target.id, parseOptionalNumber(raw));
-    },
-    [target],
-  );
+  const [localPhase, setLocalPhase] = useState('');
+  const [localPeriod, setLocalPeriod] = useState('');
 
-  const onPeriodChange = useCallback(
-    (raw: string) => {
-      if (!target) return;
-      const n = parseOptionalNumber(raw);
-      if (n === undefined) {
-        applyPeriod(target.id, undefined);
-        return;
-      }
-      const period = Math.max(1, Math.floor(n));
+  useEffect(() => {
+    if (target) {
+      setLocalPhase(formatOptionalNumber(target.signal.phase));
+      setLocalPeriod(formatOptionalNumber(target.signal.period));
+    }
+  }, [target?.id, target?.signal.phase, target?.signal.period]);
+
+  const commitPhase = useCallback(() => {
+    if (!target) return;
+    const val = parseOptionalNumber(localPhase);
+    applyPhase(target.id, val);
+    setLocalPhase(formatOptionalNumber(val));
+  }, [target, localPhase]);
+
+  const commitPeriod = useCallback(() => {
+    if (!target) return;
+    const val = parseOptionalNumber(localPeriod);
+    if (val === undefined) {
+      applyPeriod(target.id, undefined);
+      setLocalPeriod('');
+    } else {
+      const period = Math.max(1, Math.floor(val));
       applyPeriod(target.id, period);
-    },
-    [target],
-  );
+      setLocalPeriod(String(period));
+    }
+  }, [target, localPeriod]);
 
   const clearPhase = useCallback(() => {
     if (!target) return;
     applyPhase(target.id, undefined);
+    setLocalPhase('');
   }, [target]);
 
   const clearPeriod = useCallback(() => {
     if (!target) return;
     applyPeriod(target.id, undefined);
+    setLocalPeriod('');
   }, [target]);
+
+  const handleKeyDown = (e: React.KeyboardEvent, commitFn: () => void) => {
+    if (e.key === 'Enter') {
+      commitFn();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
 
   if (!target) return null;
 
@@ -115,8 +132,10 @@ export function SignalTimingBar() {
           <input
             type="text"
             className={styles.timingBarNum}
-            value={formatOptionalNumber(signal.phase)}
-            onChange={(e) => onPhaseChange(e.target.value)}
+            value={localPhase}
+            onChange={(e) => setLocalPhase(e.target.value)}
+            onBlur={commitPhase}
+            onKeyDown={(e) => handleKeyDown(e, commitPhase)}
             placeholder="0"
             inputMode="decimal"
             spellCheck={false}
@@ -136,8 +155,10 @@ export function SignalTimingBar() {
           <input
             type="text"
             className={styles.timingBarNum}
-            value={formatOptionalNumber(signal.period)}
-            onChange={(e) => onPeriodChange(e.target.value)}
+            value={localPeriod}
+            onChange={(e) => setLocalPeriod(e.target.value)}
+            onBlur={commitPeriod}
+            onKeyDown={(e) => handleKeyDown(e, commitPeriod)}
             placeholder="—"
             inputMode="numeric"
             spellCheck={false}

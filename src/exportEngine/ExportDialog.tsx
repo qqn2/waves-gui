@@ -1,8 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
-import { exportSVG } from './exportSVG';
+import { exportSVG, buildSVGString } from './exportSVG';
 import { exportWavedromJSON } from './exportJSON';
+import { computeExportDimensions } from './exportDimensions';
+import { drawSignalLabels } from './labelEntries';
+import { CanvasRenderer } from '../renderer/CanvasRenderer';
+import {
+  createExportCanvas,
+  disposeExportCanvas,
+  exportCanvasToBlob,
+} from './exportCanvas';
+import { drawEdgesOnCanvas } from './exportEdges';
 import styles from './ExportDialog.module.css';
 
 export type ExportFormat = 'png' | 'svg' | 'jpg' | 'json';
@@ -23,6 +32,19 @@ function defaultBackground(): string {
   );
 }
 
+function themeColor(varName: string, fallback: string): string {
+  if (typeof document === 'undefined') return fallback;
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+  return v || fallback;
+}
+
+/** True only when running on a secure origin (HTTPS or localhost). */
+const clipboardAvailable =
+  typeof navigator !== 'undefined' &&
+  typeof navigator.clipboard?.write === 'function';
+
 export function ExportDialog({
   open,
   onClose,
@@ -34,11 +56,13 @@ export function ExportDialog({
   const [background, setBackground] = useState(defaultBackground);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setBackground(defaultBackground());
       setError(null);
+      setCopied(null);
     }
   }, [open]);
 
@@ -66,6 +90,66 @@ export function ExportDialog({
       setBusy(false);
     }
   }, [background, diagram, format, onClose, scale, view]);
+
+  const handleCopyPNG = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const dims = computeExportDimensions(diagram, view);
+      const pixelW = Math.ceil(dims.totalWidth);
+      const pixelH = Math.ceil(dims.totalHeight);
+      const created = createExportCanvas(pixelW, pixelH);
+      if (!created) throw new Error('Could not create canvas');
+      const { canvas, ctx } = created;
+      try {
+        ctx.fillStyle = background;
+        ctx.fillRect(0, 0, dims.totalWidth, dims.totalHeight);
+        const labelBg = themeColor('--bg-panel', '#242424');
+        const textColor = themeColor('--text-primary', '#e8e8e8');
+        drawSignalLabels(
+          ctx,
+          diagram,
+          dims.labelWidth,
+          dims.axisOffset,
+          dims.totalHeight,
+          labelBg,
+          textColor,
+        );
+        ctx.save();
+        ctx.translate(dims.labelWidth, 0);
+        const exportView: ViewState = { ...view, zoom: 1, scrollX: 0, scrollY: 0 };
+        const renderer = new CanvasRenderer(ctx);
+        renderer.draw(diagram, exportView, dims.waveformWidth, dims.totalHeight);
+        drawEdgesOnCanvas(ctx, diagram, exportView, 0);
+        ctx.restore();
+        const blob = await exportCanvasToBlob(canvas, 'image/png');
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        setCopied('PNG');
+        setTimeout(() => setCopied(null), 2000);
+      } finally {
+        disposeExportCanvas(canvas);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Copy failed');
+    } finally {
+      setBusy(false);
+    }
+  }, [background, diagram, view]);
+
+  const handleCopySVG = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const svgString = buildSVGString(diagram, view);
+      await navigator.clipboard.writeText(svgString);
+      setCopied('SVG');
+      setTimeout(() => setCopied(null), 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Copy failed');
+    } finally {
+      setBusy(false);
+    }
+  }, [diagram, view]);
 
   if (!open) return null;
 
@@ -139,8 +223,33 @@ export function ExportDialog({
         )}
 
         {error && <p className={styles.error}>{error}</p>}
+        {copied && <p className={styles.copied}>✓ Copied as {copied}!</p>}
 
         <div className={styles.actions}>
+          {clipboardAvailable && (
+            <>
+              <button
+                type="button"
+                id="copy-png-btn"
+                className={styles.btn}
+                disabled={busy}
+                onClick={() => void handleCopyPNG()}
+                title="Copy diagram as PNG image to clipboard"
+              >
+                Copy PNG
+              </button>
+              <button
+                type="button"
+                id="copy-svg-btn"
+                className={styles.btn}
+                disabled={busy}
+                onClick={() => void handleCopySVG()}
+                title="Copy diagram as SVG markup to clipboard"
+              >
+                Copy SVG
+              </button>
+            </>
+          )}
           <button type="button" className={styles.btn} onClick={onClose}>
             Cancel
           </button>

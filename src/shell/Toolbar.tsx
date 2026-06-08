@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShortcutHelp } from './ShortcutHelp';
 import {
   ArrowRight,
@@ -8,10 +8,21 @@ import {
   Paintbrush,
   ZoomIn,
   ZoomOut,
+  Maximize,
 } from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { BitState } from '../shared/types';
-import { HSCALE_STEP, MAX_HSCALE, MIN_HSCALE } from '../shared/constants';
+import {
+  HSCALE_STEP,
+  MAX_HSCALE,
+  MIN_HSCALE,
+  CELL_WIDTH,
+  TIME_AXIS_HEIGHT,
+  MIN_ZOOM,
+  MAX_ZOOM,
+} from '../shared/constants';
+import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
+import { measureHeadFoot } from '../renderer/renderHeadFoot';
 import { ThemeMenu } from './ThemeMenu';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import { ToolbarAddSignalMenu } from './toolbar/ToolbarAddSignalMenu';
@@ -47,6 +58,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setActiveBitState = useStore((s) => s.setActiveBitState);
   const setPaintMode = useStore((s) => s.setPaintMode);
   const setZoom = useStore((s) => s.setZoom);
+  const setScroll = useStore((s) => s.setScroll);
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
   const toggleRenderPanel = useStore((s) => s.toggleRenderPanel);
   const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
@@ -63,6 +75,54 @@ export function Toolbar({ onExport }: ToolbarProps) {
     setActiveBitState(st);
     setPaintMode('set');
   };
+
+  const fitToWindow = () => {
+    const canvas = document.querySelector('.canvasWrap canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const canvasWidth = canvas.clientWidth;
+    const canvasHeight = canvas.clientHeight;
+    if (canvasWidth <= 0 || canvasHeight <= 0) return;
+
+    const { totalSteps, hscale } = diagram.config;
+    const contentW = totalSteps * CELL_WIDTH * hscale;
+
+    const rows = buildRowLayout(diagram.signals);
+    const contentH = totalContentHeight(rows);
+
+    const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+    const { headHeight, footHeight } = measureHeadFoot(diagram.config);
+
+    const zoomX = canvasWidth / contentW;
+    const remainingH = canvasHeight - (axisOffset + headHeight + footHeight);
+    const zoomY = remainingH > 0 ? remainingH / contentH : zoomX;
+
+    const fitZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.min(zoomX, zoomY)));
+    setZoom(fitZoom);
+    setScroll(0, 0);
+  };
+
+  const [localHscale, setLocalHscale] = useState('');
+
+  useEffect(() => {
+    setLocalHscale(String(diagram.config.hscale));
+  }, [diagram.config.hscale]);
+
+  const commitHscale = () => {
+    const val = Number(localHscale);
+    if (Number.isFinite(val)) {
+      setHscale(val);
+    } else {
+      setLocalHscale(String(diagram.config.hscale));
+    }
+  };
+
+  const handleHscaleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      commitHscale();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
+
 
   return (
     <div className={styles.toolbar}>
@@ -172,6 +232,15 @@ export function Toolbar({ onExport }: ToolbarProps) {
       <button type="button" className={styles.toolBtn} onClick={() => setZoom(zoom * 1.25)}>
         <ZoomIn size={15} />
       </button>
+      <button
+        type="button"
+        id="fit-zoom-btn"
+        className={styles.toolBtn}
+        onClick={fitToWindow}
+        title="Fit diagram to canvas window"
+      >
+        <Maximize size={15} />
+      </button>
       <label
         className={styles.hscaleWrap}
         title="WaveDrom config.hscale (≥ 1, fractional OK e.g. 1.5)"
@@ -183,8 +252,10 @@ export function Toolbar({ onExport }: ToolbarProps) {
           min={MIN_HSCALE}
           max={MAX_HSCALE}
           step={HSCALE_STEP}
-          value={diagram.config.hscale}
-          onChange={(e) => setHscale(Number(e.target.value))}
+          value={localHscale}
+          onChange={(e) => setLocalHscale(e.target.value)}
+          onBlur={commitHscale}
+          onKeyDown={handleHscaleKeyDown}
           aria-label="WaveDrom horizontal scale"
         />
       </label>
