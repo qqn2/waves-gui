@@ -45,7 +45,7 @@ export function useEdgeTools(): {
   cancelEdgeEdit: () => void;
   onPointerDown: (e: PointerEvent, hit: HitTestResult) => void;
   onPointerMove: (e: PointerEvent, hit: HitTestResult) => void;
-  onPointerUp: (_e: PointerEvent, _hit: HitTestResult) => void;
+  onPointerUp: () => void;
 } {
   const tool = useStore((s) => s.view.selectedTool);
   const edgeAnchorPending = useStore((s) => s.view.edgeAnchorPending);
@@ -200,7 +200,7 @@ export function useEdgeTools(): {
     [tool, setEdgeToolHover],
   );
 
-  const onPointerUp = useCallback((_e: PointerEvent, _hit: HitTestResult) => {
+  const onPointerUp = useCallback(() => {
     // Arrow and timespan complete on click — no drag / pointer-up gesture.
   }, []);
 

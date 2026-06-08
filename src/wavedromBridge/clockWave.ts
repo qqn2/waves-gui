@@ -222,8 +222,8 @@ export function decodeClockWave(wave: string): DecodedWave {
 
     const head = c as BitState;
     const posedgeFirst = isClockRiseStep(head);
-    let riseChar: BitState = posedgeFirst ? head : riseStateFor(head);
-    let fallChar: BitState = posedgeFirst ? fallStateFor(head) : head;
+    const riseChar: BitState = posedgeFirst ? head : riseStateFor(head);
+    const fallChar: BitState = posedgeFirst ? fallStateFor(head) : head;
 
     const pushAt = (runIdx: number) => {
       const riseEdge = posedgeFirst ? runIdx % 2 === 0 : runIdx % 2 === 1;

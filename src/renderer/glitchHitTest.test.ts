@@ -52,6 +52,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     edgeToolHover: null,
     activeEdgeShape: '',
     showAnchorLetters: false,
+    diagramRevision: 0,
     ...overrides,
   };
 }

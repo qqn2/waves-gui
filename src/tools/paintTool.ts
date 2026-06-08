@@ -56,7 +56,7 @@ export function paintPointerDown(
   capturePointer(canvas, e);
 }
 
-export function paintPointerMove(e: PointerEvent, _hit: HitTestResult): void {
+export function paintPointerMove(e: PointerEvent): void {
   if (!toolState.isPaintDragging()) return;
   const draft = useStore.getState().view.paintDraft;
   if (!draft) return;

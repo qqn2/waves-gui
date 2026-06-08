@@ -321,7 +321,7 @@ function walkSignalSvg(
   return parts.join('\n');
 }
 
-export function exportSVG(diagram: DiagramState, view: ViewState): void {
+export function buildSVGString(diagram: DiagramState, view: ViewState): string {
   const dims = computeExportDimensions(diagram, view);
   const rows = buildRowLayout(diagram.signals);
   const contentH = totalContentHeight(rows);
@@ -358,7 +358,7 @@ export function exportSVG(diagram: DiagramState, view: ViewState): void {
   const edgeSvg = svgEdges(diagram, view, 0);
   if (edgeSvg) waveformParts.push(edgeSvg);
 
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${dims.totalWidth}" height="${dims.totalHeight}" viewBox="0 0 ${dims.totalWidth} ${dims.totalHeight}">
   <defs>
     <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
@@ -371,7 +371,10 @@ export function exportSVG(diagram: DiagramState, view: ViewState): void {
     ${waveformParts.join('\n')}
   </g>
 </svg>`;
+}
 
+export function exportSVG(diagram: DiagramState, view: ViewState): void {
+  const svg = buildSVGString(diagram, view);
   const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
   saveAs(blob, `${exportBaseName(view)}.svg`);
 }

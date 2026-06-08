@@ -62,7 +62,7 @@ export function erasePointerDown(
   capturePointer(canvas, e);
 }
 
-export function erasePointerMove(e: PointerEvent, _hit: HitTestResult): void {
+export function erasePointerMove(e: PointerEvent): void {
   if (!toolState.isEraseDragging()) return;
   const draft = useStore.getState().view.paintDraft;
   if (!draft) return;
