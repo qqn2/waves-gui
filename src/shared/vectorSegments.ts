@@ -57,6 +57,19 @@ function segmentsFromSteps(steps: StepCell[]): VectorSegment[] {
 }
 
 /** Paint or clear a bus value across inclusive step range; idle cells become wave `.` */
+export function segmentAtStep(
+  segments: VectorSegment[],
+  step: number,
+): VectorSegment | undefined {
+  return segments.find((seg) => step >= seg.startStep && step < seg.endStep);
+}
+
+export interface ApplyVectorSpanOptions {
+  /** Keep labels (and colors) on steps that already hold bus data. */
+  preserveExistingLabels?: boolean;
+}
+
+/** Paint or clear a bus value across inclusive step range; idle cells become wave `.` */
 export function applyVectorSpan(
   segments: VectorSegment[],
   startStep: number,
@@ -64,13 +77,17 @@ export function applyVectorSpan(
   value: string | null,
   totalSteps: number,
   busColorFill?: string,
+  options?: ApplyVectorSpanOptions,
 ): VectorSegment[] {
   const steps = stepsFromSegments(segments, totalSteps);
   const lo = Math.max(0, startStep);
   const hi = Math.min(totalSteps - 1, endStepInclusive);
+  const preserve = options?.preserveExistingLabels === true;
   for (let i = lo; i <= hi; i++) {
     if (value === null) {
       steps[i] = null;
+    } else if (preserve && steps[i] !== null) {
+      continue;
     } else {
       steps[i] = {
         value,
@@ -85,10 +102,10 @@ export function applyVectorSpan(
 export function segmentsToWaveAndData(
   segments: VectorSegment[],
   totalSteps: number,
-): { wave: string; data: string[] } {
+): { wave: string; data: Array<string | string[]> } {
   const steps = stepsFromSegments(segments, totalSteps);
   let wave = '';
-  const data: string[] = [];
+  const data: Array<string | string[]> = [];
 
   let i = 0;
   while (i < totalSteps) {
@@ -121,7 +138,11 @@ export function segmentsToWaveAndData(
     const colorIndex = colorIndexFromFillHex(cell.color);
     wave += colorIndexToWaveChar(colorIndex);
     for (let k = 1; k < span; k++) wave += '.';
-    data.push(cell.value);
+    if (cell.value.includes('\n')) {
+      data.push(cell.value.split('\n'));
+    } else {
+      data.push(cell.value);
+    }
     i = j;
   }
 

@@ -98,8 +98,8 @@
   padding: 2px 4px;
   border: 1px solid var(--accent, #4a9eff);
   border-radius: 2px;
-  background: var(--bg-input, #2a2a2a);
-  color: inherit;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
 }
 
 .footer {
@@ -239,6 +239,17 @@
   color: var(--text-muted, #888);
 }
 
+.segmentEditorOverflowBadge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #e8a040;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, #e8a040 60%, transparent);
+  background: color-mix(in srgb, #e8a040 14%, var(--bg-panel, #1e1e1e));
+}
+
 .segmentEditorSignal {
   font-size: 11px;
   min-width: 0;
@@ -272,8 +283,59 @@
 
 .segmentRow {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.segmentRowMain {
+  display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+}
+
+.segmentRowFit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-left: 4.5em;
+}
+
+.segmentOverflow {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #e8a040;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, #e8a040 60%, transparent);
+  background: color-mix(in srgb, #e8a040 14%, var(--bg-panel, #1e1e1e));
+}
+
+.segmentHscaleBtn {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--border, #444);
+  border-radius: 3px;
+  background: var(--bg-app, #1a1a1a);
+  color: var(--text-primary, #eee);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.segmentHscaleBtn:hover:not(:disabled) {
+  border-color: var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+}
+
+.segmentHscaleBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .segmentRange {
@@ -291,13 +353,23 @@
   padding: 3px 6px;
   border: 1px solid var(--border, #444);
   border-radius: 2px;
-  background: var(--bg-input, #2a2a2a);
-  color: inherit;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
 }
 
 .segmentValue:focus {
   outline: none;
   border-color: var(--accent, #4a9eff);
+}
+
+.segmentValueOverflow {
+  border-color: #e8a040;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #e8a040 45%, transparent);
+}
+
+.segmentValueOverflow:focus {
+  border-color: #e8a040;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #e8a040 55%, transparent);
 }
 
 .segmentColorGroup {
@@ -320,51 +392,10 @@
   outline-offset: 1px;
 }
 
-.segmentEditor {
-  flex-shrink: 0;
-  padding: 6px 8px;
-  border-top: 1px solid var(--border, #444);
-  background: color-mix(in srgb, var(--bg-panel) 92%, var(--accent) 8%);
-}
-
-.segmentEditorTitle {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-}
-
-.segmentRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  font-size: 11px;
-}
-
-.segmentRange {
-  flex-shrink: 0;
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
-  min-width: 4.5rem;
-}
-
-.segmentValue {
-  flex: 1;
-  min-width: 0;
-  padding: 2px 6px;
-  font-size: 12px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--bg-app);
-  color: var(--text-primary);
-}
-
 .filterBar {
   display: flex;
   position: relative;
+  flex-shrink: 0;
   align-items: center;
   padding: 6px 8px;
   border-bottom: 1px solid var(--border, #333);
@@ -404,4 +435,3 @@
 .filterClear:hover {
   color: var(--text-primary, #eee);
 }
-

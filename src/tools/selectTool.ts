@@ -7,6 +7,7 @@ import {
   canvasToLogicalY,
   type ViewTransform,
 } from '../renderer/coordinates';
+import { pickBusLabelFromHit } from './busLabelPick';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { setActiveSignalIds, toolState, SELECT_DRAG_THRESHOLD_PX } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
@@ -86,6 +87,7 @@ function applyClickSelection(hit: HitTestResult, diagram: DiagramState): void {
         end: diagram.config.totalSteps - 1,
       });
     }
+    pickBusLabelFromHit(hit, diagram);
     return;
   }
   clearSelection();
