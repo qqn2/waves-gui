@@ -15,27 +15,19 @@ import styles from '../shell.module.css';
 export interface ToolbarPaintSectionProps {
   paintMode: PaintMode;
   activeBit: BitState;
-  activeBusLabel: string;
-  activeBusColorIndex: WavedromColorIndex;
   moreBitsOpen: boolean;
   onSetPaintMode: (mode: PaintMode) => void;
   onSelectBit: (st: BitState) => void;
   onToggleMoreBits: () => void;
-  onBusLabelChange: (label: string) => void;
-  onBusColorIndex: (index: WavedromColorIndex) => void;
 }
 
 export function ToolbarPaintSection({
   paintMode,
   activeBit,
-  activeBusLabel,
-  activeBusColorIndex,
   moreBitsOpen,
   onSetPaintMode,
   onSelectBit,
   onToggleMoreBits,
-  onBusLabelChange,
-  onBusColorIndex,
 }: ToolbarPaintSectionProps) {
   const moreBitsActive = MORE_BIT_STATES.includes(activeBit);
 
@@ -101,8 +93,35 @@ export function ToolbarPaintSection({
           </button>
         </span>
       ) : null}
-      <label className={styles.busLabelWrap} title="Label for bus rows (= span)">
-        <span className={styles.busLabelTag}>Bus</span>
+    </>
+  );
+}
+
+export interface ToolbarBusSectionProps {
+  activeBusLabel: string;
+  activeBusColorIndex: WavedromColorIndex;
+  onBusLabelChange: (label: string) => void;
+  onBusColorIndex: (index: WavedromColorIndex) => void;
+  /** Pointer mode: click canvas bus to copy label here */
+  pickFromCanvas?: boolean;
+}
+
+export function ToolbarBusSection({
+  activeBusLabel,
+  activeBusColorIndex,
+  onBusLabelChange,
+  onBusColorIndex,
+  pickFromCanvas = false,
+}: ToolbarBusSectionProps) {
+  const labelTitle = pickFromCanvas
+    ? 'Click a bus segment on canvas to copy its label here'
+    : 'Label written on bus spans when you drag with Draw';
+
+  return (
+    <>
+      <span className={styles.toolGroupLabel}>Bus</span>
+      <label className={styles.busLabelWrap} title={labelTitle}>
+        <span className={styles.busLabelTag}>label</span>
         <input
           type="text"
           className={styles.busLabelInput}

@@ -10,6 +10,7 @@ import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/cons
 import { decodeWaveDetail, padDecodedWaveToLength } from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
+import { hasSubcycleSyntax, waveColumnCount } from './subcycleWave';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 
 function isGroup(entry: WdSignalEntry): entry is WdGroup {
@@ -29,9 +30,14 @@ function isVectorWave(wave: string): boolean {
   return /[=2-9]/.test(wave);
 }
 
+function normalizeDataLabel(entry: string | string[]): string {
+  if (Array.isArray(entry)) return entry.map(String).join('\n');
+  return String(entry);
+}
+
 function parseVectorSegments(
   wave: string,
-  data: string[],
+  data: Array<string | string[]>,
   totalSteps: number,
 ): VectorSegment[] {
   const segments: VectorSegment[] = [];
@@ -66,7 +72,7 @@ function parseVectorSegments(
       segStart = i;
       segColor = fillHexForWaveChar(ch);
       if (ch === '=' || (ch >= '2' && ch <= '9')) {
-        segValue = data[dataIdx++] ?? '';
+        segValue = normalizeDataLabel(data[dataIdx++] ?? '');
       } else {
         segStart = i + 1;
         segValue = null;
@@ -82,7 +88,7 @@ function parseVectorSegments(
       id: nanoid(),
       startStep: 0,
       endStep: totalSteps,
-      value: data[0] ?? '',
+      value: normalizeDataLabel(data[0] ?? ''),
     });
   }
   return segments;
@@ -118,13 +124,16 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
   const sig = entry as WdSignal;
   const wave = sig.wave ?? '0';
   if (isVectorWave(wave)) {
+    const rawData = (sig.data ?? []).map((d) =>
+      Array.isArray(d) ? d.map(String) : String(d),
+    );
     const totalSteps = wave.length;
     return {
       id: nanoid(),
       name: sig.name ?? 'bus',
       type: 'vector',
       states: [],
-      segments: parseVectorSegments(wave, sig.data ?? [], totalSteps),
+      segments: parseVectorSegments(wave, rawData, totalSteps),
       color: DEFAULT_SIGNAL_COLOR,
       rowHeight: ROW_HEIGHT,
       phase: sig.phase,
@@ -133,16 +142,21 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     };
   }
   const { states, stepGaps, stepGlitches } = decodeWaveDetail(wave);
+  const waveOverride = hasSubcycleSyntax(wave) ? wave : undefined;
+  const columnSteps = waveOverride
+    ? waveColumnCount(wave, sig.period ?? 1, DEFAULT_HSCALE)
+    : states.length;
   return {
     id: nanoid(),
     name: sig.name ?? 'sig',
     type: 'bit',
-    states,
+    states: states.length > 0 ? states : Array(columnSteps).fill('0' as const),
     segments: [],
     color: DEFAULT_SIGNAL_COLOR,
     rowHeight: ROW_HEIGHT,
     phase: sig.phase,
     period: sig.period,
+    ...(waveOverride !== undefined ? { waveOverride } : {}),
     ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
     ...(stepGlitches.some(Boolean) ? { stepGlitches } : {}),
     ...(sig.node !== undefined ? { node: sig.node } : {}),
@@ -154,8 +168,12 @@ function maxSteps(signals: SignalOrGroup[]): number {
   const walk = (list: SignalOrGroup[]) => {
     for (const item of list) {
       if (item.type === 'group') walk(item.children);
-      else if (item.type === 'bit') max = Math.max(max, item.states.length);
-      else if (item.type === 'vector') {
+      else if (item.type === 'bit') {
+        const len = item.waveOverride
+          ? waveColumnCount(item.waveOverride, item.period ?? 1, DEFAULT_HSCALE)
+          : item.states.length;
+        max = Math.max(max, len);
+      } else if (item.type === 'vector') {
         for (const seg of item.segments) {
           max = Math.max(max, seg.endStep);
         }
@@ -205,24 +223,6 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       }
       return;
     }
-    if (s.type === 'vector') {
-      const lastEnd = s.segments.reduce(
-        (m, seg) => Math.max(m, seg.endStep),
-        0,
-      );
-      if (lastEnd < totalSteps) {
-        const lastVal =
-          s.segments.length > 0
-            ? s.segments[s.segments.length - 1].value
-            : '';
-        s.segments.push({
-          id: nanoid(),
-          startStep: lastEnd,
-          endStep: totalSteps,
-          value: lastVal,
-        });
-      }
-    }
   };
   const walk = (list: SignalOrGroup[]) => {
     for (const item of list) {
@@ -244,6 +244,7 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
   const config = {
     totalSteps,
     hscale: wd.config?.hscale ?? DEFAULT_HSCALE,
+    ...(wd.config?.skin ? { skin: wd.config.skin } : {}),
     head: wd.head ?? wd.config?.head,
     foot: wd.foot ?? wd.config?.foot,
   };

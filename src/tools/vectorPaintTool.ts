@@ -10,10 +10,10 @@ function capturePointer(
   e: PointerEvent,
   kind: 'paint' | 'erase',
 ): void {
-  if (!canvas) return;
-  canvas.setPointerCapture(e.pointerId);
   if (kind === 'paint') toolState.beginPaintDrag(e.pointerId);
   else toolState.beginEraseDrag(e.pointerId);
+  if (!canvas) return;
+  canvas.setPointerCapture(e.pointerId);
 }
 
 function releasePointer(
@@ -21,8 +21,7 @@ function releasePointer(
   e: PointerEvent,
   kind: 'paint' | 'erase',
 ): void {
-  if (!canvas) return;
-  if (canvas.hasPointerCapture(e.pointerId)) {
+  if (canvas?.hasPointerCapture(e.pointerId)) {
     canvas.releasePointerCapture(e.pointerId);
   }
   if (kind === 'paint') toolState.endPaintDrag();
@@ -83,15 +82,13 @@ export function vectorPaintPointerUp(
   if (!draft || draft.lane !== 'vector') return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
-  useStore
-    .getState()
-    .setVectorSpanRange(
-      draft.signalId,
-      lo,
-      hi,
-      draft.busLabel ?? 'data',
-      draft.busColorFill,
-    );
+  useStore.getState().setVectorSpanRange(
+    draft.signalId,
+    lo,
+    hi,
+    draft.busLabel ?? 'data',
+    draft.busColorFill,
+  );
   useStore.getState().clearPaintDraft();
 }
 

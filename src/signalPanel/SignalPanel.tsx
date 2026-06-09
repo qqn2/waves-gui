@@ -276,33 +276,33 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   return (
     <div className={styles.panel} style={{ width: labelWidth, minWidth: labelWidth }}>
+      <div className={styles.filterBar}>
+        <input
+          ref={filterInputRef}
+          type="text"
+          className={styles.filterInput}
+          placeholder="Filter signals…"
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+          aria-label="Filter signals by name"
+          spellCheck={false}
+        />
+        {filterText && (
+          <button
+            type="button"
+            className={styles.filterClear}
+            onClick={() => { setFilterText(''); filterInputRef.current?.focus(); }}
+            aria-label="Clear filter"
+          >
+            ×
+          </button>
+        )}
+      </div>
       <div
         ref={scrollRef}
         className={styles.scroll}
         onScroll={onScroll}
       >
-        <div className={styles.filterBar}>
-          <input
-            ref={filterInputRef}
-            type="text"
-            className={styles.filterInput}
-            placeholder="Filter signals…"
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-            aria-label="Filter signals by name"
-            spellCheck={false}
-          />
-          {filterText && (
-            <button
-              type="button"
-              className={styles.filterClear}
-              onClick={() => { setFilterText(''); filterInputRef.current?.focus(); }}
-              aria-label="Clear filter"
-            >
-              ×
-            </button>
-          )}
-        </div>
         <div
           className={styles.scrollInner}
           style={{ paddingTop: waveformTopInset }}

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import {
   applyVectorSpan,
+  segmentAtStep,
   segmentsToWaveAndData,
   VECTOR_UNKNOWN_LABEL,
 } from './vectorSegments';
@@ -69,6 +70,29 @@ describe('vectorSegments', () => {
     expect(data).toContain('SEQ');
     const cleared = applyVectorSpan(painted, 2, 4, null, 8);
     expect(segmentsToWaveAndData(cleared, 8).data).not.toContain('SEQ');
+  });
+
+  it('applyVectorSpan preserveExistingLabels keeps occupied step labels', () => {
+    const base: VectorSegment[] = [
+      { id: '1', startStep: 0, endStep: 2, value: 'A0' },
+      { id: '2', startStep: 4, endStep: 5, value: 'A1' },
+    ];
+    const painted = applyVectorSpan(base, 0, 4, 'NEW', 8, undefined, {
+      preserveExistingLabels: true,
+    });
+    const { data } = segmentsToWaveAndData(painted, 8);
+    expect(data).toContain('A0');
+    expect(data).toContain('NEW');
+    expect(data).toContain('A1');
+    expect(data.filter((d) => d === 'A0')).toHaveLength(1);
+  });
+
+  it('segmentAtStep finds the segment covering a step', () => {
+    const segments: VectorSegment[] = [
+      { id: '1', startStep: 2, endStep: 5, value: 'MID' },
+    ];
+    expect(segmentAtStep(segments, 1)).toBeUndefined();
+    expect(segmentAtStep(segments, 3)?.value).toBe('MID');
   });
 
   it('segmentsToWaveAndData serializes empty string and "0" as = and pushes to data', () => {

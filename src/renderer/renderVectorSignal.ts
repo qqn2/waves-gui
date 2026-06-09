@@ -5,6 +5,8 @@ import { logicalToCanvasY } from './coordinates';
 import { isVectorUnknownValue } from './stateColors';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import { segmentBusFill, segmentBusStroke } from './vectorBusStyle';
+import { labelOverflowsInWidth } from '../shared/vectorLabelFit';
+import { drawBusOverflowIndicator } from './drawBusOverflowIndicator';
 
 export function renderVectorSignal(
   ctx: CanvasRenderingContext2D,
@@ -42,14 +44,21 @@ export function renderVectorSignal(
     const x1 = stepLogicalX(signal, seg.startStep) * scale - transform.scrollX;
     const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * scale - transform.scrollX;
     const span = x2 - x1;
+    const spanTooNarrow = span < d * 3;
+    const fontPx = Math.max(10, rowH * 0.35);
+    const maxW = span - d * 2 - 8;
+    const overflows = labelOverflowsInWidth(seg.value, maxW, fontPx, spanTooNarrow);
 
-    if (span < d * 3) {
+    if (spanTooNarrow) {
       ctx.beginPath();
       ctx.moveTo(x1, yHigh);
       ctx.lineTo(x2, yLow);
       ctx.moveTo(x1, yLow);
       ctx.lineTo(x2, yHigh);
       ctx.stroke();
+      if (overflows) {
+        drawBusOverflowIndicator(ctx, x1, x2, yHigh, yLow, yMid, d, span);
+      }
       continue;
     }
 
@@ -65,12 +74,22 @@ export function renderVectorSignal(
     ctx.stroke();
 
     ctx.fillStyle = unknown ? textSecondary : textPrimary;
-    ctx.font = `${Math.max(10, rowH * 0.35)}px sans-serif`;
+    ctx.font = `${fontPx}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const maxW = span - d * 2 - 8;
     if (maxW > 4) {
-      ctx.fillText(seg.value, (x1 + x2) / 2, yMid, maxW);
+      const lines = seg.value.split('\n');
+      const lineHeight = fontPx;
+      const blockH = lines.length * lineHeight;
+      let lineY = yMid - blockH / 2 + lineHeight / 2;
+      for (const line of lines) {
+        ctx.fillText(line, (x1 + x2) / 2, lineY, maxW);
+        lineY += lineHeight;
+      }
+    }
+
+    if (overflows) {
+      drawBusOverflowIndicator(ctx, x1, x2, yHigh, yLow, yMid, d, span);
     }
   }
 }
