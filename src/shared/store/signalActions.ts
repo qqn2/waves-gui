@@ -18,6 +18,12 @@ import { applyVectorSpan } from '../vectorSegments';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import type { ImmerSet, StoreActions } from './storeActions';
 import {
+  clearNodesAndEdges,
+  deleteStepInSignal,
+  insertStepInSignal,
+  walkSignals,
+} from './stepColumnHelpers';
+import {
   clearStepGlitchesTouchingRange,
   findGroup,
   findSignal,
@@ -27,6 +33,10 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
+
+function clearWaveOverride(sig: Signal): void {
+  delete sig.waveOverride;
+}
 
 /** Collapse redundant clock fall edges when painting explicit 0/1 into a clock lane. */
 function normalizeBinaryPaintOnClockLane(
@@ -69,6 +79,7 @@ function duplicateSignalInDraft(
         })),
         stepGaps: item.stepGaps ? [...item.stepGaps] : undefined,
         stepGlitches: item.stepGlitches ? [...item.stepGlitches] : undefined,
+        ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
       };
       signals.splice(i + 1, 0, clone);
       return true;
@@ -105,6 +116,9 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setActiveSignalIds'
   | 'setTotalSteps'
   | 'setHscale'
+  | 'insertStepAt'
+  | 'deleteStepAt'
+  | 'setDiagramSkin'
 > {
   return {
     addSignal(type, afterId) {
@@ -191,7 +205,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
-    setVectorSpanRange(signalId, startStep, endStepInclusive, value, busColorFill) {
+    setVectorSpanRange(signalId, startStep, endStepInclusive, value, busColorFill, options) {
       set((s) => {
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
@@ -203,6 +217,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             value,
             s.diagram.config.totalSteps,
             busColorFill,
+            options,
           );
         });
         s.view.isDirty = true;
@@ -266,6 +281,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
           sig.states[step] = resolvePaintValue(sig.states, step, bitState);
         });
       });
@@ -278,6 +294,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
           if (isHoldPaintValue(bitState)) {
             for (let i = lo; i <= hi; i++) {
               sig.states[i] = resolvePaintValue(sig.states, i, bitState);
@@ -303,6 +320,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
           if (sig.states.every(isClockBitState)) {
             applyClockToggleToRange(sig.states, lo, hi);
           } else {
@@ -320,7 +338,9 @@ export function createSignalActions(set: ImmerSet): Pick<
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type !== 'bit' || sig.states.length < 2) return;
+          if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
+          if (sig.states.length < 2) return;
           const maxBoundaries = sig.states.length - 1;
           if (!sig.stepGlitches) sig.stepGlitches = [];
           while (sig.stepGlitches.length < maxBoundaries) {
@@ -342,6 +362,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type === 'bit') {
+            clearWaveOverride(sig);
             sig.states[step] = step > 0 ? sig.states[step - 1]! : '0';
             clearStepGlitchesTouchingRange(sig, step, step);
           }
@@ -356,6 +377,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
           for (let i = lo; i <= hi; i++) {
             sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
           }
@@ -457,6 +479,58 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (s.diagram.config.hscale === next) return;
         pushHistory(s);
         s.diagram.config.hscale = next;
+        s.view.isDirty = true;
+      });
+    },
+
+    insertStepAt(index) {
+      set((s) => {
+        const total = s.diagram.config.totalSteps;
+        if (total >= MAX_TOTAL_STEPS) return;
+        const at = Math.max(0, Math.min(index, total));
+        pushHistory(s);
+        walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at));
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        s.diagram.config.totalSteps = total + 1;
+        s.view.isDirty = true;
+      });
+    },
+
+    deleteStepAt(index) {
+      set((s) => {
+        const total = s.diagram.config.totalSteps;
+        if (total <= MIN_TOTAL_STEPS) return;
+        const at = Math.max(0, Math.min(index, total - 1));
+        let blocked = false;
+        walkSignals(s.diagram.signals, (sig) => {
+          if (sig.type === 'vector') {
+            for (const seg of sig.segments) {
+              if (
+                seg.startStep <= at &&
+                seg.endStep > at &&
+                seg.endStep - seg.startStep <= 1
+              ) {
+                blocked = true;
+              }
+            }
+          }
+        });
+        if (blocked) return;
+        pushHistory(s);
+        walkSignals(s.diagram.signals, (sig) => {
+          deleteStepInSignal(sig, at, MIN_TOTAL_STEPS);
+        });
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        s.diagram.config.totalSteps = total - 1;
+        s.view.isDirty = true;
+      });
+    },
+
+    setDiagramSkin(skin) {
+      set((s) => {
+        pushHistory(s);
+        if (skin === undefined || skin.trim() === '') delete s.diagram.config.skin;
+        else s.diagram.config.skin = skin.trim();
         s.view.isDirty = true;
       });
     },

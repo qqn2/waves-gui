@@ -1,6 +1,7 @@
 import type { WdRoot } from './wdTypes';
+import { isValidWaveString } from './subcycleWave';
 
-const WAVE_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9]*$/;
+const WAVE_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
 
 function isWdGroup(entry: unknown): entry is [string, ...unknown[]] {
   return Array.isArray(entry) && typeof entry[0] === 'string';
@@ -21,10 +22,10 @@ function validateSignalEntry(entry: unknown): string | null {
   const sig = entry as { wave?: string };
   if (sig.wave !== undefined) {
     if (typeof sig.wave !== 'string') return 'wave must be a string';
-    if (sig.wave.includes('<') || sig.wave.includes('>')) {
-      return 'Sub-cycle wave syntax (<n|>) is not supported; use wavedrom.com editor and import JSON';
-    }
     if (!WAVE_CHARS.test(sig.wave)) {
+      return `Invalid wave characters: ${sig.wave}`;
+    }
+    if (!isValidWaveString(sig.wave)) {
       return `Invalid wave characters: ${sig.wave}`;
     }
   }

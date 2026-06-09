@@ -13,6 +13,7 @@ export interface HitTestResult {
   step: number | null;
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;
+  isTimeAxis: boolean;
   edgeIndex: number | null;
 }
 
@@ -22,6 +23,7 @@ const MISS: HitTestResult = {
   step: null,
   half: null,
   isLabelArea: false,
+  isTimeAxis: false,
   edgeIndex: null,
 };
 
@@ -53,6 +55,19 @@ export function hitTest(
   const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
   const { headHeight } = measureHeadFoot(diagram.config);
   const waveformTop = axisOffset + headHeight;
+
+  if (
+    view.showTimeAxis &&
+    canvasY >= axisOffset &&
+    canvasY < waveformTop
+  ) {
+    const logicalX = canvasToLogicalX(canvasX, transform);
+    const raw = Math.floor(logicalX / CELL_WIDTH);
+    const step =
+      raw >= 0 && raw < diagram.config.totalSteps ? raw : null;
+    return { ...MISS, isTimeAxis: true, step };
+  }
+
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
 
@@ -117,6 +132,7 @@ export function hitTest(
       step,
       half,
       isLabelArea: false,
+      isTimeAxis: false,
       edgeIndex: null,
     };
   }

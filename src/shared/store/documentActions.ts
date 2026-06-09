@@ -11,6 +11,7 @@ export function createEdgeActions(set: ImmerSet): Pick<
   | 'addDiagramEdge'
   | 'updateDiagramEdge'
   | 'removeDiagramEdge'
+  | 'setEdgeCurveControl'
   | 'setActiveEdgeShape'
   | 'setShowAnchorLetters'
   | 'setEdgeAnchorPending'
@@ -41,6 +42,32 @@ export function createEdgeActions(set: ImmerSet): Pick<
         const removed = s.diagram.edges[index]!;
         s.diagram.edges.splice(index, 1);
         pruneUnusedNodeAnchorsAfterEdgeRemoval(s.diagram, removed);
+        if (s.diagram.edgeCurveControls) {
+          const next: Record<number, { c1x: number; c2x: number }> = {};
+          for (const [k, v] of Object.entries(s.diagram.edgeCurveControls)) {
+            const i = Number(k);
+            if (i < index) next[i] = v;
+            else if (i > index) next[i - 1] = v;
+          }
+          s.diagram.edgeCurveControls = Object.keys(next).length > 0 ? next : undefined;
+        }
+        s.view.isDirty = true;
+      });
+    },
+
+    setEdgeCurveControl(index, control, options) {
+      set((s) => {
+        if (!s.diagram.edges?.[index]) return;
+        if (options?.recordHistory !== false) pushHistory(s);
+        if (!s.diagram.edgeCurveControls) s.diagram.edgeCurveControls = {};
+        if (control === undefined) {
+          delete s.diagram.edgeCurveControls[index];
+          if (Object.keys(s.diagram.edgeCurveControls).length === 0) {
+            delete s.diagram.edgeCurveControls;
+          }
+        } else {
+          s.diagram.edgeCurveControls[index] = control;
+        }
         s.view.isDirty = true;
       });
     },
@@ -107,6 +134,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
     },
 
     undo() {
+      cancelPendingCodeToDiagramDebounce();
       set((s) => {
         if (s.history.length === 0) return;
         s.future.push(current(s.diagram));
@@ -117,6 +145,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
     },
 
     redo() {
+      cancelPendingCodeToDiagramDebounce();
       set((s) => {
         if (s.future.length === 0) return;
         s.history.push(current(s.diagram));

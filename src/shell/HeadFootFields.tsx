@@ -30,6 +30,10 @@ function hasScaleFields(
   );
 }
 
+function hasLabelFields(head: DiagramConfig['head'], foot: DiagramConfig['foot']): boolean {
+  return Boolean(head?.text?.trim() || foot?.text?.trim());
+}
+
 function patchHead(patch: Partial<HeadSlice>): void {
   useStore.setState((s) => {
     const prev = s.diagram.config.head ?? {};
@@ -56,15 +60,22 @@ function patchFoot(patch: Partial<FootSlice>): void {
   });
 }
 
-/** Title, caption, steps, and optional tick/tock scale (WaveDrom head/foot). */
+/** Steps plus collapsible title/caption and column scale (WaveDrom head/foot). */
 export function HeadFootFields() {
   const head = useStore((s) => s.diagram.config.head);
   const foot = useStore((s) => s.diagram.config.foot);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [labelsOpen, setLabelsOpen] = useState(false);
+  const [scaleOpen, setScaleOpen] = useState(false);
+
+  useEffect(() => {
+    if (hasLabelFields(head, foot)) {
+      setLabelsOpen(true);
+    }
+  }, [head?.text, foot?.text]);
 
   useEffect(() => {
     if (hasScaleFields(head, foot)) {
-      setAdvancedOpen(true);
+      setScaleOpen(true);
     }
   }, [head?.tick, head?.every, foot?.tock, foot?.every]);
 
@@ -79,43 +90,56 @@ export function HeadFootFields() {
   return (
     <div
       className={styles.headFootRow}
-      title="Steps, title/caption (head.text / foot.text); Advanced: column number scales"
+      title="Diagram steps; Labels: head.text / foot.text; Scale: column number ticks"
     >
       <DiagramStepsControl />
-      <span className={styles.headFootSep} aria-hidden />
-      <label className={styles.headFootField}>
-        <span className={styles.headFootLabel}>Title</span>
-        <input
-          type="text"
-          className={styles.headFootInput}
-          value={head?.text ?? ''}
-          onChange={(e) => onHeadText(e.target.value)}
-          placeholder="head.text"
-          spellCheck={false}
-        />
-      </label>
-      <span className={styles.headFootSep} />
-      <label className={styles.headFootField}>
-        <span className={styles.headFootLabel}>Caption</span>
-        <input
-          type="text"
-          className={styles.headFootInput}
-          value={foot?.text ?? ''}
-          onChange={(e) => onFootText(e.target.value)}
-          placeholder="foot.text"
-          spellCheck={false}
-        />
-      </label>
       <button
         type="button"
         className={styles.headFootAdvancedBtn}
-        aria-expanded={advancedOpen}
-        onClick={() => setAdvancedOpen((o) => !o)}
+        aria-expanded={labelsOpen}
+        onClick={() => setLabelsOpen((o) => !o)}
+        title="WaveDrom title and caption (head.text / foot.text)"
+      >
+        Labels {labelsOpen ? '▾' : '▸'}
+      </button>
+      {labelsOpen ? (
+        <>
+          <span className={styles.headFootSep} aria-hidden />
+          <label className={styles.headFootField}>
+            <span className={styles.headFootLabel}>Title</span>
+            <input
+              type="text"
+              className={styles.headFootInput}
+              value={head?.text ?? ''}
+              onChange={(e) => onHeadText(e.target.value)}
+              placeholder="head.text"
+              spellCheck={false}
+            />
+          </label>
+          <span className={styles.headFootSep} />
+          <label className={styles.headFootField}>
+            <span className={styles.headFootLabel}>Caption</span>
+            <input
+              type="text"
+              className={styles.headFootInput}
+              value={foot?.text ?? ''}
+              onChange={(e) => onFootText(e.target.value)}
+              placeholder="foot.text"
+              spellCheck={false}
+            />
+          </label>
+        </>
+      ) : null}
+      <button
+        type="button"
+        className={styles.headFootAdvancedBtn}
+        aria-expanded={scaleOpen}
+        onClick={() => setScaleOpen((o) => !o)}
         title="WaveDrom column numbers: head.tick / head.every, foot.tock / foot.every"
       >
-        Advanced {advancedOpen ? '▾' : '▸'}
+        Scale {scaleOpen ? '▾' : '▸'}
       </button>
-      {advancedOpen ? (
+      {scaleOpen ? (
         <>
           <span className={styles.headFootSep} aria-hidden />
           <label className={styles.headFootField} title="head.tick — first number on top time scale">

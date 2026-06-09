@@ -9,6 +9,8 @@ import { buildRowLayout, totalContentHeight } from './rowLayout';
 import { renderGrid } from './renderGrid';
 import { renderTimeAxis } from './renderTimeAxis';
 import { renderBitSignal } from './renderBitSignal';
+import { renderSubcycleBitSignal } from './renderSubcycleBitSignal';
+import { padWaveOverride } from '../wavedromBridge/subcycleWave';
 import { renderVectorSignal } from './renderVectorSignal';
 import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
 import { applyVectorSpan } from '../shared/vectorSegments';
@@ -131,19 +133,37 @@ export class CanvasRenderer {
               }
             }
           }
-          renderBitSignal(
-            this.ctx,
-            drawSignal,
-            row.y,
-            row.height,
-            transform,
-            diagram.config.totalSteps,
-            draft,
-            {
-              highlightGlitchBoundaries:
-                view.selectedTool === 'paint' && view.paintMode === 'glitch',
-            },
-          );
+          if (item.waveOverride && !draft) {
+            renderSubcycleBitSignal(
+              this.ctx,
+              drawSignal,
+              padWaveOverride(
+                item.waveOverride,
+                diagram.config.totalSteps,
+                item.period ?? 1,
+                diagram.config.hscale,
+              ),
+              row.y,
+              row.height,
+              transform,
+              diagram.config.totalSteps,
+              diagram.config.hscale,
+            );
+          } else {
+            renderBitSignal(
+              this.ctx,
+              drawSignal,
+              row.y,
+              row.height,
+              transform,
+              diagram.config.totalSteps,
+              draft,
+              {
+                highlightGlitchBoundaries:
+                  view.selectedTool === 'paint' && view.paintMode === 'glitch',
+              },
+            );
+          }
           if (item.node) {
             renderSignalNodes(
               this.ctx,

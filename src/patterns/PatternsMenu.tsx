@@ -28,6 +28,8 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
   const addSignal = useStore((s) => s.addSignal);
   const renameSignal = useStore((s) => s.renameSignal);
+  const activeSignalIds = useStore((s) => s.view.activeSignalIds);
+  const signals = useStore((s) => s.diagram.signals);
 
   const [selectedId, setSelectedId] = useState<PatternId>('clock');
   const [configs, setConfigs] = useState(initialPatternConfigs);
@@ -54,6 +56,36 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
     }
 
     onInserted?.(selectedId, signalId);
+    onClose?.();
+  };
+
+  const selectedSignal = useMemo(() => {
+    if (activeSignalIds.length !== 1) return null;
+    const id = activeSignalIds[0]!;
+    let found: import('../shared/types').Signal | undefined;
+    const walk = (list: typeof signals) => {
+      for (const sg of list) {
+        if (sg.type === 'group') walk(sg.children);
+        else if (sg.id === id) found = sg;
+      }
+    };
+    walk(signals);
+    return found ?? null;
+  }, [activeSignalIds, signals]);
+
+  const canApplyToSelected =
+    selectedSignal !== null &&
+    selectedSignal.type !== 'spacer' &&
+    selectedSignal.type === def.signalKind;
+
+  const handleApplyToSelected = () => {
+    if (!selectedSignal || !canApplyToSelected) return;
+    if (def.signalKind === 'bit') {
+      applyBitPatternToSignal(selectedSignal.id, preview as BitState[]);
+    } else {
+      applyVectorPatternToSignal(selectedSignal.id, preview as VectorSegment[]);
+    }
+    onInserted?.(selectedId, selectedSignal.id);
     onClose?.();
   };
 
@@ -132,6 +164,15 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
         </div>
       </div>
       <div className={styles.footer}>
+        {canApplyToSelected ? (
+          <button
+            type="button"
+            className={styles.insertBtn}
+            onClick={handleApplyToSelected}
+          >
+            Apply to selected signal
+          </button>
+        ) : null}
         <button type="button" className={styles.insertBtn} onClick={handleInsert}>
           Insert signal
         </button>
