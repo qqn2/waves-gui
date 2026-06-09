@@ -72,6 +72,7 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   const onBlurRef = useRef(onBlur);
+  const syncingRef = useRef(false);
 
   onChangeRef.current = onChange;
   onBlurRef.current = onBlur;
@@ -93,9 +94,8 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
           editorTheme(),
           keymap.of([...defaultKeymap, ...historyKeymap]),
           EditorView.updateListener.of((update) => {
-            if (update.docChanged) {
-              onChangeRef.current(update.state.doc.toString());
-            }
+            if (syncingRef.current || !update.docChanged) return;
+            onChangeRef.current(update.state.doc.toString());
           }),
           EditorView.domEventHandlers({
             blur: () => onBlurRef.current?.(),
@@ -117,9 +117,13 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
     if (!view) return;
     const current = view.state.doc.toString();
     if (current !== code) {
+      syncingRef.current = true;
       view.dispatch({
         changes: { from: 0, to: current.length, insert: code },
         selection: view.state.selection,
+      });
+      queueMicrotask(() => {
+        syncingRef.current = false;
       });
     }
   }, [code]);

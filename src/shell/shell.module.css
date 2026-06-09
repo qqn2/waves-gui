@@ -412,9 +412,78 @@
   left: 0;
   z-index: 50;
   margin-top: 4px;
+  overflow: visible;
   background: var(--bg-panel);
   border: 1px solid var(--border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dropdownScroll {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.sampleFolderRow,
+.sampleFlyoutFolder {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: default;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sampleFolderRow:hover,
+.sampleFlyoutFolder:hover {
+  background: var(--selection-fill);
+}
+
+.sampleFolderChevron {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.sampleFlyout {
+  position: fixed;
+  z-index: 10000;
+  min-width: 11rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 4px 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.sampleFlyout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 6px;
+  height: 100%;
+}
+
+.sampleFlyoutBtn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.sampleFlyoutBtn:hover {
+  background: var(--selection-fill);
 }
 
 .dropdown button {

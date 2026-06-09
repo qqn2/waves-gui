@@ -1,0 +1,31 @@
+.menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 12rem;
+  padding: 0.25rem 0;
+  background: var(--bg-panel, #2a2a2a);
+  border: 1px solid var(--border, #444);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 35%);
+}
+
+.menu button {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #eee);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu button:hover:not(:disabled) {
+  background: var(--bg-hover, #3a3a3a);
+}
+
+.menu button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

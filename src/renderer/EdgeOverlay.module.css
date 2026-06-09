@@ -22,3 +22,10 @@
   stroke-width: 3px;
   stroke-linejoin: round;
 }
+
+.edgeCurveHandle {
+  fill: var(--accent, #4a9eff);
+  stroke: var(--bg-canvas, #111);
+  stroke-width: 1.5;
+  pointer-events: none;
+}

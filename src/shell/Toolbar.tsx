@@ -27,6 +27,7 @@ import { ThemeMenu } from './ThemeMenu';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import { ToolbarAddSignalMenu } from './toolbar/ToolbarAddSignalMenu';
 import {
+  ToolbarBusSection,
   ToolbarEdgeSection,
   ToolbarPaintSection,
 } from './toolbar/ToolbarPaintSection';
@@ -61,6 +62,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setScroll = useStore((s) => s.setScroll);
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
   const toggleRenderPanel = useStore((s) => s.toggleRenderPanel);
+  const setDiagramSkin = useStore((s) => s.setDiagramSkin);
+  const diagramSkin = useStore((s) => s.diagram.config.skin);
   const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
   const addSignal = useStore((s) => s.addSignal);
   const addGroup = useStore((s) => s.addGroup);
@@ -148,7 +151,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       {/* Drawing tools */}
       <button
         type="button"
-        title="Draw (D) — drag along a row to fill time steps with the value below"
+        title="Draw (D) — drag to fill steps; bit values below, bus label in Bus field"
         className={`${styles.toolBtn} ${tool === 'paint' ? styles.toolActive : ''}`}
         onClick={() => setTool('paint')}
       >
@@ -164,7 +167,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       </button>
       <button
         type="button"
-        title="Pointer (V) — click a row to select; drag for area select"
+        title="Pointer (V) — click a bus to copy its label; click a row to select"
         className={`${styles.toolBtn} ${tool === 'cursor' || tool === 'select' ? styles.toolActive : ''}`}
         onClick={() => setTool('cursor')}
       >
@@ -201,16 +204,22 @@ export function Toolbar({ onExport }: ToolbarProps) {
         <ToolbarPaintSection
           paintMode={paintMode}
           activeBit={activeBit}
-          activeBusLabel={activeBusLabel}
-          activeBusColorIndex={activeBusColorIndex}
           moreBitsOpen={moreBitsOpen}
           onSetPaintMode={setPaintMode}
           onSelectBit={selectBitValue}
           onToggleMoreBits={() => setMoreBitsOpen((o) => !o)}
-          onBusLabelChange={setActiveBusLabel}
-          onBusColorIndex={setActiveBusColorIndex}
         />
       ) : null}
+
+      {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (
+        <ToolbarBusSection
+          activeBusLabel={activeBusLabel}
+          activeBusColorIndex={activeBusColorIndex}
+          onBusLabelChange={setActiveBusLabel}
+          onBusColorIndex={setActiveBusColorIndex}
+          pickFromCanvas={tool === 'cursor' || tool === 'select'}
+        />
+      )}
 
       <span className={styles.divider} />
 
@@ -278,6 +287,22 @@ export function Toolbar({ onExport }: ToolbarProps) {
       >
         {view.showRenderPanel ? '✓ ' : ''}Render
       </button>
+      <label className={styles.hscaleField} title="WaveDrom config.skin">
+        <span className={styles.hscaleLabel}>Skin</span>
+        <select
+          className={styles.hscaleInput}
+          value={diagramSkin ?? 'default'}
+          onChange={(e) => {
+            const v = e.target.value;
+            setDiagramSkin(v === 'default' ? undefined : v);
+          }}
+        >
+          <option value="default">default</option>
+          <option value="narrow">narrow</option>
+          <option value="dark">dark</option>
+          <option value="lowkey">lowkey</option>
+        </select>
+      </label>
       <button type="button" className={styles.toolBtn} onClick={() => toggleTimeAxis()}>
         {view.showTimeAxis ? '✓ ' : ''}Axis
       </button>

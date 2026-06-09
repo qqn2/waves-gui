@@ -18,6 +18,9 @@ import * as erase from './eraseTool';
 import * as select from './selectTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { useEdgeTools } from './useEdgeTools';
+import { useTimeAxisContextMenu } from '../shell/TimeAxisContextMenu';
+import { copyStepSelection, pasteStepSelection } from './stepClipboard';
+import { useEdgeCurveDrag } from './useEdgeCurveDrag';
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -34,6 +37,8 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   onContextMenu: (e: MouseEvent, hit: HitTestResult) => void;
   selectionOverlay: SelectOverlayRect | null;
   edgeHint: string | null;
+  timeAxisMenu: { step: number; x: number; y: number } | null;
+  closeTimeAxisMenu: () => void;
 } {
   const tool = useStore((s) => s.view.selectedTool);
   const setTool = useStore((s) => s.setTool);
@@ -45,6 +50,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   const zoom = useStore((s) => s.view.zoom);
   const clearPaintDraft = useStore((s) => s.clearPaintDraft);
   const edge = useEdgeTools();
+  const curveDrag = useEdgeCurveDrag(canvasRef);
+  const { menu: timeAxisMenu, openMenu: openTimeAxisMenu, closeMenu: closeTimeAxisMenu } =
+    useTimeAxisContextMenu();
 
   const [selectionOverlay, setSelectionOverlay] = useState<SelectOverlayRect | null>(
     null,
@@ -81,6 +89,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
           e.preventDefault();
           redo();
+        } else if (e.key === 'c' || e.key === 'C') {
+          e.preventDefault();
+          copyStepSelection();
+        } else if (e.key === 'v' || e.key === 'V') {
+          e.preventDefault();
+          pasteStepSelection();
         } else if (e.key === '+' || e.key === '=') {
           e.preventDefault();
           setZoom(zoom * 1.25);
@@ -104,6 +118,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       }
 
       if (e.key === 'v' || e.key === 'V') {
+        if (e.ctrlKey || e.metaKey) return;
         setTool('cursor');
       } else if (e.key === 'd' || e.key === 'D') {
         setTool('paint');
@@ -173,6 +188,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
 
   const onPointerDown = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
+      if (curveDrag.onPointerDown(e)) return;
       flushPendingCodeToDiagram();
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
@@ -183,11 +199,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         select.selectPointerDown(e, el, hit);
       }
     },
-    [tool, canvasRef, edge],
+    [tool, canvasRef, edge, curveDrag],
   );
 
   const onPointerMove = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
+      curveDrag.onPointerMove(e);
       if (tool === 'paint') paint.paintPointerMove(e);
       else if (tool === 'erase') erase.erasePointerMove(e);
       else if (tool === 'arrow' || tool === 'timespan') edge.onPointerMove(e, hit);
@@ -196,11 +213,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setSelectionOverlay(toolState.getSelectOverlay());
       }
     },
-    [tool, edge],
+    [tool, edge, curveDrag],
   );
 
   const onPointerUp = useCallback(
     (e: PointerEvent) => {
+      curveDrag.onPointerUp(e);
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
@@ -209,16 +227,21 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setSelectionOverlay(null);
       }
     },
-    [tool, canvasRef],
+    [tool, canvasRef, curveDrag],
   );
 
   const onContextMenu = useCallback(
     (e: MouseEvent, hit: HitTestResult) => {
+      if (hit.isTimeAxis && hit.step !== null) {
+        e.preventDefault();
+        openTimeAxisMenu(hit.step, e.clientX, e.clientY);
+        return;
+      }
       if (tool === 'paint' && hit.signalType === 'bit' && hit.signalId) {
         e.preventDefault();
       }
     },
-    [tool],
+    [tool, openTimeAxisMenu],
   );
 
   return {
@@ -228,5 +251,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     onContextMenu,
     selectionOverlay,
     edgeHint: edge.edgeHint,
+    timeAxisMenu,
+    closeTimeAxisMenu,
   };
 }

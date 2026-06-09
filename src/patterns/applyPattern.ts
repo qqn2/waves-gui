@@ -1,4 +1,5 @@
-import { useStore } from '../shared/store';
+import { nanoid } from 'nanoid';
+import { useStore, pushHistory } from '../shared/store';
 import type { BitState, Signal, SignalOrGroup, VectorSegment } from '../shared/types';
 
 function findSignalById(
@@ -32,9 +33,11 @@ export function applyBitPatternToSignal(
   states: BitState[],
 ): void {
   useStore.setState((s) => {
+    pushHistory(s);
     const sig = findSignalById(s.diagram.signals, signalId);
     if (sig?.type === 'bit' && states.length === s.diagram.config.totalSteps) {
       sig.states = [...states];
+      delete sig.waveOverride;
       s.view.isDirty = true;
     }
   });
@@ -45,9 +48,10 @@ export function applyVectorPatternToSignal(
   segments: VectorSegment[],
 ): void {
   useStore.setState((s) => {
+    pushHistory(s);
     const sig = findSignalById(s.diagram.signals, signalId);
     if (sig?.type === 'vector') {
-      sig.segments = segments.map((seg) => ({ ...seg }));
+      sig.segments = segments.map((seg) => ({ ...seg, id: nanoid() }));
       s.view.isDirty = true;
     }
   });

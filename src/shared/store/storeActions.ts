@@ -39,6 +39,7 @@ export interface StoreActions {
     endStepInclusive: number,
     value: string | null,
     busColorFill?: string,
+    options?: { preserveExistingLabels?: boolean },
   ): void;
   updateVectorSegmentColor(
     signalId: string,
@@ -51,11 +52,19 @@ export interface StoreActions {
   setActiveSignalIds(ids: string[]): void;
   setTotalSteps(steps: number): void;
   setHscale(hscale: number): void;
+  insertStepAt(index: number): void;
+  deleteStepAt(index: number): void;
+  setDiagramSkin(skin: string | undefined): void;
 
   // ── WaveDrom edges ──
   addDiagramEdge(edge: string): void;
   updateDiagramEdge(index: number, edge: string): void;
   removeDiagramEdge(index: number): void;
+  setEdgeCurveControl(
+    index: number,
+    control: { c1x: number; c2x: number } | undefined,
+    options?: { recordHistory?: boolean },
+  ): void;
   setActiveEdgeShape(shape: string): void;
   setShowAnchorLetters(show: boolean): void;
   setEdgeAnchorPending(pending: EdgeAnchorPending | null): void;

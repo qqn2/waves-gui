@@ -11,7 +11,9 @@ export { openDiagramFile, saveDiagramFile, newDiagramFile } from './FileOperatio
 export {
   loadSampleDiagram,
   SAMPLE_DIAGRAMS,
-  samplesByCategory,
+  SAMPLE_LIBRARY,
+  collectSampleLeaves,
+  findSampleById,
   sampleAssetUrl,
 } from './samples';
-export type { SampleCategory, SampleDiagram } from './samples';
+export type { SampleLeaf, SampleFolder, SampleTreeNode, SampleDiagram } from './samples';

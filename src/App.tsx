@@ -5,6 +5,7 @@ import {
   Toolbar,
   type AppLayoutPaneContext,
 } from './shell';
+import { TimeAxisContextMenu } from './shell/TimeAxisContextMenu';
 import { SignalPanel } from './signalPanel';
 import {
   WaveformCanvas,
@@ -38,6 +39,8 @@ function IntegratedCanvas({
     onPointerUp,
     onContextMenu,
     selectionOverlay,
+    timeAxisMenu,
+    closeTimeAxisMenu,
   } = useToolHandler(canvasRef);
 
   const onPointerEvent = useCallback(
@@ -75,6 +78,14 @@ function IntegratedCanvas({
             width: selectionOverlay.width,
             height: selectionOverlay.height,
           }}
+        />
+      ) : null}
+      {timeAxisMenu ? (
+        <TimeAxisContextMenu
+          step={timeAxisMenu.step}
+          x={timeAxisMenu.x}
+          y={timeAxisMenu.y}
+          onClose={closeTimeAxisMenu}
         />
       ) : null}
     </div>

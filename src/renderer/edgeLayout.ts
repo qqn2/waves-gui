@@ -156,6 +156,32 @@ export function resolveEdgeAnchors(
   return { from, to };
 }
 
+export function isCurvyEdgeShape(shape: string): boolean {
+  return shape.includes('~');
+}
+
+export function defaultCurveControl(shape: string): { c1x: number; c2x: number } {
+  if (shape.startsWith('-~') || shape.includes('-~>')) return { c1x: 0.7, c2x: 1 };
+  if (shape.endsWith('~-') || shape.includes('~->')) return { c1x: 0, c2x: 0.3 };
+  return { c1x: 0.7, c2x: 0.3 };
+}
+
+export function cubicMidpoint(
+  from: CanvasAnchor,
+  to: CanvasAnchor,
+  c1x: number,
+  c1y: number,
+  c2x: number,
+  c2y: number,
+): CanvasAnchor {
+  const t = 0.5;
+  const u = 1 - t;
+  return {
+    x: u * u * u * from.x + 3 * u * u * t * c1x + 3 * u * t * t * c2x + t * t * t * to.x,
+    y: u * u * u * from.y + 3 * u * u * t * c1y + 3 * u * t * t * c2y + t * t * t * to.y,
+  };
+}
+
 /**
  * SVG path `d` aligned with WaveDrom `lib/arc-shape.js` (shape = middle of edge word).
  */
@@ -163,18 +189,23 @@ export function buildEdgePathD(
   from: CanvasAnchor,
   to: CanvasAnchor,
   shape: string,
+  curveControl?: { c1x: number; c2x: number },
 ): string {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const key = shape.length > 0 ? shape : '-';
 
+  const curve = curveControl ?? defaultCurveControl(key);
+  const c1xf = curve.c1x;
+  const c2xf = curve.c2x;
+
   switch (key) {
     case '~':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${from.x + c2xf * dx} ${from.y + dy} ${to.x} ${to.y}`;
     case '-~':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
     case '~-':
-      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + c2xf * dx} ${from.y + dy} ${to.x} ${to.y}`;
     case '-|':
       return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
     case '|-':
@@ -182,11 +213,11 @@ export function buildEdgePathD(
     case '-|-':
       return `M ${from.x} ${from.y} l ${dx / 2} 0 0 ${dy} ${dx / 2} 0`;
     case '~>':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${from.x + c2xf * dx} ${from.y + dy} ${to.x} ${to.y}`;
     case '-~>':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
     case '~->':
-      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x} ${from.y} ${from.x + c2xf * dx} ${from.y + dy} ${to.x} ${to.y}`;
     case '-|>':
       return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
     case '|->':
@@ -194,9 +225,9 @@ export function buildEdgePathD(
     case '-|->':
       return `M ${from.x} ${from.y} l ${dx / 2} 0 0 ${dy} ${dx / 2} 0`;
     case '<~>':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${from.x + 0.3 * dx} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${from.x + c2xf * dx} ${from.y + dy} ${to.x} ${to.y}`;
     case '<-~>':
-      return `M ${from.x} ${from.y} C ${from.x + 0.7 * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
+      return `M ${from.x} ${from.y} C ${from.x + c1xf * dx} ${from.y} ${to.x} ${from.y + dy} ${to.x} ${to.y}`;
     case '<-|>':
       return `M ${from.x} ${from.y} l ${dx} 0 0 ${dy}`;
     case '<-|->':
@@ -251,14 +282,19 @@ export function buildEdgeDrawItems(
 ): EdgeDrawItem[] {
   const nodeIndex = buildNodeIndex(diagram.signals);
   const items: EdgeDrawItem[] = [];
+  const controls = diagram.edgeCurveControls ?? {};
 
-  for (const edgeStr of edges) {
+  for (let i = 0; i < edges.length; i++) {
+    const edgeStr = edges[i]!;
     const { path } = parseEdgeString(edgeStr);
     const parsed = parseEdge(edgeStr);
     if (!parsed) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) continue;
-    const d = buildEdgePathD(anchors.from, anchors.to, parsed.shape);
+    const curve = isCurvyEdgeShape(parsed.shape)
+      ? (controls[i] ?? defaultCurveControl(parsed.shape))
+      : undefined;
+    const d = buildEdgePathD(anchors.from, anchors.to, parsed.shape, curve);
     const labelPos = labelPositionOnPath(anchors.from, anchors.to, parsed.shape);
     const bidirectional = path.includes('<->');
     items.push({

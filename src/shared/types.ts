@@ -64,6 +64,8 @@ export interface Signal {
   stepGaps?: boolean[];
   /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
   stepGlitches?: boolean[];
+  /** Preserved WaveDrom wave when sub-cycle syntax (<|>) cannot be round-tripped from states[] */
+  waveOverride?: string;
 }
 
 export interface SignalGroup {
@@ -82,6 +84,8 @@ export type SignalOrGroup = Signal | SignalGroup;
 export interface DiagramConfig {
   totalSteps: number; // number of time step columns
   hscale: number; // 1–4 (fractional OK), multiplier applied to CELL_WIDTH
+  /** WaveDrom config.skin (default, narrow, dark, …) */
+  skin?: string;
   head?: { text?: string; tick?: number; every?: number };
   foot?: { text?: string; tock?: number; every?: number };
 }
@@ -94,6 +98,8 @@ export interface DiagramState {
   config: DiagramConfig;
   /** WaveDrom edge[] dependency arrow strings */
   edges: string[];
+  /** Per-edge cubic control bias for ~ curves (not exported to WaveDrom JSON). */
+  edgeCurveControls?: Record<number, { c1x: number; c2x: number }>;
 }
 
 // ─── View/UI state ────────────────────────────────────────────────────────────
