@@ -27,4 +27,25 @@ describe('step column actions', () => {
     useStore.getState().deleteStepAt(0);
     expect(useStore.getState().diagram.config.totalSteps).toBe(steps - 1);
   });
+
+  it('insertGapColumnsRange sets gap column on one lane', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().insertGapColumnsRange(id, 2, 1);
+    const sig = useStore.getState().diagram.signals[0] as {
+      stepGaps?: boolean[];
+    };
+    expect(sig.stepGaps?.[2]).toBe(true);
+  });
+
+  it('eraseSignalStateRange removes gap columns in range', () => {
+    useStore.getState().addSignal('bit');
+    const id = useStore.getState().diagram.signals[0]!.id;
+    useStore.getState().insertGapColumnsRange(id, 1, 1);
+    useStore.getState().eraseSignalStateRange(id, 1, 1);
+    const sig = useStore.getState().diagram.signals[0] as {
+      stepGaps?: boolean[];
+    };
+    expect(sig.stepGaps).toBeUndefined();
+  });
 });

@@ -13,8 +13,21 @@ import {
   MIN_TOTAL_STEPS,
   ROW_HEIGHT,
 } from '../constants';
-import { toggleBinaryBitState, isClockBitState, resolvePaintValue, isHoldPaintValue } from '../bitToggle';
+import {
+  toggleBinaryBitState,
+  isClockBitState,
+  resolvePaintValue,
+  isHoldPaintValue,
+} from '../bitToggle';
 import { applyVectorSpan } from '../vectorSegments';
+import {
+  clearStepGapsOnColumns,
+  insertGapColumnsOnDiagram,
+  insertGapColumnOnDiagram,
+  insertValueColumnOnDiagram,
+  removeGapColumnsOnDiagram,
+  toggleGapColumnsOnSignal,
+} from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import type { ImmerSet, StoreActions } from './storeActions';
 import {
@@ -36,6 +49,74 @@ import {
 
 function clearWaveOverride(sig: Signal): void {
   delete sig.waveOverride;
+}
+
+function isClockOnlyBitLane(sig: Signal): boolean {
+  return sig.type === 'bit' && sig.states.length > 0 && sig.states.every(isClockBitState);
+}
+
+function canDeleteStepAt(signals: SignalOrGroup[], at: number): boolean {
+  let blocked = false;
+  walkSignals(signals, (sig) => {
+    if (sig.type !== 'vector') return;
+    for (const seg of sig.segments) {
+      if (
+        seg.startStep <= at &&
+        seg.endStep > at &&
+        seg.endStep - seg.startStep <= 1
+      ) {
+        blocked = true;
+      }
+    }
+  });
+  return !blocked;
+}
+
+function deleteDiagramStepAt(
+  signals: SignalOrGroup[],
+  edges: string[],
+  at: number,
+  total: number,
+): boolean {
+  if (!canDeleteStepAt(signals, at)) return false;
+  walkSignals(signals, (sig) => {
+    deleteStepInSignal(sig, at, total, MIN_TOTAL_STEPS);
+  });
+  clearNodesAndEdges(signals, edges);
+  return true;
+}
+
+function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
+  if (sig.type !== 'bit') return;
+  clearWaveOverride(sig);
+  for (let i = lo; i <= hi; i++) {
+    sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
+    clearStepGlitchesTouchingRange(sig, i, i);
+  }
+}
+
+function applyBitStateInRange(
+  sig: Signal,
+  lo: number,
+  hi: number,
+  bitState: BitState,
+): void {
+  if (sig.type !== 'bit') return;
+  clearWaveOverride(sig);
+  if (isHoldPaintValue(bitState)) {
+    for (let i = lo; i <= hi; i++) {
+      sig.states[i] = resolvePaintValue(sig.states, i, bitState);
+    }
+  } else if (isClockBitState(bitState) && lo < hi) {
+    applyClockBrushToRange(sig.states, lo, hi, bitState);
+  } else if (isClockBitState(bitState)) {
+    sig.states[lo] = bitState;
+  } else {
+    for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
+    if (sig.states.some(isClockBitState)) {
+      normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
+    }
+  }
 }
 
 /** Collapse redundant clock fall edges when painting explicit 0/1 into a clock lane. */
@@ -101,8 +182,14 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'renameSignal'
   | 'setSignalState'
   | 'setSignalStateRange'
+  | 'paintBitStateRange'
   | 'toggleSignalStateRange'
+  | 'paintToggleRange'
   | 'toggleStepGlitchRange'
+  | 'paintGapRange'
+  | 'insertGapColumnsRange'
+  | 'removeGapColumnsRange'
+  | 'clearGapFlagsRange'
   | 'eraseSignalState'
   | 'eraseSignalStateRange'
   | 'reorderSignals'
@@ -118,6 +205,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setHscale'
   | 'insertStepAt'
   | 'deleteStepAt'
+  | 'toggleStepGapAt'
   | 'setDiagramSkin'
 > {
   return {
@@ -293,23 +381,69 @@ export function createSignalActions(set: ImmerSet): Pick<
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
+          applyBitStateInRange(sig, lo, hi, bitState);
+        });
+      });
+    },
+
+    paintBitStateRange(signalId, startStep, endStep, bitState, paintStyle) {
+      set((s) => {
+        pushHistory(s);
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
+          if (paintStyle === 'replace') {
+            clearStepGapsOnColumns(sig, lo, hi);
+            applyBitStateInRange(sig, lo, hi, bitState);
+            return;
+          }
+
+          const wasGap: boolean[] = [];
+          for (let i = lo; i <= hi; i++) {
+            wasGap[i] = Boolean(sig.stepGaps?.[i]);
+          }
+          const hasGap = wasGap.slice(lo, hi + 1).some(Boolean);
+          if (!hasGap) {
+            applyBitStateInRange(sig, lo, hi, bitState);
+            return;
+          }
+
+          let inserted = 0;
+          for (let i = hi; i >= lo; i--) {
+            if (!wasGap[i]) continue;
+            if (s.diagram.config.totalSteps + inserted >= MAX_TOTAL_STEPS) break;
+            insertValueColumnOnDiagram(
+              s.diagram.signals,
+              i + 1,
+              signalId,
+              resolvePaintValue(sig.states, i, bitState),
+            );
+            inserted++;
+          }
+          if (inserted > 0) {
+            clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+            s.diagram.config.totalSteps += inserted;
+          }
+
           clearWaveOverride(sig);
-          if (isHoldPaintValue(bitState)) {
-            for (let i = lo; i <= hi; i++) {
+          for (let i = lo; i <= hi; i++) {
+            if (wasGap[i]) continue;
+            if (isHoldPaintValue(bitState)) {
               sig.states[i] = resolvePaintValue(sig.states, i, bitState);
-            }
-          } else if (isClockBitState(bitState) && lo < hi) {
-            applyClockBrushToRange(sig.states, lo, hi, bitState);
-          } else if (isClockBitState(bitState)) {
-            sig.states[lo] = bitState;
-          } else {
-            for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
-            if (sig.states.some(isClockBitState)) {
-              normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
+            } else {
+              sig.states[i] = bitState;
             }
           }
+          if (
+            !isHoldPaintValue(bitState) &&
+            !isClockBitState(bitState) &&
+            sig.states.some(isClockBitState)
+          ) {
+            normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
+          }
         });
+        s.view.isDirty = true;
       });
     },
 
@@ -329,6 +463,56 @@ export function createSignalActions(set: ImmerSet): Pick<
             }
           }
         });
+      });
+    },
+
+    paintToggleRange(signalId, startStep, endStep, paintStyle) {
+      set((s) => {
+        pushHistory(s);
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type !== 'bit') return;
+          clearWaveOverride(sig);
+          if (paintStyle === 'replace') {
+            clearStepGapsOnColumns(sig, lo, hi);
+          }
+          if (sig.states.every(isClockBitState)) {
+            applyClockToggleToRange(sig.states, lo, hi);
+            return;
+          }
+          for (let i = lo; i <= hi; i++) {
+            if (paintStyle === 'additive' && sig.stepGaps?.[i]) continue;
+            sig.states[i] = toggleBinaryBitState(sig.states[i]);
+          }
+        });
+        s.view.isDirty = true;
+      });
+    },
+
+    paintGapRange(signalId, startStep, endStep, paintStyle) {
+      const lo = Math.min(startStep, endStep);
+      const hi = Math.max(startStep, endStep);
+      if (paintStyle === 'additive') {
+        set((s) => {
+          const n = hi - lo + 1;
+          if (n === 0) return;
+          if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
+          pushHistory(s);
+          insertGapColumnsOnDiagram(s.diagram.signals, lo, n, signalId);
+          clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          s.diagram.config.totalSteps += n;
+          s.view.isDirty = true;
+        });
+        return;
+      }
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          if (sig.type === 'bit') clearWaveOverride(sig);
+          toggleGapColumnsOnSignal(sig, lo, hi);
+        });
+        s.view.isDirty = true;
       });
     },
 
@@ -357,16 +541,84 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
+    insertGapColumnsRange(signalId, column, count) {
+      set((s) => {
+        const n = Math.max(0, count);
+        if (n === 0) return;
+        if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
+        pushHistory(s);
+        insertGapColumnsOnDiagram(s.diagram.signals, column, n, signalId);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        s.diagram.config.totalSteps += n;
+        s.view.isDirty = true;
+      });
+    },
+
+    removeGapColumnsRange(signalId, startStep, endStep) {
+      set((s) => {
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        pushHistory(s);
+        const removed = removeGapColumnsOnDiagram(
+          s.diagram.signals,
+          signalId,
+          lo,
+          hi,
+          MIN_TOTAL_STEPS,
+        );
+        if (removed > 0) {
+          clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          s.diagram.config.totalSteps = Math.max(
+            MIN_TOTAL_STEPS,
+            s.diagram.config.totalSteps - removed,
+          );
+        }
+        s.view.isDirty = true;
+      });
+    },
+
+    clearGapFlagsRange(signalId, startStep, endStep) {
+      set((s) => {
+        const lo = Math.min(startStep, endStep);
+        const hi = Math.max(startStep, endStep);
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          clearStepGapsOnColumns(sig, lo, hi);
+        });
+        s.view.isDirty = true;
+      });
+    },
+
     eraseSignalState(signalId, step) {
       set((s) => {
         pushHistory(s);
+        let target: Signal | undefined;
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type === 'bit') {
-            clearWaveOverride(sig);
-            sig.states[step] = step > 0 ? sig.states[step - 1]! : '0';
-            clearStepGlitchesTouchingRange(sig, step, step);
-          }
+          target = sig;
         });
+        if (!target) return;
+
+        if (target.stepGaps?.[step]) {
+          clearStepGapsOnColumns(target, step, step);
+          s.view.isDirty = true;
+          return;
+        }
+
+        if (isClockOnlyBitLane(target)) {
+          if (s.diagram.config.totalSteps <= MIN_TOTAL_STEPS) return;
+          const total = s.diagram.config.totalSteps;
+          if (!deleteDiagramStepAt(s.diagram.signals, s.diagram.edges, step, total)) {
+            return;
+          }
+          s.diagram.config.totalSteps = total - 1;
+          s.view.isDirty = true;
+          return;
+        }
+
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          holdFillErasedSteps(sig, step, step);
+        });
+        s.view.isDirty = true;
       });
     },
 
@@ -375,14 +627,50 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
+        let target: Signal | undefined;
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type !== 'bit') return;
-          clearWaveOverride(sig);
-          for (let i = lo; i <= hi; i++) {
-            sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
-          }
-          clearStepGlitchesTouchingRange(sig, lo, hi);
+          target = sig;
         });
+        if (!target) return;
+
+        const gapCols: number[] = [];
+        const valueCols: number[] = [];
+        for (let i = lo; i <= hi; i++) {
+          if (target.stepGaps?.[i]) gapCols.push(i);
+          else valueCols.push(i);
+        }
+
+        for (const i of gapCols) {
+          clearStepGapsOnColumns(target, i, i);
+        }
+
+        if (isClockOnlyBitLane(target)) {
+          const gapSet = new Set(gapCols);
+          let deleted = 0;
+          for (let i = hi; i >= lo; i--) {
+            if (gapSet.has(i)) continue;
+            if (s.diagram.config.totalSteps - deleted <= MIN_TOTAL_STEPS) break;
+            const total = s.diagram.config.totalSteps - deleted;
+            if (!deleteDiagramStepAt(s.diagram.signals, s.diagram.edges, i, total)) {
+              break;
+            }
+            deleted++;
+          }
+          if (deleted > 0) {
+            s.diagram.config.totalSteps -= deleted;
+          }
+          s.view.isDirty = true;
+          return;
+        }
+
+        if (valueCols.length > 0) {
+          const vLo = Math.min(...valueCols);
+          const vHi = Math.max(...valueCols);
+          findSignal(s.diagram.signals, signalId, (sig) => {
+            holdFillErasedSteps(sig, vLo, vHi);
+          });
+        }
+        s.view.isDirty = true;
       });
     },
 
@@ -489,7 +777,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (total >= MAX_TOTAL_STEPS) return;
         const at = Math.max(0, Math.min(index, total));
         pushHistory(s);
-        walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at));
+        walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at, total));
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
         s.diagram.config.totalSteps = total + 1;
         s.view.isDirty = true;
@@ -518,10 +806,22 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (blocked) return;
         pushHistory(s);
         walkSignals(s.diagram.signals, (sig) => {
-          deleteStepInSignal(sig, at, MIN_TOTAL_STEPS);
+          deleteStepInSignal(sig, at, total, MIN_TOTAL_STEPS);
         });
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
         s.diagram.config.totalSteps = total - 1;
+        s.view.isDirty = true;
+      });
+    },
+
+    toggleStepGapAt(column) {
+      set((s) => {
+        if (s.diagram.config.totalSteps >= MAX_TOTAL_STEPS) return;
+        const at = Math.max(0, Math.min(column, s.diagram.config.totalSteps));
+        pushHistory(s);
+        insertGapColumnOnDiagram(s.diagram.signals, at, null);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        s.diagram.config.totalSteps += 1;
         s.view.isDirty = true;
       });
     },

@@ -217,6 +217,62 @@ describe('useStore', () => {
     expect(wave).not.toMatch(/Pn|nP|pN|Np/);
   });
 
+  it('setTotalSteps on default diagram keeps clk as P... after grow and shrink', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const clkBefore = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
+      .wave;
+    useStore.getState().setTotalSteps(clkBefore.length + 2);
+    useStore.getState().setTotalSteps(clkBefore.length);
+    const clkAfter = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
+      .wave;
+    expect(clkAfter).toBe(clkBefore);
+    expect(clkAfter).toMatch(/^P\.+$/);
+  });
+
+  it('erase on clk deletes a column and keeps P... wave encoding', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const clk = useStore.getState().diagram.signals[0] as { id: string };
+    const stepsBefore = useStore.getState().diagram.config.totalSteps;
+    const waveBefore = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
+      .wave;
+    useStore.getState().eraseSignalStateRange(clk.id, 5, 5);
+    const after = useStore.getState().diagram;
+    const waveAfter = (toWavedromJSON(after).signal[0] as { wave: string }).wave;
+    expect(after.config.totalSteps).toBe(stepsBefore - 1);
+    expect(waveAfter).not.toMatch(/[pPnN]{2}/);
+    expect(waveAfter).toMatch(/^P\.+$/);
+    expect(waveAfter.length).toBe(waveBefore.length - 1);
+  });
+
+  it('erase on data lane does not shorten clk wave', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const clkWaveBefore = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
+      .wave;
+    const stepsBefore = useStore.getState().diagram.config.totalSteps;
+    const enable = useStore.getState().diagram.signals[2] as { id: string };
+    useStore.getState().eraseSignalStateRange(enable.id, 3, 3);
+    const after = useStore.getState().diagram;
+    const clkWaveAfter = (toWavedromJSON(after).signal[0] as { wave: string }).wave;
+    expect(after.config.totalSteps).toBe(stepsBefore);
+    expect(clkWaveAfter).toBe(clkWaveBefore);
+  });
+
+  it('erase gap on one lane clears flag without removing timeline columns', () => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    const reset = useStore.getState().diagram.signals[1] as { id: string };
+    const clkWaveBefore = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
+      .wave;
+    const stepsBefore = useStore.getState().diagram.config.totalSteps;
+    useStore.getState().paintGapRange(reset.id, 2, 2, 'replace');
+    useStore.getState().eraseSignalStateRange(reset.id, 2, 2);
+    const after = useStore.getState().diagram;
+    const resetSig = after.signals[1] as { stepGaps?: boolean[] };
+    const clkWaveAfter = (toWavedromJSON(after).signal[0] as { wave: string }).wave;
+    expect(after.config.totalSteps).toBe(stepsBefore);
+    expect(resetSig.stepGaps).toBeUndefined();
+    expect(clkWaveAfter).toBe(clkWaveBefore);
+  });
+
   it('eraseSignalStateRange clears step glitches on touched boundaries', () => {
     useStore.getState().addSignal('bit');
     const id = useStore.getState().diagram.signals[0]!.id;
@@ -288,7 +344,7 @@ describe('useStore', () => {
     const clone = updated[1]!;
     expect(clone.id).not.toBe(orig.id);
     expect(clone.type).toBe('vector');
-    
+
     // segments should be copied and have different IDs
     const origSig = updated[0] as { segments: { id: string; value: string }[] };
     const cloneSig = clone as { segments: { id: string; value: string }[] };

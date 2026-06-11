@@ -39,7 +39,7 @@ function signalToEntry(
     totalSteps,
     sig.segments.length > 0 ? Math.max(...sig.segments.map((s) => s.endStep)) : 0,
   );
-  const { wave, data } = segmentsToWaveAndData(sig.segments, steps);
+  const { wave, data } = segmentsToWaveAndData(sig.segments, steps, sig.stepGaps);
   const entry: WdSignal = { name: sig.name, wave, data };
   if (sig.node !== undefined) entry.node = sig.node;
   if (sig.phase !== undefined) entry.phase = sig.phase;

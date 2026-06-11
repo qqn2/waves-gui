@@ -104,4 +104,15 @@ describe('vectorSegments', () => {
     expect(wave).toBe('=.=.');
     expect(data).toEqual(['', '0']);
   });
+
+  it('segmentsToWaveAndData emits pipe gaps from stepGaps', () => {
+    const segments: VectorSegment[] = [
+      { id: '1', startStep: 0, endStep: 3, value: 'A' },
+      { id: '2', startStep: 3, endStep: 6, value: 'B' },
+    ];
+    const stepGaps = [false, true, false, false, false];
+    const { wave } = segmentsToWaveAndData(segments, 6, stepGaps);
+    expect(wave).toContain('|');
+    expect(wave.indexOf('|')).toBeGreaterThan(0);
+  });
 });

@@ -4,6 +4,7 @@ import type {
   EdgeAnchorPending,
   PaintDraft,
   PaintMode,
+  PaintStyle,
   Signal,
   Theme,
   Tool,
@@ -26,8 +27,45 @@ export interface StoreActions {
     endStep: number,
     bitState: BitState,
   ): void;
+  paintBitStateRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    bitState: BitState,
+    paintStyle: PaintStyle,
+  ): void;
   toggleSignalStateRange(signalId: string, startStep: number, endStep: number): void;
+  paintToggleRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    paintStyle: PaintStyle,
+  ): void;
   toggleStepGlitchRange(signalId: string, startStep: number, endStep: number): void;
+  paintGapRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    paintStyle: PaintStyle,
+  ): void;
+  /** Insert `count` gap columns at `column` on one lane (all lanes gain a column). */
+  insertGapColumnsRange(
+    signalId: string,
+    column: number,
+    count: number,
+  ): void;
+  /** Remove gap columns on one lane within `[startStep, endStep]`. */
+  removeGapColumnsRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+  ): void;
+  /** Clear `|` gap flags on one lane without deleting timeline columns. */
+  clearGapFlagsRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+  ): void;
   eraseSignalState(signalId: string, step: number): void;
   eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
@@ -54,6 +92,8 @@ export interface StoreActions {
   setHscale(hscale: number): void;
   insertStepAt(index: number): void;
   deleteStepAt(index: number): void;
+  /** Toggle WaveDrom `|` gap before column `boundary + 1` on every lane (bulk helper). */
+  toggleStepGapAt(boundary: number): void;
   setDiagramSkin(skin: string | undefined): void;
 
   // ── WaveDrom edges ──
@@ -88,6 +128,7 @@ export interface StoreActions {
   setActiveBusColorIndex(index: WavedromColorIndex): void;
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
   setPaintMode(mode: PaintMode): void;
+  setPaintStyle(style: PaintStyle): void;
   toggleCodePanel(): void;
   toggleRenderPanel(): void;
   setLabelWidth(width: number): void;

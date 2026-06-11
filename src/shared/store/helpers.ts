@@ -1,6 +1,6 @@
 import { current } from 'immer';
+import { resizeBitSignalToLength } from '../bitStepResize';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
-import type { BitState } from '../types';
 import { MAX_HISTORY } from '../constants';
 import { createDefaultDiagram } from '../defaultDiagram';
 import { loadLabelColumnWidth } from '../../shell/labelColumnLayout';
@@ -26,6 +26,7 @@ export function defaultView(): ViewState {
     scrollY: 0,
     selectedTool: 'paint',
     paintMode: 'set',
+    paintStyle: 'replace',
     activeBitState: '1',
     activeBusLabel: 'data',
     activeTimespanLabel: '5 ms',
@@ -125,14 +126,7 @@ export function resizeAllStates(
     if (sg.type === 'group') {
       resizeAllStates(sg.children, newLen, oldLen);
     } else if (sg.type === 'bit') {
-      if (newLen > oldLen) {
-        const pad: BitState = oldLen > 0 ? sg.states[oldLen - 1]! : '0';
-        while (sg.states.length < newLen) {
-          sg.states.push(pad);
-        }
-      } else if (newLen < oldLen) {
-        sg.states.length = newLen;
-      }
+      resizeBitSignalToLength(sg, newLen, oldLen);
     } else if (sg.type === 'vector') {
       for (const seg of sg.segments) {
         if (seg.endStep > newLen) seg.endStep = newLen;

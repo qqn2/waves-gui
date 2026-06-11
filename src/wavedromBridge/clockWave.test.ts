@@ -7,6 +7,7 @@ import {
   encodeRepeatingClockWave,
   isClockWaveString,
   isRepeatingClockWave,
+  repairClockLaneIfNeeded,
   scanClockRuns,
 } from './clockWave';
 import { decodeWaveDetail, encodeWaveString, padBitStatesToLength } from './waveStringCodec';
@@ -56,6 +57,19 @@ describe('clockWave', () => {
 
   it('rejects non-alternating clock for collapse', () => {
     expect(encodeClockWaveString(['P', 'p', 'N', 'n'])).toBe(null);
+  });
+
+  it('repairClockLaneIfNeeded restores dotted clock encoding', () => {
+    const broken = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n', 'n'] as const;
+    expect(encodeClockWaveString([...broken])).toBe(null);
+    const repaired = repairClockLaneIfNeeded([...broken]);
+    expect(encodeClockWaveString(repaired)).toBe('P.........');
+  });
+
+  it('rejects P.......n orphan-tail encoding', () => {
+    const tailOrphan = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n'] as const;
+    expect(encodeClockWaveString([...tailOrphan])).toBe(null);
+    expect(encodeWaveString([...tailOrphan])).toBe('P........');
   });
 
   it('repairs expanded pnpn import to dotted form on export', () => {

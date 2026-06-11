@@ -102,10 +102,14 @@ export function applyVectorSpan(
 export function segmentsToWaveAndData(
   segments: VectorSegment[],
   totalSteps: number,
+  stepGaps?: boolean[],
 ): { wave: string; data: Array<string | string[]> } {
   const steps = stepsFromSegments(segments, totalSteps);
   let wave = '';
   const data: Array<string | string[]> = [];
+
+  const gapChar = (column: number): string =>
+    stepGaps?.[column] ? '|' : '.';
 
   let i = 0;
   while (i < totalSteps) {
@@ -121,7 +125,7 @@ export function segmentsToWaveAndData(
         j++;
       }
       wave += 'x';
-      for (let k = i + 1; k < j; k++) wave += '.';
+      for (let k = i + 1; k < j; k++) wave += gapChar(k);
       i = j;
       continue;
     }
@@ -137,7 +141,7 @@ export function segmentsToWaveAndData(
     const span = j - i;
     const colorIndex = colorIndexFromFillHex(cell.color);
     wave += colorIndexToWaveChar(colorIndex);
-    for (let k = 1; k < span; k++) wave += '.';
+    for (let k = 1; k < span; k++) wave += gapChar(i + k);
     if (cell.value.includes('\n')) {
       data.push(cell.value.split('\n'));
     } else {
