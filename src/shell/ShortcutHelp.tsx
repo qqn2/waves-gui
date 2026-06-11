@@ -10,6 +10,7 @@ const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'D', action: 'Draw (paint) tool' },
   { keys: 'E', action: 'Erase tool' },
   { keys: 'G', action: 'Draw + glitch mode' },
+  { keys: '|', action: 'Draw + timeline gap (|) mode' },
   { keys: '1 / 0 / P / N / Z / X', action: 'Primary paint values' },
   { keys: 'p / n / U', action: 'More paint values (toolbar More ▾)' },
   { keys: 'T', action: 'Draw + toggle (NOT) mode' },

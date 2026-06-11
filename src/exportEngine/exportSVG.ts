@@ -102,6 +102,14 @@ function svgBitSignal(
     const x = i * cellW;
     const nextX = (i + 1) * cellW;
 
+    if (signal.stepGaps?.[i]) {
+      flushPath();
+      const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+      const gapFill = esc(themeColor('--bg-canvas', '#121212'));
+      parts.push(svgStepGap(x, nextX, yHigh, yLow, gapStroke, gapFill));
+      continue;
+    }
+
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
       parts.push(...clockStepSvg(st, x, nextX, yHigh, yLow, color));
@@ -141,8 +149,11 @@ function svgBitSignal(
 
     const y = bitY(st, yHigh, yLow, yMid);
     if (!pathOpen) {
-      pathD = `M${x},${prevY}`;
+      const resumeY =
+        i > 0 && (signal.stepGaps?.[i - 1] ?? false) ? y : prevY;
+      pathD = `M${x},${resumeY}`;
       pathOpen = true;
+      prevY = resumeY;
     }
     if (y !== prevY) {
       pathD += ` L${x + tw / 2},${prevY} L${x + tw},${y}`;
@@ -161,13 +172,6 @@ function svgBitSignal(
     prevY = y;
   }
   flushPath();
-
-  const gapStroke = esc(themeColor('--text-muted', '#888'));
-  const gaps = signal.stepGaps ?? [];
-  for (let i = 0; i < gaps.length; i++) {
-    if (!gaps[i]) continue;
-    parts.push(svgStepGap(i * cellW + tw, (i + 1) * cellW, yHigh, yLow, gapStroke));
-  }
 
   return parts.join('\n');
 }

@@ -47,15 +47,18 @@ export function vectorPaintPointerDown(
 
   flushPendingCodeToDiagram();
 
+  const { view } = useStore.getState();
+  const gapMode = view.paintMode === 'gap';
+
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,
     startStep: hit.step,
     endStep: hit.step,
     lane: 'vector',
     bitState: '0',
-    apply: 'set',
-    busLabel: busLabelForPaint(),
-    busColorFill: busColorForPaint(),
+    apply: gapMode ? 'gap' : 'set',
+    busLabel: gapMode ? undefined : busLabelForPaint(),
+    busColorFill: gapMode ? undefined : busColorForPaint(),
     mode: 'paint',
   });
   capturePointer(canvas, e, 'paint');
@@ -82,13 +85,22 @@ export function vectorPaintPointerUp(
   if (!draft || draft.lane !== 'vector') return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
-  useStore.getState().setVectorSpanRange(
-    draft.signalId,
-    lo,
-    hi,
-    draft.busLabel ?? 'data',
-    draft.busColorFill,
-  );
+  if (draft.apply === 'gap') {
+    useStore.getState().paintGapRange(
+      draft.signalId,
+      lo,
+      hi,
+      useStore.getState().view.paintStyle,
+    );
+  } else {
+    useStore.getState().setVectorSpanRange(
+      draft.signalId,
+      lo,
+      hi,
+      draft.busLabel ?? 'data',
+      draft.busColorFill,
+    );
+  }
   useStore.getState().clearPaintDraft();
 }
 
@@ -145,6 +157,7 @@ export function vectorErasePointerUp(
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
   useStore.getState().setVectorSpanRange(draft.signalId, lo, hi, null);
+  useStore.getState().clearGapFlagsRange(draft.signalId, lo, hi);
   useStore.getState().clearPaintDraft();
 }
 

@@ -63,6 +63,8 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
       });
       if (paintMode === 'glitch') {
         pointerLabel += ' · glitch';
+      } else if (paintMode === 'gap') {
+        pointerLabel += ' · |';
       } else if (paintMode === 'toggle' && cur !== null) {
         pointerLabel += ` · ¬ ${cur}→${toggleBinaryBitState(cur)}`;
       } else {

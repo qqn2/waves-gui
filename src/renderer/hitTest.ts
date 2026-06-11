@@ -6,6 +6,7 @@ import { canvasToLogicalX, canvasToLogicalY, type ViewTransform } from './coordi
 import { stepAtLogicalXForSignal } from './laneTiming';
 import { hitTestDiagramEdge } from './edgeLayout';
 import { hitTestStepGlitchBoundary } from './glitchHitTest';
+import { hitTestStepGapBoundary } from './stepGapHitTest';
 
 export interface HitTestResult {
   signalId: string | null;
@@ -110,6 +111,11 @@ export function hitTest(
       const glitch = hitTestStepGlitchBoundary(canvasX, canvasY, diagram, view);
       if (glitch && glitch.signalId === row.id) {
         step = glitch.boundaryIndex;
+      } else {
+        const gap = hitTestStepGapBoundary(canvasX, canvasY, diagram, view);
+        if (gap && gap.signalId === row.id) {
+          step = gap.boundaryIndex;
+        }
       }
     }
 

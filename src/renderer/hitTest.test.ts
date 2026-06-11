@@ -31,6 +31,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     scrollY: 0,
     selectedTool: 'cursor',
     paintMode: 'set',
+    paintStyle: 'replace',
     activeBitState: '1',
     activeBusLabel: 'data',
     activeBusColorIndex: 2,

@@ -3,7 +3,7 @@ import {
   WAVEDROM_COLOR_INDEXES,
   type WavedromColorIndex,
 } from '../../wavedromBridge/wavedromColors';
-import type { BitState, PaintMode } from '../../shared/types';
+import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
 import { BitStateButton } from './BitStateButton';
 import {
   EDGE_SHAPES,
@@ -14,18 +14,22 @@ import styles from '../shell.module.css';
 
 export interface ToolbarPaintSectionProps {
   paintMode: PaintMode;
+  paintStyle: PaintStyle;
   activeBit: BitState;
   moreBitsOpen: boolean;
   onSetPaintMode: (mode: PaintMode) => void;
+  onSetPaintStyle: (style: PaintStyle) => void;
   onSelectBit: (st: BitState) => void;
   onToggleMoreBits: () => void;
 }
 
 export function ToolbarPaintSection({
   paintMode,
+  paintStyle,
   activeBit,
   moreBitsOpen,
   onSetPaintMode,
+  onSetPaintStyle,
   onSelectBit,
   onToggleMoreBits,
 }: ToolbarPaintSectionProps) {
@@ -33,6 +37,25 @@ export function ToolbarPaintSection({
 
   return (
     <>
+      <span className={styles.toolGroupLabel}>Draw</span>
+      <button
+        type="button"
+        title="Replace — overwrite cells (1→0, |→0); gap paint toggles | on column"
+        className={`${styles.toolBtn} ${paintStyle === 'replace' ? styles.toolActive : ''}`}
+        onClick={() => onSetPaintStyle('replace')}
+        aria-pressed={paintStyle === 'replace'}
+      >
+        Replace
+      </button>
+      <button
+        type="button"
+        title="Additive — insert columns (|→|value); paint on | adds value after gap"
+        className={`${styles.toolBtn} ${paintStyle === 'additive' ? styles.toolActive : ''}`}
+        onClick={() => onSetPaintStyle('additive')}
+        aria-pressed={paintStyle === 'additive'}
+      >
+        Add
+      </button>
       <span className={styles.toolGroupLabel}>Value</span>
       <button
         type="button"
@@ -42,6 +65,15 @@ export function ToolbarPaintSection({
         aria-pressed={paintMode === 'glitch'}
       >
         ⌢
+      </button>
+      <button
+        type="button"
+        title="Timeline gap (|) — vertical break before the next column on this lane"
+        className={`${styles.toolBtn} ${paintMode === 'gap' ? styles.toolActive : ''}`}
+        onClick={() => onSetPaintMode('gap')}
+        aria-pressed={paintMode === 'gap'}
+      >
+        |
       </button>
       <button
         type="button"

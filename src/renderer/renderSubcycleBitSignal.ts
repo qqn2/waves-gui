@@ -166,8 +166,11 @@ export function renderSubcycleBitSignal(
   const scale = transform.zoom * transform.hscale;
   const tw = TRANSITION_WIDTH * scale;
   const gapStroke =
-    getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() ||
-    '#888';
+    getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
+    '#e8e8e8';
+  const gapFill =
+    getComputedStyle(document.documentElement).getPropertyValue('--bg-canvas').trim() ||
+    '#121212';
 
   const rowY = logicalToCanvasY(rowYLogical, transform);
   const rowH = rowHeightLogical * transform.zoom;
@@ -204,9 +207,7 @@ export function renderSubcycleBitSignal(
     }
 
     if (col.gapAfter && i + 1 < columns.length) {
-      const x1 = nextX;
-      const x2 = stepLogicalX(signal, i + 1) * scale - transform.scrollX;
-      drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke);
+      drawStepGap(ctx, nextX, nextX, yHigh, yLow, gapStroke, gapFill);
     }
   }
 }

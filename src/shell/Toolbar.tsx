@@ -40,6 +40,7 @@ export interface ToolbarProps {
 export function Toolbar({ onExport }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const paintMode = useStore((s) => s.view.paintMode);
+  const paintStyle = useStore((s) => s.view.paintStyle);
   const activeBit = useStore((s) => s.view.activeBitState);
   const activeBusLabel = useStore((s) => s.view.activeBusLabel);
   const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
@@ -58,6 +59,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setTool = useStore((s) => s.setTool);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
   const setPaintMode = useStore((s) => s.setPaintMode);
+  const setPaintStyle = useStore((s) => s.setPaintStyle);
   const setZoom = useStore((s) => s.setZoom);
   const setScroll = useStore((s) => s.setScroll);
   const toggleCodePanel = useStore((s) => s.toggleCodePanel);
@@ -73,7 +75,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const [fileOpen, setFileOpen] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
-
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -203,9 +204,11 @@ export function Toolbar({ onExport }: ToolbarProps) {
       {tool === 'paint' ? (
         <ToolbarPaintSection
           paintMode={paintMode}
+          paintStyle={paintStyle}
           activeBit={activeBit}
           moreBitsOpen={moreBitsOpen}
           onSetPaintMode={setPaintMode}
+          onSetPaintStyle={setPaintStyle}
           onSelectBit={selectBitValue}
           onToggleMoreBits={() => setMoreBitsOpen((o) => !o)}
         />

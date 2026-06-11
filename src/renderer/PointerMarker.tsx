@@ -53,7 +53,9 @@ export function PointerMarker({
     hit.signalType === 'bit' && current !== null
       ? view.paintMode === 'glitch'
         ? ' · glitch'
-        : view.paintMode === 'set'
+        : view.paintMode === 'gap'
+          ? ' · |'
+          : view.paintMode === 'set'
           ? ` → ${view.activeBitState}`
           : ` ${current}→${toggleBinaryBitState(current)}`
       : '';

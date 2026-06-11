@@ -78,8 +78,11 @@ export function renderBitSignal(
   const scale = transform.zoom * transform.hscale;
   const tw = TRANSITION_WIDTH * scale;
   const gapStroke =
-    getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() ||
-    '#888';
+    getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
+    '#e8e8e8';
+  const gapFill =
+    getComputedStyle(document.documentElement).getPropertyValue('--bg-canvas').trim() ||
+    '#121212';
 
   const rowY = logicalToCanvasY(rowYLogical, transform);
   const rowH = rowHeightLogical * transform.zoom;
@@ -102,6 +105,15 @@ export function renderBitSignal(
     const st = states[i] ?? '0';
     const x = stepLogicalX(signal, i) * scale - transform.scrollX;
     const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+
+    if (signal.stepGaps?.[i]) {
+      if (pathOpen) {
+        ctx.stroke();
+        pathOpen = false;
+      }
+      drawStepGap(ctx, x, nextX, yHigh, yLow, gapStroke, gapFill);
+      continue;
+    }
 
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       if (pathOpen) {
@@ -142,8 +154,13 @@ export function renderBitSignal(
 
     if (!pathOpen) {
       ctx.beginPath();
-      ctx.moveTo(x, prevY);
+      const resumeY =
+        i > 0 && (signal.stepGaps?.[i - 1] ?? false)
+          ? stateToY(st, yHigh, yLow, yMid)
+          : prevY;
+      ctx.moveTo(x, resumeY);
       pathOpen = true;
+      prevY = resumeY;
       ctx.strokeStyle = stateStrokeColor(st, signal.color);
       const dash = stateLineDash(st);
       ctx.setLineDash(dash ?? []);
@@ -169,14 +186,6 @@ export function renderBitSignal(
   }
 
   if (pathOpen) ctx.stroke();
-
-  const gaps = signal.stepGaps ?? [];
-  for (let i = 0; i < gaps.length; i++) {
-    if (!gaps[i]) continue;
-    const x1 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
-    const x2 = stepLogicalX(signal, i + 1) * scale - transform.scrollX;
-    drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke);
-  }
 
   if (options?.highlightGlitchBoundaries) {
     for (let i = 0; i < glitches.length; i++) {
