@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { clearWaveMode } from '../wavedromBridge/laneWaveOps';
 import { useStore, findSignal, pushHistory } from '../shared/store';
 import { applyVectorSpan } from '../shared/vectorSegments';
 import type { BitState, VectorSegment } from '../shared/types';
@@ -84,7 +85,7 @@ export function pasteStepSelection(atStep?: number): boolean {
           for (let i = 0; i < src.length && lo + i < sig.states.length; i++) {
             sig.states[lo + i] = src[i]!;
           }
-          delete sig.waveOverride;
+          clearWaveMode(sig);
         } else if (sig.type === 'vector') {
           const slice = clip.vectorSlices[vecIdx++];
           if (!slice) return;

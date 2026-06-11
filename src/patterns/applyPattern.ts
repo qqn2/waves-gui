@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { clearWaveMode } from '../wavedromBridge/laneWaveOps';
 import { useStore, pushHistory } from '../shared/store';
 import type { BitState, Signal, SignalOrGroup, VectorSegment } from '../shared/types';
 
@@ -37,7 +38,7 @@ export function applyBitPatternToSignal(
     const sig = findSignalById(s.diagram.signals, signalId);
     if (sig?.type === 'bit' && states.length === s.diagram.config.totalSteps) {
       sig.states = [...states];
-      delete sig.waveOverride;
+      clearWaveMode(sig);
       s.view.isDirty = true;
     }
   });

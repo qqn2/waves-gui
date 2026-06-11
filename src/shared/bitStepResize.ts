@@ -1,10 +1,13 @@
-import { repairClockLaneIfNeeded } from '../wavedromBridge/clockWave';
 import {
-  decodeWaveDetail,
-  encodeWaveString,
-  padDecodedWaveToLength,
-  type DecodedWave,
-} from '../wavedromBridge/waveStringCodec';
+  demoteToStatesMode,
+  getBitLaneWave,
+  isWaveModeLane,
+  mutateBitWave,
+  resizeWaveByDelta,
+  setBitLaneWave,
+  writeDecodedToSignal,
+} from '../wavedromBridge/laneWaveOps';
+import type { DecodedWave } from '../wavedromBridge/waveStringCodec';
 import { isClockBitState } from './bitToggle';
 import type { BitState, Signal } from './types';
 
@@ -16,84 +19,13 @@ function readDecoded(sig: Signal): DecodedWave {
   };
 }
 
-function writeDecoded(sig: Signal, decoded: DecodedWave, len: number): void {
-  const padded = padDecodedWaveToLength(decoded, len);
-  sig.states = padded.states;
-  if (padded.stepGaps.some(Boolean)) sig.stepGaps = padded.stepGaps;
-  else delete sig.stepGaps;
-  if (padded.stepGlitches.some(Boolean)) sig.stepGlitches = padded.stepGlitches;
-  else delete sig.stepGlitches;
-  delete sig.waveOverride;
-}
-
 function hasGapColumns(sig: Signal): boolean {
   return Boolean(sig.stepGaps?.some(Boolean));
 }
 
 /** Clock-bearing lanes always grow/shrink via wave `.` — never hold-fill state push. */
 function useWaveStepResize(sig: Signal): boolean {
-  return !hasGapColumns(sig) || sig.states.some(isClockBitState);
-}
-
-function preparedStates(sig: Signal): BitState[] {
-  if (sig.states.every(isClockBitState)) {
-    return repairClockLaneIfNeeded(sig.states, sig.stepGaps, sig.stepGlitches);
-  }
-  return sig.states;
-}
-
-function waveForSignal(sig: Signal): string {
-  const wave = encodeWaveString(preparedStates(sig), sig.stepGaps, sig.stepGlitches);
-  return wave.length > 0 ? wave : '0';
-}
-
-function trimWaveToLength(wave: string, len: number): string {
-  let out = wave;
-  while (decodeWaveDetail(out).states.length > len && out.length > 0) {
-    out = out.slice(0, -1);
-  }
-  return out;
-}
-
-function resizeWaveByDelta(wave: string, delta: number, targetLen: number): string {
-  if (delta > 0) return wave + '.'.repeat(delta);
-  if (delta < 0) return trimWaveToLength(wave, targetLen);
-  const cur = decodeWaveDetail(wave).states.length;
-  if (cur === targetLen) return wave;
-  if (cur < targetLen) return wave + '.'.repeat(targetLen - cur);
-  return trimWaveToLength(wave, targetLen);
-}
-
-function spliceBoundaryFlags(
-  flags: boolean[] | undefined,
-  index: number,
-  newBoundaryCount: number,
-): boolean[] | undefined {
-  if (!flags?.some(Boolean) && newBoundaryCount <= 0) return undefined;
-  const out = flags ? [...flags] : [];
-  while (out.length < newBoundaryCount) out.push(false);
-  if (out.length > newBoundaryCount) out.length = newBoundaryCount;
-  if (index > 0 && index <= out.length) {
-    out.splice(index - 1, 0, false);
-  }
-  if (!out.some(Boolean)) return undefined;
-  return out;
-}
-
-function removeBoundaryFlags(
-  flags: boolean[] | undefined,
-  index: number,
-  newBoundaryCount: number,
-): boolean[] | undefined {
-  if (!flags?.length) return undefined;
-  const out = [...flags];
-  if (index > 0 && index - 1 < out.length) {
-    out.splice(index - 1, 1);
-  }
-  while (out.length < newBoundaryCount) out.push(false);
-  if (out.length > newBoundaryCount) out.length = newBoundaryCount;
-  if (!out.some(Boolean)) return undefined;
-  return out;
+  return isWaveModeLane(sig) || !hasGapColumns(sig) || sig.states.some(isClockBitState);
 }
 
 /** Resize a bit lane by appending or trimming `.` on its WaveDrom wave string. */
@@ -109,8 +41,7 @@ export function resizeBitSignalToLength(
   if (delta === 0 && sig.states.length === newLen) return;
 
   if (useWaveStepResize(sig)) {
-    const wave = resizeWaveByDelta(waveForSignal(sig), delta, newLen);
-    writeDecoded(sig, decodeWaveDetail(wave), newLen);
+    mutateBitWave(sig, (wave) => resizeWaveByDelta(wave, delta, newLen), newLen);
     return;
   }
 
@@ -121,11 +52,11 @@ export function resizeBitSignalToLength(
       decoded.states.push(hold);
       decoded.stepGaps.push(false);
     }
-    writeDecoded(sig, decoded, newLen);
+    writeDecodedToSignal(sig, decoded, newLen);
     return;
   }
 
-  writeDecoded(sig, readDecoded(sig), newLen);
+  writeDecodedToSignal(sig, readDecoded(sig), newLen);
 }
 
 /** Insert one timeline column on a bit lane (wave `.` insertion when no gaps). */
@@ -135,9 +66,11 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   const at = Math.max(0, Math.min(index, n));
 
   if (useWaveStepResize(sig)) {
-    const wave = waveForSignal(sig);
-    const extended = at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at);
-    writeDecoded(sig, decodeWaveDetail(extended), n + 1);
+    mutateBitWave(
+      sig,
+      (wave) => (at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at)),
+      n + 1,
+    );
     return;
   }
 
@@ -148,8 +81,8 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   while (gaps.length < n) gaps.push(false);
   gaps.splice(at, 0, false);
   decoded.stepGaps = gaps;
-  decoded.stepGlitches = spliceBoundaryFlags(decoded.stepGlitches, at, Math.max(0, n));
-  writeDecoded(sig, decoded, n + 1);
+  decoded.stepGlitches.splice(at, 0, false);
+  writeDecodedToSignal(sig, decoded, n + 1);
 }
 
 /** Remove one timeline column on a bit lane (wave char removal when no gaps). */
@@ -159,18 +92,25 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
   const at = Math.max(0, Math.min(index, n - 1));
 
   if (useWaveStepResize(sig)) {
-    const wave = waveForSignal(sig);
+    const wave = getBitLaneWave(sig);
     if (wave.length === 0) return false;
     const waveAt = Math.min(at, wave.length - 1);
     const trimmed = wave.slice(0, waveAt) + wave.slice(waveAt + 1);
-    writeDecoded(sig, decodeWaveDetail(trimmed.length > 0 ? trimmed : '0'), n - 1);
+    setBitLaneWave(sig, trimmed.length > 0 ? trimmed : '0', n - 1);
     return true;
   }
 
   const decoded = readDecoded(sig);
   decoded.states.splice(at, 1);
   if (decoded.stepGaps.length > at) decoded.stepGaps.splice(at, 1);
-  decoded.stepGlitches = removeBoundaryFlags(decoded.stepGlitches, at, Math.max(0, n - 2));
-  writeDecoded(sig, decoded, n - 1);
+  if (at > 0 && at - 1 < decoded.stepGlitches.length) {
+    decoded.stepGlitches.splice(at - 1, 1);
+  }
+  writeDecodedToSignal(sig, decoded, n - 1);
   return true;
+}
+
+/** Drop wave-canonical mode when a states-first edit cannot round-trip. */
+export function invalidateWaveMode(sig: Signal): void {
+  demoteToStatesMode(sig, sig.states.length);
 }

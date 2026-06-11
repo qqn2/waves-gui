@@ -10,6 +10,7 @@ import { renderGrid } from './renderGrid';
 import { renderTimeAxis } from './renderTimeAxis';
 import { renderBitSignal } from './renderBitSignal';
 import { renderSubcycleBitSignal } from './renderSubcycleBitSignal';
+import { getBitLaneWave, isSubcycleWaveLane } from '../wavedromBridge/laneWaveOps';
 import { padWaveOverride } from '../wavedromBridge/subcycleWave';
 import { renderVectorSignal } from './renderVectorSignal';
 import { fillHexForColorIndex } from '../wavedromBridge/wavedromColors';
@@ -211,12 +212,12 @@ export class CanvasRenderer {
               }
             }
           }
-          if (item.waveOverride && !draft) {
+          if (isSubcycleWaveLane(item) && !draft) {
             renderSubcycleBitSignal(
               this.ctx,
               drawSignal,
               padWaveOverride(
-                item.waveOverride,
+                getBitLaneWave(item),
                 diagram.config.totalSteps,
                 item.period ?? 1,
                 diagram.config.hscale,

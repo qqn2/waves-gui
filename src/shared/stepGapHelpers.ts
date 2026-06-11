@@ -1,3 +1,12 @@
+import {
+  applyDecodedEditToLane,
+  clearWaveMode,
+  insertColumnInBitLane,
+  isRepeatingClockLane,
+  isSubcycleWaveLane,
+  isWaveModeLane,
+  mutateBitWave,
+} from '../wavedromBridge/laneWaveOps';
 import type { Signal, SignalOrGroup } from './types';
 import type { BitState } from './types';
 
@@ -66,9 +75,23 @@ export function insertGapColumnOnDiagram(
       sig.type === 'bit' ? sig.states.length + 1 : gapColumnCount(sig.stepGaps?.length ?? 0) + 1;
 
     if (sig.type === 'bit') {
-      sig.states.splice(clamped, 0, holdState(sig.states, clamped));
-      delete sig.waveOverride;
       const isGap = gapSignalId === null || sig.id === gapSignalId;
+      if (isSubcycleWaveLane(sig)) {
+        clearWaveMode(sig);
+      }
+      if (isWaveModeLane(sig)) {
+        if (isGap && isRepeatingClockLane(sig)) {
+          mutateBitWave(
+            sig,
+            (wave) => wave.slice(0, clamped) + '|' + wave.slice(clamped),
+            newLen,
+          );
+        } else {
+          insertColumnInBitLane(sig, clamped, holdState(sig.states, clamped), isGap);
+        }
+        return;
+      }
+      sig.states.splice(clamped, 0, holdState(sig.states, clamped));
       sig.stepGaps = spliceColumnFlag(sig.stepGaps, clamped, newLen, isGap);
       sig.stepGlitches = spliceColumnFlag(sig.stepGlitches, clamped, Math.max(0, newLen - 1), false);
       return;
@@ -135,8 +158,18 @@ function deleteGapColumnOnDiagram(
         return;
       }
       const clamped = Math.max(0, Math.min(index, sig.states.length - 1));
+      if (isSubcycleWaveLane(sig)) {
+        clearWaveMode(sig);
+      }
+      if (isWaveModeLane(sig)) {
+        const newLen = sig.states.length - 1;
+        applyDecodedEditToLane(sig, (decoded) => {
+          decoded.states.splice(clamped, 1);
+          if (clamped < decoded.stepGaps.length) decoded.stepGaps.splice(clamped, 1);
+        }, newLen);
+        return;
+      }
       sig.states.splice(clamped, 1);
-      delete sig.waveOverride;
       const newLen = sig.states.length;
       sig.stepGaps = removeColumnFlag(sig.stepGaps, clamped, newLen);
       sig.stepGlitches = removeColumnFlag(sig.stepGlitches, clamped, Math.max(0, newLen - 1));
@@ -168,6 +201,30 @@ export function toggleGapColumnsOnSignal(signal: Signal, lo: number, hi: number)
   const clampHi = Math.min(hi, len - 1);
   if (clampLo > clampHi) return;
 
+  if (signal.type === 'bit' && isSubcycleWaveLane(signal)) {
+    clearWaveMode(signal);
+  }
+
+  if (signal.type === 'bit' && isWaveModeLane(signal)) {
+    applyDecodedEditToLane(
+      signal,
+      (decoded) => {
+        const gaps = ensureStepGaps(decoded.stepGaps, decoded.states.length);
+        for (let i = clampLo; i <= clampHi; i++) {
+          if (gaps[i]) {
+            gaps[i] = false;
+          } else {
+            gaps[i] = true;
+            decoded.states[i] = holdState(decoded.states, i);
+          }
+        }
+        decoded.stepGaps = gaps;
+      },
+      signal.states.length,
+    );
+    return;
+  }
+
   const gaps = ensureStepGaps(signal.stepGaps, len);
   for (let i = clampLo; i <= clampHi; i++) {
     if (gaps[i]) {
@@ -176,7 +233,6 @@ export function toggleGapColumnsOnSignal(signal: Signal, lo: number, hi: number)
       gaps[i] = true;
       if (signal.type === 'bit') {
         signal.states[i] = holdState(signal.states, i);
-        delete signal.waveOverride;
       }
     }
   }
@@ -223,8 +279,14 @@ export function insertValueColumnOnDiagram(
 
     if (sig.type === 'bit') {
       const value = sig.id === valueSignalId ? bitState : holdState(sig.states, clamped);
+      if (isSubcycleWaveLane(sig)) {
+        clearWaveMode(sig);
+      }
+      if (isWaveModeLane(sig)) {
+        insertColumnInBitLane(sig, clamped, value, false);
+        return;
+      }
       sig.states.splice(clamped, 0, value);
-      delete sig.waveOverride;
       sig.stepGaps = spliceColumnFlag(sig.stepGaps, clamped, newLen, false);
       sig.stepGlitches = spliceColumnFlag(sig.stepGlitches, clamped, Math.max(0, newLen - 1), false);
       return;
