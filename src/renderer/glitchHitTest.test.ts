@@ -32,6 +32,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     scrollY: 0,
     selectedTool: 'erase',
     paintMode: 'set',
+    paintStyle: 'replace',
     activeBitState: '0',
     activeBusLabel: '',
     activeTimespanLabel: '',

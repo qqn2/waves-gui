@@ -7,6 +7,7 @@ import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import { segmentBusFill, segmentBusStroke } from './vectorBusStyle';
 import { labelOverflowsInWidth } from '../shared/vectorLabelFit';
 import { drawBusOverflowIndicator } from './drawBusOverflowIndicator';
+import { drawStepGap } from './drawStepGap';
 
 export function renderVectorSignal(
   ctx: CanvasRenderingContext2D,
@@ -91,5 +92,19 @@ export function renderVectorSignal(
     if (overflows) {
       drawBusOverflowIndicator(ctx, x1, x2, yHigh, yLow, yMid, d, span);
     }
+  }
+
+  const gapStroke =
+    getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
+    '#e8e8e8';
+  const gapFill =
+    getComputedStyle(document.documentElement).getPropertyValue('--bg-canvas').trim() ||
+    '#121212';
+  const gaps = signal.stepGaps ?? [];
+  for (let i = 0; i < gaps.length; i++) {
+    if (!gaps[i]) continue;
+    const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
+    const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke, gapFill);
   }
 }

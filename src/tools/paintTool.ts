@@ -36,12 +36,14 @@ export function paintPointerDown(
   flushPendingCodeToDiagram();
 
   const { view } = useStore.getState();
-  const apply: 'toggle' | 'set' | 'glitch' =
-    view.paintMode === 'glitch'
-      ? 'glitch'
-      : e.shiftKey || view.paintMode === 'toggle'
-        ? 'toggle'
-        : 'set';
+  const apply: 'toggle' | 'set' | 'glitch' | 'gap' =
+    view.paintMode === 'gap'
+      ? 'gap'
+      : view.paintMode === 'glitch'
+        ? 'glitch'
+        : e.shiftKey || view.paintMode === 'toggle'
+          ? 'toggle'
+          : 'set';
   const bitState: BitState = view.activeBitState;
 
   useStore.getState().setPaintDraft({
@@ -83,12 +85,21 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   if (!draft) return;
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
+  const paintStyle = useStore.getState().view.paintStyle;
   if (draft.apply === 'glitch') {
     useStore.getState().toggleStepGlitchRange(draft.signalId, lo, hi);
+  } else if (draft.apply === 'gap') {
+    useStore.getState().paintGapRange(draft.signalId, lo, hi, paintStyle);
   } else if (draft.apply === 'toggle') {
-    useStore.getState().toggleSignalStateRange(draft.signalId, lo, hi);
+    useStore.getState().paintToggleRange(draft.signalId, lo, hi, paintStyle);
   } else {
-    useStore.getState().setSignalStateRange(draft.signalId, lo, hi, draft.bitState);
+    useStore.getState().paintBitStateRange(
+      draft.signalId,
+      lo,
+      hi,
+      draft.bitState,
+      paintStyle,
+    );
   }
   useStore.getState().clearPaintDraft();
 }

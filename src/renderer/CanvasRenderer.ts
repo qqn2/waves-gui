@@ -1,4 +1,4 @@
-import type { DiagramState, ViewState, BitState } from '../shared/types';
+import type { DiagramState, ViewState, BitState, Signal } from '../shared/types';
 import { toggleBinaryBitState, isClockBitState, resolvePaintValue, isHoldPaintValue } from '../shared/bitToggle';
 import {
   applyClockBrushToRange,
@@ -17,6 +17,49 @@ import { applyVectorSpan } from '../shared/vectorSegments';
 import { renderSignalNodes } from './renderNodes';
 import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
+
+function previewToggleGapColumns(signal: Signal, lo: number, hi: number): Signal {
+  const len = signal.type === 'bit' ? signal.states.length : signal.stepGaps?.length ?? 0;
+  const gaps = [...(signal.stepGaps ?? [])];
+  while (gaps.length < len) gaps.push(false);
+  const states = signal.type === 'bit' ? [...signal.states] : signal.states;
+  for (let i = lo; i <= hi && i < len; i++) {
+    gaps[i] = !gaps[i];
+    if (signal.type === 'bit' && gaps[i]) {
+      states[i] = i > 0 ? states[i - 1]! : (states[0] ?? '0');
+    }
+  }
+  const stepGaps = gaps.some(Boolean) ? gaps : undefined;
+  return signal.type === 'bit'
+    ? { ...signal, states, stepGaps }
+    : { ...signal, stepGaps };
+}
+
+function previewInsertGapColumns(signal: Signal, column: number, count: number): Signal {
+  const n = Math.max(0, count);
+  if (n === 0) return signal;
+  if (signal.type === 'bit') {
+    const states = [...signal.states];
+    const gaps = [...(signal.stepGaps ?? [])];
+    while (gaps.length < states.length) gaps.push(false);
+    for (let c = 0; c < n; c++) {
+      const hold = column > 0 ? states[column - 1]! : (states[0] ?? '0');
+      states.splice(column, 0, hold);
+      gaps.splice(column, 0, true);
+    }
+    return { ...signal, states, stepGaps: gaps };
+  }
+  if (signal.type === 'vector') {
+    const gaps = [...(signal.stepGaps ?? [])];
+    const spanEnd = signal.segments.reduce((m, seg) => Math.max(m, seg.endStep), 0);
+    while (gaps.length < spanEnd) gaps.push(false);
+    for (let c = 0; c < n; c++) {
+      gaps.splice(column, 0, true);
+    }
+    return { ...signal, stepGaps: gaps };
+  }
+  return signal;
+}
 
 export class CanvasRenderer {
   constructor(private readonly ctx: CanvasRenderingContext2D) {}
@@ -77,6 +120,7 @@ export class CanvasRenderer {
         } else if (item.type === 'bit') {
           let drawSignal = item;
           let draft: BitState[] | null = null;
+          let rowTotalSteps = diagram.config.totalSteps;
           if (view.paintDraft && view.paintDraft.signalId === item.id) {
             const lo = Math.min(view.paintDraft.startStep, view.paintDraft.endStep);
             const hi = Math.max(view.paintDraft.startStep, view.paintDraft.endStep);
@@ -91,8 +135,35 @@ export class CanvasRenderer {
                 glitches[i] = !glitches[i];
               }
               drawSignal = { ...item, stepGlitches: glitches };
+            } else if (
+              view.paintDraft.mode === 'paint' &&
+              view.paintDraft.apply === 'gap'
+            ) {
+              if (view.paintStyle === 'additive') {
+                const gapCount = hi - lo + 1;
+                drawSignal = previewInsertGapColumns(item, lo, gapCount);
+                rowTotalSteps = diagram.config.totalSteps + gapCount;
+              } else {
+                drawSignal = previewToggleGapColumns(item, lo, hi);
+              }
             } else {
               draft = [...item.states];
+              if (view.paintStyle === 'replace') {
+                const gaps = [...(item.stepGaps ?? [])];
+                let changed = false;
+                for (let i = lo; i <= hi; i++) {
+                  if (gaps[i]) {
+                    gaps[i] = false;
+                    changed = true;
+                  }
+                }
+                if (changed) {
+                  drawSignal = {
+                    ...item,
+                    stepGaps: gaps.some(Boolean) ? gaps : undefined,
+                  };
+                }
+              }
               if (
                 view.paintDraft.mode === 'paint' &&
                 view.paintDraft.apply === 'set' &&
@@ -121,6 +192,13 @@ export class CanvasRenderer {
                 applyClockToggleToRange(draft, lo, hi);
               } else {
                 for (let s = lo; s <= hi; s++) {
+                  if (
+                    view.paintDraft.mode === 'paint' &&
+                    view.paintStyle === 'additive' &&
+                    item.stepGaps?.[s]
+                  ) {
+                    continue;
+                  }
                   if (view.paintDraft.mode === 'paint') {
                     draft[s] =
                       view.paintDraft.apply === 'toggle'
@@ -156,7 +234,7 @@ export class CanvasRenderer {
               row.y,
               row.height,
               transform,
-              diagram.config.totalSteps,
+              rowTotalSteps,
               draft,
               {
                 highlightGlitchBoundaries:
@@ -184,24 +262,31 @@ export class CanvasRenderer {
           if (draft && draft.signalId === item.id && draft.lane === 'vector') {
             const lo = Math.min(draft.startStep, draft.endStep);
             const hi = Math.max(draft.startStep, draft.endStep);
-            const value =
-              draft.mode === 'paint' ? (draft.busLabel ?? 'data') : null;
-            const busFill =
-              draft.mode === 'paint'
-                ? (draft.busColorFill ??
-                  fillHexForColorIndex(view.activeBusColorIndex))
-                : undefined;
-            drawSignal = {
-              ...item,
-              segments: applyVectorSpan(
-                item.segments,
-                lo,
-                hi,
-                value,
-                diagram.config.totalSteps,
-                busFill,
-              ),
-            };
+            if (draft.mode === 'paint' && draft.apply === 'gap') {
+              drawSignal =
+                view.paintStyle === 'additive'
+                  ? previewInsertGapColumns(item, lo, hi - lo + 1)
+                  : previewToggleGapColumns(item, lo, hi);
+            } else {
+              const value =
+                draft.mode === 'paint' ? (draft.busLabel ?? 'data') : null;
+              const busFill =
+                draft.mode === 'paint'
+                  ? (draft.busColorFill ??
+                    fillHexForColorIndex(view.activeBusColorIndex))
+                  : undefined;
+              drawSignal = {
+                ...item,
+                segments: applyVectorSpan(
+                  item.segments,
+                  lo,
+                  hi,
+                  value,
+                  diagram.config.totalSteps,
+                  busFill,
+                ),
+              };
+            }
           }
           renderVectorSignal(this.ctx, drawSignal, row.y, row.height, transform);
           if (drawSignal.node) {

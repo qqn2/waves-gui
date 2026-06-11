@@ -127,6 +127,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       } else if (e.key === 'g' || e.key === 'G') {
         setTool('paint');
         setPaintMode('glitch');
+      } else if (e.key === '|') {
+        setTool('paint');
+        setPaintMode('gap');
       } else if (e.key === 't' || e.key === 'T') {
         setTool('paint');
         setPaintMode('toggle');
