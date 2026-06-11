@@ -14,6 +14,13 @@ import {
   ROW_HEIGHT,
 } from '../constants';
 import {
+  applyDecodedEditToLane,
+  clearWaveMode,
+  isRepeatingClockLane,
+  isSubcycleWaveLane,
+  isWaveModeLane,
+} from '../../wavedromBridge/laneWaveOps';
+import {
   toggleBinaryBitState,
   isClockBitState,
   resolvePaintValue,
@@ -47,12 +54,10 @@ import {
   resizeAllStates,
 } from './helpers';
 
-function clearWaveOverride(sig: Signal): void {
-  delete sig.waveOverride;
-}
-
-function isClockOnlyBitLane(sig: Signal): boolean {
-  return sig.type === 'bit' && sig.states.length > 0 && sig.states.every(isClockBitState);
+function demoteWaveLaneOnStatesEdit(sig: Signal): void {
+  if (isSubcycleWaveLane(sig)) {
+    clearWaveMode(sig);
+  }
 }
 
 function canDeleteStepAt(signals: SignalOrGroup[], at: number): boolean {
@@ -87,8 +92,8 @@ function deleteDiagramStepAt(
 }
 
 function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
-  if (sig.type !== 'bit') return;
-  clearWaveOverride(sig);
+  if (sig.type !== 'bit' || isWaveModeLane(sig)) return;
+  demoteWaveLaneOnStatesEdit(sig);
   for (let i = lo; i <= hi; i++) {
     sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
     clearStepGlitchesTouchingRange(sig, i, i);
@@ -102,7 +107,29 @@ function applyBitStateInRange(
   bitState: BitState,
 ): void {
   if (sig.type !== 'bit') return;
-  clearWaveOverride(sig);
+  const len = sig.states.length;
+
+  if (isWaveModeLane(sig)) {
+    applyDecodedEditToLane(sig, (decoded) => {
+      if (isHoldPaintValue(bitState)) {
+        for (let i = lo; i <= hi; i++) {
+          decoded.states[i] = resolvePaintValue(decoded.states, i, bitState);
+        }
+      } else if (isClockBitState(bitState) && lo < hi) {
+        applyClockBrushToRange(decoded.states, lo, hi, bitState);
+      } else if (isClockBitState(bitState)) {
+        decoded.states[lo] = bitState;
+      } else {
+        for (let i = lo; i <= hi; i++) decoded.states[i] = bitState;
+        if (decoded.states.some(isClockBitState)) {
+          normalizeBinaryPaintOnClockLane(decoded.states, lo, hi, bitState);
+        }
+      }
+    }, len);
+    return;
+  }
+
+  demoteWaveLaneOnStatesEdit(sig);
   if (isHoldPaintValue(bitState)) {
     for (let i = lo; i <= hi; i++) {
       sig.states[i] = resolvePaintValue(sig.states, i, bitState);
@@ -160,6 +187,8 @@ function duplicateSignalInDraft(
         })),
         stepGaps: item.stepGaps ? [...item.stepGaps] : undefined,
         stepGlitches: item.stepGlitches ? [...item.stepGlitches] : undefined,
+        ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
+        ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
       };
       signals.splice(i + 1, 0, clone);
@@ -369,8 +398,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          clearWaveOverride(sig);
-          sig.states[step] = resolvePaintValue(sig.states, step, bitState);
+          applyBitStateInRange(sig, step, step, bitState);
         });
       });
     },
@@ -426,22 +454,23 @@ export function createSignalActions(set: ImmerSet): Pick<
             s.diagram.config.totalSteps += inserted;
           }
 
-          clearWaveOverride(sig);
-          for (let i = lo; i <= hi; i++) {
-            if (wasGap[i]) continue;
-            if (isHoldPaintValue(bitState)) {
-              sig.states[i] = resolvePaintValue(sig.states, i, bitState);
-            } else {
-              sig.states[i] = bitState;
+          applyDecodedEditToLane(sig, (decoded) => {
+            for (let i = lo; i <= hi; i++) {
+              if (wasGap[i]) continue;
+              if (isHoldPaintValue(bitState)) {
+                decoded.states[i] = resolvePaintValue(decoded.states, i, bitState);
+              } else {
+                decoded.states[i] = bitState;
+              }
             }
-          }
-          if (
-            !isHoldPaintValue(bitState) &&
-            !isClockBitState(bitState) &&
-            sig.states.some(isClockBitState)
-          ) {
-            normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
-          }
+            if (
+              !isHoldPaintValue(bitState) &&
+              !isClockBitState(bitState) &&
+              decoded.states.some(isClockBitState)
+            ) {
+              normalizeBinaryPaintOnClockLane(decoded.states, lo, hi, bitState);
+            }
+          }, sig.states.length);
         });
         s.view.isDirty = true;
       });
@@ -454,14 +483,15 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          clearWaveOverride(sig);
-          if (sig.states.every(isClockBitState)) {
-            applyClockToggleToRange(sig.states, lo, hi);
-          } else {
-            for (let i = lo; i <= hi; i++) {
-              sig.states[i] = toggleBinaryBitState(sig.states[i]);
+          applyDecodedEditToLane(sig, (decoded) => {
+            if (decoded.states.every(isClockBitState)) {
+              applyClockToggleToRange(decoded.states, lo, hi);
+            } else {
+              for (let i = lo; i <= hi; i++) {
+                decoded.states[i] = toggleBinaryBitState(decoded.states[i]!);
+              }
             }
-          }
+          }, sig.states.length);
         });
       });
     },
@@ -473,18 +503,19 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          clearWaveOverride(sig);
           if (paintStyle === 'replace') {
             clearStepGapsOnColumns(sig, lo, hi);
           }
-          if (sig.states.every(isClockBitState)) {
-            applyClockToggleToRange(sig.states, lo, hi);
-            return;
-          }
-          for (let i = lo; i <= hi; i++) {
-            if (paintStyle === 'additive' && sig.stepGaps?.[i]) continue;
-            sig.states[i] = toggleBinaryBitState(sig.states[i]);
-          }
+          applyDecodedEditToLane(sig, (decoded) => {
+            if (decoded.states.every(isClockBitState)) {
+              applyClockToggleToRange(decoded.states, lo, hi);
+              return;
+            }
+            for (let i = lo; i <= hi; i++) {
+              if (paintStyle === 'additive' && decoded.stepGaps[i]) continue;
+              decoded.states[i] = toggleBinaryBitState(decoded.states[i]!);
+            }
+          }, sig.states.length);
         });
         s.view.isDirty = true;
       });
@@ -509,7 +540,6 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (sig.type === 'bit') clearWaveOverride(sig);
           toggleGapColumnsOnSignal(sig, lo, hi);
         });
         s.view.isDirty = true;
@@ -523,20 +553,21 @@ export function createSignalActions(set: ImmerSet): Pick<
         const hi = Math.max(startStep, endStep);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
-          clearWaveOverride(sig);
           if (sig.states.length < 2) return;
-          const maxBoundaries = sig.states.length - 1;
-          if (!sig.stepGlitches) sig.stepGlitches = [];
-          while (sig.stepGlitches.length < maxBoundaries) {
-            sig.stepGlitches.push(false);
-          }
-          if (sig.stepGlitches.length > maxBoundaries) {
-            sig.stepGlitches.length = maxBoundaries;
-          }
-          for (let i = lo; i < hi && i < maxBoundaries; i++) {
-            sig.stepGlitches[i] = !sig.stepGlitches[i];
-          }
-          if (!sig.stepGlitches.some(Boolean)) delete sig.stepGlitches;
+          applyDecodedEditToLane(sig, (decoded) => {
+            if (decoded.states.length < 2) return;
+            const maxBoundaries = decoded.states.length - 1;
+            while (decoded.stepGlitches.length < maxBoundaries) {
+              decoded.stepGlitches.push(false);
+            }
+            if (decoded.stepGlitches.length > maxBoundaries) {
+              decoded.stepGlitches.length = maxBoundaries;
+            }
+            for (let i = lo; i < hi && i < maxBoundaries; i++) {
+              decoded.stepGlitches[i] = !decoded.stepGlitches[i];
+            }
+          }, sig.states.length);
+          if (!sig.stepGlitches?.some(Boolean)) delete sig.stepGlitches;
         });
       });
     },
@@ -604,7 +635,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           return;
         }
 
-        if (isClockOnlyBitLane(target)) {
+        if (isRepeatingClockLane(target)) {
           if (s.diagram.config.totalSteps <= MIN_TOTAL_STEPS) return;
           const total = s.diagram.config.totalSteps;
           if (!deleteDiagramStepAt(s.diagram.signals, s.diagram.edges, step, total)) {
@@ -644,7 +675,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           clearStepGapsOnColumns(target, i, i);
         }
 
-        if (isClockOnlyBitLane(target)) {
+        if (isRepeatingClockLane(target)) {
           const gapSet = new Set(gapCols);
           let deleted = 0;
           for (let i = hi; i >= lo; i--) {
