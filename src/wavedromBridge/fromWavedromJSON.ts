@@ -10,6 +10,12 @@ import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/cons
 import { decodeWaveDetail, padDecodedWaveToLength } from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
+import {
+  bitLaneStepCount,
+  isWaveModeLane,
+  padWaveLaneToLength,
+  shouldImportAsWaveMode,
+} from './laneWaveOps';
 import { hasSubcycleSyntax, waveColumnCount } from './subcycleWave';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 
@@ -152,8 +158,8 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     };
   }
   const { states, stepGaps, stepGlitches } = decodeWaveDetail(wave);
-  const waveOverride = hasSubcycleSyntax(wave) ? wave : undefined;
-  const columnSteps = waveOverride
+  const waveMode = shouldImportAsWaveMode(wave);
+  const columnSteps = hasSubcycleSyntax(wave)
     ? waveColumnCount(wave, sig.period ?? 1, DEFAULT_HSCALE)
     : states.length;
   return {
@@ -166,7 +172,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     rowHeight: ROW_HEIGHT,
     phase: sig.phase,
     period: sig.period,
-    ...(waveOverride !== undefined ? { waveOverride } : {}),
+    ...(waveMode ? { laneMode: 'wave' as const, wave } : {}),
     ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
     ...(stepGlitches.some(Boolean) ? { stepGlitches } : {}),
     ...(sig.node !== undefined ? { node: sig.node } : {}),
@@ -179,9 +185,7 @@ function maxSteps(signals: SignalOrGroup[]): number {
     for (const item of list) {
       if (item.type === 'group') walk(item.children);
       else if (item.type === 'bit') {
-        const len = item.waveOverride
-          ? waveColumnCount(item.waveOverride, item.period ?? 1, DEFAULT_HSCALE)
-          : item.states.length;
+        const len = bitLaneStepCount(item, DEFAULT_HSCALE);
         max = Math.max(max, len);
       } else if (item.type === 'vector') {
         max = Math.max(max, item.stepGaps?.length ?? 0);
@@ -208,6 +212,10 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       s.node = padNode(s.node, totalSteps);
     }
     if (s.type === 'bit') {
+      if (isWaveModeLane(s)) {
+        padWaveLaneToLength(s, totalSteps, DEFAULT_HSCALE);
+        return;
+      }
       const padded = padDecodedWaveToLength(
         {
           states: s.states,

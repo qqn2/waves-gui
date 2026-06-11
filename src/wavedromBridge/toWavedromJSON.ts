@@ -1,6 +1,6 @@
 import type { DiagramState, Signal, SignalGroup, SignalOrGroup } from '../shared/types';
+import { isWaveModeLane, padWaveForDiagram } from './laneWaveOps';
 import { encodeWaveStringForDiagram } from './waveStringCodec';
-import { padWaveOverride } from './subcycleWave';
 import { segmentsToWaveAndData } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 import { exportWdFoot, exportWdHead } from './headFootExport';
@@ -12,20 +12,14 @@ function signalToEntry(
 ): WdSignal | Record<string, never> {
   if (sig.type === 'spacer') return {};
   if (sig.type === 'bit') {
-    const wave =
-      sig.waveOverride !== undefined
-        ? padWaveOverride(
-            sig.waveOverride,
-            totalSteps,
-            sig.period ?? 1,
-            hscale,
-          )
-        : encodeWaveStringForDiagram(
-            sig.states,
-            totalSteps,
-            sig.stepGaps,
-            sig.stepGlitches,
-          );
+    const wave = isWaveModeLane(sig)
+      ? padWaveForDiagram(sig, totalSteps, hscale)
+      : encodeWaveStringForDiagram(
+          sig.states,
+          totalSteps,
+          sig.stepGaps,
+          sig.stepGlitches,
+        );
     const entry: WdSignal = {
       name: sig.name,
       wave,

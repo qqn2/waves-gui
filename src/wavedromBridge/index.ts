@@ -1,5 +1,12 @@
 export { toWavedromJSON } from './toWavedromJSON';
 export { fromWavedromJSON } from './fromWavedromJSON';
+export {
+  isWaveModeLane,
+  isSubcycleWaveLane,
+  isRepeatingClockLane,
+  getBitLaneWave,
+  mutateBitWave,
+} from './laneWaveOps';
 export { validateWavedromJSON } from './validate';
 export {
   encodeWaveString,
