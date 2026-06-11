@@ -4,6 +4,8 @@
  * WaveDrom JSON mapping (encode/decode lives in src/wavedromBridge/):
  *
  *   Signal.states[]     ↔  signal[i].wave     one char per time step (0,1,x,z,u,d,p,n,P,N,=,|,…)
+ *   Signal.wave         ↔  signal[i].wave     canonical when laneMode is 'wave' (clocks, sub-cycles)
+ *   Signal.laneMode     ↔  (internal)         'states' = per-step cache is truth; 'wave' = wave string is truth
  *   Signal.segments[]   ↔  signal[i].data[]   bus label per '=' span in wave
  *   Signal.node         ↔  signal[i].node     anchor letters for edge[] arrows
  *   Signal.stepGaps[]   ↔  '|' in wave        column i is a gap column (one `|` each)
@@ -64,7 +66,14 @@ export interface Signal {
   stepGaps?: boolean[];
   /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
   stepGlitches?: boolean[];
-  /** Preserved WaveDrom wave when sub-cycle syntax (<|>) cannot be round-tripped from states[] */
+  /**
+   * When `'wave'`, `wave` is the source of truth (clock `P...`, sub-cycle `<|>`, etc.).
+   * `states[]` is a decoded render cache kept in sync via laneWaveOps.
+   */
+  laneMode?: 'states' | 'wave';
+  /** Canonical WaveDrom wave for laneMode `'wave'` lanes. */
+  wave?: string;
+  /** @deprecated Use laneMode `'wave'` and `wave`. Kept for loaded diagrams. */
   waveOverride?: string;
 }
 

@@ -7,6 +7,7 @@ import {
   DEFAULT_STEPS,
   ROW_HEIGHT,
 } from './constants';
+import { isWaveModeLane, padWaveLaneToLength } from '../wavedromBridge/laneWaveOps';
 import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
@@ -45,7 +46,11 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.states)) {
       signal.states = [];
     }
-    signal.states = padBitStatesToLength(signal.states, totalSteps);
+    if (signal.type === 'bit' && isWaveModeLane(signal)) {
+      padWaveLaneToLength(signal, totalSteps, DEFAULT_HSCALE);
+    } else {
+      signal.states = padBitStatesToLength(signal.states, totalSteps);
+    }
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
     }
