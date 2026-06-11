@@ -5,6 +5,7 @@ import {
   decodeWaveString,
   decodeWaveDetail,
   normalizeWaveString,
+  padDecodedWaveToLength,
 } from './waveStringCodec';
 import {
   toWavedromJSON,
@@ -113,6 +114,16 @@ describe('encodeWaveString / decodeWaveString', () => {
     ).toBe('0.1.....');
   });
 
+  it('padDecodedWaveToLength grow repairs broken clock before appending dots', () => {
+    const states = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n', 'n'] as const;
+    const padded = padDecodedWaveToLength(
+      { states: [...states], stepGaps: [], stepGlitches: [] },
+      11,
+    );
+    expect(encodeWaveStringForDiagram(padded.states, 11)).toBe('P..........');
+    expect(encodeWaveString([...states])).toBe('P.........');
+  });
+
   it('decodes explicit same-level repeats as glitches', () => {
     const d00 = decodeWaveDetail('00');
     expect(d00.states).toEqual(['0', '0']);
@@ -130,6 +141,33 @@ describe('encodeWaveString / decodeWaveString', () => {
     expect(
       encodeWaveString(['0', '0'], undefined, [true]),
     ).toBe('00');
+  });
+
+  it('encodes gap columns as | and |1 when level changes', () => {
+    expect(encodeWaveString(['0', '0', '0', '1'], [false, false, true, false])).toBe(
+      '0.|1',
+    );
+    expect(encodeWaveString(['0', '0', '1', '0'], [false, true, false, false])).toBe(
+      '0|10',
+    );
+  });
+
+  it('round-trips consecutive gap columns', () => {
+    const wave = '0|||';
+    const detail = decodeWaveDetail(wave);
+    expect(detail.stepGaps.filter(Boolean).length).toBe(3);
+    expect(encodeWaveString(detail.states, detail.stepGaps, detail.stepGlitches)).toBe(
+      wave,
+    );
+  });
+
+  it('round-trips mixed gaps and holds like reset_n example', () => {
+    const wave = '10|.|.|||';
+    const detail = decodeWaveDetail(wave);
+    expect(
+      encodeWaveString(detail.states, detail.stepGaps, detail.stepGlitches),
+    ).toBe(wave);
+    expect(detail.stepGaps.filter(Boolean).length).toBe(5);
   });
 
   it('round-trips waves that carry explicit glitches', () => {

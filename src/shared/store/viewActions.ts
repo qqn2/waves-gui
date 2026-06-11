@@ -1,4 +1,4 @@
-import type { BitState, PaintMode, Theme, Tool } from '../types';
+import type { BitState, PaintMode, PaintStyle, Theme, Tool } from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
 import { saveThemeSettings, themeSettingsFromView } from '../theme';
@@ -28,6 +28,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setActiveBusColorIndex'
   | 'setEdgeToolHover'
   | 'setPaintMode'
+  | 'setPaintStyle'
   | 'toggleCodePanel'
   | 'toggleRenderPanel'
   | 'setLabelWidth'
@@ -91,6 +92,12 @@ export function createViewActions(set: ImmerSet): Pick<
     setPaintMode(mode: PaintMode) {
       set((s) => {
         s.view.paintMode = mode;
+      });
+    },
+
+    setPaintStyle(style: PaintStyle) {
+      set((s) => {
+        s.view.paintStyle = style;
       });
     },
 

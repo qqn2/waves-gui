@@ -236,10 +236,10 @@ export function decodeClockWave(wave: string): DecodedWave {
     while (i < wave.length) {
       const nc = wave[i]!;
       if (nc === '.' || nc === '|') {
-        if (nc === '|' && states.length > 0) {
+        pushAt(runIdx++);
+        if (nc === '|') {
           stepGaps[states.length - 1] = true;
         }
-        pushAt(runIdx++);
         i++;
       } else {
         break;
@@ -280,17 +280,50 @@ export function encodeClockWaveString(
   const runs = scanClockRuns(states);
   if (!runs) return null;
 
+  // Reject `P.......n` — a dotted run plus a one-step orphan tail (hold-fill bug).
+  if (runs.length > 1) {
+    const tail = runs[runs.length - 1]!;
+    if (tail.end - tail.start === 1) return null;
+  }
+
   let wave = '';
   for (const run of runs) {
     wave += run.head;
     for (let k = run.start + 1; k < run.end; k++) {
       if (stepGlitches?.[k - 1]) return null;
-      wave += stepGaps?.[k - 1] ? '|' : '.';
+      wave += stepGaps?.[k] ? '|' : '.';
     }
   }
   // Reject accidental `PpNn`-style adjacent heads (invalid clock notation).
   if (/[pPnN][pPnN]/.test(wave)) return null;
   return wave;
+}
+
+/**
+ * Repair clock-only lanes that no longer encode as WaveDrom clock notation
+ * (e.g. broken alternation after a state-array slice). Preserves valid `n....p....`.
+ */
+export function repairClockLaneIfNeeded(
+  states: BitState[],
+  stepGaps?: boolean[],
+  stepGlitches?: boolean[],
+): BitState[] {
+  if (states.length === 0 || !states.every(isClockBit)) return states;
+  if (stepGlitches?.some(Boolean)) return states;
+
+  const encoded = encodeClockWaveString(states, stepGaps, stepGlitches);
+  if (encoded !== null && isRepeatingClockWave(encoded)) return states;
+  if (encoded !== null && isClockWaveString(encoded) && !stepGaps?.some(Boolean)) {
+    return states;
+  }
+
+  const copy = [...states];
+  ensureClockLaneFormat(copy);
+  const afterEnsure = encodeClockWaveString(copy, stepGaps, stepGlitches);
+  if (afterEnsure !== null && isRepeatingClockWave(afterEnsure)) return copy;
+
+  applyClockBrushToRange(copy, 0, copy.length - 1, copy[0]!);
+  return copy;
 }
 
 /** @deprecated Use encodeClockWaveString */

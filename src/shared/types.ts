@@ -6,7 +6,7 @@
  *   Signal.states[]     ↔  signal[i].wave     one char per time step (0,1,x,z,u,d,p,n,P,N,=,|,…)
  *   Signal.segments[]   ↔  signal[i].data[]   bus label per '=' span in wave
  *   Signal.node         ↔  signal[i].node     anchor letters for edge[] arrows
- *   Signal.stepGaps[]   ↔  '|' in wave        vertical gap before next column
+ *   Signal.stepGaps[]   ↔  '|' in wave        column i is a gap column (one `|` each)
  *   Signal.stepGlitches ↔  repeated char      spurious transition (e.g. "00" = glitch between steps)
  *   Signal.period/phase ↔  .period / .phase   lane stretch and horizontal shift
  *   DiagramState.edges  ↔  top-level edge[]   dependency paths (e.g. "a~>b  label")
@@ -60,7 +60,7 @@ export interface Signal {
   period?: number;
   /** WaveDrom node string — one character per step; anchors for edge[] */
   node?: string;
-  /** Gap before step i+1 when stepGaps[i] is true (WaveDrom `|` in wave) */
+  /** Column i is a WaveDrom `|` gap column (holds previous level; consecutive `||` = multiple columns) */
   stepGaps?: boolean[];
   /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
   stepGlitches?: boolean[];
@@ -116,8 +116,14 @@ import type { WavedromColorIndex } from '../wavedromBridge/wavedromColors';
 import type { Theme } from './theme';
 export type { Theme } from './theme';
 
-/** Paint tool: set value, toggle (NOT), or insert explicit glitch between steps */
-export type PaintMode = 'toggle' | 'set' | 'glitch';
+/** Paint tool: set value, toggle (NOT), glitch, or timeline gap (|) between steps */
+export type PaintMode = 'toggle' | 'set' | 'glitch' | 'gap';
+
+/**
+ * Replace — overwrite cells: paint 0 on 1 → 0, paint 0 on | → 0, paint | toggles gap on column.
+ * Additive — insert: paint | → |value (new column), paint 0 on | → |0 (value after gap).
+ */
+export type PaintStyle = 'replace' | 'additive';
 
 export interface ViewState {
   zoom: number; // 0.25–4.0, default 1.0
@@ -125,6 +131,8 @@ export interface ViewState {
   scrollY: number; // canvas vertical scroll in logical px
   selectedTool: Tool;
   paintMode: PaintMode;
+  /** Replace vs additive when painting values and gaps (Draw tool). */
+  paintStyle: PaintStyle;
   activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
   /** Label written on bus lanes when painting with the paint tool (= span) */
   activeBusLabel: string;
@@ -182,7 +190,7 @@ export interface PaintDraft {
   endStep: number; // inclusive; grows during drag
   lane: 'bit' | 'vector';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
-  apply: 'toggle' | 'set' | 'glitch'; // paint only; erase ignores
+  apply: 'toggle' | 'set' | 'glitch' | 'gap'; // paint only; erase ignores
   busLabel?: string; // vector paint: WaveDrom data[] label
   busColorFill?: string; // vector paint: WaveDrom bus fill hex
   mode: 'paint' | 'erase';

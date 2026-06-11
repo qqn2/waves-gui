@@ -5,7 +5,7 @@
  *   0 1 x z u d  — logic levels (unknown, high-Z, pull-up/down)
  *   p n P N      — clock rise/fall (see clockWave.ts for full clock encoding)
  *   =            — start/end of a bus span (pairs with data[] label)
- *   |            — gap before next column → stepGaps[]
+ *   |            — gap column (hold previous level) → stepGaps[] on that column
  *   2–9          — bus fill color index (WaveDrom palette)
  *   repeated char — same level held; duplicate at boundary → stepGlitches[] (spurious transition)
  *
@@ -20,6 +20,7 @@ import {
   isClockFallStep,
   isClockRiseStep,
   isClockWaveString,
+  repairClockLaneIfNeeded,
   scanClockRuns,
 } from './clockWave';
 
@@ -113,8 +114,13 @@ function encodeGenericWaveSegment(
     const ch = BIT_STATE_CHARS[states[i]!];
     const prevCh = BIT_STATE_CHARS[states[i - 1]!];
     const boundary = i - 1;
-    if (stepGaps?.[boundary]) {
+    if (stepGaps?.[i]) {
       wave += '|';
+      if (stepGlitches?.[boundary]) {
+        wave += ch;
+      } else if (ch !== prevCh) {
+        wave += ch;
+      }
     } else if (stepGlitches?.[boundary]) {
       wave += ch;
     } else if (ch === prevCh) {
@@ -222,9 +228,8 @@ function decodeMixedWaveDetail(wave: string): DecodedWave {
 
     switch (char) {
       case '|':
-        if (result.states.length > 0) {
-          result.stepGaps[result.states.length - 1] = true;
-        }
+        result.states.push(prev);
+        result.stepGaps[result.states.length - 1] = true;
         lastWaveChar = char;
         break;
       case '.':
@@ -308,10 +313,17 @@ export function encodeWaveString(
   stepGlitches?: boolean[],
 ): string {
   if (states.length === 0) return '';
-  const prepared =
+  let prepared =
     states.some(isClockBitState) && states.some(isBinaryLevel)
       ? normalizeMixedClockForExport(states)
       : states;
+  if (
+    prepared.every(isClockBitState) &&
+    !stepGaps?.some(Boolean) &&
+    !stepGlitches?.some(Boolean)
+  ) {
+    prepared = repairClockLaneIfNeeded(prepared, stepGaps, stepGlitches);
+  }
   const clockWave = encodeClockWaveString(prepared, stepGaps, stepGlitches);
   if (clockWave !== null) return clockWave;
 
@@ -325,17 +337,46 @@ export function padDecodedWaveToLength(
   const n = Math.max(0, totalSteps);
   if (n === 0) return { states: [], stepGaps: [], stepGlitches: [] };
 
+  if (decoded.states.length === n) {
+    const stepGaps = decoded.stepGaps ? [...decoded.stepGaps] : [];
+    while (stepGaps.length < n) stepGaps.push(false);
+    if (stepGaps.length > n) stepGaps.length = n;
+    const stepGlitches = decoded.stepGlitches ? [...decoded.stepGlitches] : [];
+    const maxBoundaries = Math.max(0, n - 1);
+    while (stepGlitches.length < maxBoundaries) stepGlitches.push(false);
+    if (stepGlitches.length > maxBoundaries) stepGlitches.length = maxBoundaries;
+    return { states: [...decoded.states], stepGaps, stepGlitches };
+  }
+
+  if (decoded.states.length > n) {
+    const clockOnly =
+      decoded.states.every(isClockBitState) && !decoded.stepGaps?.some(Boolean);
+    if (clockOnly) {
+      const repaired = repairClockLaneIfNeeded(
+        decoded.states,
+        decoded.stepGaps,
+        decoded.stepGlitches,
+      );
+      let wave = encodeWaveString(repaired, decoded.stepGaps, decoded.stepGlitches);
+      while (decodeWaveDetail(wave).states.length > n && wave.length > 0) {
+        wave = wave.slice(0, -1);
+      }
+      return padDecodedWaveToLength(decodeWaveDetail(wave), n);
+    }
+    return {
+      states: decoded.states.slice(0, n),
+      stepGaps: (decoded.stepGaps ?? []).slice(0, n),
+      stepGlitches: (decoded.stepGlitches ?? []).slice(0, Math.max(0, n - 1)),
+    };
+  }
+
   let wave = encodeWaveString(
     decoded.states,
     decoded.stepGaps,
     decoded.stepGlitches,
   );
   if (wave.length === 0) wave = '0';
-  if (wave.length < n) {
-    wave += '.'.repeat(n - wave.length);
-  } else if (wave.length > n) {
-    wave = wave.slice(0, n);
-  }
+  wave += '.'.repeat(n - decoded.states.length);
   return decodeWaveDetail(wave);
 }
 

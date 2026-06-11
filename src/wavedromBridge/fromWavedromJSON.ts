@@ -39,8 +39,9 @@ function parseVectorSegments(
   wave: string,
   data: Array<string | string[]>,
   totalSteps: number,
-): VectorSegment[] {
+): { segments: VectorSegment[]; stepGaps: boolean[] } {
   const segments: VectorSegment[] = [];
+  const stepGaps: boolean[] = [];
   let dataIdx = 0;
 
   let segStart = 0;
@@ -60,6 +61,13 @@ function parseVectorSegments(
 
   for (let i = 0; i < wave.length; i++) {
     const ch = wave[i];
+    if (ch === '|') {
+      stepGaps[i] = true;
+      continue;
+    }
+    if (ch === '.') {
+      continue;
+    }
     if (ch === 'x' || ch === 'X') {
       flushSegment(i);
       segStart = i;
@@ -91,7 +99,7 @@ function parseVectorSegments(
       value: normalizeDataLabel(data[0] ?? ''),
     });
   }
-  return segments;
+  return { segments, stepGaps };
 }
 
 function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
@@ -128,16 +136,18 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       Array.isArray(d) ? d.map(String) : String(d),
     );
     const totalSteps = wave.length;
+    const { segments, stepGaps } = parseVectorSegments(wave, rawData, totalSteps);
     return {
       id: nanoid(),
       name: sig.name ?? 'bus',
       type: 'vector',
       states: [],
-      segments: parseVectorSegments(wave, rawData, totalSteps),
+      segments,
       color: DEFAULT_SIGNAL_COLOR,
       rowHeight: ROW_HEIGHT,
       phase: sig.phase,
       period: sig.period,
+      ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
   }
@@ -174,6 +184,7 @@ function maxSteps(signals: SignalOrGroup[]): number {
           : item.states.length;
         max = Math.max(max, len);
       } else if (item.type === 'vector') {
+        max = Math.max(max, item.stepGaps?.length ?? 0);
         for (const seg of item.segments) {
           max = Math.max(max, seg.endStep);
         }
@@ -210,18 +221,23 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       else delete s.stepGaps;
       if (padded.stepGlitches.some(Boolean)) s.stepGlitches = padded.stepGlitches;
       else delete s.stepGlitches;
-      const maxBoundaries = Math.max(0, s.states.length - 1);
       if (s.stepGaps) {
-        while (s.stepGaps.length < maxBoundaries) s.stepGaps.push(false);
-        if (s.stepGaps.length > maxBoundaries) s.stepGaps.length = maxBoundaries;
+        while (s.stepGaps.length < s.states.length) s.stepGaps.push(false);
+        if (s.stepGaps.length > s.states.length) s.stepGaps.length = s.states.length;
         if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
       }
+      const maxBoundaries = Math.max(0, s.states.length - 1);
       if (s.stepGlitches) {
         while (s.stepGlitches.length < maxBoundaries) s.stepGlitches.push(false);
         if (s.stepGlitches.length > maxBoundaries) s.stepGlitches.length = maxBoundaries;
         if (!s.stepGlitches.some(Boolean)) delete s.stepGlitches;
       }
       return;
+    }
+    if (s.type === 'vector' && s.stepGaps?.length) {
+      while (s.stepGaps.length < totalSteps) s.stepGaps.push(false);
+      if (s.stepGaps.length > totalSteps) s.stepGaps.length = totalSteps;
+      if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
     }
   };
   const walk = (list: SignalOrGroup[]) => {

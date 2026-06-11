@@ -20,6 +20,11 @@ describe('signal-step4.json5', () => {
     );
     expect(clk?.stepGaps?.some(Boolean)).toBe(true);
 
+    const data = diagram.signals.find(
+      (s): s is Signal => s.type === 'vector' && s.name === 'Data',
+    );
+    expect(data?.stepGaps?.some(Boolean)).toBe(true);
+
     const back = toWavedromJSON(diagram);
     const clkWd = back.signal?.find(
       (e) => typeof e === 'object' && !Array.isArray(e) && (e as { name?: string }).name === 'clk',
