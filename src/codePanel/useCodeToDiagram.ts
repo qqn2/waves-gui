@@ -5,19 +5,19 @@ import { CODE_DEBOUNCE_MS, parseCodeToDiagram } from './codeSync';
 import { registerCodeDebounceCancel, registerCodeFlush } from './flushRegistry';
 
 export function useCodeToDiagram(onApplied?: () => void) {
-  const loadDiagram = useStore((s) => s.loadDiagram);
+  const applyDiagramEdit = useStore((s) => s.applyDiagramEdit);
   const suppressDiagramToCodeSyncRef = useRef<number | null>(null);
 
   const applyCodeToDiagram = useCallback(
     (newCode: string): string | null => {
       const result = parseCodeToDiagram(newCode);
       if (result.ok === false) return result.error;
-      loadDiagram(result.diagram);
+      applyDiagramEdit(result.diagram);
       suppressDiagramToCodeSyncRef.current = useStore.getState().view.diagramRevision;
       onApplied?.();
       return null;
     },
-    [loadDiagram, onApplied],
+    [applyDiagramEdit, onApplied],
   );
 
   const debouncedApply = useDebouncedCallback((newCode: string) => {

@@ -7,9 +7,11 @@ import {
   highlightActiveLine,
 } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
-import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { defaultKeymap } from '@codemirror/commands';
 import { linter, lintGutter } from '@codemirror/lint';
 import { validateCodeString } from './codeSync';
+import { flushPendingCodeToDiagram } from './flushRegistry';
+import { useStore } from '../shared/store';
 import styles from './CodePanel.module.css';
 
 export interface CodeEditorProps {
@@ -67,6 +69,33 @@ function editorTheme(): Extension {
   );
 }
 
+const unifiedHistoryKeymap = [
+  {
+    key: 'Mod-z',
+    run: () => {
+      flushPendingCodeToDiagram();
+      useStore.getState().undo();
+      return true;
+    },
+  },
+  {
+    key: 'Mod-y',
+    run: () => {
+      flushPendingCodeToDiagram();
+      useStore.getState().redo();
+      return true;
+    },
+  },
+  {
+    key: 'Mod-Shift-z',
+    run: () => {
+      flushPendingCodeToDiagram();
+      useStore.getState().redo();
+      return true;
+    },
+  },
+];
+
 export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -87,12 +116,11 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
-          history(),
           json(),
           jsonLinter(),
           lintGutter(),
           editorTheme(),
-          keymap.of([...defaultKeymap, ...historyKeymap]),
+          keymap.of([...unifiedHistoryKeymap, ...defaultKeymap]),
           EditorView.updateListener.of((update) => {
             if (syncingRef.current || !update.docChanged) return;
             onChangeRef.current(update.state.doc.toString());

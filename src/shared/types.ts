@@ -162,7 +162,8 @@ export interface ViewState {
   canvasColor: string | null;
   /** Body font scale (0.9–1.15). */
   uiFontScale: number;
-  isDirty: boolean; // unsaved changes
+  /** Derived cache: true when diagram differs from AppState.savedDiagram. */
+  isDirty: boolean;
   fileName: string | null;
   /** Ephemeral paint/erase preview during pointer drag — never pushed to undo history */
   paintDraft: PaintDraft | null;
@@ -211,6 +212,8 @@ export interface PaintDraft {
 
 export interface AppState {
   diagram: DiagramState;
+  /** Last confirmed save/load state; document dirtiness is derived from this snapshot. */
+  savedDiagram: DiagramState;
   view: ViewState;
   history: DiagramState[]; // undo stack (most recent last)
   future: DiagramState[]; // redo stack

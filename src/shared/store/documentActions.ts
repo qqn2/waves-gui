@@ -1,10 +1,18 @@
 import { current } from 'immer';
 import { cancelPendingCodeToDiagramDebounce } from '../../codePanel/flushRegistry';
 import { pruneUnusedNodeAnchorsAfterEdgeRemoval } from '../../wavedromBridge/nodeString';
-import type { DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
+import type { AppState, DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
-import { pushHistory } from './helpers';
+import { diagramsEqual, pushHistory } from './helpers';
+
+function resetTransientDocumentView(s: AppState & StoreActions): void {
+  s.view.scrollX = 0;
+  s.view.scrollY = 0;
+  s.view.paintDraft = null;
+  s.view.edgeAnchorPending = null;
+  s.view.edgeToolHover = null;
+}
 
 export function createEdgeActions(set: ImmerSet): Pick<
   StoreActions,
@@ -95,6 +103,8 @@ export function createEdgeActions(set: ImmerSet): Pick<
 export function createDocumentActions(set: ImmerSet): Pick<
   StoreActions,
   | 'loadDiagram'
+  | 'restoreDraft'
+  | 'applyDiagramEdit'
   | 'clearAll'
   | 'markClean'
   | 'undo'
@@ -106,13 +116,34 @@ export function createDocumentActions(set: ImmerSet): Pick<
     loadDiagram(diagram: DiagramState) {
       cancelPendingCodeToDiagramDebounce();
       set((s) => {
+        const normalized = normalizeDiagram(diagram);
+        s.view.diagramRevision += 1;
+        s.history = [];
+        s.future = [];
+        s.diagram = normalized;
+        s.savedDiagram = normalizeDiagram(normalized);
+        s.view.isDirty = false;
+        resetTransientDocumentView(s);
+      });
+    },
+
+    restoreDraft(diagram: DiagramState) {
+      cancelPendingCodeToDiagramDebounce();
+      set((s) => {
         s.view.diagramRevision += 1;
         s.history = [];
         s.future = [];
         s.diagram = normalizeDiagram(diagram);
-        s.view.isDirty = false;
-        s.view.scrollX = 0;
-        s.view.scrollY = 0;
+        resetTransientDocumentView(s);
+      });
+    },
+
+    applyDiagramEdit(diagram: DiagramState) {
+      set((s) => {
+        const normalized = normalizeDiagram(diagram);
+        if (diagramsEqual(current(s.diagram), normalized)) return;
+        pushHistory(s);
+        s.diagram = normalized;
         s.view.paintDraft = null;
         s.view.edgeAnchorPending = null;
         s.view.edgeToolHover = null;
@@ -128,6 +159,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
 
     markClean(fileName) {
       set((s) => {
+        s.savedDiagram = normalizeDiagram(current(s.diagram));
         s.view.isDirty = false;
         s.view.fileName = fileName;
       });

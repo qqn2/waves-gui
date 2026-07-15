@@ -1,6 +1,7 @@
 import type { WdRoot } from '../wavedromBridge/wdTypes';
 import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { useStore } from '../shared/store';
+import { forgetCurrentFileHandle } from './FileOperations';
 
 export interface SampleLeaf {
   kind: 'sample';
@@ -191,6 +192,7 @@ export async function loadSampleDiagram(sampleId: string): Promise<void> {
     }
     useStore.getState().loadDiagram(fromWavedromJSON(json as WdRoot));
     useStore.getState().markClean(sample.file);
+    forgetCurrentFileHandle();
   } catch {
     window.alert('Could not load sample diagram');
   }
