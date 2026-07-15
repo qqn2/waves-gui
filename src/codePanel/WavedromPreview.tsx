@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
 import styles from './CodePanel.module.css';
 
 const SKIN_LOADERS: Record<string, () => Promise<unknown>> = {
@@ -34,8 +35,11 @@ export function WavedromPreview({ code, error }: WavedromPreviewProps) {
         const skinMod = await (SKIN_LOADERS[skinName] ?? SKIN_LOADERS.default!)();
         const skin = (skinMod as { default?: unknown }).default ?? skinMod;
         if (cancelled) return;
-        el.replaceChildren();
-        WaveDrom.renderWaveElement(0, parsed, el, skin, false);
+        const staging = document.createElement('div');
+        WaveDrom.renderWaveElement(0, parsed, staging, skin, false);
+        sanitizeDetachedSvg(staging);
+        if (cancelled) return;
+        el.replaceChildren(...Array.from(staging.childNodes));
       } catch {
         if (!cancelled) el.replaceChildren();
       }

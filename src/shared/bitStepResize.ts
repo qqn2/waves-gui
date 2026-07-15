@@ -24,7 +24,7 @@ function hasGapColumns(sig: Signal): boolean {
 }
 
 /** Clock-bearing lanes always grow/shrink via wave `.` — never hold-fill state push. */
-function useWaveStepResize(sig: Signal): boolean {
+function shouldUseWaveStepResize(sig: Signal): boolean {
   return isWaveModeLane(sig) || !hasGapColumns(sig) || sig.states.some(isClockBitState);
 }
 
@@ -40,7 +40,7 @@ export function resizeBitSignalToLength(
     prevDiagramLen !== undefined ? newLen - prevDiagramLen : newLen - sig.states.length;
   if (delta === 0 && sig.states.length === newLen) return;
 
-  if (useWaveStepResize(sig)) {
+  if (shouldUseWaveStepResize(sig)) {
     mutateBitWave(sig, (wave) => resizeWaveByDelta(wave, delta, newLen), newLen);
     return;
   }
@@ -65,7 +65,7 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   const n = sig.states.length;
   const at = Math.max(0, Math.min(index, n));
 
-  if (useWaveStepResize(sig)) {
+  if (shouldUseWaveStepResize(sig)) {
     mutateBitWave(
       sig,
       (wave) => (at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at)),
@@ -91,7 +91,7 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
   const n = sig.states.length;
   const at = Math.max(0, Math.min(index, n - 1));
 
-  if (useWaveStepResize(sig)) {
+  if (shouldUseWaveStepResize(sig)) {
     const wave = getBitLaneWave(sig);
     if (wave.length === 0) return false;
     const waveAt = Math.min(at, wave.length - 1);
