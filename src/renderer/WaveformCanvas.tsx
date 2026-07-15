@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useStore } from '../shared/store';
-import { CELL_WIDTH } from '../shared/constants';
 import { CanvasRenderer } from './CanvasRenderer';
 import { hitTest, type HitTestResult } from './hitTest';
 import { buildRowLayout, totalContentHeight } from './rowLayout';
+import { diagramLogicalWidth } from './laneTiming';
 
 /** Optional scroll bridge from shell (Track H); kept local to avoid importing shell/. */
 export interface CanvasScrollSync {
@@ -137,7 +137,7 @@ export function WaveformCanvas({
       const rows = buildRowLayout(diagram.signals);
       const contentLogicalH = totalContentHeight(rows);
       const maxY = Math.max(0, contentLogicalH * view.zoom - viewportH);
-      const contentLogicalW = diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
+      const contentLogicalW = diagramLogicalWidth(diagram) * diagram.config.hscale;
       const maxX = Math.max(
         0,
         contentLogicalW * view.zoom - viewportW,
@@ -150,9 +150,7 @@ export function WaveformCanvas({
       });
     },
     [
-      diagram.signals,
-      diagram.config.totalSteps,
-      diagram.config.hscale,
+      diagram,
       view.zoom,
       view.scrollX,
       view.scrollY,

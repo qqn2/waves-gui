@@ -13,17 +13,17 @@ describe('toggleBinaryBitState', () => {
     expect(toggleBinaryBitState('1')).toBe('0');
   });
 
-  it('inverts clock phase (rise↔fall), not P↔N', () => {
+  it('inverts clock phase and preserves arrow visibility', () => {
     expect(toggleBinaryBitState('p')).toBe('n');
-    expect(toggleBinaryBitState('P')).toBe('n');
+    expect(toggleBinaryBitState('P')).toBe('N');
     expect(toggleBinaryBitState('n')).toBe('p');
-    expect(toggleBinaryBitState('N')).toBe('p');
+    expect(toggleBinaryBitState('N')).toBe('P');
   });
 
-  it('preserves alternation when toggling a clock pattern', () => {
-    const before = ['P', 'n', 'P', 'n'] as const;
+  it('toggles clock cycles independently', () => {
+    const before = ['P', 'P', 'p', 'p'] as const;
     const after = before.map((s) => toggleBinaryBitState(s));
-    expect(after).toEqual(['n', 'p', 'n', 'p']);
+    expect(after).toEqual(['N', 'N', 'n', 'n']);
   });
 
   it('leaves x, z, u, d, and hold paint unchanged', () => {
@@ -51,7 +51,7 @@ describe('isClockBitState', () => {
 
 describe('invertClockBitState', () => {
   it('maps rise to fall and fall to rise', () => {
-    expect(invertClockBitState('P')).toBe('n');
-    expect(invertClockBitState('N')).toBe('p');
+    expect(invertClockBitState('P')).toBe('N');
+    expect(invertClockBitState('N')).toBe('P');
   });
 });

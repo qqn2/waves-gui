@@ -1,106 +1,73 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyClockBrushToRange,
   applyClockToggleToRange,
   decodeClockWave,
-  decodeExpandedClockWave,
   encodeClockWaveString,
-  encodeRepeatingClockWave,
   isClockWaveString,
   isRepeatingClockWave,
-  repairClockLaneIfNeeded,
   scanClockRuns,
 } from './clockWave';
 import { decodeWaveDetail, encodeWaveString, padBitStatesToLength } from './waveStringCodec';
 
 describe('clockWave', () => {
-  it('detects clock wave strings', () => {
+  it('accepts repeating clocks and adjacent clock-head changes', () => {
     expect(isRepeatingClockWave('P........')).toBe(true);
     expect(isClockWaveString('n...p...')).toBe(true);
+    expect(isClockWaveString('Pn.pN')).toBe(true);
     expect(isClockWaveString('01')).toBe(false);
   });
 
-  it('expands P... into alternating P/n steps', () => {
-    const { states } = decodeClockWave('P...');
-    expect(states).toEqual(['P', 'n', 'P', 'n']);
+  it('decodes each WaveDrom character as one complete clock cycle', () => {
+    expect(decodeClockWave('P...').states).toEqual(['P', 'P', 'P', 'P']);
+    expect(decodeClockWave('n...').states).toEqual(['n', 'n', 'n', 'n']);
   });
 
-  it('expands n... into alternating n/p steps', () => {
-    const { states } = decodeClockWave('n...');
-    expect(states).toEqual(['n', 'p', 'n', 'p']);
-  });
-
-  it('decodes phase change as n...p... not pnPn', () => {
+  it('preserves clock phase changes without manufacturing alternating columns', () => {
     const { states } = decodeClockWave('n...p...');
-    expect(states).toEqual(['n', 'p', 'n', 'p', 'p', 'n', 'p', 'n']);
+    expect(states).toEqual(['n', 'n', 'n', 'n', 'p', 'p', 'p', 'p']);
     expect(encodeClockWaveString(states)).toBe('n...p...');
   });
 
-  it('round-trips single-run clock through codec', () => {
+  it('round-trips a positive-edge arrow clock', () => {
     const wave = 'P........';
-    const { states, stepGaps } = decodeWaveDetail(wave);
-    expect(states[0]).toBe('P');
-    expect(states[1]).toBe('n');
-    expect(encodeWaveString(states, stepGaps)).toBe(wave);
+    const decoded = decodeWaveDetail(wave);
+    expect(decoded.states.every((state) => state === 'P')).toBe(true);
+    expect(encodeWaveString(decoded.states, decoded.stepGaps)).toBe(wave);
   });
 
-  it('collapses painted alternating clock to dotted wave string', () => {
-    const states = ['P', 'n', 'P', 'n', 'P', 'n'] as const;
-    expect(encodeRepeatingClockWave([...states])).toBe('P.....');
+  it('encodes identical cycles with dots and explicit phase changes with heads', () => {
+    expect(encodeClockWaveString(['P', 'P', 'P', 'P'])).toBe('P...');
+    expect(encodeClockWaveString(['P', 'P', 'N', 'N'])).toBe('P.N.');
+    expect(scanClockRuns(['n', 'n', 'p', 'p'])).toHaveLength(2);
   });
 
-  it('collapses two phase runs into n...p...', () => {
-    const states = ['n', 'p', 'n', 'p', 'p', 'n', 'p', 'n'] as const;
-    const runs = scanClockRuns([...states]);
-    expect(runs).toHaveLength(2);
-    expect(encodeClockWaveString([...states])).toBe('n...p...');
+  it('does not rewrite valid adjacent clock heads', () => {
+    const states = ['P', 'n', 'P', 'n'] as const;
+    expect(encodeClockWaveString([...states])).toBe('PnPn');
   });
 
-  it('rejects non-alternating clock for collapse', () => {
-    expect(encodeClockWaveString(['P', 'p', 'N', 'n'])).toBe(null);
+  it('paints only the requested clock cycles', () => {
+    const states = decodeClockWave('P.....').states;
+    applyClockBrushToRange(states, 2, 3, 'n');
+    expect(states).toEqual(['P', 'P', 'n', 'n', 'P', 'P']);
+    expect(encodeClockWaveString(states)).toBe('P.n.P.');
   });
 
-  it('repairClockLaneIfNeeded restores dotted clock encoding', () => {
-    const broken = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n', 'n'] as const;
-    expect(encodeClockWaveString([...broken])).toBe(null);
-    const repaired = repairClockLaneIfNeeded([...broken]);
-    expect(encodeClockWaveString(repaired)).toBe('P.........');
+  it('toggles only the selected cycle and preserves arrow style', () => {
+    const states = decodeClockWave('P........').states;
+    applyClockToggleToRange(states, 2, 2);
+    expect(states[1]).toBe('P');
+    expect(states[2]).toBe('N');
+    expect(states[3]).toBe('P');
+    expect(encodeClockWaveString(states)).toBe('P.NP.....');
   });
 
-  it('rejects P.......n orphan-tail encoding', () => {
-    const tailOrphan = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n'] as const;
-    expect(encodeClockWaveString([...tailOrphan])).toBe(null);
-    expect(encodeWaveString([...tailOrphan])).toBe('P........');
-  });
-
-  it('repairs expanded pnpn import to dotted form on export', () => {
-    const decoded = decodeExpandedClockWave('pnpnpnpn');
-    expect(decoded?.states).toEqual(['p', 'n', 'p', 'n', 'p', 'n', 'p', 'n']);
-    expect(encodeWaveString(decoded!.states)).toBe('p.......');
-  });
-
-  it('applyClockToggleToRange on one step inverts the whole run', () => {
-    const states = [...decodeClockWave('P........').states];
-    applyClockToggleToRange(states, 0, 0);
-    expect(states[0]).toBe('n');
-    expect(states[1]).toBe('p');
-    expect(encodeClockWaveString(states)).toBe('n........');
-  });
-
-  it('applyClockToggleToRange only toggles runs touched by the range', () => {
-    const states = [...decodeClockWave('n...p...').states];
-    const headBefore = states.slice(0, 4);
-    const tailBefore = states.slice(4, 8);
-    applyClockToggleToRange(states, 4, 5);
-    expect(states.slice(0, 4)).toEqual(headBefore);
-    expect(states.slice(4, 8)).not.toEqual(tailBefore);
-    expect(encodeClockWaveString(states)).not.toBe('n...p...');
-  });
-
-  it('padBitStatesToLength preserves toggled clock after applyClockToggleToRange', () => {
-    const states = [...decodeClockWave('P........').states];
-    applyClockToggleToRange(states, 0, 0);
-    const padded = padBitStatesToLength(states, states.length);
-    expect(padded[0]).toBe('n');
-    expect(encodeClockWaveString(padded)).toBe('n........');
+  it('padding preserves a locally toggled clock cycle', () => {
+    const states = decodeClockWave('P...').states;
+    applyClockToggleToRange(states, 1, 1);
+    const padded = padBitStatesToLength(states, 6);
+    expect(padded).toEqual(['P', 'N', 'P', 'P', 'P', 'P']);
+    expect(encodeClockWaveString(padded)).toBe('PNP...');
   });
 });

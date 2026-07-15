@@ -20,7 +20,8 @@ import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
-import { clockStepEndY, clockStepSvg } from '../renderer/drawClock';
+import { clockCycleEndY, clockCycleSvg } from '../renderer/drawClock';
+import { stepLogicalX, stepLogicalXEnd } from '../renderer/laneTiming';
 import { svgStepGap } from '../renderer/drawStepGap';
 import {
   appendGlitchToSvgPath,
@@ -74,7 +75,6 @@ function svgBitSignal(
   hscale: number,
   axisOffset: number,
 ): string {
-  const cellW = CELL_WIDTH * hscale;
   const tw = TRANSITION_WIDTH * hscale;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
@@ -99,8 +99,8 @@ function svgBitSignal(
 
   for (let i = 0; i < totalSteps; i++) {
     const st = states[i] ?? '0';
-    const x = i * cellW;
-    const nextX = (i + 1) * cellW;
+    const x = stepLogicalX(signal, i) * hscale;
+    const nextX = stepLogicalXEnd(signal, i) * hscale;
 
     if (signal.stepGaps?.[i]) {
       flushPath();
@@ -112,8 +112,8 @@ function svgBitSignal(
 
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
-      parts.push(...clockStepSvg(st, x, nextX, yHigh, yLow, color));
-      prevY = clockStepEndY(st, yHigh, yLow);
+      parts.push(...clockCycleSvg(st, x, nextX, yHigh, yLow, color));
+      prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
     }
 
@@ -183,7 +183,6 @@ function svgVectorSignal(
   hscale: number,
   axisOffset: number,
 ): string {
-  const cellW = CELL_WIDTH * hscale;
   const d = BUS_DIAGONAL * hscale;
   const yMid = axisOffset + rowY + rowH / 2;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
@@ -193,8 +192,8 @@ function svgVectorSignal(
   const parts: string[] = [];
 
   for (const seg of signal.segments) {
-    const x1 = seg.startStep * cellW;
-    const x2 = seg.endStep * cellW;
+    const x1 = stepLogicalX(signal, seg.startStep) * hscale;
+    const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * hscale;
     const span = x2 - x1;
     const unknown = isVectorUnknownValue(seg.value);
     const stroke = esc(segmentBusStroke(seg, signal));

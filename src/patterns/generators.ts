@@ -63,29 +63,15 @@ function stepsToSegments(
 
 // ── Bit patterns ──────────────────────────────────────────────────────────────
 
-/** Rising-edge clock: 1,0,1,0,... with optional period, phase, and initial level. */
+/** WaveDrom clock cycles; period and phase are stored as lane timing metadata. */
 export function clockPattern(opts: {
   totalSteps: number;
   period?: number;
   phase?: number;
   initialValue?: '0' | '1';
 }): BitState[] {
-  const { totalSteps, period = 2, phase = 0, initialValue = '1' } = opts;
-  const cycle = Math.max(1, period);
-  const phaseShift = Math.round(phase * cycle) % cycle;
-  const highDuration = Math.max(1, Math.floor(cycle / 2));
-
-  const states: BitState[] = [];
-  for (let i = 0; i < totalSteps; i++) {
-    const pos = (i + phaseShift) % cycle;
-    const high = pos < highDuration;
-    states.push(high ? '1' : '0');
-  }
-
-  if (initialValue === '0') {
-    return states.map((s) => (s === '1' ? '0' : '1'));
-  }
-  return states;
+  const { totalSteps, initialValue = '1' } = opts;
+  return new Array<BitState>(totalSteps).fill(initialValue === '0' ? 'N' : 'P');
 }
 
 /** Synchronous reset: asserted for the first N steps, then deasserted. */

@@ -16,13 +16,13 @@ import {
   HSCALE_STEP,
   MAX_HSCALE,
   MIN_HSCALE,
-  CELL_WIDTH,
   TIME_AXIS_HEIGHT,
   MIN_ZOOM,
   MAX_ZOOM,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
 import { measureHeadFoot } from '../renderer/renderHeadFoot';
+import { diagramLogicalWidth } from '../renderer/laneTiming';
 import { ThemeMenu } from './ThemeMenu';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import { ToolbarAddSignalMenu } from './toolbar/ToolbarAddSignalMenu';
@@ -87,8 +87,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
     const canvasHeight = canvas.clientHeight;
     if (canvasWidth <= 0 || canvasHeight <= 0) return;
 
-    const { totalSteps, hscale } = diagram.config;
-    const contentW = totalSteps * CELL_WIDTH * hscale;
+    const contentW = diagramLogicalWidth(diagram) * diagram.config.hscale;
 
     const rows = buildRowLayout(diagram.signals);
     const contentH = totalContentHeight(rows);

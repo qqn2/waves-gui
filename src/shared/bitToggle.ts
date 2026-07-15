@@ -27,17 +27,18 @@ export function isClockBitState(st: BitState): boolean {
 }
 
 /**
- * Invert clock phase at one step: rising↔falling (p/P→n, n/N→p).
- * Does not swap P↔N (that swaps edge kind + arrow and breaks the waveform).
+ * Invert one WaveDrom clock cycle while preserving whether edge arrows are shown.
  */
 export function invertClockBitState(st: BitState): BitState {
-  if (st === 'p' || st === 'P') return 'n';
-  if (st === 'n' || st === 'N') return 'p';
+  if (st === 'p') return 'n';
+  if (st === 'P') return 'N';
+  if (st === 'n') return 'p';
+  if (st === 'N') return 'P';
   return st;
 }
 
 /**
- * Paint-tool toggle: 0↔1; clock rise↔fall; x/z/u/d unchanged.
+ * Paint-tool toggle: 0↔1; clock-cycle phase p↔n and P↔N; x/z/u/d unchanged.
  */
 export function toggleBinaryBitState(st: BitState): BitState {
   if (st === '1') return '0';

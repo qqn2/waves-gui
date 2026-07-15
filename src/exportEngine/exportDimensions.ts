@@ -1,6 +1,7 @@
 import type { DiagramState, ViewState } from '../shared/types';
-import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
+import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
+import { diagramLogicalWidth } from '../renderer/laneTiming';
 
 export interface ExportDimensions {
   labelWidth: number;
@@ -19,8 +20,7 @@ export function computeExportDimensions(
   const rows = buildRowLayout(diagram.signals);
   const contentH = totalContentHeight(rows);
   const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
-  const waveformWidth =
-    diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
+  const waveformWidth = diagramLogicalWidth(diagram) * diagram.config.hscale;
   const waveformHeight = contentH + axisOffset;
   return {
     labelWidth: view.labelWidth,

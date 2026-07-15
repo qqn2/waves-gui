@@ -7,11 +7,11 @@ import type {
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
-import { canvasCellWidth } from './coordinates';
 import type { HitTestResult } from './hitTest';
 import { findSignal } from '../shared/store';
 import { toggleBinaryBitState } from '../shared/bitToggle';
 import type { BitState } from '../shared/types';
+import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 
 export interface PointerMarkerProps {
   hit: HitTestResult | null;
@@ -34,20 +34,25 @@ export function PointerMarker({
   const row = rows.find((r) => r.id === hit.signalId);
   if (!row || row.type === 'group') return null;
 
-  const cellW = canvasCellWidth(diagram.config.hscale, view.zoom);
+  let targetSignal: import('../shared/types').Signal | null = null;
+  findSignal(diagram.signals, hit.signalId, (signal) => {
+    targetSignal = signal;
+  });
+  if (!targetSignal) return null;
+  const scale = diagram.config.hscale * view.zoom;
+  const left = stepLogicalX(targetSignal, hit.step) * scale - view.scrollX;
+  const cellW =
+    (stepLogicalXEnd(targetSignal, hit.step) - stepLogicalX(targetSignal, hit.step)) * scale;
   const axis = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
   const { headHeight } = measureHeadFoot(diagram.config);
   const waveformTop = axis + headHeight;
-  const left = hit.step * cellW - view.scrollX;
   const top = row.y * view.zoom - view.scrollY + waveformTop;
   const height = row.height * view.zoom;
 
   let signalName = hit.signalId;
   let current: BitState | null = null;
-  findSignal(diagram.signals, hit.signalId, (s) => {
-    signalName = s.name;
-    if (s.type === 'bit' && hit.step !== null) current = s.states[hit.step];
-  });
+  signalName = targetSignal.name;
+  if (targetSignal.type === 'bit') current = targetSignal.states[hit.step];
 
   const paintHint =
     hit.signalType === 'bit' && current !== null

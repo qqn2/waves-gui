@@ -51,6 +51,11 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
 
     if (def.signalKind === 'bit') {
       applyBitPatternToSignal(signalId, preview as BitState[]);
+      if (selectedId === 'clock') {
+        const { setSignalPeriod, setSignalPhase } = useStore.getState();
+        setSignalPeriod(signalId, fieldNum(cfg, 'period'));
+        setSignalPhase(signalId, fieldNum(cfg, 'phase'));
+      }
     } else {
       applyVectorPatternToSignal(signalId, preview as VectorSegment[]);
     }
@@ -82,6 +87,11 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
     if (!selectedSignal || !canApplyToSelected) return;
     if (def.signalKind === 'bit') {
       applyBitPatternToSignal(selectedSignal.id, preview as BitState[]);
+      if (selectedId === 'clock') {
+        const { setSignalPeriod, setSignalPhase } = useStore.getState();
+        setSignalPeriod(selectedSignal.id, fieldNum(cfg, 'period'));
+        setSignalPhase(selectedSignal.id, fieldNum(cfg, 'phase'));
+      }
     } else {
       applyVectorPatternToSignal(selectedSignal.id, preview as VectorSegment[]);
     }

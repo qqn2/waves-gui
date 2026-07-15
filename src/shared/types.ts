@@ -3,7 +3,7 @@
  *
  * WaveDrom JSON mapping (encode/decode lives in src/wavedromBridge/):
  *
- *   Signal.states[]     ↔  signal[i].wave     one char per time step (0,1,x,z,u,d,p,n,P,N,=,|,…)
+ *   Signal.states[]     ↔  signal[i].wave     one char per time step; p/n/P/N are full clock cycles
  *   Signal.wave         ↔  signal[i].wave     canonical when laneMode is 'wave' (clocks, sub-cycles)
  *   Signal.laneMode     ↔  (internal)         'states' = per-step cache is truth; 'wave' = wave string is truth
  *   Signal.segments[]   ↔  signal[i].data[]   bus label per '=' span in wave
@@ -50,7 +50,7 @@ export interface Signal {
   id: string;
   name: string;
   type: 'bit' | 'vector' | 'spacer';
-  /** Bit signals: one entry per time step. Length always equals DiagramConfig.totalSteps */
+  /** Bit signals: one entry per time step. Clock entries represent a complete WaveDrom cycle. */
   states: BitState[];
   /** Vector signals: non-overlapping segments covering all steps */
   segments: VectorSegment[];

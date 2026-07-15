@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clockArrowPoints } from './drawClock';
+import { clockArrowPoints, clockCycleEndY, clockCycleSvg } from './drawClock';
 
 describe('clockArrowPoints', () => {
   it('places posedge arrow on the vertical midpoint pointing up', () => {
@@ -20,5 +20,20 @@ describe('clockArrowPoints', () => {
     expect(tipY).toBeGreaterThan(yMid);
     expect(y1).toBeLessThan(yMid);
     expect(y2).toBeLessThan(yMid);
+  });
+});
+
+describe('clockCycleSvg', () => {
+  it('draws both edges inside one positive clock column', () => {
+    const svg = clockCycleSvg('P', 0, 40, 10, 30, '#48f').join('');
+    expect(svg).toContain('M0,30 L0,10 L20,10 L20,30 L40,30');
+    expect(svg).toContain('<polygon');
+    expect(clockCycleEndY('P', 10, 30)).toBe(30);
+  });
+
+  it('draws both edges inside one negative clock column', () => {
+    const svg = clockCycleSvg('N', 0, 40, 10, 30, '#48f').join('');
+    expect(svg).toContain('M0,10 L0,30 L20,30 L20,10 L40,10');
+    expect(clockCycleEndY('N', 10, 30)).toBe(10);
   });
 });

@@ -77,7 +77,7 @@ export function ToolbarPaintSection({
       </button>
       <button
         type="button"
-        title="Toggle (NOT) — 0↔1; clock rise↔fall (p/P→n, n/N→p); x/z unchanged"
+        title="Toggle (NOT) — 0↔1; clock phase p↔n and P↔N; x/z unchanged"
         className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('toggle')}
         aria-pressed={paintMode === 'toggle'}
