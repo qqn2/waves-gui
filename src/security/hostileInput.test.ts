@@ -28,6 +28,33 @@ function assertInertSvg(svg: string): void {
 }
 
 describe('hostile labels remain inert', () => {
+  it('preserves safe bundled skin CSS and rejects active or remote CSS', async () => {
+    const svg = await renderWavedromSvg({ signal: [{ name: 'clk', wave: 'P...' }] });
+    const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+    expect(doc.querySelector('style')?.textContent).toContain('.s1{fill:none;stroke:#000');
+
+    const root = document.createElement('div');
+    const svgRoot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const safeStyle = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    safeStyle.textContent = '.safe { fill: #fff; stroke: #000 }';
+    const unsafeStyle = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    unsafeStyle.textContent = '@import url(https://example.invalid/evil.css)';
+    const safePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    safePath.setAttribute('class', 'safe');
+    safePath.setAttribute('style', 'fill:#fff;marker-end:url(#arrowhead)');
+    const unsafePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    unsafePath.setAttribute('style', 'fill:url(https://example.invalid/evil.svg)');
+    svgRoot.append(safeStyle, unsafeStyle, safePath, unsafePath);
+    root.append(svgRoot);
+    const { sanitizeDetachedSvg } = await import('./sanitizeSvg');
+    sanitizeDetachedSvg(root);
+    expect(root.querySelectorAll('style')).toHaveLength(1);
+    expect(root.querySelector('path.safe')?.getAttribute('style')).toBe(
+      'fill:#fff;marker-end:url(#arrowhead)',
+    );
+    expect(root.querySelectorAll('path')[1]?.hasAttribute('style')).toBe(false);
+  });
+
   it.each(payloads)('escapes exported SVG label: %s', (payload) => {
     const diagram = defaultDiagram();
     diagram.signals[0]!.name = payload;
