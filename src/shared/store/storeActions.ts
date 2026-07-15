@@ -111,6 +111,8 @@ export interface StoreActions {
 
   // ── Document ──
   loadDiagram(diagram: DiagramState): void;
+  restoreDraft(diagram: DiagramState): void;
+  applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
   markClean(fileName: string): void;
   undo(): void;

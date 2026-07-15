@@ -136,8 +136,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
           setFileOpen((o) => !o);
         }}
         onClose={() => setFileOpen(false)}
-        diagram={diagram}
-        view={view}
         onExport={onExport}
       />
 

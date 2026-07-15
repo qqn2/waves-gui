@@ -5,6 +5,7 @@ import type { DiagramState } from '../shared/types';
 import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
 import { recordRecentFile } from './soloDesk/recentFiles';
+import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
 
 type FilePickerWindow = Window & {
   showOpenFilePicker?: (options?: {
@@ -15,6 +16,24 @@ type FilePickerWindow = Window & {
     types?: { description: string; accept: Record<string, string[]> }[];
   }) => Promise<FileSystemFileHandle>;
 };
+
+let retainedFileHandle: FileSystemFileHandle | null = null;
+
+export function forgetCurrentFileHandle(): void {
+  retainedFileHandle = null;
+}
+
+async function writeDiagramToHandle(
+  handle: FileSystemFileHandle,
+  blob: Blob,
+): Promise<void> {
+  const writable = await handle.createWritable();
+  await writable.write(blob);
+  await writable.close();
+  useStore.getState().markClean(handle.name);
+  clearDraft();
+  recordRecentFile(handle.name);
+}
 
 function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -47,6 +66,7 @@ export async function openDiagramFile(): Promise<void> {
       }
       useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
       useStore.getState().markClean(handle.name);
+      retainedFileHandle = handle;
       recordRecentFile(handle.name);
       return;
     } catch (e) {
@@ -72,6 +92,7 @@ export async function openDiagramFile(): Promise<void> {
         else {
           useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
           useStore.getState().markClean(file.name);
+          forgetCurrentFileHandle();
           recordRecentFile(file.name);
         }
       } catch {
@@ -91,6 +112,16 @@ export async function saveDiagramFile(
   const json = JSON.stringify(toWavedromJSON(diagram), null, 2);
   const blob = new Blob([json], { type: 'application/json' });
 
+  if (retainedFileHandle) {
+    try {
+      await writeDiagramToHandle(retainedFileHandle, blob);
+      return;
+    } catch {
+      // A revoked or unavailable handle falls through to Save As/download.
+      forgetCurrentFileHandle();
+    }
+  }
+
   if (w.showSaveFilePicker) {
     try {
       const handle = await w.showSaveFilePicker({
@@ -102,12 +133,8 @@ export async function saveDiagramFile(
           },
         ],
       });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-      useStore.getState().markClean(handle.name);
-      clearDraft();
-      recordRecentFile(handle.name);
+      await writeDiagramToHandle(handle, blob);
+      retainedFileHandle = handle;
       return;
     } catch (e) {
       if ((e as DOMException).name === 'AbortError') return;
@@ -119,15 +146,21 @@ export async function saveDiagramFile(
   a.download = existingName ?? 'diagram.json';
   a.click();
   URL.revokeObjectURL(a.href);
-  useStore.getState().markClean(a.download);
-  clearDraft();
-  recordRecentFile(a.download);
+  // A download click is only a request: the browser may block or cancel it.
+  // Keep the document dirty and preserve recovery data until a confirmed write.
+}
+
+export async function saveCurrentDiagramFile(): Promise<void> {
+  flushPendingCodeToDiagram();
+  const { diagram, view } = useStore.getState();
+  await saveDiagramFile(diagram, view.fileName);
 }
 
 export function newDiagramFile(): void {
   const { view, loadDiagram } = useStore.getState();
   if (view.isDirty && !window.confirm('Discard unsaved changes?')) return;
   loadDiagram(createDefaultDiagram());
+  forgetCurrentFileHandle();
   clearDraft();
   useStore.setState((s) => {
     s.view.fileName = null;

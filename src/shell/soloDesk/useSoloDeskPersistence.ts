@@ -15,7 +15,7 @@ const RESTORE_CONFIRM_MESSAGE =
  */
 export function useSoloDeskPersistence(): void {
   const diagram = useStore((s) => s.diagram);
-  const loadDiagram = useStore((s) => s.loadDiagram);
+  const restoreDraft = useStore((s) => s.restoreDraft);
   const [autosaveEnabled, setAutosaveEnabled] = useState(false);
   const restoreCheckedRef = useRef(false);
 
@@ -39,7 +39,7 @@ export function useSoloDeskPersistence(): void {
           const shouldRestore =
             isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
           if (shouldRestore) {
-            loadDiagram(draft);
+            restoreDraft(draft);
           }
         }
       }
@@ -53,7 +53,7 @@ export function useSoloDeskPersistence(): void {
     }
 
     setAutosaveEnabled(true);
-  }, [loadDiagram]);
+  }, [restoreDraft]);
 
   useEffect(() => {
     if (!autosaveEnabled) {

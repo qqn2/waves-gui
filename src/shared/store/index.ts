@@ -13,7 +13,8 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { AppState } from '../types';
 import type { StoreActions } from './storeActions';
-import { defaultDiagram, defaultView } from './helpers';
+import { defaultDiagram, defaultView, isDocumentDirty } from './helpers';
+import { normalizeDiagram } from '../normalizeDiagram';
 import { loadThemeSettings } from '../theme';
 import { createSignalActions } from './signalActions';
 import { createEdgeActions, createDocumentActions } from './documentActions';
@@ -24,14 +25,18 @@ export {
   clearStepGlitchesTouchingRange,
   findSignal,
   findGroup,
+  diagramsEqual,
+  isDocumentDirty,
   pushHistory,
 } from './helpers';
 
 export const useStore = create<AppState & StoreActions>()(
   immer((set) => {
     const storedTheme = loadThemeSettings();
+    const diagram = defaultDiagram();
     return {
-      diagram: defaultDiagram(),
+      diagram,
+      savedDiagram: normalizeDiagram(diagram),
       view: {
         ...defaultView(),
         theme: storedTheme.theme,
@@ -49,3 +54,17 @@ export const useStore = create<AppState & StoreActions>()(
     };
   }),
 );
+
+// Reconcile the compatibility cache after every document/savepoint mutation.
+// Subscriptions run synchronously, so consumers never observe stale dirtiness.
+useStore.subscribe((state, previous) => {
+  if (
+    state.diagram === previous.diagram
+    && state.savedDiagram === previous.savedDiagram
+  ) return;
+  const isDirty = isDocumentDirty(state);
+  if (state.view.isDirty === isDirty) return;
+  useStore.setState((draft) => {
+    draft.view.isDirty = isDirty;
+  });
+});

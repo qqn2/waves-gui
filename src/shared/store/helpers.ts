@@ -15,6 +15,16 @@ export function pushHistory(state: AppState): void {
   state.view.diagramRevision += 1;
 }
 
+export function diagramsEqual(a: DiagramState, b: DiagramState): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+export function isDocumentDirty(
+  state: Pick<AppState, 'diagram' | 'savedDiagram'>,
+): boolean {
+  return !diagramsEqual(state.diagram, state.savedDiagram);
+}
+
 export function defaultDiagram(): DiagramState {
   return createDefaultDiagram();
 }

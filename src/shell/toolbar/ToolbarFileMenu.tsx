@@ -1,17 +1,13 @@
 import { loadRecentFiles } from '../soloDesk/recentFiles';
 import { loadSampleDiagram } from '../samples';
 import { SampleLibraryMenu } from './SampleLibraryMenu';
-import { newDiagramFile, openDiagramFile, saveDiagramFile } from '../FileOperations';
-import type { DiagramState } from '../../shared/types';
-import type { ViewState } from '../../shared/types';
+import { newDiagramFile, openDiagramFile, saveCurrentDiagramFile } from '../FileOperations';
 import styles from '../shell.module.css';
 
 export interface ToolbarFileMenuProps {
   open: boolean;
   onToggle: () => void;
   onClose: () => void;
-  diagram: DiagramState;
-  view: ViewState;
   onExport: () => void;
 }
 
@@ -19,8 +15,6 @@ export function ToolbarFileMenu({
   open,
   onToggle,
   onClose,
-  diagram,
-  view,
   onExport,
 }: ToolbarFileMenuProps) {
   const recentFiles = open ? loadRecentFiles() : [];
@@ -42,7 +36,7 @@ export function ToolbarFileMenu({
             <button
               type="button"
               onClick={() => {
-                void saveDiagramFile(diagram, view.fileName);
+                void saveCurrentDiagramFile();
                 onClose();
               }}
             >

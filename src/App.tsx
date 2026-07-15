@@ -3,6 +3,7 @@ import {
   AppLayout,
   StatusBar,
   Toolbar,
+  saveCurrentDiagramFile,
   type AppLayoutPaneContext,
 } from './shell';
 import { TimeAxisContextMenu } from './shell/TimeAxisContextMenu';
@@ -68,6 +69,7 @@ function IntegratedCanvas({
         scrollSync={scrollSync}
         onPointerEvent={onPointerEvent}
         onContextMenu={onContextMenu}
+        onKeyboardFocusHit={onHoverHit}
       />
       {selectionOverlay ? (
         <div
@@ -138,6 +140,16 @@ function CanvasWithMarker({
 
 function App() {
   useSoloDeskPersistence();
+
+  useEffect(() => {
+    const onSaveShortcut = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return;
+      event.preventDefault();
+      void saveCurrentDiagramFile();
+    };
+    window.addEventListener('keydown', onSaveShortcut, { capture: true });
+    return () => window.removeEventListener('keydown', onSaveShortcut, { capture: true });
+  }, []);
 
   const showCodePanel = useStore((s) => s.view.showCodePanel);
   const showRenderPanel = useStore((s) => s.view.showRenderPanel);

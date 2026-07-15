@@ -10,6 +10,7 @@ const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'G / | / T', action: 'Glitch / timeline gap / toggle mode' },
   { keys: '1 / 0 / P / N / Z / X', action: 'Primary paint values' },
   { keys: 'Ctrl+Z / Ctrl+Y', action: 'Undo / redo' },
+  { keys: 'Ctrl+S', action: 'Save to the opened file, or Save As' },
   { keys: 'Ctrl+A', action: 'Select all signals' },
   { keys: 'Del / Backspace', action: 'Clear steps or remove selected rows' },
   { keys: 'Esc', action: 'Cancel drag or edge placement' },
