@@ -70,6 +70,7 @@ export class CanvasRenderer {
     view: ViewState,
     canvasWidth: number,
     canvasHeight: number,
+    pixelRatio = 1,
   ): void {
     const transform: ViewTransform = {
       zoom: view.zoom,
@@ -89,7 +90,7 @@ export class CanvasRenderer {
       view.selectedTool === 'timespan';
 
     this.ctx.save();
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     this.ctx.fillStyle =
       getComputedStyle(document.documentElement).getPropertyValue('--bg-canvas').trim() ||

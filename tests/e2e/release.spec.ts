@@ -53,6 +53,73 @@ test('keeps signal names aligned with their waveform rows', async ({ page }) => 
   expect(Math.abs(firstSignalBox!.y - canvasBox!.y - 48)).toBeLessThanOrEqual(1);
 });
 
+test('keeps waveform pixels aligned at fractional Windows display scaling', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      get: () => 1.25,
+    });
+  });
+  await page.reload();
+
+  const geometry = await page.evaluate(() => {
+    const canvas = document.querySelector('canvas');
+    const label = document.querySelector<HTMLElement>('[title="clk"]')?.parentElement;
+    if (!canvas || !label) throw new Error('waveform geometry unavailable');
+    const canvasRect = canvas.getBoundingClientRect();
+    const labelRect = label.getBoundingClientRect();
+    const ratio = canvas.width / canvas.clientWidth;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('2D context unavailable');
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const rowTop = Math.floor((labelRect.top - canvasRect.top) * ratio);
+    const rowBottom = Math.ceil((labelRect.bottom - canvasRect.top) * ratio);
+    let minBlueY = Number.POSITIVE_INFINITY;
+    let maxBlueY = Number.NEGATIVE_INFINITY;
+    for (let y = Math.max(0, rowTop); y < Math.min(canvas.height, rowBottom); y += 1) {
+      for (let x = 0; x < canvas.width; x += 1) {
+        const i = (y * canvas.width + x) * 4;
+        const r = pixels[i] ?? 0;
+        const g = pixels[i + 1] ?? 0;
+        const b = pixels[i + 2] ?? 0;
+        if (b > 160 && b > r * 1.4 && b > g * 1.25) {
+          minBlueY = Math.min(minBlueY, y);
+          maxBlueY = Math.max(maxBlueY, y);
+        }
+      }
+    }
+    return {
+      ratio,
+      labelCenter: (labelRect.top + labelRect.bottom) / 2,
+      waveCenter: canvasRect.top + (minBlueY + maxBlueY) / (2 * ratio),
+    };
+  });
+
+  expect(geometry.ratio).toBeCloseTo(1.25, 1);
+  expect(Math.abs(geometry.labelCenter - geometry.waveCenter)).toBeLessThanOrEqual(1.5);
+});
+
+test('uses consistent toolbar control sizes and a readable skin selector', async ({ page }) => {
+  const squareControls = [
+    page.locator('button[title^="Draw (D)"]'),
+    page.locator('button[title^="Erase"]'),
+    page.locator('button[title^="Pointer"]'),
+    page.locator('button[title^="WaveDrom edge arrow"]'),
+    page.locator('button[title^="WaveDrom timespan"]'),
+  ];
+  const boxes = await Promise.all(squareControls.map((control) => control.boundingBox()));
+  for (const box of boxes) {
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeCloseTo(28, 3);
+    expect(box!.height).toBeCloseTo(28, 3);
+  }
+
+  const skinBox = await page.getByLabel('WaveDrom skin').boundingBox();
+  expect(skinBox).not.toBeNull();
+  expect(skinBox!.height).toBeCloseTo(28, 3);
+  expect(skinBox!.width).toBeGreaterThanOrEqual(80);
+});
+
 test('synchronizes JSON, supports undo/redo, and restores the local draft', async ({ page }) => {
   await replaceJson(page, editedDiagram);
   await expect(page.getByTitle('safe_bus')).toBeVisible();
