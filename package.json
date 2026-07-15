@@ -1,7 +1,7 @@
 {
-  "name": "wavedrom-gui-editor",
+  "name": "waves-gui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Client-only visual editor for WaveDrom-compatible timing diagrams.",
   "type": "module",
   "license": "MIT",
