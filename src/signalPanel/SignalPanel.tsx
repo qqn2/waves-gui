@@ -7,7 +7,7 @@ import {
   type RefObject,
 } from 'react';
 import { useStore } from '../shared/store';
-import { getWaveformTopInsetPx } from '../renderer/renderHeadFoot';
+import { getSignalRowsTopInsetPx } from '../renderer/renderHeadFoot';
 import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
@@ -122,9 +122,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const zoom = useStore((s) => s.view.zoom);
   const scrollY = useStore((s) => s.view.scrollY);
   const config = useStore((s) => s.diagram.config);
-  const showTimeAxis = useStore((s) => s.view.showTimeAxis);
   const totalSteps = config.totalSteps;
-  const waveformTopInset = getWaveformTopInsetPx(config, showTimeAxis);
+  const signalRowsTopInset = getSignalRowsTopInsetPx(config);
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const addSignal = useStore((s) => s.addSignal);
   const duplicateSignal = useStore((s) => s.duplicateSignal);
@@ -305,7 +304,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
       >
         <div
           className={styles.scrollInner}
-          style={{ paddingTop: waveformTopInset }}
+          style={{ paddingTop: signalRowsTopInset }}
         >
         {renderTree(
           filteredSignals,

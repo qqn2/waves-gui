@@ -5,11 +5,8 @@ import { clearDraft, isDiagramEmpty, loadDraft, saveDraft } from './localDraft';
 
 const DRAFT_DEBOUNCE_MS = 1000;
 
-const RESTORE_CONFIRM_MESSAGE =
-  'An unsaved draft was found. Restore it and replace the current diagram?';
-
 /**
- * Autosaves diagram drafts, offers restore on mount, and guards tab close when dirty.
+ * Autosaves diagram drafts, restores the latest recovery state on mount, and guards tab close.
  *
  * Call {@link recordRecentFile} from FileOperations after a successful open or save.
  */
@@ -34,14 +31,7 @@ export function useSoloDeskPersistence(): void {
       if (draft) {
         if (isDiagramEmpty(draft)) {
           clearDraft();
-        } else {
-          const current = useStore.getState().diagram;
-          const shouldRestore =
-            isDiagramEmpty(current) || window.confirm(RESTORE_CONFIRM_MESSAGE);
-          if (shouldRestore) {
-            restoreDraft(draft);
-          }
-        }
+        } else restoreDraft(draft);
       }
     } catch (err) {
       console.warn('[soloDesk] draft restore failed', err);
