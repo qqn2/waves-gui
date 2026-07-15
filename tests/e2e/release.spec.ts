@@ -15,8 +15,7 @@ async function replaceJson(page: Page, json: string): Promise<void> {
   await editor.click();
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+A' : 'Control+A');
   await page.keyboard.insertText(json);
-  await page.getByRole('button', { name: /Undo/ }).click();
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(500);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -46,13 +45,150 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   await page.getByLabel('More steps').click();
-  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+z' : 'Control+z');
   await expect(steps).toHaveValue(before);
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
   await expect(steps).toHaveValue(String(Number(before) + 1));
 
   await page.reload();
   await expect(page.getByTitle('safe_bus')).toBeVisible();
+});
+
+test('raw JSON edits are dirty and participate in unified undo/redo', async ({ page }) => {
+  await replaceJson(page, editedDiagram);
+  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+z' : 'Control+z');
+  await expect(page.getByTitle('safe_bus')).toHaveCount(0);
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+});
+
+test('dirty state follows the confirmed savepoint across undo', async ({ page }) => {
+  await page.evaluate(() => {
+    Object.defineProperty(window, 'showSaveFilePicker', {
+      configurable: true,
+      value: async () => ({
+        name: 'saved.json',
+        createWritable: async () => ({
+          write: async () => undefined,
+          close: async () => undefined,
+        }),
+      }),
+    });
+  });
+  await replaceJson(page, editedDiagram);
+  await page.getByRole('button', { name: /File/ }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+
+  await page.getByLabel('More steps').click();
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByTitle('safe_bus')).toHaveCount(0);
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+});
+
+test('Open retains its file handle and Ctrl+S writes back without Save As', async ({ page }) => {
+  await page.evaluate(() => {
+    const testWindow = window as typeof window & {
+      __writes?: number;
+      __saveAsCalls?: number;
+    };
+    testWindow.__writes = 0;
+    testWindow.__saveAsCalls = 0;
+    const source = JSON.stringify({ signal: [{ name: 'opened_handle', wave: '01..' }] });
+    Object.defineProperty(window, 'showOpenFilePicker', {
+      configurable: true,
+      value: async () => [{
+        name: 'opened.json',
+        getFile: async () => new File([source], 'opened.json', { type: 'application/json' }),
+        createWritable: async () => ({
+          write: async () => { testWindow.__writes = (testWindow.__writes ?? 0) + 1; },
+          close: async () => undefined,
+        }),
+      }],
+    });
+    Object.defineProperty(window, 'showSaveFilePicker', {
+      configurable: true,
+      value: async () => {
+        testWindow.__saveAsCalls = (testWindow.__saveAsCalls ?? 0) + 1;
+        throw new DOMException('cancelled', 'AbortError');
+      },
+    });
+  });
+
+  await page.getByRole('button', { name: /File/ }).click();
+  await page.getByRole('button', { name: /Open/ }).click();
+  await expect(page.getByTitle('opened_handle')).toBeVisible();
+  await page.getByLabel('More steps').click();
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+s' : 'Control+s');
+
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (
+    window as typeof window & { __writes?: number }
+  ).__writes)).toBe(1);
+  expect(await page.evaluate(() => (
+    window as typeof window & { __saveAsCalls?: number }
+  ).__saveAsCalls)).toBe(0);
+});
+
+test('invalid JSON never mutates the diagram or history', async ({ page }) => {
+  const steps = page.getByLabel('Diagram step count');
+  const before = await steps.inputValue();
+  const editor = page.locator('.cm-content');
+  await editor.click();
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+A' : 'Control+A');
+  await page.keyboard.insertText('{"signal": [');
+  await page.waitForTimeout(500);
+
+  await expect(page.getByText('Invalid JSON syntax', { exact: true })).toBeVisible();
+  await expect(page.getByTitle('clk')).toBeVisible();
+  await expect(steps).toHaveValue(before);
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByTitle('clk')).toBeVisible();
+  await expect(steps).toHaveValue(before);
+});
+
+test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {
+  await page.evaluate(() => {
+    Object.defineProperty(window, 'showSaveFilePicker', {
+      configurable: true,
+      value: undefined,
+    });
+  });
+  await replaceJson(page, editedDiagram);
+  await page.waitForTimeout(1_200);
+  const draftBefore = await page.evaluate(() => localStorage.getItem('wavedrom-gui-draft'));
+  expect(draftBefore).not.toBeNull();
+
+  await page.getByRole('button', { name: /File/ }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await downloadPromise;
+
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('wavedrom-gui-draft'))).toBe(draftBefore);
+});
+
+test('waveform cells expose keyboard focus and position status', async ({ page }) => {
+  const canvas = page.getByRole('grid', { name: /Waveform editor/ });
+  await canvas.focus();
+  await expect(canvas).toHaveAttribute('aria-label', /clk, step 1 of/i);
+  await page.keyboard.press('ArrowRight');
+  await expect(canvas).toHaveAttribute('aria-label', /clk, step 2 of/i);
+  await page.keyboard.press('ArrowDown');
+  await expect(canvas).toHaveAttribute('aria-label', /reset_n, step 2 of/i);
+  await expect(page.locator('.pointerMarkerLabel')).toContainText('reset_n');
 });
 
 for (const format of ['json', 'svg', 'png'] as const) {
