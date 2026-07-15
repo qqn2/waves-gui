@@ -44,6 +44,15 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
+test('keeps signal names aligned with their waveform rows', async ({ page }) => {
+  const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
+  const firstSignalBox = await page.getByTitle('clk').locator('..').boundingBox();
+
+  expect(canvasBox).not.toBeNull();
+  expect(firstSignalBox).not.toBeNull();
+  expect(Math.abs(firstSignalBox!.y - canvasBox!.y - 48)).toBeLessThanOrEqual(1);
+});
+
 test('synchronizes JSON, supports undo/redo, and restores the local draft', async ({ page }) => {
   await replaceJson(page, editedDiagram);
   await expect(page.getByTitle('safe_bus')).toBeVisible();
@@ -58,8 +67,15 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
   await expect(steps).toHaveValue(String(Number(before) + 1));
 
+  const recoveryDialogs: string[] = [];
+  page.on('dialog', (dialog) => {
+    if (dialog.message().includes('Restore it and replace the current diagram')) {
+      recoveryDialogs.push(dialog.message());
+    }
+  });
   await page.reload();
   await expect(page.getByTitle('safe_bus')).toBeVisible();
+  expect(recoveryDialogs).toEqual([]);
 });
 
 test('raw JSON edits are dirty and participate in unified undo/redo', async ({ page }) => {

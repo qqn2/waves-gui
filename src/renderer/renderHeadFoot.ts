@@ -191,3 +191,8 @@ export function getWaveformTopInsetPx(
   const { headHeight } = measureHeadFoot(config);
   return axis + headHeight;
 }
+
+/** SignalPanel's filter bar occupies the same vertical band as the time axis. */
+export function getSignalRowsTopInsetPx(config: DiagramConfig): number {
+  return measureHeadFoot(config).headHeight;
+}

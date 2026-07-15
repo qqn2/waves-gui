@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { buildStepLabels, measureHeadFoot } from './renderHeadFoot';
+import {
+  buildStepLabels,
+  getSignalRowsTopInsetPx,
+  getWaveformTopInsetPx,
+  measureHeadFoot,
+} from './renderHeadFoot';
 
 describe('measureHeadFoot', () => {
   it('returns zero when head and foot are absent', () => {
@@ -38,5 +43,18 @@ describe('buildStepLabels', () => {
 
   it('filters labels with every', () => {
     expect(buildStepLabels(0, 2, 5)).toEqual(['0', '', '2', '', '4']);
+  });
+});
+
+describe('signal panel alignment', () => {
+  it('uses the filter bar as the time-axis band instead of counting it twice', () => {
+    const config = {
+      totalSteps: 10,
+      hscale: 1,
+      head: { text: 'Clock and reset' },
+    };
+
+    expect(getWaveformTopInsetPx(config, true)).toBe(48);
+    expect(getSignalRowsTopInsetPx(config)).toBe(24);
   });
 });
