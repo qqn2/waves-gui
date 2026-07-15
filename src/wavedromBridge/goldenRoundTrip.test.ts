@@ -8,7 +8,7 @@ import {
 } from './index';
 import type { WdRoot } from './wdTypes';
 
-const goldenDir = join(process.cwd(), 'public', 'golden');
+const goldenDir = join(process.cwd(), 'tests', 'fixtures', 'golden');
 
 function signalNames(diagram: ReturnType<typeof fromWavedromJSON>): string[] {
   const names: string[] = [];

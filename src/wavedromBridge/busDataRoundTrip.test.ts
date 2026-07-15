@@ -6,7 +6,7 @@ import { segmentsToWaveAndData } from '../shared/vectorSegments';
 import type { WdRoot, WdSignal } from './wdTypes';
 import type { Signal } from '../shared/types';
 
-const goldenDir = join(process.cwd(), 'public', 'golden');
+const goldenDir = join(process.cwd(), 'tests', 'fixtures', 'golden');
 
 /** WaveDrom: one data[] entry per bus-start character (= or 2–9 after idle). */
 export function countBusDataSlots(wave: string): number {

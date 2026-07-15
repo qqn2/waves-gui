@@ -1,106 +1,81 @@
-# WaveDrom GUI Editor
+# waves-gui
 
-Browser-based timing diagram editor: paint waveforms on a canvas, keep WaveDrom JSON in sync, save files locally. **Client-only** — no server or database.
+A browser-based timing-diagram editor: paint waveforms on a canvas, keep WaveDrom-compatible JSON synchronized, and export JSON, SVG, PNG, or JPEG. The application is client-only—there is no server, database, account, or cloud synchronization.
 
-## Solo desk scope
+> This is an independent community project and is not affiliated with or endorsed by WaveDrom or its maintainers.
 
-Built for **one engineer at a desk**: open a diagram from the repo, edit, save JSON next to RTL or docs. Version control and sharing are handled by **Git**, not by this app.
+## Scope
 
-| In scope | Out of scope |
-|----------|----------------|
-| Open / Save / New, export PNG/SVG/JSON | Backend, API, Postgres, auth |
-| Paint, erase, toggle (NOT), undo | Team libraries, cloud sync |
-| Live JSON editor + samples | VCD |
+waves-gui is built for one engineer at a desk. Open or create a diagram, edit it locally, save it beside RTL or documentation, and let Git handle versioning and sharing. A backend, authentication, collaborative libraries, VCD support, and real-time collaboration are intentionally out of scope.
 
 ## Quick start
 
-From the project folder, run `make` to see commands. Typical flow:
-
 ```bash
-make install   # first time only
-make dev       # editor at http://localhost:5173 — stop with Ctrl+C
+npm ci
+npm run dev
 ```
 
-To ship a static copy: `make build` (creates `dist/`). Try it locally with `make preview`.
+Open `http://localhost:5173`. A production build is created with `npm run build` and can be inspected with `npm run preview`.
 
-Before sharing changes: `make check` (runs tests and build).
+## Privacy
 
-**Windows:** use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) and run the commands above, or use `npm install` / `npm run dev` / `npm test` / `npm run build` in PowerShell if Node is installed.
+- Diagram editing and rendering happen in the browser. The app has no analytics and does not send diagrams to WaveDrom or any other remote service.
+- For crash recovery, the complete current diagram is automatically stored in this browser's `localStorage`. Recent file **names** are stored there too.
+- This browser-local data does not synchronize to another browser or device. It disappears when site data is cleared.
+- Do not use shared browser profiles for confidential work. Clear this site's data after use on a shared machine.
 
-```bash
-make test      # vitest only
-make check     # test + production build
-```
+The former “Web” action was removed because putting a complete diagram in a third-party query URL could expose it through browser history, clipboard history, intermediary systems, or server logs.
 
 ## Architecture
 
-```
-  File / JSON editor          Canvas + tools
-         │                           │
-         ▼                           ▼
-   wavedromBridge  ◄────►  DiagramState  ◄── Zustand store (src/shared/store/)
-   (import/export)              │
-                                ▼
-                          CanvasRenderer
-                          (draw only — no JSON parsing)
+```text
+File / JSON editor <-> wavedromBridge <-> DiagramState <-> Zustand store
+                                                |
+                                                v
+                                         CanvasRenderer
 ```
 
-| Layer | Folder | Role |
-|-------|--------|------|
-| **Document** | `src/shared/types.ts`, `store/` | `DiagramState` = what gets saved (signals, steps, edges, config) |
-| **View** | `store/` → `ViewState` | Zoom, scroll, active tool, paint color — **not** saved to file |
-| **Bridge** | `src/wavedromBridge/` | **Only** place that reads/writes WaveDrom JSON (`wave`, `data[]`, `edge[]`, `node`, …) |
-| **Renderer** | `src/renderer/` | Draws `DiagramState` on `<canvas>`; hit-test maps mouse → signal + step |
-| **Tools** | `src/tools/` | Pointer events → store actions (paint, erase, edges) |
-| **UI shell** | `src/shell/`, `signalPanel/`, `codePanel/` | Layout, toolbar, JSON editor, file I/O |
+- `src/shared/` contains the document model and store.
+- `src/wavedromBridge/` is the only layer that parses or emits WaveDrom JSON.
+- `src/renderer/` and `src/tools/` implement canvas drawing, hit testing, and editing.
+- `src/codePanel/` contains the lazy-loaded CodeMirror editor and local WaveDrom preview.
+- `src/shell/` provides file operations, layout, autosave, and recent filenames.
+- `src/exportEngine/` creates downloadable JSON and inert, escaped image output.
 
-### WaveDrom field mapping
+## Development and tests
 
-Internal names vs WaveDrom JSON (encode/decode in `wavedromBridge/`):
+```bash
+npm run lint          # static checks
+npm test              # unit, integration, and security tests
+npm run test:security # hostile-label tests only
+npm run build         # TypeScript + Vite + runtime license bundle
+npm run check         # complete non-browser release gate
+npm run test:e2e      # Chromium and Firefox deployment flows
+```
 
-| Internal (`DiagramState`) | WaveDrom JSON | Meaning |
-|---------------------------|---------------|---------|
-| `Signal.states[]` | `signal[i].wave` | One character per time step for bit lanes |
-| `Signal.segments[]` | `signal[i].data[]` | Bus labels per span (`=` in wave marks spans) |
-| `Signal.node` | `signal[i].node` | Anchor letters (A–Z) for dependency arrows |
-| `Signal.stepGaps[]` | `\|` in `wave` | Vertical gap before next column |
-| `Signal.stepGlitches[]` | repeated char in `wave` (e.g. `00`) | Spurious transition between steps |
-| `Signal.period`, `phase` | `signal[i].period`, `.phase` | Lane timing stretch / shift |
-| `DiagramState.edges[]` | top-level `edge[]` | Dependency arrows (`a~>b`, optional label) |
-| `DiagramConfig.head/foot` | `head`, `foot` | Title, tick/tock labels |
+Install browser binaries once with `npx playwright install chromium firefox`. See [CONTRIBUTING.md](CONTRIBUTING.md) for engineering rules and disclosure hygiene.
 
-### Undo and code sync
+## Deployment
 
-- Diagram edits call `pushHistory()` in the store (snapshot before mutation).
-- **Not** undoable: zoom, scroll, tool selection, `paintDraft` (live drag preview).
-- Canvas edits must **flush** the JSON editor first (`codeFlush.ts` / `flushRegistry.ts`) so code and canvas never fight.
+The repository defines an assets-only Cloudflare Worker in `wrangler.jsonc`; it has no Worker script or backend. `public/_headers` is copied into the build and supplies the production security policy.
 
-### Key source files
+Manual deployment:
 
-1. `src/shared/types.ts` — domain model
-2. `src/shared/store/` — all mutations (`store/index.ts`)
-3. `src/wavedromBridge/waveStringCodec.ts` — `wave` string encode/decode
-4. `src/renderer/CanvasRenderer.ts` — draw pipeline
-5. `src/tools/useToolHandler.ts` — pointer → tool routing
+```bash
+npm ci
+npm run deploy
+```
 
-## Project layout
+For Cloudflare dashboard/Git deployment, import this GitHub repository as a Worker, use `npm run build` as the build command, and `dist` as the asset directory. Keep the checked-in Wrangler configuration as the deployment source of truth. Verify `/`, `/licenses/THIRD_PARTY_NOTICES.txt`, a nonexistent SPA route, and the response headers after every deployment.
 
-| Path | Role |
-|------|------|
-| `src/shared/` | Types, Zustand store, theme |
-| `src/renderer/` | Canvas + hit test |
-| `src/wavedromBridge/` | WaveDrom JSON import/export |
-| `src/tools/` | Paint, erase, edge tools |
-| `src/signalPanel/` | Left label column |
-| `src/codePanel/` | CodeMirror JSON editor |
-| `src/shell/` | Toolbar, layout, file I/O |
-| `src/exportEngine/` | PNG / SVG / JSON export |
-| `src/patterns/` | Predefined waveform templates |
-| `public/samples/` | Example diagrams |
+Clipboard image export requires HTTPS (or localhost). Blob-based downloads and the local SVG preview are permitted by the checked-in CSP; network connections, framing, camera, microphone, location, and other unnecessary capabilities are denied.
 
-## Further reading
+## Security reporting
 
-| Document | Purpose |
-|----------|---------|
-| [`agent.md`](./agent.md) | Scope, WaveDrom feature checklist, coding rules, build history |
-| [`docs/wavedrom-ref/`](docs/wavedrom-ref/) | Vendored WaveJSON notes and upstream fixtures |
+Please report vulnerabilities privately through [GitHub Security Advisories](https://github.com/qqn2/waves-gui/security/advisories/new). Do not open a public issue with a vulnerability, confidential diagram, proprietary signal name, credential, or internal screenshot. See [SECURITY.md](SECURITY.md).
+
+## Licensing and attribution
+
+Original project code is available under the [MIT License](LICENSE). Runtime dependency copyright and license texts are generated deterministically in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and are shipped under `/licenses/` in every production build. Vendored WaveDrom and `wavedrom/schema` reference fixtures are attributed in `docs/wavedrom-ref/SOURCES.md`.
+
+WaveDrom compatibility is a file-format and rendering integration; it does not imply affiliation, endorsement, or ownership of the WaveDrom project or name.
