@@ -31,6 +31,14 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   });
   await page.reload();
   await expect(page.locator('canvas')).toBeVisible();
+  const preview = page.getByText('WaveDrom render (local)', { exact: true })
+    .locator('..')
+    .locator('svg');
+  await expect(preview).toBeVisible();
+  await expect(preview.locator('style')).toContainText('.s1{fill:none;stroke:#000');
+  expect(await preview.locator('.s5').first().evaluate((element) => (
+    getComputedStyle(element).fill
+  ))).toBe('rgb(255, 255, 255)');
   await expect(page.getByRole('button', { name: 'Web', exact: true })).toHaveCount(0);
   await expect(page.locator('a[href*="wavedrom.com/editor"]')).toHaveCount(0);
   expect(errors).toEqual([]);
@@ -222,7 +230,8 @@ test('hostile labels stay text in the local preview', async ({ page }) => {
   }, null, 2);
   await replaceJson(page, hostile);
   await expect(page.getByText('<script>window.pwned=1</script>', { exact: true }).first()).toBeVisible();
-  await expect(page.locator('.preview script, .preview foreignObject, .preview image')).toHaveCount(0);
+  const previewRoot = page.getByText('WaveDrom render (local)', { exact: true }).locator('..');
+  await expect(previewRoot.locator('script, foreignObject, image')).toHaveCount(0);
   expect(await page.evaluate(() => (window as typeof window & { pwned?: number }).pwned)).toBeUndefined();
 });
 
