@@ -313,7 +313,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       <button
         type="button"
         className={styles.toolBtn}
-        title="Keyboard shortcuts"
+        title="Help and keyboard shortcuts"
         onClick={() => setShortcutOpen(true)}
       >
         ?
