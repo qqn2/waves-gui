@@ -290,7 +290,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
       <label className={styles.hscaleField} title="WaveDrom config.skin">
         <span className={styles.hscaleLabel}>Skin</span>
         <select
-          className={styles.hscaleInput}
+          className={`${styles.hscaleInput} ${styles.skinSelect}`}
+          aria-label="WaveDrom skin"
           value={diagramSkin ?? 'default'}
           onChange={(e) => {
             const v = e.target.value;

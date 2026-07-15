@@ -350,6 +350,7 @@
 }
 
 .toolbar {
+  --toolbar-control-height: 28px;
   display: flex;
   align-items: center;
   gap: 3px;
@@ -368,8 +369,13 @@
 .toolBtn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 4px 8px;
+  box-sizing: border-box;
+  min-width: var(--toolbar-control-height);
+  height: var(--toolbar-control-height);
+  padding: 0 8px;
+  line-height: 1;
   font-size: 12px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -380,6 +386,11 @@
 
 .toolBtn:hover {
   border-color: var(--accent);
+}
+
+.toolBtn:has(> svg:only-child) {
+  width: var(--toolbar-control-height);
+  padding: 0;
 }
 
 .toolActive {
@@ -829,9 +840,11 @@
 
 .hscaleInput,
 .hscaleSelect {
+  box-sizing: border-box;
   width: 3.25rem;
+  height: var(--toolbar-control-height, 28px);
   font-size: 12px;
-  padding: 2px 4px;
+  padding: 0 4px;
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg-canvas);
@@ -841,6 +854,12 @@
 .hscaleSelect {
   width: auto;
   min-width: 3.25rem;
+}
+
+.skinSelect {
+  width: 5.25rem;
+  min-width: 5.25rem;
+  padding-right: 1.5rem;
 }
 
 .headFootRow {

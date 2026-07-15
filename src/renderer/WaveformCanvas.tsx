@@ -47,7 +47,13 @@ export function WaveformCanvas({
     if (!ctx) return;
     if (!rendererRef.current) rendererRef.current = new CanvasRenderer(ctx);
     const latest = renderStateRef.current;
-    rendererRef.current.draw(latest.diagram, latest.view, canvas.width, canvas.height);
+    rendererRef.current.draw(
+      latest.diagram,
+      latest.view,
+      canvas.clientWidth,
+      canvas.clientHeight,
+      window.devicePixelRatio || 1,
+    );
   }, [canvasRef]);
 
   useEffect(() => {
@@ -61,7 +67,6 @@ export function WaveformCanvas({
       canvas.height = Math.floor(rect.height * dpr);
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         rendererRef.current = new CanvasRenderer(ctx);
       }
       redraw();
