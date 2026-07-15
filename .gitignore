@@ -9,9 +9,23 @@ lerna-debug.log*
 
 node_modules
 dist
+.npm-cache
+test-results
+playwright-report
+blob-report
 .run
 dist-ssr
 *.local
+.wrangler
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# Internal agent handoffs are not part of the public project.
+agent.md
+Agent-QC.md
+AGENT_TASKS.md
 
 # Editor directories and files
 .vscode/*

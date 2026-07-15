@@ -39,6 +39,8 @@ for f in signal-step4.json5 signal-arcs.json5 signal-arcs1.json5 reg-vl.json5 as
 done
 ```
 
-## License
+## License and attribution
 
-WaveDrom is FOSS; see upstream [LICENSE](https://github.com/wavedrom/wavedrom/blob/trunk/LICENSE). Vendored text is for engineering reference only.
+WaveDrom source and the upstream fixtures are copyright their respective contributors and distributed under the MIT License. The complete WaveDrom license text is preserved in the generated root `THIRD_PARTY_NOTICES.md` and shipped in `public/licenses/THIRD_PARTY_NOTICES.txt`.
+
+`WaveJSON.md` is derived from the [`wavedrom/schema`](https://github.com/wavedrom/schema) project. That repository is MIT-licensed; its copyright and license text are included in the generated notices through the runtime WaveDrom package and the source link is retained here for provenance.
