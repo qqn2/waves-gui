@@ -3,8 +3,6 @@ import { setNodeCharAt } from '../../wavedromBridge/nodeString';
 import {
   applyClockBrushToRange,
   applyClockToggleToRange,
-  isClockFallStep,
-  isClockRiseStep,
 } from '../../wavedromBridge/clockWave';
 import {
   clampHscale,
@@ -16,7 +14,6 @@ import {
 import {
   applyDecodedEditToLane,
   clearWaveMode,
-  isRepeatingClockLane,
   isSubcycleWaveLane,
   isWaveModeLane,
 } from '../../wavedromBridge/laneWaveOps';
@@ -60,39 +57,26 @@ function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   }
 }
 
-function canDeleteStepAt(signals: SignalOrGroup[], at: number): boolean {
-  let blocked = false;
-  walkSignals(signals, (sig) => {
-    if (sig.type !== 'vector') return;
-    for (const seg of sig.segments) {
-      if (
-        seg.startStep <= at &&
-        seg.endStep > at &&
-        seg.endStep - seg.startStep <= 1
-      ) {
-        blocked = true;
-      }
-    }
-  });
-  return !blocked;
-}
-
-function deleteDiagramStepAt(
-  signals: SignalOrGroup[],
-  edges: string[],
-  at: number,
-  total: number,
-): boolean {
-  if (!canDeleteStepAt(signals, at)) return false;
-  walkSignals(signals, (sig) => {
-    deleteStepInSignal(sig, at, total, MIN_TOTAL_STEPS);
-  });
-  clearNodesAndEdges(signals, edges);
-  return true;
-}
-
 function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
-  if (sig.type !== 'bit' || isWaveModeLane(sig)) return;
+  if (sig.type !== 'bit') return;
+  if (isWaveModeLane(sig)) {
+    applyDecodedEditToLane(sig, (decoded) => {
+      for (let i = lo; i <= hi; i++) {
+        const current = decoded.states[i] ?? '0';
+        decoded.states[i] =
+          current === 'p' || current === 'P'
+            ? '0'
+            : current === 'n' || current === 'N'
+              ? '1'
+              : i > 0
+                ? decoded.states[i - 1]!
+                : '0';
+        if (i > 0) decoded.stepGlitches[i - 1] = false;
+        decoded.stepGlitches[i] = false;
+      }
+    }, sig.states.length);
+    return;
+  }
   demoteWaveLaneOnStatesEdit(sig);
   for (let i = lo; i <= hi; i++) {
     sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
@@ -121,9 +105,6 @@ function applyBitStateInRange(
         decoded.states[lo] = bitState;
       } else {
         for (let i = lo; i <= hi; i++) decoded.states[i] = bitState;
-        if (decoded.states.some(isClockBitState)) {
-          normalizeBinaryPaintOnClockLane(decoded.states, lo, hi, bitState);
-        }
       }
     }, len);
     return;
@@ -140,33 +121,6 @@ function applyBitStateInRange(
     sig.states[lo] = bitState;
   } else {
     for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
-    if (sig.states.some(isClockBitState)) {
-      normalizeBinaryPaintOnClockLane(sig.states, lo, hi, bitState);
-    }
-  }
-}
-
-/** Collapse redundant clock fall edges when painting explicit 0/1 into a clock lane. */
-function normalizeBinaryPaintOnClockLane(
-  states: BitState[],
-  lo: number,
-  hi: number,
-  bitState: BitState,
-): void {
-  if (bitState !== '0' && bitState !== '1') return;
-  for (let i = lo; i <= hi; i++) {
-    if (bitState === '0') {
-      if (i > 0 && isClockFallStep(states[i - 1]!)) {
-        states[i - 1] = '0';
-      }
-      if (
-        i + 2 < states.length &&
-        isClockFallStep(states[i + 1]!) &&
-        isClockRiseStep(states[i + 2]!)
-      ) {
-        states[i + 1] = '0';
-      }
-    }
   }
 }
 
@@ -463,13 +417,6 @@ export function createSignalActions(set: ImmerSet): Pick<
                 decoded.states[i] = bitState;
               }
             }
-            if (
-              !isHoldPaintValue(bitState) &&
-              !isClockBitState(bitState) &&
-              decoded.states.some(isClockBitState)
-            ) {
-              normalizeBinaryPaintOnClockLane(decoded.states, lo, hi, bitState);
-            }
           }, sig.states.length);
         });
         s.view.isDirty = true;
@@ -635,17 +582,6 @@ export function createSignalActions(set: ImmerSet): Pick<
           return;
         }
 
-        if (isRepeatingClockLane(target)) {
-          if (s.diagram.config.totalSteps <= MIN_TOTAL_STEPS) return;
-          const total = s.diagram.config.totalSteps;
-          if (!deleteDiagramStepAt(s.diagram.signals, s.diagram.edges, step, total)) {
-            return;
-          }
-          s.diagram.config.totalSteps = total - 1;
-          s.view.isDirty = true;
-          return;
-        }
-
         findSignal(s.diagram.signals, signalId, (sig) => {
           holdFillErasedSteps(sig, step, step);
         });
@@ -673,25 +609,6 @@ export function createSignalActions(set: ImmerSet): Pick<
 
         for (const i of gapCols) {
           clearStepGapsOnColumns(target, i, i);
-        }
-
-        if (isRepeatingClockLane(target)) {
-          const gapSet = new Set(gapCols);
-          let deleted = 0;
-          for (let i = hi; i >= lo; i--) {
-            if (gapSet.has(i)) continue;
-            if (s.diagram.config.totalSteps - deleted <= MIN_TOTAL_STEPS) break;
-            const total = s.diagram.config.totalSteps - deleted;
-            if (!deleteDiagramStepAt(s.diagram.signals, s.diagram.edges, i, total)) {
-              break;
-            }
-            deleted++;
-          }
-          if (deleted > 0) {
-            s.diagram.config.totalSteps -= deleted;
-          }
-          s.view.isDirty = true;
-          return;
         }
 
         if (valueCols.length > 0) {

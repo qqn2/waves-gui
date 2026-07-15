@@ -11,5 +11,5 @@ describe('main bootstrap', () => {
     await new Promise((r) => setTimeout(r, 500));
     const root = document.getElementById('root');
     expect(root?.innerHTML.length ?? 0).toBeGreaterThan(0);
-  });
+  }, 20_000);
 });

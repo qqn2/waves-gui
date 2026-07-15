@@ -53,19 +53,19 @@ describe('pattern generators — length', () => {
 });
 
 describe('clockPattern', () => {
-  it('alternates 1,0 with default period', () => {
+  it('creates positive-edge WaveDrom clock cycles', () => {
     const states = clockPattern({ totalSteps: 6 });
-    expect(states).toEqual(['1', '0', '1', '0', '1', '0']);
+    expect(states).toEqual(['P', 'P', 'P', 'P', 'P', 'P']);
   });
 
-  it('respects period and phase', () => {
+  it('leaves period and phase to lane timing metadata', () => {
     const states = clockPattern({ totalSteps: 8, period: 4, phase: 0.5 });
-    expect(states.slice(0, 4)).toEqual(['0', '0', '1', '1']);
+    expect(states).toEqual(new Array(8).fill('P'));
   });
 
-  it('inverts when initialValue is 0', () => {
+  it('uses a negative-edge arrow clock when initialValue is 0', () => {
     const states = clockPattern({ totalSteps: 4, initialValue: '0' });
-    expect(states).toEqual(['0', '1', '0', '1']);
+    expect(states).toEqual(['N', 'N', 'N', 'N']);
   });
 });
 

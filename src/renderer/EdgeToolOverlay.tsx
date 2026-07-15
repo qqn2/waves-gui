@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { useStore } from '../shared/store';
+import { findSignal, useStore } from '../shared/store';
 import type { DiagramState, ViewState } from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
-import { canvasCellWidth } from './coordinates';
 import { buildEdgePathD, labelPositionOnPath, resolveNodeAnchor } from './edgeLayout';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import { EDGE_ARROW_PATH, edgeArrowMarkerProps } from './edgeArrowMarker';
 import styles from './EdgeToolOverlay.module.css';
+import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 
 const PREVIEW_ARROW_ID = 'wd-edge-preview-arrowhead';
 
@@ -30,7 +30,17 @@ export function EdgeToolOverlay() {
     if (tool !== 'arrow' && tool !== 'timespan') return null;
 
     const rows = buildRowLayout(diagram.signals);
-    const cellW = canvasCellWidth(diagram.config.hscale, view.zoom);
+    const laneColumn = (signalId: string, step: number) => {
+      let signal: import('../shared/types').Signal | null = null;
+      findSignal(diagram.signals, signalId, (found) => {
+        signal = found;
+      });
+      if (!signal) return null;
+      const scale = diagram.config.hscale * view.zoom;
+      const left = stepLogicalX(signal, step) * scale - view.scrollX;
+      const right = stepLogicalXEnd(signal, step) * scale - view.scrollX;
+      return { left, width: right - left, center: (left + right) / 2 };
+    };
     const topBase = waveformTop(view, diagram);
 
     const rowBand = (
@@ -41,8 +51,11 @@ export function EdgeToolOverlay() {
     ) => {
       const row = rows.find((r) => r.id === signalId);
       if (!row || row.type === 'group') return null;
-      const left = lo * cellW - view.scrollX;
-      const width = (hi - lo + 1) * cellW;
+      const first = laneColumn(signalId, lo);
+      const last = laneColumn(signalId, hi);
+      if (!first || !last) return null;
+      const left = first.left;
+      const width = last.left + last.width - first.left;
       const bandTop = row.y * view.zoom - view.scrollY + topBase;
       const height = row.height * view.zoom;
       return { left, width, top: bandTop, height, variant };
@@ -51,7 +64,9 @@ export function EdgeToolOverlay() {
     const anchorMarker = (signalId: string, step: number, char: string) => {
       const row = rows.find((r) => r.id === signalId);
       if (!row || row.type === 'group') return null;
-      const left = step * cellW - view.scrollX + cellW / 2;
+      const column = laneColumn(signalId, step);
+      if (!column) return null;
+      const left = column.center;
       const bandTop = row.y * view.zoom - view.scrollY + topBase;
       const cy = bandTop + (row.height * view.zoom) / 2;
       return { left, top: cy, char };
@@ -59,17 +74,19 @@ export function EdgeToolOverlay() {
 
     let previewPath: string | null = null;
     let previewLabel: { x: number; y: number; text: string } | null = null;
-    let hoverCol: { left: number; top: number; height: number } | null = null;
+    let hoverCol: { left: number; top: number; width: number; height: number } | null = null;
     let band: ReturnType<typeof rowBand> = null;
     let markers: Array<{ left: number; top: number; char: string }> = [];
 
     if (hover?.signalId != null && hover.step != null) {
       const row = rows.find((r) => r.id === hover.signalId);
       if (row && row.type !== 'group') {
-        const colLeft = hover.step * cellW - view.scrollX;
+        const column = laneColumn(hover.signalId, hover.step);
+        if (!column) return null;
         const bandTop = row.y * view.zoom - view.scrollY + topBase;
         hoverCol = {
-          left: colLeft,
+          left: column.left,
+          width: column.width,
           top: bandTop,
           height: row.height * view.zoom,
         };
@@ -162,7 +179,7 @@ export function EdgeToolOverlay() {
           style={{
             left: hoverCol.left,
             top: hoverCol.top,
-            width: canvasCellWidth(diagram.config.hscale, view.zoom),
+            width: hoverCol.width,
             height: hoverCol.height,
           }}
           aria-hidden

@@ -7,7 +7,7 @@
  * stepAtLogicalXForSignal() is the authoritative "which step is under this X?" for a given signal.
  */
 import { CELL_WIDTH } from '../shared/constants';
-import type { Signal } from '../shared/types';
+import type { DiagramState, Signal, SignalOrGroup } from '../shared/types';
 
 /** WaveDrom period: cycles per displayed column (integer >= 1). */
 export function lanePeriod(signal: Signal): number {
@@ -28,7 +28,7 @@ export function stepLogicalWidth(signal: Signal): number {
 
 /** Logical X at the left edge of `step` for this lane (before hscale/zoom). */
 export function stepLogicalX(signal: Signal, step: number): number {
-  return (step + lanePhase(signal)) * stepLogicalWidth(signal);
+  return step * stepLogicalWidth(signal) - lanePhase(signal) * CELL_WIDTH;
 }
 
 /** Logical X at the right edge of `step`. */
@@ -55,9 +55,21 @@ export function stepFromLogicalX(
     return Math.floor(logicalX / CELL_WIDTH);
   }
   const period = lanePeriod(signal);
-  const phase = lanePhase(signal);
   const w = CELL_WIDTH * period;
-  return Math.floor(logicalX / w - phase);
+  return Math.floor((logicalX + lanePhase(signal) * CELL_WIDTH) / w);
+}
+
+/** Rightmost logical X required by the global grid or any period/phase-shifted lane. */
+export function diagramLogicalWidth(diagram: DiagramState): number {
+  let width = diagram.config.totalSteps * CELL_WIDTH;
+  const walk = (items: SignalOrGroup[]) => {
+    for (const item of items) {
+      if (item.type === 'group') walk(item.children);
+      else width = Math.max(width, laneLogicalWidth(item, diagram.config.totalSteps));
+    }
+  };
+  walk(diagram.signals);
+  return width;
 }
 
 /** Step index under `logicalX` for a lane with period/phase, or null if outside the lane. */

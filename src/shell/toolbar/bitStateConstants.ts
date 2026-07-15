@@ -8,10 +8,10 @@ export const MORE_BIT_STATES: BitState[] = ['.', 'p', 'n', 'u', 'd'];
 
 export const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
   '.': 'Hold previous step (WaveDrom continuation .)',
-  p: 'Clock rising edge (p)',
-  P: 'Clock rising edge with arrow (P)',
-  n: 'Clock falling edge (n); toggle (¬) inverts phase (→p)',
-  N: 'Clock falling edge with arrow (N)',
+  p: 'Positive-edge clock cycle (p)',
+  P: 'Positive-edge clock cycle with arrow (P)',
+  n: 'Negative-edge clock cycle (n); toggle (¬) inverts phase (→p)',
+  N: 'Negative-edge clock cycle with arrow (N)',
   u: 'Weak pull-up (u)',
   d: 'Weak pull-down (d)',
   z: 'High impedance (z)',

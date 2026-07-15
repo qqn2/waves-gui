@@ -60,40 +60,30 @@ describe('encodeWaveString / decodeWaveString', () => {
     expect(decodeWaveString('XzP')).toEqual(['x', 'z', 'P']);
   });
 
-  it('never encodes clock as per-step pnPn spam', () => {
-    expect(encodeWaveString(['P', 'n', 'P', 'n'])).toBe('P...');
-    expect(encodeWaveString(['p', 'n', 'p', 'n'])).toBe('p...');
-    expect(encodeWaveString(['n', 'p', 'n', 'p', 'p', 'n', 'p', 'n'])).toBe(
-      'n...p...',
-    );
+  it('preserves adjacent WaveDrom clock phase changes', () => {
+    expect(encodeWaveString(['P', 'n', 'P', 'n'])).toBe('PnPn');
+    expect(encodeWaveString(['p', 'n', 'p', 'n'])).toBe('pnpn');
+    expect(encodeWaveString(['n', 'n', 'p', 'p'])).toBe('n.p.');
     expect(decodeWaveString('pnpn')).toEqual(['p', 'n', 'p', 'n']);
-    expect(encodeWaveString(decodeWaveString('pnpn'))).toBe('p...');
+    expect(encodeWaveString(decodeWaveString('pnpn'))).toBe('pnpn');
   });
 
-  it('encodes clock mixed with 0/1 using dotted clock runs, not n/p spam', () => {
-    const states: BitState[] = ['P', '0', 'P', 'n', 'P', 'n', 'P', '1', 'P'];
+  it('round-trips clock cycles mixed with stable binary levels', () => {
+    const states: BitState[] = ['P', '0', 'P', 'P', 'P', 'P', 'P', '1', 'P'];
     const wave = encodeWaveString(states);
-    expect(wave).not.toMatch(/[pPnN]{2}/);
-    expect(wave).not.toMatch(/nP|pN|Pn|Np/);
     expect(wave).toBe('P0P....1P');
     expect(decodeWaveString(wave)).toEqual(states);
   });
 
-  it('does not emit Pn0..nPnPn when a 0 is painted into a clock lane', () => {
-    const states: BitState[] = ['P', 'n', '0', 'P', 'n', 'P', 'n', 'P', 'n'];
+  it('keeps a binary override local within a clock lane', () => {
+    const states: BitState[] = ['P', 'P', '0', 'P', 'P', 'P', 'P', 'P', 'P'];
     const wave = encodeWaveString(states);
-    expect(wave).not.toMatch(/Pn|nP|pN|Np/);
-    expect(wave).not.toMatch(/[pPnN]{2}/);
-    expect(wave).toBe('P0.P.....');
+    expect(wave).toBe('P.0P.....');
+    expect(decodeWaveString(wave)).toEqual(states);
 
-    const doubleZero: BitState[] = ['P', 'n', '0', '0', 'n', 'P', 'n', 'P', 'n'];
+    const doubleZero: BitState[] = ['P', 'P', '0', '0', 'P', 'P', 'P', 'P', 'P'];
     const wave2 = encodeWaveString(doubleZero);
-    expect(wave2).not.toMatch(/Pn|nP|pN|Np/);
-    expect(wave2).toBe('P0...P...');
-
-    const repaired = normalizeWaveString('Pn0..nPnPn');
-    expect(repaired).not.toMatch(/Pn|nP|pN|Np/);
-    expect(normalizeWaveString(repaired)).toBe(repaired);
+    expect(wave2).toBe('P.0.P....');
   });
 
   it('round-trips mixed clock and binary wave strings', () => {
@@ -107,21 +97,21 @@ describe('encodeWaveString / decodeWaveString', () => {
 
   it('encodeWaveStringForDiagram pads wave to totalSteps with dots', () => {
     expect(
-      encodeWaveStringForDiagram(['P', 'n', 'P', 'n'], 8),
+      encodeWaveStringForDiagram(['P', 'P', 'P', 'P'], 8),
     ).toBe('P.......');
     expect(
       encodeWaveStringForDiagram(['0', '0', '1', '1'], 8),
     ).toBe('0.1.....');
   });
 
-  it('padDecodedWaveToLength grow repairs broken clock before appending dots', () => {
-    const states = ['P', 'n', 'P', 'n', 'P', 'n', 'P', 'n', 'n', 'n'] as const;
+  it('padDecodedWaveToLength extends the final clock cycle with dots', () => {
+    const states = ['P', 'P', 'N', 'N'] as const;
     const padded = padDecodedWaveToLength(
       { states: [...states], stepGaps: [], stepGlitches: [] },
       11,
     );
-    expect(encodeWaveStringForDiagram(padded.states, 11)).toBe('P..........');
-    expect(encodeWaveString([...states])).toBe('P.........');
+    expect(encodeWaveStringForDiagram(padded.states, 11)).toBe('P.N........');
+    expect(encodeWaveString([...states])).toBe('P.N.');
   });
 
   it('decodes explicit same-level repeats as glitches', () => {

@@ -251,13 +251,13 @@ describe('useStore', () => {
     expect(sig.states[3]).toBe('p');
   });
 
-  it('toggleSignalStateRange inverts clock-reset clk lane from one step', () => {
+  it('toggleSignalStateRange inverts only the selected clock cycle', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     const clk = useStore.getState().diagram.signals[0] as { id: string; states: BitState[] };
     useStore.getState().toggleSignalStateRange(clk.id, 0, 0);
     const after = (useStore.getState().diagram.signals[0] as { states: BitState[] }).states;
-    expect(after[0]).toBe('n');
-    expect(after[1]).toBe('p');
+    expect(after[0]).toBe('N');
+    expect(after[1]).toBe('P');
   });
 
   it('painting 0 into clk does not export Pn0..nPnPn spam', () => {
@@ -280,7 +280,7 @@ describe('useStore', () => {
     expect(clkAfter).toMatch(/^P\.+$/);
   });
 
-  it('erase on clk deletes a column and keeps P... wave encoding', () => {
+  it('erase on clk replaces only that cycle with its inactive level', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     const clk = useStore.getState().diagram.signals[0] as { id: string };
     const stepsBefore = useStore.getState().diagram.config.totalSteps;
@@ -289,10 +289,9 @@ describe('useStore', () => {
     useStore.getState().eraseSignalStateRange(clk.id, 5, 5);
     const after = useStore.getState().diagram;
     const waveAfter = (toWavedromJSON(after).signal[0] as { wave: string }).wave;
-    expect(after.config.totalSteps).toBe(stepsBefore - 1);
-    expect(waveAfter).not.toMatch(/[pPnN]{2}/);
-    expect(waveAfter).toMatch(/^P\.+$/);
-    expect(waveAfter.length).toBe(waveBefore.length - 1);
+    expect(after.config.totalSteps).toBe(stepsBefore);
+    expect(waveAfter).toBe('P....0P...');
+    expect(waveAfter).toHaveLength(waveBefore.length);
   });
 
   it('erase on data lane does not shorten clk wave', () => {

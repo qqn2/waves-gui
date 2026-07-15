@@ -37,8 +37,8 @@ export function applyBitPatternToSignal(
     pushHistory(s);
     const sig = findSignalById(s.diagram.signals, signalId);
     if (sig?.type === 'bit' && states.length === s.diagram.config.totalSteps) {
-      sig.states = [...states];
       clearWaveMode(sig);
+      sig.states = [...states];
       s.view.isDirty = true;
     }
   });

@@ -23,8 +23,13 @@ describe('laneTiming', () => {
     expect(laneLogicalWidth(sig, 3)).toBeGreaterThan(40 * 3);
   });
 
-  it('shifts with phase', () => {
+  it('moves positive phase toward the past like WaveDrom', () => {
     const sig = { ...base, phase: 0.5 };
-    expect(stepLogicalCenter(sig, 0)).toBeGreaterThan(10);
+    expect(stepLogicalCenter(sig, 0)).toBe(0);
+  });
+
+  it('does not multiply phase displacement by period', () => {
+    const sig = { ...base, phase: 0.5, period: 3 };
+    expect(stepLogicalXEnd(sig, 0)).toBe(100);
   });
 });

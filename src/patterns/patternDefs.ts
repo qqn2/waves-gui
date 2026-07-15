@@ -66,7 +66,7 @@ export const PATTERN_DEFS: PatternDef[] = [
     signalKind: 'bit',
     defaultName: 'clk',
     fields: [
-      { key: 'period', label: 'Period (steps)', type: 'number', min: 1, max: 32, default: 2 },
+      { key: 'period', label: 'Period (steps)', type: 'number', min: 1, max: 32, default: 1 },
       { key: 'phase', label: 'Phase (0–1)', type: 'number', min: 0, max: 1, step: 0.25, default: 0 },
       {
         key: 'initialValue',
