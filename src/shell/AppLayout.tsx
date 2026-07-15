@@ -1,6 +1,8 @@
 import {
+  useEffect,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
   type RefObject,
 } from 'react';
@@ -67,6 +69,20 @@ function stackMoveProps(
   };
 }
 
+function useNarrowLayout(): boolean {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 700,
+  );
+
+  useEffect(() => {
+    const update = () => setNarrow(window.innerWidth < 700);
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  return narrow;
+}
+
 export function AppLayout({
   signalPanel,
   canvas,
@@ -76,6 +92,18 @@ export function AppLayout({
   const panelScrollRef = useRef<HTMLDivElement | null>(null);
   const [panelsLayout, updatePanelLayout, movePanelInOrder] =
     useSharedSidePanelsLayout();
+  const narrowLayout = useNarrowLayout();
+  const effectivePanelsLayout = useMemo(
+    () =>
+      narrowLayout
+        ? {
+            ...panelsLayout,
+            json: { ...panelsLayout.json, placement: 'bottom' as const, dockSize: 180 },
+            render: { ...panelsLayout.render, placement: 'bottom' as const, dockSize: 180 },
+          }
+        : panelsLayout,
+    [narrowLayout, panelsLayout],
+  );
   const dockResizeBase = useRef(0);
   const labelWidth = useStore((s) => s.view.labelWidth);
   const setLabelWidth = useStore((s) => s.setLabelWidth);
@@ -108,31 +136,31 @@ export function AppLayout({
   const rightSlots = useMemo(
     () =>
       dockSlotsForPlacement(
-        panelsLayout.panelOrder,
+        effectivePanelsLayout.panelOrder,
         'right',
-        panelsLayout,
+        effectivePanelsLayout,
         panelVisible,
       ),
-    [panelsLayout, panelVisible],
+    [effectivePanelsLayout, panelVisible],
   );
 
   const bottomSlots = useMemo(
     () =>
       dockSlotsForPlacement(
-        panelsLayout.panelOrder,
+        effectivePanelsLayout.panelOrder,
         'bottom',
-        panelsLayout,
+        effectivePanelsLayout,
         panelVisible,
       ),
-    [panelsLayout, panelVisible],
+    [effectivePanelsLayout, panelVisible],
   );
 
   const isMixedDock = rightSlots.length > 0 && bottomSlots.length > 0;
 
   const floatJson =
-    showCodePanel && panelsLayout.json.placement === 'float';
+    showCodePanel && effectivePanelsLayout.json.placement === 'float';
   const floatRender =
-    showRenderPanel && panelsLayout.render.placement === 'float';
+    showRenderPanel && effectivePanelsLayout.render.placement === 'float';
 
   const canvasRow = (
     <div className={styles.mainRow}>
@@ -234,26 +262,26 @@ export function AppLayout({
       <div className={styles.columnLayout}>{dockedBody}</div>
       {floatJson ? (
         <FloatingCodePanel
-          layout={panelsLayout.json}
+          layout={effectivePanelsLayout.json}
           ariaLabel="JSON panel"
           onLayoutChange={(patch) => updatePanelLayout('json', patch)}
         >
           <DockPanel
             panelId="json"
-            layout={panelsLayout.json}
+            layout={effectivePanelsLayout.json}
             onLayoutChange={(patch) => updatePanelLayout('json', patch)}
           />
         </FloatingCodePanel>
       ) : null}
       {floatRender ? (
         <FloatingCodePanel
-          layout={panelsLayout.render}
+          layout={effectivePanelsLayout.render}
           ariaLabel="Render panel"
           onLayoutChange={(patch) => updatePanelLayout('render', patch)}
         >
           <DockPanel
             panelId="render"
-            layout={panelsLayout.render}
+            layout={effectivePanelsLayout.render}
             onLayoutChange={(patch) => updatePanelLayout('render', patch)}
           />
         </FloatingCodePanel>

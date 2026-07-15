@@ -1197,7 +1197,9 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 16px;
-  max-width: 420px;
+  max-width: 640px;
+  max-height: 86vh;
+  overflow: auto;
   width: 90vw;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
@@ -1239,4 +1241,37 @@
   font-weight: 600;
   white-space: nowrap;
   color: var(--text-secondary);
+}
+
+.shortcutSectionTitle {
+  margin: 14px 0 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.shortcutText {
+  margin: 6px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.shortcutLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.shortcutLinks a {
+  color: var(--accent);
+}
+
+.panelLoading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
