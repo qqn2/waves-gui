@@ -31,9 +31,30 @@ await access(join(dist, '_headers'));
 await access(join(dist, 'licenses', 'THIRD_PARTY_NOTICES.txt'));
 const files = await walk(dist);
 const forbidden = files.filter((file) =>
-  file.endsWith('.map') || /(^|\/)golden(\/|$)/i.test(file) || /agent(-qc|_tasks)?\.md$/i.test(file),
+  /\.(map|key|pem|p12|pfx)$/i.test(file)
+  || /(^|\/)(golden|fixtures?)(\/|$)/i.test(file)
+  || /(^|\/)\.env($|\.)/i.test(file)
+  || /(^|\/)\.(agents|codex|wrangler)(\/|$)/i.test(file)
+  || /(^|\/)(agent\.md|agents\.md|agent-qc\.md|agent_tasks\.md)$/i.test(file),
 );
 if (forbidden.length) throw new Error(`Forbidden production files: ${forbidden.join(', ')}`);
+
+const sensitiveArtifactPatterns = [
+  /\b(?:samy|rekioua|netint|melexis)\b/i,
+  /[A-Za-z]:\\Users\\[^\\\r\n]+\\/,
+  /\/(?:home|Users)\/[^/\s]+\//,
+  /-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/,
+  /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/,
+  /\b(?:gh[pousr]_[0-9A-Za-z]{20,}|github_pat_[0-9A-Za-z_]{20,})\b/,
+];
+for (const file of files.filter((name) => !name.startsWith('licenses/'))) {
+  const buffer = await readFile(join(dist, file));
+  if (buffer.includes(0)) continue;
+  const content = buffer.toString('utf8');
+  if (sensitiveArtifactPatterns.some((pattern) => pattern.test(content))) {
+    throw new Error(`Sensitive marker in production file: ${file}`);
+  }
+}
 
 const headers = await readFile(join(dist, '_headers'), 'utf8');
 for (const header of ['Content-Security-Policy', 'X-Frame-Options', 'X-Content-Type-Options', 'Referrer-Policy', 'Permissions-Policy']) {

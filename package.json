@@ -22,9 +22,10 @@
     "test": "vitest run",
     "test:security": "vitest run src/security/hostileInput.test.ts",
     "test:e2e": "playwright test",
+    "confidentiality:check": "node scripts/check-confidentiality.mjs",
     "licenses:generate": "node scripts/generate-third-party-notices.mjs",
     "licenses:check": "node scripts/check-production-artifact.mjs",
-    "check": "npm run lint && npm test && npm run test:security && npm run build && npm run licenses:check",
+    "check": "npm run confidentiality:check && npm run lint && npm test && npm run test:security && npm run build && npm run licenses:check",
     "deploy": "npm run check && wrangler deploy"
   },
   "dependencies": {
