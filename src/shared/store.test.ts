@@ -46,6 +46,57 @@ describe('useStore', () => {
     expect(useStore.getState().view.diagramRevision).toBe(revBeforeLoad + 1);
   });
 
+  it('records a raw diagram edit in unified undo history and dirtiness', () => {
+    const edited = createDefaultDiagram();
+    edited.config.head = { text: 'raw edit' };
+
+    useStore.getState().applyDiagramEdit(edited);
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
+
+    useStore.getState().undo();
+    expect(useStore.getState().view.isDirty).toBe(false);
+    expect(useStore.getState().diagram.config.head).toBeUndefined();
+
+    useStore.getState().redo();
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
+  });
+
+  it('returns clean when undo reaches the saved snapshot', () => {
+    useStore.getState().addSignal('bit');
+    useStore.getState().markClean('saved.json');
+    const savedSignalCount = useStore.getState().diagram.signals.length;
+
+    useStore.getState().addSignal('vector');
+    expect(useStore.getState().view.isDirty).toBe(true);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.signals).toHaveLength(savedSignalCount);
+    expect(useStore.getState().view.isDirty).toBe(false);
+  });
+
+  it('becomes dirty when undo moves before the saved snapshot', () => {
+    useStore.getState().addSignal('bit');
+    useStore.getState().markClean('saved.json');
+    expect(useStore.getState().view.isDirty).toBe(false);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.signals).toHaveLength(0);
+    expect(useStore.getState().view.isDirty).toBe(true);
+  });
+
+  it('restores recovery data as unsaved instead of treating it as a file load', () => {
+    const draft = createDefaultDiagram();
+    draft.config.head = { text: 'recovered' };
+
+    useStore.getState().restoreDraft(draft);
+
+    expect(useStore.getState().diagram.config.head?.text).toBe('recovered');
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(useStore.getState().history).toHaveLength(0);
+  });
+
   it('addSignal, setSignalState, undo, redo', () => {
     useStore.getState().addSignal('bit');
     const signalId = useStore.getState().diagram.signals[0]!.id;
