@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible waves-gui defect using synthetic data.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not upload confidential diagrams, proprietary signal names, credentials, internal URLs, or unredacted screenshots. Replace them with a minimal synthetic example."
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Synthetic reproduction
+      description: Provide safe steps or non-confidential WaveDrom JSON.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Disclosure check
+      options:
+        - label: I removed confidential diagrams and proprietary signal names.
+          required: true

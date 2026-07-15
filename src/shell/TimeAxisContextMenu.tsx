@@ -63,7 +63,9 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
   );
 }
 
-export function useTimeAxisContextMenu() {
+// This file intentionally co-locates the menu component with its state hook.
+// eslint-disable-next-line react-refresh/only-export-components
+export function useTimeAxisContextMenu() {
   const [menu, setMenu] = useState<{ step: number; x: number; y: number } | null>(null);
   return {
     menu,

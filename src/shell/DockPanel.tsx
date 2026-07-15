@@ -1,6 +1,4 @@
-import type { ReactNode } from 'react';
-import { CodePanel } from '../codePanel/CodePanel';
-import { RenderPanel } from '../codePanel/RenderPanel';
+import { lazy, Suspense, type ReactNode } from 'react';
 import type { DockPanelLayout, SidePanelId } from './codePanelLayout';
 import { CodePanelChrome } from './CodePanelChrome';
 import styles from './shell.module.css';
@@ -22,6 +20,13 @@ const PANEL_TITLES: Record<SidePanelId, string> = {
   render: 'Render',
 };
 
+const CodePanel = lazy(() =>
+  import('../codePanel/CodePanel').then((module) => ({ default: module.CodePanel })),
+);
+const RenderPanel = lazy(() =>
+  import('../codePanel/RenderPanel').then((module) => ({ default: module.RenderPanel })),
+);
+
 export function DockPanel({
   panelId,
   layout,
@@ -33,9 +38,11 @@ export function DockPanel({
   onMoveTowardCanvas,
   onMoveAwayFromCanvas,
 }: DockPanelProps) {
-  const body =
-    children ??
-    (panelId === 'json' ? <CodePanel /> : <RenderPanel />);
+  const body = children ?? (
+    <Suspense fallback={<div className={styles.panelLoading}>Loading panel…</div>}>
+      {panelId === 'json' ? <CodePanel /> : <RenderPanel />}
+    </Suspense>
+  );
 
   return (
     <div className={styles.codePanelStack}>

@@ -1,4 +1,6 @@
 /** Render WaveJSON to SVG string via bundled `wavedrom` (Node / Vitest). */
+import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
+
 export async function renderWavedromSvg(json: unknown): Promise<string> {
   const WaveDrom = await import('wavedrom');
   const el = document.createElementNS(
@@ -6,6 +8,7 @@ export async function renderWavedromSvg(json: unknown): Promise<string> {
     'svg',
   ) as unknown as HTMLElement;
   WaveDrom.renderWaveElement(0, json, el, WaveDrom.waveSkin, false);
+  sanitizeDetachedSvg(el);
   return el.outerHTML;
 }
 
