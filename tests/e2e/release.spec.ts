@@ -18,6 +18,10 @@ async function replaceJson(page: Page, json: string): Promise<void> {
   await page.waitForTimeout(500);
 }
 
+function signalRow(page: Page, name: string) {
+  return page.locator('[data-signal-row="true"]').filter({ hasText: name }).first();
+}
+
 test.beforeEach(async ({ page }) => {
   page.on('dialog', (dialog) => dialog.accept());
   await page.goto('/');
@@ -46,7 +50,7 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
 
 test('keeps signal names aligned with their waveform rows', async ({ page }) => {
   const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
-  const firstSignalBox = await page.getByTitle('clk').locator('..').boundingBox();
+  const firstSignalBox = await signalRow(page, 'clk').boundingBox();
 
   expect(canvasBox).not.toBeNull();
   expect(firstSignalBox).not.toBeNull();
@@ -64,7 +68,7 @@ test('keeps waveform pixels aligned at fractional Windows display scaling', asyn
 
   const geometry = await page.evaluate(() => {
     const canvas = document.querySelector('canvas');
-    const label = document.querySelector<HTMLElement>('[title="clk"]')?.parentElement;
+    const label = document.querySelector<HTMLElement>('[data-signal-row="true"]');
     if (!canvas || !label) throw new Error('waveform geometry unavailable');
     const canvasRect = canvas.getBoundingClientRect();
     const labelRect = label.getBoundingClientRect();
@@ -120,9 +124,31 @@ test('uses consistent toolbar control sizes and a readable skin selector', async
   expect(skinBox!.width).toBeGreaterThanOrEqual(80);
 });
 
+test('detects clipped signal names and clears the tooltip after resize', async ({ page }) => {
+  const longName = 'memory_controller_status';
+  await replaceJson(page, JSON.stringify({
+    signal: [{ name: longName, wave: '01..' }],
+  }));
+
+  const name = signalRow(page, longName).locator('[data-overflow]');
+  await expect(name).toHaveAttribute('data-overflow', 'true');
+  await expect(name).toHaveAttribute('title', longName);
+
+  const handle = page.getByTitle('Resize signal name column');
+  const box = await handle.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + 40);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + 390, box!.y + 40, { steps: 8 });
+  await page.mouse.up();
+
+  await expect(name).toHaveAttribute('data-overflow', 'false');
+  await expect(name).not.toHaveAttribute('title', longName);
+});
+
 test('synchronizes JSON, supports undo/redo, and restores the local draft', async ({ page }) => {
   await replaceJson(page, editedDiagram);
-  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(signalRow(page, 'safe_bus')).toBeVisible();
   await page.waitForTimeout(1_200);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('wavedrom-gui-draft'))).not.toBeNull();
 
@@ -141,21 +167,21 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
     }
   });
   await page.reload();
-  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(signalRow(page, 'safe_bus')).toBeVisible();
   expect(recoveryDialogs).toEqual([]);
 });
 
 test('raw JSON edits are dirty and participate in unified undo/redo', async ({ page }) => {
   await replaceJson(page, editedDiagram);
-  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(signalRow(page, 'safe_bus')).toBeVisible();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
 
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+z' : 'Control+z');
-  await expect(page.getByTitle('safe_bus')).toHaveCount(0);
+  await expect(signalRow(page, 'safe_bus')).toHaveCount(0);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
-  await expect(page.getByTitle('safe_bus')).toBeVisible();
+  await expect(signalRow(page, 'safe_bus')).toBeVisible();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
 });
 
@@ -183,7 +209,7 @@ test('dirty state follows the confirmed savepoint across undo', async ({ page })
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(page.getByTitle('safe_bus')).toHaveCount(0);
+  await expect(signalRow(page, 'safe_bus')).toHaveCount(0);
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
 });
 
@@ -218,7 +244,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
 
   await page.getByRole('button', { name: /File/ }).click();
   await page.getByRole('button', { name: /Open/ }).click();
-  await expect(page.getByTitle('opened_handle')).toBeVisible();
+  await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+s' : 'Control+s');
@@ -242,11 +268,11 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await page.waitForTimeout(500);
 
   await expect(page.getByText('Invalid JSON syntax', { exact: true })).toBeVisible();
-  await expect(page.getByTitle('clk')).toBeVisible();
+  await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(page.getByTitle('clk')).toBeVisible();
+  await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
 });
 
@@ -300,7 +326,10 @@ test('Help/About exposes privacy and project routes', async ({ page }) => {
   await expect(page.getByText(/full recovery draft and recent filenames/i)).toBeVisible();
   await expect(page.getByText(/independent community project/i)).toBeVisible();
   await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/qqn2/waves-gui');
-  await expect(page.getByRole('link', { name: 'Report a bug' })).toHaveAttribute('href', /github\.com\/qqn2\/waves-gui\/issues/);
+  await expect(page.getByRole('link', { name: 'Report a bug' })).toHaveAttribute(
+    'href',
+    'https://github.com/qqn2/waves-gui/issues/new?template=bug_report.yml',
+  );
   await expect(page.getByRole('link', { name: 'Licenses' })).toHaveAttribute('href', '/licenses/THIRD_PARTY_NOTICES.txt');
 });
 

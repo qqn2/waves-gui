@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { SignalGroup } from '../shared/types';
 import { GROUP_HEADER_HEIGHT } from '../shared/constants';
 import { useStore } from '../shared/store';
+import { OverflowText } from '../shared/OverflowText';
 import { DragHandle } from './DragHandle';
 import { InlineEditor } from './InlineEditor';
 import { renameGroupInStore, toggleGroupCollapsedInStore } from './panelTree';
@@ -70,13 +71,12 @@ export function GroupRow({
           onCancel={() => setEditing(false)}
         />
       ) : (
-        <span
+        <OverflowText
           className={styles.name}
-          title={group.name}
+          text={group.name}
+          emptyText="(group)"
           onDoubleClick={() => setEditing(true)}
-        >
-          {group.name || '(group)'}
-        </span>
+        />
       )}
     </div>
   );

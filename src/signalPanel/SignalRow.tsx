@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import type { Signal } from '../shared/types';
 import { useStore } from '../shared/store';
+import { OverflowText } from '../shared/OverflowText';
 import { DragHandle } from './DragHandle';
 import { InlineEditor } from './InlineEditor';
 import styles from './SignalPanel.module.css';
@@ -66,6 +67,7 @@ export function SignalRow({
   return (
     <div
       className={rowClass}
+      data-signal-row="true"
       style={{ height: h, paddingLeft: 8 + depth * 12 }}
       onDragOver={(e) => onDragOver(e, signal.id)}
       onDrop={(e) => onDrop(e, signal.id)}
@@ -94,13 +96,12 @@ export function SignalRow({
           }}
         />
       ) : (
-        <span
+        <OverflowText
           className={styles.name}
-          title={signal.name}
+          text={signal.name}
+          emptyText="(unnamed)"
           onDoubleClick={() => setEditing(true)}
-        >
-          {signal.name || '(unnamed)'}
-        </span>
+        />
       )}
       <button
         type="button"

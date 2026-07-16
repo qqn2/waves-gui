@@ -32,10 +32,18 @@
   border-bottom: 1px solid var(--border, #333);
   box-sizing: border-box;
   flex-shrink: 0;
+  padding-right: 4px;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.row:hover,
+.groupRow:hover {
+  background: color-mix(in srgb, var(--accent, #4a9eff) 7%, var(--bg-panel));
 }
 
 .rowSelected {
   background: color-mix(in srgb, var(--accent, #4a9eff) 18%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent, #4a9eff);
 }
 
 .rowDropTarget {
@@ -52,11 +60,19 @@
   font-size: 12px;
 }
 
+.name[data-overflow='true'] {
+  cursor: help;
+}
+
 .badge {
   font-size: 9px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  background: var(--border, #444);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  padding: 2px 5px;
+  border: 1px solid color-mix(in srgb, var(--accent, #4a9eff) 22%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent, #4a9eff) 9%, var(--bg-app));
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
@@ -84,11 +100,14 @@
   color: var(--text-muted, #888);
   cursor: pointer;
   flex-shrink: 0;
+  border-radius: 4px;
+  transition: color 120ms ease, background-color 120ms ease;
 }
 
 .menuBtn:hover,
 .collapseBtn:hover {
   color: var(--text-primary, #eee);
+  background: color-mix(in srgb, var(--accent, #4a9eff) 10%, transparent);
 }
 
 .inlineEditor {
@@ -118,7 +137,7 @@
   padding: 6px 8px;
   cursor: pointer;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--bg-app);
   color: var(--text-primary);
 }
@@ -401,17 +420,25 @@
   align-items: center;
   padding: 2px 6px;
   border-bottom: 1px solid var(--border, #333);
-  background: var(--bg-panel);
+  background: color-mix(in srgb, var(--bg-panel) 92%, var(--bg-app));
+}
+
+.filterIcon {
+  position: absolute;
+  left: 10px;
+  z-index: 1;
+  pointer-events: none;
+  color: var(--text-muted, #888);
 }
 
 .filterInput {
   flex: 1;
   box-sizing: border-box;
   height: 19px;
-  padding: 1px 22px 1px 6px;
+  padding: 1px 22px 1px 22px;
   font-size: 11px;
   border: 1px solid var(--border, #333);
-  border-radius: 3px;
+  border-radius: 6px;
   background: var(--bg-app, #1a1a1a);
   color: var(--text-primary, #e8e8e8);
 }
@@ -419,17 +446,20 @@
 .filterInput:focus {
   outline: none;
   border-color: var(--accent, #4a9eff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #4a9eff) 14%, transparent);
 }
 
 .filterClear {
   position: absolute;
-  right: 12px;
+  right: 8px;
   border: none;
   background: transparent;
   color: var(--text-muted, #888);
-  font-size: 14px;
   cursor: pointer;
   padding: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -437,4 +467,5 @@
 
 .filterClear:hover {
   color: var(--text-primary, #eee);
+  background: color-mix(in srgb, var(--accent, #4a9eff) 10%, transparent);
 }

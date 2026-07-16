@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { useStore, findSignal } from '../shared/store';
+import { OverflowText } from '../shared/OverflowText';
 import type { Signal } from '../shared/types';
 import styles from './shell.module.css';
 
@@ -124,9 +125,7 @@ export function SignalTimingBar() {
         title="Selected lane only: WaveDrom phase (shift) and period (clock cycles per column). Diagram length: Steps (left column)."
         data-signal-id={id}
       >
-        <span className={styles.timingBarSignal} title={signal.name}>
-          {signal.name}
-        </span>
+        <OverflowText className={styles.timingBarSignal} text={signal.name} />
         <label className={styles.timingBarField}>
           <span className={styles.timingBarLabel}>phase</span>
           <input

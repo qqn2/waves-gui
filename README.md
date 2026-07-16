@@ -74,6 +74,8 @@ Clipboard image export requires HTTPS (or localhost). Blob-based downloads and t
 
 Please report vulnerabilities privately through [GitHub Security Advisories](https://github.com/qqn2/waves-gui/security/advisories/new). Do not open a public issue with a vulnerability, confidential diagram, proprietary signal name, credential, or internal screenshot. See [SECURITY.md](SECURITY.md).
 
+For ordinary defects, use the in-app **Report a bug** action or the [safe bug-report form](https://github.com/qqn2/waves-gui/issues/new?template=bug_report.yml). Reduce the problem to synthetic signal names and include the browser, window size, and display scaling for visual issues.
+
 ## Licensing and attribution
 
 Original project code is available under the [MIT License](LICENSE). Runtime dependency copyright and license texts are generated deterministically in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and are shipped under `/licenses/` in every production build. Vendored WaveDrom and `wavedrom/schema` reference fixtures are attributed in `docs/wavedrom-ref/SOURCES.md`.

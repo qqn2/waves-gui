@@ -6,6 +6,7 @@ import {
   useState,
   type RefObject,
 } from 'react';
+import { Search, X } from 'lucide-react';
 import { useStore } from '../shared/store';
 import { getSignalRowsTopInsetPx } from '../renderer/renderHeadFoot';
 import type { Signal, SignalOrGroup } from '../shared/types';
@@ -276,6 +277,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   return (
     <div className={styles.panel} style={{ width: labelWidth, minWidth: labelWidth }}>
       <div className={styles.filterBar}>
+        <Search className={styles.filterIcon} size={12} aria-hidden />
         <input
           ref={filterInputRef}
           type="text"
@@ -293,7 +295,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
             onClick={() => { setFilterText(''); filterInputRef.current?.focus(); }}
             aria-label="Clear filter"
           >
-            ×
+            <X size={12} aria-hidden />
           </button>
         )}
       </div>

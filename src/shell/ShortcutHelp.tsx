@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { Bug, ExternalLink, FileText, Github, ShieldCheck, X } from 'lucide-react';
 import styles from './shell.module.css';
 
 export interface ShortcutHelpProps {
@@ -13,11 +15,23 @@ const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'Ctrl+S', action: 'Save to the opened file, or Save As' },
   { keys: 'Ctrl+A', action: 'Select all signals' },
   { keys: 'Del / Backspace', action: 'Clear steps or remove selected rows' },
-  { keys: 'Esc', action: 'Cancel drag or edge placement' },
+  { keys: 'Esc', action: 'Cancel drag or close this panel' },
   { keys: 'Ctrl + + / − / 0', action: 'Zoom in / out / reset' },
 ];
 
+const BUG_REPORT_URL =
+  'https://github.com/qqn2/waves-gui/issues/new?template=bug_report.yml';
+
 export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
@@ -29,37 +43,70 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
       onClick={onClose}
     >
       <div className={styles.shortcutDialog} onClick={(event) => event.stopPropagation()}>
-        <header className={styles.shortcutHeader}>
-          <h2 id="help-about-title" className={styles.shortcutTitle}>Help &amp; About</h2>
+        <header className={styles.shortcutHero}>
+          <div>
+            <span className={styles.shortcutEyebrow}>waves-gui workspace</span>
+            <h2 id="help-about-title" className={styles.shortcutTitle}>Help &amp; About</h2>
+            <p className={styles.shortcutLead}>
+              Paint timing diagrams, inspect WaveDrom JSON, and export locally.
+            </p>
+          </div>
           <button type="button" aria-label="Close help" className={styles.shortcutClose} onClick={onClose}>
-            ×
+            <X size={17} aria-hidden />
           </button>
         </header>
 
-        <h3 className={styles.shortcutSectionTitle}>Keyboard shortcuts</h3>
-        <table className={styles.shortcutTable}>
-          <tbody>
-            {SHORTCUTS.map((row) => (
-              <tr key={row.keys}>
-                <td className={styles.shortcutKeys}>{row.keys}</td>
-                <td>{row.action}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className={styles.shortcutGrid}>
+          <section className={styles.shortcutCard}>
+            <div className={styles.shortcutCardHeader}>
+              <FileText size={16} aria-hidden />
+              <h3>Keyboard shortcuts</h3>
+            </div>
+            <table className={styles.shortcutTable}>
+              <tbody>
+                {SHORTCUTS.map((row) => (
+                  <tr key={row.keys}>
+                    <td className={styles.shortcutKeys}><kbd>{row.keys}</kbd></td>
+                    <td>{row.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
 
-        <h3 className={styles.shortcutSectionTitle}>Privacy</h3>
-        <p className={styles.shortcutText}>
-          Editing and rendering stay in this browser. The full recovery draft and recent filenames are stored in localStorage, do not synchronize, and disappear when site data is cleared. No diagram is sent to WaveDrom or another service.
-        </p>
-        <p className={styles.shortcutText}>
-          This is an independent community project and is not affiliated with or endorsed by WaveDrom or its maintainers.
-        </p>
-        <nav className={styles.shortcutLinks} aria-label="Project links">
-          <a href="https://github.com/qqn2/waves-gui" target="_blank" rel="noreferrer">Source</a>
-          <a href="https://github.com/qqn2/waves-gui/issues/new/choose" target="_blank" rel="noreferrer">Report a bug</a>
-          <a href="/licenses/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">Licenses</a>
-        </nav>
+          <div className={styles.shortcutSide}>
+            <section className={styles.shortcutCard}>
+              <div className={styles.shortcutCardHeader}>
+                <ShieldCheck size={16} aria-hidden />
+                <h3>Browser-local privacy</h3>
+              </div>
+              <p className={styles.shortcutText}>
+                Editing and rendering stay in this browser. The full recovery draft and recent filenames are stored in localStorage, do not synchronize, and disappear when site data is cleared.
+              </p>
+            </section>
+
+            <section className={`${styles.shortcutCard} ${styles.shortcutReportCard}`}>
+              <div className={styles.shortcutCardHeader}>
+                <Bug size={16} aria-hidden />
+                <h3>Found a bug?</h3>
+              </div>
+              <p className={styles.shortcutText}>
+                Use synthetic names and remove confidential diagrams, internal URLs, and proprietary screenshots.
+              </p>
+              <a className={styles.shortcutReportLink} href={BUG_REPORT_URL} target="_blank" rel="noreferrer">
+                Report a bug <ExternalLink size={13} aria-hidden />
+              </a>
+            </section>
+          </div>
+        </div>
+
+        <footer className={styles.shortcutFooter}>
+          <p>This independent community project is not affiliated with or endorsed by WaveDrom or its maintainers.</p>
+          <nav className={styles.shortcutLinks} aria-label="Project links">
+            <a href="https://github.com/qqn2/waves-gui" target="_blank" rel="noreferrer"><Github size={13} aria-hidden /> Source</a>
+            <a href="/licenses/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer"><FileText size={13} aria-hidden /> Licenses</a>
+          </nav>
+        </footer>
       </div>
     </div>
   );

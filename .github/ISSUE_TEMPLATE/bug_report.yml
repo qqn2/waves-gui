@@ -24,6 +24,23 @@ body:
     id: browser
     attributes:
       label: Browser and version
+      placeholder: Firefox 140, Chrome 138, etc.
+    validations:
+      required: true
+  - type: input
+    id: viewport
+    attributes:
+      label: Window size and display scaling
+      description: Include browser window dimensions and OS scaling when the problem is visual.
+      placeholder: 1280x720 at Windows 125%
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Production deployment
+        - Local development
+        - Both
     validations:
       required: true
   - type: checkboxes
