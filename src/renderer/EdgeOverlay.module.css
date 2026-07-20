@@ -15,7 +15,7 @@
 }
 
 .edgeLabel {
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   fill: var(--text-secondary, #aaa);
   paint-order: stroke fill;
   stroke: var(--bg-canvas, #111);

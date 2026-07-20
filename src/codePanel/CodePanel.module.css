@@ -24,7 +24,7 @@
 }
 
 .title {
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary, #999);
   text-transform: uppercase;
@@ -50,7 +50,7 @@
   border-radius: 4px;
   background: var(--bg-app, #1a1a1a);
   color: var(--text-primary, #e8e8e8);
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   cursor: pointer;
 }
 
@@ -85,7 +85,7 @@
 .paneHeader {
   flex-shrink: 0;
   padding: 4px 8px;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -132,7 +132,7 @@
 .statusBar {
   flex-shrink: 0;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   border-top: 1px solid var(--border, #333);
 }
 
@@ -156,7 +156,7 @@
 .previewLabel {
   flex-shrink: 0;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary, #999);
   border-bottom: 1px solid var(--border, #333);
 }
@@ -177,7 +177,7 @@
 
 .previewError {
   margin: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--signal-x-stroke, #ff6b6b);
   line-height: 1.4;
 }

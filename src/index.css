@@ -13,6 +13,18 @@ body,
 }
 
 body {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
   font-size: calc(14px * var(--ui-font-scale, 1));
+  font-feature-settings: normal;
+}
+
+html {
+  font-size: calc(16px * var(--ui-font-scale, 1));
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }

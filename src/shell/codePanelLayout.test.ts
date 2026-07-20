@@ -11,7 +11,7 @@ import {
 } from './codePanelLayout';
 
 describe('codePanelLayout', () => {
-  it('defaults json right and render bottom', () => {
+  it('defaults json vertically on the right and render below the workspace', () => {
     const layout = defaultSidePanelsLayout();
     expect(layout.json.placement).toBe('right');
     expect(layout.json.dockSize).toBe(CODE_PANEL_DOCK_DEFAULT_RIGHT);

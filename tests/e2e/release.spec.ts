@@ -35,6 +35,8 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   });
   await page.reload();
   await expect(page.locator('canvas')).toBeVisible();
+  expect((await page.locator('canvas').boundingBox())!.height).toBeGreaterThanOrEqual(120);
+  await expect(page.getByTitle('Show or hide WaveDrom render preview')).toHaveAttribute('aria-pressed', 'true');
   const preview = page.getByText('WaveDrom render (local)', { exact: true })
     .locator('..')
     .locator('svg');
@@ -44,6 +46,7 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
     getComputedStyle(element).fill
   ))).toBe('rgb(255, 255, 255)');
   await expect(page.getByRole('button', { name: 'Web', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Axis', exact: true })).toHaveCount(0);
   await expect(page.locator('a[href*="wavedrom.com/editor"]')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
@@ -103,25 +106,177 @@ test('keeps waveform pixels aligned at fractional Windows display scaling', asyn
   expect(Math.abs(geometry.labelCenter - geometry.waveCenter)).toBeLessThanOrEqual(1.5);
 });
 
-test('uses consistent toolbar control sizes and a readable skin selector', async ({ page }) => {
-  const squareControls = [
+test('uses consistent editing rail controls and a readable skin selector', async ({ page }) => {
+  const editingModes = [
     page.locator('button[title^="Draw (D)"]'),
-    page.locator('button[title^="Erase"]'),
-    page.locator('button[title^="Pointer"]'),
-    page.locator('button[title^="WaveDrom edge arrow"]'),
-    page.locator('button[title^="WaveDrom timespan"]'),
+    page.locator('button[title^="Erase (E)"]'),
+    page.locator('button[title^="Select (V)"]'),
+    page.locator('button[title^="Edge (A)"]'),
+    page.locator('button[title^="Span (T)"]'),
   ];
-  const boxes = await Promise.all(squareControls.map((control) => control.boundingBox()));
+  const boxes = await Promise.all(editingModes.map((control) => control.boundingBox()));
   for (const box of boxes) {
     expect(box).not.toBeNull();
-    expect(box!.width).toBeCloseTo(28, 3);
-    expect(box!.height).toBeCloseTo(28, 3);
+    expect(box!.width).toBeGreaterThanOrEqual(48);
+    expect(box!.height).toBeGreaterThanOrEqual(48);
   }
 
   const skinBox = await page.getByLabel('WaveDrom skin').boundingBox();
   expect(skinBox).not.toBeNull();
-  expect(skinBox!.height).toBeCloseTo(28, 3);
+  expect(skinBox!.height).toBeCloseTo(32, 3);
   expect(skinBox!.width).toBeGreaterThanOrEqual(80);
+
+  const desktopChrome = await page.locator('button[title^="Draw (D)"]').evaluate((button) => ({
+    buttonRadius: getComputedStyle(button).borderRadius,
+    bodyFont: getComputedStyle(document.body).fontFamily,
+  }));
+  expect(desktopChrome.buttonRadius).toBe('3px');
+  expect(desktopChrome.bodyFont).toContain('Segoe UI');
+  await expect(signalRow(page, 'clk').getByText('BIT', { exact: true })).toHaveCSS('border-radius', '2px');
+  for (const operation of ['Glitch', 'Gap', 'Invert']) {
+    const button = page.getByRole('button', { name: operation, exact: true });
+    await expect(button).toBeVisible();
+    await expect(button.locator('svg')).toHaveCount(1);
+  }
+});
+
+test('applies visible text scaling and a real dark theme', async ({ page }) => {
+  await page.getByTitle('Appearance').click();
+  const sample = page.getByRole('button', { name: /File/ });
+
+  await page.getByRole('button', { name: 'M', exact: true }).click();
+  const medium = Number.parseFloat(await sample.evaluate((element) => getComputedStyle(element).fontSize));
+  await page.getByRole('button', { name: 'L', exact: true }).click();
+  const large = Number.parseFloat(await sample.evaluate((element) => getComputedStyle(element).fontSize));
+  await page.getByRole('button', { name: 'S', exact: true }).click();
+  const small = Number.parseFloat(await sample.evaluate((element) => getComputedStyle(element).fontSize));
+
+  expect(large).toBeGreaterThan(medium);
+  expect(small).toBeLessThan(medium);
+
+  await page.getByRole('button', { name: 'Dark', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  const colors = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      app: style.getPropertyValue('--bg-app').trim(),
+      panel: style.getPropertyValue('--bg-panel').trim(),
+      canvas: style.getPropertyValue('--bg-canvas').trim(),
+      text: style.getPropertyValue('--text-primary').trim(),
+    };
+  });
+  expect(colors).toEqual({
+    app: '#191b1f',
+    panel: '#272a30',
+    canvas: '#15171a',
+    text: '#f1f3f5',
+  });
+  await expect.poll(() => page.locator('canvas').evaluate((canvas) => {
+    const context = canvas.getContext('2d');
+    if (!context || canvas.width < 2 || canvas.height < 2) return [];
+    return Array.from(context.getImageData(canvas.width - 2, canvas.height - 2, 1, 1).data.slice(0, 3));
+  })).toEqual([21, 23, 26]);
+});
+
+test('keeps bus segment editing exclusively in the selected bus inspector', async ({ page }) => {
+  await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
+  await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
+  await expect(page.getByTitle('Select a bus to inspect its properties')).toBeDisabled();
+
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      { name: 'control', wave: '01....' },
+      { name: 'payload', wave: '=.=.=.', data: ['A5', '5A', 'FF'] },
+      { name: 'address', wave: '=.....', data: ['1000'] },
+    ],
+  }, null, 2));
+
+  await signalRow(page, 'payload').click();
+  const inspector = page.getByLabel('Properties inspector');
+  const segments = inspector.getByLabel('Bus segment labels');
+  await expect(inspector).toBeVisible();
+  await expect(segments).toBeVisible();
+  await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
+  const widths = await Promise.all([inspector.boundingBox(), segments.boundingBox()]);
+  expect(widths[0]).not.toBeNull();
+  expect(widths[1]!.width).toBeGreaterThan(widths[0]!.width * 0.9);
+  await expect(inspector.getByLabel('Bus inspector details')).toHaveCSS('overflow-y', 'auto');
+  await expect(page.getByTitle('Show or hide bus properties inspector')).toBeEnabled();
+  await expect(segments.getByLabel('Label for steps 0 to 2')).toHaveValue('A5');
+  await expect(segments.getByLabel('Label for steps 2 to 4')).toHaveValue('5A');
+  await expect(segments.getByLabel('Label for steps 4 to 6')).toHaveValue('FF');
+
+  const firstLabel = segments.getByLabel('Label for steps 0 to 2');
+  await firstLabel.fill('A6');
+  await firstLabel.press('Enter');
+  await expect(firstLabel).toHaveValue('A6');
+  await expect(page.locator('.cm-content')).toContainText('A6');
+
+  const busLabel = inspector.getByLabel('Bus label');
+  await expect(busLabel).toHaveValue('data');
+  await busLabel.fill('A5 payload');
+
+  await page.getByRole('button', { name: 'Close bus inspector' }).click();
+  await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
+  await expect(page.getByRole('banner').getByLabel('Bus label')).toHaveCount(0);
+
+  await signalRow(page, 'payload').click();
+  await expect(page.getByLabel('Properties inspector')).toBeVisible();
+  await expect(page.getByLabel('Properties inspector').getByLabel('Bus label')).toHaveValue('A5 payload');
+
+  await signalRow(page, 'address').click();
+  await expect(page.getByLabel('Properties inspector').getByLabel('Bus segment labels')).toBeVisible();
+  await expect(page.getByLabel('Label for steps 0 to 6')).toHaveValue('1000');
+  await expect(page.getByLabel('Label for steps 0 to 2')).toHaveCount(0);
+
+  await signalRow(page, 'control').click();
+  await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
+  await expect(page.getByLabel('Bus segment labels')).toHaveCount(0);
+});
+
+test('keeps narrow view controls separated instead of shrinking labels together', async ({ page }) => {
+  await page.setViewportSize({ width: 420, height: 760 });
+
+  const controls = [
+    page.getByTitle('Show or hide WaveDrom JSON editor'),
+    page.getByTitle('Show or hide WaveDrom render preview'),
+    page.getByRole('button', { name: 'Inspector', exact: true }),
+    page.getByLabel('WaveDrom skin'),
+  ];
+  const boxes = await Promise.all(controls.map((control) => control.boundingBox()));
+  for (const box of boxes) expect(box).not.toBeNull();
+  for (let index = 1; index < boxes.length; index += 1) {
+    expect(boxes[index]!.x).toBeGreaterThanOrEqual(
+      boxes[index - 1]!.x + boxes[index - 1]!.width,
+    );
+  }
+});
+
+test('separates document controls from tool options at desktop width', async ({ page }) => {
+  await page.setViewportSize({ width: 1222, height: 912 });
+
+  const primary = await page.locator('[data-toolbar="primary"]').boundingBox();
+  const context = await page.locator('[data-toolbar="context"]').boundingBox();
+  expect(primary).not.toBeNull();
+  expect(context).not.toBeNull();
+  expect(primary!.height).toBeLessThanOrEqual(48);
+  expect(context!.y).toBeGreaterThanOrEqual(primary!.y + primary!.height - 1);
+
+  const viewControls = [
+    page.getByTitle('Show or hide WaveDrom JSON editor'),
+    page.getByTitle('Show or hide WaveDrom render preview'),
+    page.getByRole('button', { name: 'Inspector', exact: true }),
+    page.getByLabel('WaveDrom skin'),
+  ];
+  const boxes = await Promise.all(viewControls.map((control) => control.boundingBox()));
+  for (const box of boxes) {
+    expect(box).not.toBeNull();
+    expect(box!.y).toBeGreaterThanOrEqual(primary!.y);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(primary!.y + primary!.height + 1);
+  }
+  expect(boxes[0]!.width).toBeGreaterThanOrEqual(54);
+  expect(boxes[1]!.width).toBeGreaterThanOrEqual(64);
+  expect(boxes[2]!.width).toBeGreaterThanOrEqual(78);
 });
 
 test('detects clipped signal names and clears the tooltip after resize', async ({ page }) => {
@@ -325,7 +480,7 @@ test('Help/About exposes privacy and project routes', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Help & About' })).toBeVisible();
   await expect(page.getByText(/full recovery draft and recent filenames/i)).toBeVisible();
   await expect(page.getByText(/independent community project/i)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Source' })).toHaveAttribute('href', 'https://github.com/qqn2/waves-gui');
+  await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/qqn2/waves-gui');
   await expect(page.getByRole('link', { name: 'Report a bug' })).toHaveAttribute(
     'href',
     'https://github.com/qqn2/waves-gui/issues/new?template=bug_report.yml',

@@ -3,6 +3,8 @@ export type { AppLayoutPane, AppLayoutPaneContext, AppLayoutProps } from './AppL
 export { createScrollSync } from './scrollSync';
 export type { ScrollSyncHandles } from './scrollSync';
 export { Toolbar } from './Toolbar';
+export { EditToolbar } from './EditToolbar';
+export { SignalInspector } from './SignalInspector';
 export { HeadFootFields } from './HeadFootFields';
 export { DiagramStepsControl } from './DiagramStepsControl';
 export { SignalTimingBar } from './SignalTimingBar';

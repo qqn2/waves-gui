@@ -432,7 +432,10 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
   return (
 
-    <section className={styles.segmentEditor} aria-label="Bus segment labels">
+    <section
+      className={`${styles.segmentEditor} ${styles.segmentEditorInspector}`}
+      aria-label="Bus segment labels"
+    >
 
       <div className={styles.segmentEditorHeader}>
 

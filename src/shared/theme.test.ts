@@ -22,9 +22,9 @@ describe('theme helpers', () => {
     expect(defaultThemeSettings().theme).toBe('light');
   });
 
-  it('migrates legacy dark themes to light-grey', () => {
-    expect(migrateLegacyTheme('dark')).toBe('light-grey');
-    expect(migrateLegacyTheme('dark-hc')).toBe('light-grey');
+  it('migrates legacy dark themes to the dark preset', () => {
+    expect(migrateLegacyTheme('dark')).toBe('dark');
+    expect(migrateLegacyTheme('dark-hc')).toBe('dark');
     expect(migrateLegacyTheme('light-hc')).toBe('light');
   });
 
@@ -45,7 +45,7 @@ describe('theme helpers', () => {
 
   it('migrates v1 plain string storage', () => {
     getSafeStorage().setItem(THEME_STORAGE_KEY, 'dark-hc');
-    expect(loadThemeSettings().theme).toBe('light-grey');
+    expect(loadThemeSettings().theme).toBe('dark');
   });
 
   it('rejects invalid stored values', () => {

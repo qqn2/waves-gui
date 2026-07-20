@@ -42,7 +42,7 @@ function editorTheme(): Extension {
     {
       '&': {
         height: '100%',
-        fontSize: '12px',
+        fontSize: 'calc(12px * var(--ui-font-scale, 1))',
         backgroundColor: 'var(--bg-panel, #242424)',
         color: 'var(--text-primary, #e8e8e8)',
       },

@@ -387,7 +387,8 @@ function BottomDockRow({
       <div
         className={styles.codeDock}
         style={{
-          flex: `0 0 ${layout.dockSize}px`,
+          // Multiple bottom panels must yield space before collapsing the waveform.
+          flex: `0 1 ${layout.dockSize}px`,
           height: layout.dockSize,
           maxHeight: '72vh',
         }}

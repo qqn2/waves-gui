@@ -5,6 +5,7 @@
   min-height: 0;
   color: var(--text-primary);
   background: var(--bg-panel, var(--bg-secondary, #1e1e1e));
+  border-right: 1px solid color-mix(in srgb, var(--border) 72%, white);
 }
 
 .scroll {
@@ -36,14 +37,38 @@
   transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
+.panelHeader {
+  display: flex;
+  min-height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-panel) 92%, white), color-mix(in srgb, var(--bg-panel) 76%, var(--bg-app)));
+}
+
+.panelHeader strong {
+  font-size: calc(12px * var(--ui-font-scale, 1));
+}
+
+.panelHeader span {
+  color: var(--text-muted);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .row:hover,
 .groupRow:hover {
-  background: color-mix(in srgb, var(--accent, #4a9eff) 7%, var(--bg-panel));
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent, #4a9eff) 8%, var(--bg-panel)), var(--bg-panel));
 }
 
 .rowSelected {
-  background: color-mix(in srgb, var(--accent, #4a9eff) 18%, transparent);
-  box-shadow: inset 3px 0 0 var(--accent, #4a9eff);
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent, #4a9eff) 18%, white), color-mix(in srgb, var(--accent, #4a9eff) 8%, var(--bg-panel)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 38%, transparent);
 }
 
 .rowDropTarget {
@@ -57,7 +82,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .name[data-overflow='true'] {
@@ -65,14 +90,14 @@
 }
 
 .badge {
-  font-size: 9px;
+  font-size: calc(9px * var(--ui-font-scale, 1));
   font-weight: 650;
   letter-spacing: 0.02em;
-  padding: 2px 5px;
+  padding: 1px 4px;
   border: 1px solid color-mix(in srgb, var(--accent, #4a9eff) 22%, var(--border));
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent, #4a9eff) 9%, var(--bg-app));
-  color: var(--text-secondary);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--selection-fill) 50%, white), color-mix(in srgb, var(--selection-fill) 75%, var(--bg-panel)));
+  color: var(--accent-ink);
   flex-shrink: 0;
 }
 
@@ -100,7 +125,7 @@
   color: var(--text-muted, #888);
   cursor: pointer;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: color 120ms ease, background-color 120ms ease;
 }
 
@@ -113,7 +138,7 @@
 .inlineEditor {
   flex: 1;
   min-width: 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   padding: 2px 4px;
   border: 1px solid var(--accent, #4a9eff);
   border-radius: 2px;
@@ -133,18 +158,18 @@
 
 .addBtn {
   width: 100%;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   padding: 6px 8px;
   cursor: pointer;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-app);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 70%, var(--bg-app)));
   color: var(--text-primary);
 }
 
 .addBtn:hover {
   border-color: var(--accent);
-  background: var(--selection-fill);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
 }
 
 .addDropdown {
@@ -164,7 +189,7 @@
 .addDropdown button {
   text-align: left;
   padding: 8px 10px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   border: none;
   background: transparent;
   color: var(--text-primary);
@@ -191,7 +216,7 @@
   width: 100%;
   text-align: left;
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: none;
   background: transparent;
   color: inherit;
@@ -215,7 +240,7 @@
 
 .menuSubheading {
   padding: 6px 12px 2px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -229,7 +254,7 @@
 
 .menuHint {
   margin: 4px 12px;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   color: var(--text-muted, #888);
 }
 
@@ -251,7 +276,7 @@
 }
 
 .segmentEditorTitle {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -260,7 +285,7 @@
 
 .segmentEditorOverflowBadge {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: #e8a040;
   padding: 1px 6px;
@@ -270,7 +295,7 @@
 }
 
 .segmentEditorSignal {
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -278,7 +303,7 @@
 }
 
 .segmentEditorHint {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   color: var(--text-muted, #888);
   font-weight: 400;
   text-transform: none;
@@ -287,7 +312,7 @@
 
 .segmentEditorEmpty {
   margin: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-muted, #888);
 }
 
@@ -306,7 +331,7 @@
   align-items: stretch;
   gap: 4px;
   margin-bottom: 4px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
 }
 
 .segmentRowMain {
@@ -326,7 +351,7 @@
 
 .segmentOverflow {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: #e8a040;
   padding: 2px 6px;
@@ -337,7 +362,7 @@
 
 .segmentHscaleBtn {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   padding: 2px 6px;
   border: 1px solid var(--border, #444);
   border-radius: 3px;
@@ -359,7 +384,7 @@
 
 .segmentRange {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-family: ui-monospace, monospace;
   color: var(--text-muted, #888);
   min-width: 4.5em;
@@ -368,7 +393,7 @@
 .segmentValue {
   flex: 1;
   min-width: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   padding: 3px 6px;
   border: 1px solid var(--border, #444);
   border-radius: 2px;
@@ -420,7 +445,71 @@
   align-items: center;
   padding: 2px 6px;
   border-bottom: 1px solid var(--border, #333);
-  background: color-mix(in srgb, var(--bg-panel) 92%, var(--bg-app));
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 74%, var(--bg-app)));
+}
+
+.segmentEditorInspector {
+  max-height: none;
+  overflow: visible;
+  padding: 12px 11px 14px;
+  border-top: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+}
+
+.segmentEditorInspector .segmentEditorHeader {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.segmentEditorInspector .segmentEditorHint {
+  margin-left: auto;
+}
+
+.segmentEditorInspector .segmentEditorSignal {
+  display: none;
+}
+
+.segmentEditorInspector .segmentRow {
+  gap: 5px;
+  padding: 7px;
+  margin-bottom: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  background: var(--bg-app);
+}
+
+.segmentEditorInspector .segmentRowMain {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+  gap: 6px 8px;
+}
+
+.segmentEditorInspector .segmentRange {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.segmentEditorInspector .segmentValue {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.segmentEditorInspector .segmentColorGroup {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-content: space-between;
+}
+
+.segmentEditorInspector .segmentColorSwatch {
+  width: 18px;
+  height: 16px;
+}
+
+.segmentEditorInspector .segmentRowFit {
+  padding-left: 0;
 }
 
 .filterIcon {
@@ -436,17 +525,17 @@
   box-sizing: border-box;
   height: 19px;
   padding: 1px 22px 1px 22px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   border: 1px solid var(--border, #333);
-  border-radius: 6px;
-  background: var(--bg-app, #1a1a1a);
+  border-radius: 2px;
+  background: var(--bg-canvas, #fff);
   color: var(--text-primary, #e8e8e8);
 }
 
 .filterInput:focus {
   outline: none;
   border-color: var(--accent, #4a9eff);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #4a9eff) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 12%, transparent);
 }
 
 .filterClear {
@@ -459,7 +548,7 @@
   padding: 0;
   width: 18px;
   height: 18px;
-  border-radius: 4px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;

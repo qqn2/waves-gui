@@ -31,7 +31,7 @@ export const DEFAULT_PANEL_ORDER: SidePanelId[] = ['render', 'json'];
 /** @deprecated use SidePanelsLayoutState */
 export type CodePanelLayoutState = SidePanelsLayoutState;
 
-export const CODE_PANEL_LAYOUT_KEY = 'wavedrom-gui-code-panel-layout';
+export const CODE_PANEL_LAYOUT_KEY = 'wavedrom-gui-code-panel-layout-v2';
 
 export const CODE_PANEL_DOCK_MIN = 140;
 export const CODE_PANEL_DOCK_MAX_RATIO = 0.72;

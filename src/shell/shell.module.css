@@ -11,7 +11,7 @@
   flex: 1 1 0;
   width: 100%;
   min-width: 0;
-  min-height: 0;
+  min-height: 160px;
   overflow: hidden;
 }
 
@@ -88,6 +88,19 @@
   overflow: hidden;
 }
 
+/* Match the signal-list title bar so lane labels and canvas traces share one Y axis. */
+.canvasPane::before {
+  content: '';
+  flex: 0 0 40px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 92%, white),
+    color-mix(in srgb, var(--bg-panel) 76%, var(--bg-app))
+  );
+}
+
 .resizeHandleCol,
 .resizeHandleRow {
   position: relative;
@@ -145,7 +158,7 @@
 .sidePanelSectionLabel {
   flex-shrink: 0;
   padding: 3px 8px;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -185,7 +198,7 @@
 }
 
 .codePanelChromeTitle {
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -212,7 +225,7 @@
   border-right: 1px solid var(--border);
   background: var(--bg-app);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -220,7 +233,7 @@
 
 .codePanelViewModeGroupToolbar .codePanelViewModeBtn {
   padding: 4px 11px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .codePanelViewModeBtn:last-child {
@@ -341,7 +354,7 @@
 
 .menuSubheading {
   padding: 6px 12px 2px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -349,16 +362,55 @@
   pointer-events: none;
 }
 
+.toolbarShell {
+  --toolbar-control-height: 32px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 95%, white),
+    color-mix(in srgb, var(--bg-panel) 82%, var(--bg-app))
+  );
+}
+
 .toolbar {
-  --toolbar-control-height: 28px;
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 4px 6px;
-  background: var(--bg-panel);
+  gap: 6px;
+  padding: 6px 9px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 96%, white),
+    color-mix(in srgb, var(--bg-panel) 80%, var(--bg-app))
+  );
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  flex-wrap: wrap;
+}
+
+.toolbarPrimary {
+  flex-wrap: nowrap;
+}
+
+.zoomControls {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 3px;
+  padding: 0 7px;
+  border-right: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.viewControls {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.viewControls > * {
+  flex: 0 0 auto;
 }
 
 .toolbarSpacer {
@@ -368,6 +420,7 @@
 
 .toolBtn {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   gap: 4px;
@@ -376,37 +429,446 @@
   height: var(--toolbar-control-height);
   padding: 0 8px;
   line-height: 1;
-  font-size: 12px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg-app);
+  font-size: calc(12px * var(--ui-font-scale, 1));
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
   color: var(--text-primary);
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.toolBtn:hover {
-  border-color: var(--accent);
+.contextToolbar {
+  display: flex;
+  min-width: 0;
+  min-height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 92%, white),
+    color-mix(in srgb, var(--bg-panel) 72%, var(--bg-app))
+  );
+  scrollbar-width: thin;
 }
 
-.toolBtn:has(> svg:only-child) {
-  width: var(--toolbar-control-height);
-  padding: 0;
+.contextToolbar > * {
+  flex: 0 0 auto;
+}
+
+.contextToolName {
+  display: inline-flex;
+  min-width: 54px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 44%, var(--border));
+  border-radius: 2px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--selection-fill) 55%, white),
+    color-mix(in srgb, var(--selection-fill) 85%, var(--bg-panel))
+  );
+  color: var(--accent-ink);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.contextHint {
+  color: var(--text-secondary);
+  font-size: calc(11px * var(--ui-font-scale, 1));
+}
+
+.toolBtn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-hover) 58%, white),
+    color-mix(in srgb, var(--bg-hover) 82%, var(--bg-panel))
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 72%, transparent);
+}
+
+.toolBtn:disabled {
+  color: var(--text-muted);
+  cursor: default;
+  opacity: 0.58;
 }
 
 .toolActive {
-  background: var(--selection-fill);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--selection-fill) 45%, white),
+    color-mix(in srgb, var(--selection-fill) 92%, var(--bg-panel))
+  );
   border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 65%, transparent);
 }
 
 .divider {
   width: 1px;
   height: 20px;
   background: var(--border);
-  margin: 0 4px;
+  margin: 0 7px;
+}
+
+.appIdentity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.appMark {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 76%, black);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #6da3ff, var(--accent));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 65%);
+  color: white;
+  font-size: calc(12px * var(--ui-font-scale, 1));
+  font-weight: 800;
+}
+
+.appName {
+  font-size: calc(13px * var(--ui-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.editRail {
+  display: flex;
+  flex: 0 0 72px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  min-height: 0;
+  padding: 7px 6px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--bg-panel) 88%, var(--bg-app)),
+    var(--bg-panel)
+  );
+}
+
+.editRailGroup {
+  display: grid;
+  gap: 3px;
+}
+
+.editRailGroup + .editRailGroup {
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.editRailLabel {
+  padding: 0 2px 3px;
+  color: var(--text-muted);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.railBtn {
+  display: flex;
+  min-height: 52px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 2px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+}
+
+.railBtn:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
+  color: var(--text-primary);
+}
+
+.railBtnActive {
+  border-color: var(--accent);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), color-mix(in srgb, var(--selection-fill) 88%, var(--bg-panel)));
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 75%, transparent);
+}
+
+.inspector {
+  display: flex;
+  flex: 0 0 252px;
+  min-width: 220px;
+  max-width: 280px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-panel);
+}
+
+.inspectorHeader {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-panel) 92%, white), color-mix(in srgb, var(--bg-panel) 75%, var(--bg-app)));
+}
+
+.inspectorHeader > div {
+  display: grid;
+  gap: 1px;
+}
+
+.inspectorHeader strong {
+  color: var(--text-primary);
+  font-size: calc(12px * var(--ui-font-scale, 1));
+}
+
+.inspectorClose {
+  display: grid;
+  width: 25px;
+  height: 23px;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-app));
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.inspectorClose:hover {
+  border-color: #c45b4c;
+  background: linear-gradient(to bottom, #fff4f1, #f2b2a8);
+  color: #7d1f16;
+}
+
+.inspectorEyebrow {
+  color: var(--text-muted);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inspectorBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.inspectorSection {
+  padding: 12px 11px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.inspectorSection h2 {
+  margin: 0 0 11px;
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inspectorField {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: calc(11px * var(--ui-font-scale, 1));
+}
+
+.inspectorField input {
+  width: 100%;
+  height: 29px;
+  min-width: 0;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  outline: none;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-canvas) 90%, var(--bg-app)), var(--bg-canvas) 4px);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.inspectorField input:focus {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.inspectorField input[readonly] {
+  color: var(--text-secondary);
+}
+
+.inspectorFieldHint {
+  margin: 8px 0 0 72px;
+  color: var(--text-muted);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.4;
+}
+
+.colorReadout {
+  display: flex;
+  height: 29px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-canvas);
+}
+
+.colorReadout i {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.colorReadout code {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font: 10px var(--font-mono);
+  text-overflow: ellipsis;
+}
+
+.inspectorMetric {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+}
+
+.inspectorEmpty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  text-align: center;
+}
+
+.inspectorEmptyIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 12px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 2px;
+  background: var(--selection-fill);
+  color: var(--accent);
+}
+
+.inspectorEmpty strong {
+  font-size: calc(12px * var(--ui-font-scale, 1));
+}
+
+.inspectorEmpty p {
+  margin: 6px 0 18px;
+  color: var(--text-secondary);
+  font-size: calc(11px * var(--ui-font-scale, 1));
+  line-height: 1.5;
+}
+
+.inspectorTip {
+  padding: 9px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.5;
+  text-align: left;
+}
+
+.inspectorTip span {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.inspectorTip kbd {
+  font: 700 9px var(--font-mono);
+}
+
+@media (max-width: 1100px) {
+  .inspector {
+    flex-basis: 220px;
+  }
+
+  .appName {
+    display: none;
+  }
+
+  .toolbarPrimary {
+    flex-wrap: wrap;
+  }
+
+  .viewControls {
+    width: 100%;
+    max-width: 100%;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-top: 1px solid var(--border-subtle);
+    scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 780px) {
+  .editRail {
+    flex-basis: 60px;
+  }
+
+  .inspector {
+    display: none;
+  }
 }
 
 .zoomLabel {
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   min-width: 40px;
   text-align: center;
   color: var(--text-secondary);
@@ -424,9 +886,10 @@
   z-index: 50;
   margin-top: 4px;
   overflow: visible;
-  background: var(--bg-panel);
+  background: color-mix(in srgb, var(--bg-panel) 94%, white);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .dropdownScroll {
@@ -441,7 +904,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 8px 12px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   color: var(--text-primary);
   cursor: default;
   white-space: nowrap;
@@ -450,12 +913,12 @@
 
 .sampleFolderRow:hover,
 .sampleFlyoutFolder:hover {
-  background: var(--selection-fill);
+  background: linear-gradient(to right, var(--selection-fill), var(--bg-hover));
 }
 
 .sampleFolderChevron {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
 }
 
@@ -468,7 +931,8 @@
   padding: 4px 0;
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.24);
 }
 
 .sampleFlyout::before {
@@ -490,7 +954,7 @@
   text-align: left;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .sampleFlyoutBtn:hover {
@@ -540,7 +1004,7 @@
 
 .themeRowLabel {
   flex: 0 0 3.25rem;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -573,7 +1037,7 @@
   border-right: 1px solid var(--border);
   background: var(--bg-app);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -646,7 +1110,7 @@
 .themeMiniBtn {
   flex: 0 0 auto;
   padding: 1px 5px;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   line-height: 1.3;
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -665,7 +1129,7 @@
   align-items: center;
   gap: 10px;
   padding: 3px 10px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
   background: var(--bg-panel);
   border-top: 1px solid var(--border);
@@ -687,7 +1151,7 @@
 }
 
 .edgeListLabel {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -718,7 +1182,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: ui-monospace, monospace;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   border: none;
   background: transparent;
   color: inherit;
@@ -731,7 +1195,7 @@
 .edgeChipInput {
   width: 10rem;
   font-family: ui-monospace, monospace;
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   padding: 1px 4px;
   border: 1px solid var(--accent);
   border-radius: 2px;
@@ -745,7 +1209,7 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   line-height: 1;
 }
 
@@ -754,7 +1218,7 @@
 }
 
 .toolGroupLabel {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -773,7 +1237,7 @@
 }
 
 .toolHint {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   color: var(--text-muted, #888);
   margin-left: 2px;
 }
@@ -786,7 +1250,7 @@
 }
 
 .busLabelTag {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -795,10 +1259,10 @@
 .busLabelInput {
   width: 6.5rem;
   padding: 2px 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--bg-canvas);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-canvas) 86%, var(--bg-app)), var(--bg-canvas) 5px);
   color: var(--text-primary);
 }
 
@@ -832,7 +1296,7 @@
 }
 
 .hscaleLabel {
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -843,17 +1307,27 @@
   box-sizing: border-box;
   width: 3.25rem;
   height: var(--toolbar-control-height, 28px);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   padding: 0 4px;
   border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--bg-canvas);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg-canvas) 86%, var(--bg-app)), var(--bg-canvas) 5px);
   color: var(--text-primary);
 }
 
 .hscaleSelect {
   width: auto;
   min-width: 3.25rem;
+}
+
+.hscaleField {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+  min-height: var(--toolbar-control-height, 32px);
+  padding: 0 4px;
+  white-space: nowrap;
 }
 
 .skinSelect {
@@ -869,7 +1343,7 @@
   gap: 6px 10px;
   padding: 2px 6px 4px;
   border-bottom: 1px solid var(--border);
-  background: var(--bg-panel);
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 78%, var(--bg-app)));
   flex-shrink: 0;
 }
 
@@ -877,7 +1351,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
 }
 
@@ -889,20 +1363,20 @@
 .headFootInput {
   width: min(12rem, 28vw);
   padding: 2px 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 3px;
-  background: var(--bg-app);
+  background: var(--bg-canvas);
   color: var(--text-primary);
 }
 
 .headFootNum {
   width: 3rem;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 3px;
-  background: var(--bg-app);
+  background: var(--bg-canvas);
   color: var(--text-primary);
   text-align: center;
 }
@@ -918,11 +1392,11 @@
   flex-shrink: 0;
   margin-left: 2px;
   padding: 2px 8px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
-  background: transparent;
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 72%, var(--bg-app)));
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
 }
 
@@ -933,7 +1407,8 @@
 
 .headFootAdvancedBtn[aria-expanded='true'] {
   color: var(--text-primary);
-  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+  border-color: var(--accent);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
 }
 
 .shellHeaderGrid {
@@ -975,7 +1450,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
   flex-shrink: 0;
 }
@@ -988,7 +1463,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
 }
 
@@ -999,7 +1474,7 @@
   padding: 2px 6px;
   width: 100%;
   box-sizing: border-box;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
 }
 
@@ -1013,7 +1488,7 @@
 .stepsNum {
   width: 3rem;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg-app);
@@ -1025,7 +1500,7 @@
   width: 1.5rem;
   height: 1.5rem;
   padding: 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-font-scale, 1));
   line-height: 1;
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -1055,7 +1530,7 @@
 }
 
 .timingBarSignal {
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   color: var(--text-primary);
   max-width: min(10rem, 24vw);
@@ -1068,7 +1543,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
 }
 
@@ -1080,7 +1555,7 @@
 .timingBarNum {
   width: 3.25rem;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg-app);
@@ -1090,7 +1565,7 @@
 
 .timingBarClear {
   padding: 0 5px;
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-font-scale, 1));
   line-height: 1;
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -1118,7 +1593,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
 }
 
 .timingBarLabel {
@@ -1140,7 +1615,7 @@
 .timingInput {
   width: 3.5rem;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--bg-app);
@@ -1183,7 +1658,7 @@
 
 .errorBtn {
   padding: 0.5rem 1rem;
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-font-scale, 1));
   border: none;
   border-radius: 4px;
   background: var(--accent, #4a9eff);
@@ -1193,7 +1668,7 @@
 
 .errorBtnSecondary {
   padding: 0.5rem 1rem;
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-font-scale, 1));
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg-panel);
@@ -1206,8 +1681,7 @@
   inset: 0;
   z-index: 2000;
   padding: 24px;
-  background: rgba(8, 12, 20, 0.62);
-  backdrop-filter: blur(6px);
+  background: rgba(20, 28, 38, 0.32);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1215,34 +1689,41 @@
 
 .shortcutDialog {
   box-sizing: border-box;
-  background: var(--bg-panel);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 90%, white),
+    color-mix(in srgb, var(--bg-panel) 78%, var(--bg-app))
+  );
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 4px;
   padding: 0;
-  max-width: 880px;
+  max-width: 800px;
   max-height: min(88vh, 720px);
   overflow: auto;
-  width: min(100%, 880px);
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+  width: min(100%, 800px);
+  box-shadow: 4px 7px 22px rgba(0, 0, 0, 0.34);
 }
 
 .shortcutHero {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
-  padding: 22px 24px 18px;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 10px 8px 14px;
   border-bottom: 1px solid var(--border);
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 16%, transparent), transparent 42%),
-    color-mix(in srgb, var(--bg-panel) 94%, var(--accent) 6%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--selection-fill) 32%, white),
+    color-mix(in srgb, var(--selection-fill) 70%, var(--bg-panel))
+  );
 }
 
 .shortcutEyebrow {
-  display: block;
-  margin-bottom: 5px;
+  display: none;
   color: var(--accent);
-  font-size: 10px;
+  font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 750;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1250,26 +1731,26 @@
 
 .shortcutTitle {
   margin: 0;
-  font-size: 22px;
-  font-weight: 720;
-  letter-spacing: -0.02em;
+  font-size: calc(15px * var(--ui-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .shortcutLead {
-  margin: 5px 0 0;
+  margin: 2px 0 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .shortcutClose {
   display: grid;
-  flex: 0 0 30px;
-  width: 30px;
-  height: 30px;
+  flex: 0 0 25px;
+  width: 25px;
+  height: 23px;
   place-items: center;
   border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--bg-app);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 70%, var(--bg-app)));
   cursor: pointer;
   color: var(--text-secondary);
 }
@@ -1277,27 +1758,29 @@
 .shortcutClose:hover {
   border-color: var(--accent);
   color: var(--text-primary);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
 }
 
 .shortcutGrid {
   display: grid;
   grid-template-columns: minmax(360px, 1.35fr) minmax(260px, 0.85fr);
-  gap: 12px;
-  padding: 16px;
+  gap: 9px;
+  padding: 10px;
 }
 
 .shortcutSide {
   display: grid;
   align-content: start;
-  gap: 12px;
+  gap: 9px;
 }
 
 .shortcutCard {
   min-width: 0;
-  padding: 14px;
+  padding: 10px;
   border: 1px solid var(--border);
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--bg-app) 72%, var(--bg-panel));
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--bg-panel) 74%, var(--bg-app));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 68%, transparent);
 }
 
 .shortcutCardHeader {
@@ -1311,12 +1794,12 @@
 .shortcutCardHeader h3 {
   margin: 0;
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .shortcutReportCard {
   border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
-  background: color-mix(in srgb, var(--accent) 7%, var(--bg-app));
+  background: color-mix(in srgb, var(--selection-fill) 44%, var(--bg-panel));
 }
 
 .shortcutReportLink {
@@ -1328,22 +1811,24 @@
   width: 100%;
   min-height: 32px;
   margin-top: 8px;
-  border-radius: 7px;
-  background: var(--accent);
-  color: white;
-  font-size: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
+  color: var(--accent-ink);
+  font-size: calc(12px * var(--ui-font-scale, 1));
   font-weight: 700;
   text-decoration: none;
 }
 
 .shortcutReportLink:hover {
-  filter: brightness(1.08);
+  border-color: var(--accent);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), color-mix(in srgb, var(--selection-fill) 85%, var(--bg-panel)));
 }
 
 .shortcutTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .shortcutTable td {
@@ -1366,8 +1851,8 @@
   padding: 2px 6px;
   border: 1px solid var(--border);
   border-bottom-width: 2px;
-  border-radius: 5px;
-  background: var(--bg-panel);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-control-top, white), color-mix(in srgb, var(--bg-panel) 65%, var(--bg-app)));
   color: var(--text-primary);
   font: 600 10px ui-monospace, monospace;
 }
@@ -1375,7 +1860,7 @@
 .shortcutText {
   margin: 6px 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   line-height: 1.5;
 }
 
@@ -1383,7 +1868,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }
 
 .shortcutLinks a {
@@ -1391,13 +1876,15 @@
   align-items: center;
   gap: 5px;
   padding: 5px 8px;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 2px;
   color: var(--accent);
   text-decoration: none;
 }
 
 .shortcutLinks a:hover {
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  border-color: var(--border);
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-hover));
 }
 
 .shortcutFooter {
@@ -1405,9 +1892,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 16px 16px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 78%, var(--bg-app)));
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
 }
 
 .shortcutFooter p {
@@ -1436,5 +1925,5 @@
   place-items: center;
   height: 100%;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
 }

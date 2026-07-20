@@ -17,7 +17,7 @@
 }
 
 .previewLabel {
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-font-scale, 1));
   font-weight: 600;
   fill: var(--edge-preview-stroke, #7eb8ff);
   paint-order: stroke fill;
@@ -82,7 +82,7 @@
 }
 
 .anchorChar {
-  font-size: 12px;
+  font-size: calc(12px * var(--ui-font-scale, 1));
   font-weight: 700;
   line-height: 1;
   color: var(--edge-stroke, #d4a84b);

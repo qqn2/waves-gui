@@ -2,13 +2,16 @@
 
 :root,
 :root[data-theme='light'] {
-  --bg-app: #ececec;
-  --bg-panel: #ffffff;
-  --bg-canvas: #fafafa;
-  --border: #c8c8c8;
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --accent: #2563eb;
+  --bg-app: #e7e7e7;
+  --bg-panel: #f8f8f8;
+  --bg-canvas: #ffffff;
+  --bg-hover: #e8f2ff;
+  --border: #b9bec5;
+  --border-subtle: #d9dde2;
+  --text-primary: #151515;
+  --text-secondary: #4f5358;
+  --text-muted: #7a7f85;
+  --accent: #2f6fdb;
   --signal-default: #2563eb;
   --signal-high: var(--signal-default);
   --signal-x-fill: #ef444440;
@@ -16,12 +19,15 @@
   --signal-z-stroke: #6b7280;
   --bus-x-fill: #6b728040;
   --bus-x-stroke: #9ca3af;
-  --grid-line: #d4d4d4;
+  --grid-line: #d9dde2;
   --selection-fill: #2563eb22;
   --selection-stroke: #2563eb;
   --pointer-marker: #2563eb55;
   --pointer-marker-row: #2563eb18;
+  --bg-control-top: #ffffff;
+  --accent-ink: #174da8;
   --ui-font-scale: 1;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 }
 
 /* ── Light grey — soft mid-tones for long sessions ───────────────────────── */
@@ -46,4 +52,36 @@
   --selection-stroke: #1d4ed8;
   --pointer-marker: #1d4ed855;
   --pointer-marker-row: #1d4ed818;
+  --bg-control-top: #ffffff;
+  --accent-ink: #153f9e;
+}
+
+/* ── Dark — native desktop dark chrome ───────────────────────────── */
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-app: #191b1f;
+  --bg-panel: #272a30;
+  --bg-canvas: #15171a;
+  --bg-hover: #33445f;
+  --border: #555b65;
+  --border-subtle: #3a3f47;
+  --text-primary: #f1f3f5;
+  --text-secondary: #c6cad0;
+  --text-muted: #9299a3;
+  --accent: #6ea8ff;
+  --signal-default: #72a7ff;
+  --signal-high: var(--signal-default);
+  --signal-x-fill: #ef444438;
+  --signal-x-stroke: #ff7979;
+  --signal-z-stroke: #a7adb7;
+  --bus-x-fill: #9ca3af35;
+  --bus-x-stroke: #b8bec7;
+  --grid-line: #353a42;
+  --selection-fill: #6ea8ff30;
+  --selection-stroke: #82b4ff;
+  --pointer-marker: #6ea8ff55;
+  --pointer-marker-row: #6ea8ff1f;
+  --bg-control-top: #3a3e46;
+  --accent-ink: #b9d5ff;
 }

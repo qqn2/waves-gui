@@ -1,6 +1,6 @@
 import { getSafeStorage } from '../shell/soloDesk/safeStorage';
 
-export type Theme = 'light' | 'light-grey';
+export type Theme = 'light' | 'light-grey' | 'dark';
 
 export const THEME_STORAGE_KEY = 'wavedrom-gui-theme';
 
@@ -34,6 +34,11 @@ export const THEME_OPTIONS: ThemeOption[] = [
     label: 'Light grey',
     description: 'Soft grey chrome — easier on the eyes',
   },
+  {
+    id: 'dark',
+    label: 'Dark',
+    description: 'Dark desktop chrome and waveform canvas',
+  },
 ];
 
 /** Quick-pick accent colors (hardware-doc friendly). */
@@ -60,7 +65,7 @@ export const UI_FONT_SCALES = [
   { id: 'lg', value: 1.1, label: 'L' },
 ] as const;
 
-const VALID: Theme[] = ['light', 'light-grey'];
+const VALID: Theme[] = ['light', 'light-grey', 'dark'];
 
 const LEGACY_DARK = new Set(['dark', 'dark-grey', 'dark-hc']);
 const LEGACY_LIGHT = new Set(['light', 'light-hc']);
@@ -109,7 +114,7 @@ export function normalizeThemeSettings(
 /** Map legacy v1 theme string to a base preset. */
 export function migrateLegacyTheme(raw: string): Theme {
   if (VALID.includes(raw as Theme)) return raw as Theme;
-  if (LEGACY_DARK.has(raw)) return 'light-grey';
+  if (LEGACY_DARK.has(raw)) return 'dark';
   if (LEGACY_LIGHT.has(raw)) return 'light';
   return 'light';
 }

@@ -14,8 +14,6 @@ import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
 import { GroupRow } from './GroupRow';
 import { SignalContextMenu } from './SignalContextMenu';
-import { VectorSegmentEditor } from './VectorSegmentEditor';
-import { findSignal } from '../shared/store';
 import {
   collectAllGroups,
   collectVisibleRows,
@@ -262,20 +260,16 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const menuParentId = menuSignalId
     ? collectVisibleRows(signals).find((r) => r.id === menuSignalId)?.parentId
     : undefined;
-  const selectedVectorId =
-    activeIds.length > 0
-      ? (() => {
-          const id = activeIds[0]!;
-          let isVector = false;
-          findSignal(signals, id, (sig) => {
-            isVector = sig.type === 'vector';
-          });
-          return isVector ? id : null;
-        })()
-      : null;
-
   return (
-    <div className={styles.panel} style={{ width: labelWidth, minWidth: labelWidth }}>
+    <div
+      className={styles.panel}
+      style={{ width: labelWidth, minWidth: labelWidth }}
+      aria-label="Signals panel"
+    >
+      <div className={styles.panelHeader}>
+        <strong>Signals</strong>
+        <span>{signals.length} lanes</span>
+      </div>
       <div className={styles.filterBar}>
         <Search className={styles.filterIcon} size={12} aria-hidden />
         <input
@@ -330,10 +324,6 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
         )}
         </div>
       </div>
-
-      {selectedVectorId && (
-        <VectorSegmentEditor signalId={selectedVectorId} />
-      )}
 
       <div className={styles.footer}>
         <div className={styles.addWrap} ref={addMenuRef}>

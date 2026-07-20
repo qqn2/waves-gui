@@ -4,6 +4,7 @@ import {
   type WavedromColorIndex,
 } from '../../wavedromBridge/wavedromColors';
 import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
+import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
 import { BitStateButton } from './BitStateButton';
 import {
   EDGE_SHAPES,
@@ -59,30 +60,30 @@ export function ToolbarPaintSection({
       <span className={styles.toolGroupLabel}>Value</span>
       <button
         type="button"
-        title="Glitch — spurious same-level transition (WaveDrom 00 / 0.0)"
+        title="Glitch — add a spurious transition (G)"
         className={`${styles.toolBtn} ${paintMode === 'glitch' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('glitch')}
         aria-pressed={paintMode === 'glitch'}
       >
-        ⌢
+        <Zap size={14} aria-hidden /> Glitch
       </button>
       <button
         type="button"
-        title="Timeline gap (|) — vertical break before the next column on this lane"
+        title="Gap — insert a timeline break before the next column (|)"
         className={`${styles.toolBtn} ${paintMode === 'gap' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('gap')}
         aria-pressed={paintMode === 'gap'}
       >
-        |
+        <Columns2 size={14} aria-hidden /> Gap
       </button>
       <button
         type="button"
-        title="Toggle (NOT) — 0↔1; clock phase p↔n and P↔N; x/z unchanged"
+        title="Invert — toggle 0↔1 and clock phase p↔n or P↔N (T); x/z unchanged"
         className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('toggle')}
         aria-pressed={paintMode === 'toggle'}
       >
-        ¬
+        <ArrowLeftRight size={14} aria-hidden /> Invert
       </button>
       {PRIMARY_BIT_STATES.map((st) => (
         <BitStateButton
@@ -130,39 +131,17 @@ export function ToolbarPaintSection({
 }
 
 export interface ToolbarBusSectionProps {
-  activeBusLabel: string;
   activeBusColorIndex: WavedromColorIndex;
-  onBusLabelChange: (label: string) => void;
   onBusColorIndex: (index: WavedromColorIndex) => void;
-  /** Pointer mode: click canvas bus to copy label here */
-  pickFromCanvas?: boolean;
 }
 
 export function ToolbarBusSection({
-  activeBusLabel,
   activeBusColorIndex,
-  onBusLabelChange,
   onBusColorIndex,
-  pickFromCanvas = false,
 }: ToolbarBusSectionProps) {
-  const labelTitle = pickFromCanvas
-    ? 'Click a bus segment on canvas to copy its label here'
-    : 'Label written on bus spans when you drag with Draw';
-
   return (
     <>
       <span className={styles.toolGroupLabel}>Bus</span>
-      <label className={styles.busLabelWrap} title={labelTitle}>
-        <span className={styles.busLabelTag}>label</span>
-        <input
-          type="text"
-          className={styles.busLabelInput}
-          value={activeBusLabel}
-          onChange={(e) => onBusLabelChange(e.target.value)}
-          placeholder="data"
-          aria-label="Bus label"
-        />
-      </label>
       <span className={styles.busColorGroup} title="WaveDrom bus fill (wave digits 2–9)">
         {WAVEDROM_COLOR_INDEXES.map((idx) => (
           <button

@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   AppLayout,
+  EditToolbar,
+  SignalInspector,
   StatusBar,
   Toolbar,
   saveCurrentDiagramFile,
@@ -17,12 +19,11 @@ import {
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
 import { ExportDialog } from './exportEngine';
-import { useStore } from './shared/store';
+import { findSignal, useStore } from './shared/store';
 import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
 import { HeadFootFields } from './shell/HeadFootFields';
-import { SignalTimingBar } from './shell/SignalTimingBar';
 import './App.css';
 
 function IntegratedCanvas({
@@ -160,9 +161,24 @@ function App() {
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const [exportOpen, setExportOpen] = useState(false);
+  const activeSignalIds = useStore((s) => s.view.activeSignalIds);
+  const [inspectorVisible, setInspectorVisible] = useState(false);
   const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
 
+  const selectedBusId = useMemo(() => {
+    if (activeSignalIds.length !== 1) return null;
+    let busId: string | null = null;
+    findSignal(diagram.signals, activeSignalIds[0]!, (signal) => {
+      if (signal.type === 'vector') busId = signal.id;
+    });
+    return busId;
+  }, [activeSignalIds, diagram.signals]);
+
   useEffect(() => {
+    setInspectorVisible(selectedBusId !== null);
+  }, [activeSignalIds, selectedBusId]);
+
+  useLayoutEffect(() => {
     applyThemeSettings(
       themeSettingsFromView({ theme, accentColor, canvasColor, uiFontScale }),
     );
@@ -172,24 +188,36 @@ function App() {
     <CodePanelLayoutProvider>
       <div className="appRoot" data-theme={theme}>
         <header className="shellHeader">
-          <Toolbar onExport={() => setExportOpen(true)} />
+          <Toolbar
+            onExport={() => setExportOpen(true)}
+            inspectorVisible={inspectorVisible}
+            inspectorAvailable={selectedBusId !== null}
+            onToggleInspector={() => setInspectorVisible((visible) => !visible)}
+          />
           <HeadFootFields />
-          <SignalTimingBar />
         </header>
         <div className="mainArea">
-          <AppLayout
-            showCodePanel={showCodePanel}
-            showRenderPanel={showRenderPanel}
-            signalPanel={(ctx) => (
-              <SignalPanel
-                scrollSync={ctx.scrollSync}
-                panelScrollRef={ctx.panelScrollRef}
+          <div className="editorShell">
+            <EditToolbar />
+            <div className="editorWorkspace">
+              <AppLayout
+                showCodePanel={showCodePanel}
+                showRenderPanel={showRenderPanel}
+                signalPanel={(ctx) => (
+                  <SignalPanel
+                    scrollSync={ctx.scrollSync}
+                    panelScrollRef={ctx.panelScrollRef}
+                  />
+                )}
+                canvas={(ctx) => (
+                  <CanvasWithMarker scrollSync={ctx.scrollSync} onHoverHit={setHoverHit} />
+                )}
               />
-            )}
-            canvas={(ctx) => (
-              <CanvasWithMarker scrollSync={ctx.scrollSync} onHoverHit={setHoverHit} />
-            )}
-          />
+            </div>
+            {inspectorVisible && selectedBusId ? (
+              <SignalInspector onClose={() => setInspectorVisible(false)} />
+            ) : null}
+          </div>
         </div>
         <StatusBar pointerHit={hoverHit} />
         <ExportDialog

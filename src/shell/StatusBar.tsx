@@ -18,7 +18,7 @@ function toolHelp(tool: Tool): string {
     case 'select':
       return 'Pointer: click row · drag area · Del clears selection';
     case 'paint':
-      return 'Draw: drag on a bit row · Set or ¬ toggle mode';
+      return 'Draw: drag on a bit row · Set or Invert mode';
     case 'erase':
       return 'Erase: drag on a bit/bus row';
     case 'arrow':
