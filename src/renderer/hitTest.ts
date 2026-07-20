@@ -53,15 +53,11 @@ export function hitTest(
     scrollY: view.scrollY,
   };
 
-  const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+  const axisOffset = TIME_AXIS_HEIGHT;
   const { headHeight } = measureHeadFoot(diagram.config);
   const waveformTop = axisOffset + headHeight;
 
-  if (
-    view.showTimeAxis &&
-    canvasY >= axisOffset &&
-    canvasY < waveformTop
-  ) {
+  if (canvasY >= 0 && canvasY < TIME_AXIS_HEIGHT) {
     const logicalX = canvasToLogicalX(canvasX, transform);
     const raw = Math.floor(logicalX / CELL_WIDTH);
     const step =

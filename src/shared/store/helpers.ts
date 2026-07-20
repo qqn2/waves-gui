@@ -45,7 +45,6 @@ export function defaultView(): ViewState {
     showCodePanel: true,
     showRenderPanel: true,
     labelWidth: loadLabelColumnWidth(),
-    showTimeAxis: true,
     theme: 'light',
     accentColor: null,
     canvasColor: null,

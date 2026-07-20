@@ -19,7 +19,7 @@ export function computeExportDimensions(
 ): ExportDimensions {
   const rows = buildRowLayout(diagram.signals);
   const contentH = totalContentHeight(rows);
-  const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+  const axisOffset = TIME_AXIS_HEIGHT;
   const waveformWidth = diagramLogicalWidth(diagram) * diagram.config.hscale;
   const waveformHeight = contentH + axisOffset;
   return {

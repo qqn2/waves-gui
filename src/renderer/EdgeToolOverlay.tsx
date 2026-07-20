@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { findSignal, useStore } from '../shared/store';
-import type { DiagramState, ViewState } from '../shared/types';
+import type { DiagramState } from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildEdgePathD, labelPositionOnPath, resolveNodeAnchor } from './edgeLayout';
 import { buildRowLayout } from './rowLayout';
@@ -11,8 +11,8 @@ import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 
 const PREVIEW_ARROW_ID = 'wd-edge-preview-arrowhead';
 
-function waveformTop(view: ViewState, diagram: DiagramState): number {
-  const axis = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+function waveformTop(diagram: DiagramState): number {
+  const axis = TIME_AXIS_HEIGHT;
   const { headHeight } = measureHeadFoot(diagram.config);
   return axis + headHeight;
 }
@@ -41,7 +41,7 @@ export function EdgeToolOverlay() {
       const right = stepLogicalXEnd(signal, step) * scale - view.scrollX;
       return { left, width: right - left, center: (left + right) / 2 };
     };
-    const topBase = waveformTop(view, diagram);
+    const topBase = waveformTop(diagram);
 
     const rowBand = (
       signalId: string,

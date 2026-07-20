@@ -66,7 +66,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const toggleRenderPanel = useStore((s) => s.toggleRenderPanel);
   const setDiagramSkin = useStore((s) => s.setDiagramSkin);
   const diagramSkin = useStore((s) => s.diagram.config.skin);
-  const toggleTimeAxis = useStore((s) => s.toggleTimeAxis);
   const addSignal = useStore((s) => s.addSignal);
   const addGroup = useStore((s) => s.addGroup);
   const undo = useStore((s) => s.undo);
@@ -92,7 +91,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
     const rows = buildRowLayout(diagram.signals);
     const contentH = totalContentHeight(rows);
 
-    const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+    const axisOffset = TIME_AXIS_HEIGHT;
     const { headHeight, footHeight } = measureHeadFoot(diagram.config);
 
     const zoomX = canvasWidth / contentW;
@@ -304,9 +303,6 @@ export function Toolbar({ onExport }: ToolbarProps) {
           <option value="lowkey">lowkey</option>
         </select>
       </label>
-      <button type="button" className={styles.toolBtn} onClick={() => toggleTimeAxis()}>
-        {view.showTimeAxis ? '✓ ' : ''}Axis
-      </button>
       <ThemeMenu />
       <button
         type="button"

@@ -43,7 +43,7 @@ export function PointerMarker({
   const left = stepLogicalX(targetSignal, hit.step) * scale - view.scrollX;
   const cellW =
     (stepLogicalXEnd(targetSignal, hit.step) - stepLogicalX(targetSignal, hit.step)) * scale;
-  const axis = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+  const axis = TIME_AXIS_HEIGHT;
   const { headHeight } = measureHeadFoot(diagram.config);
   const waveformTop = axis + headHeight;
   const top = row.y * view.zoom - view.scrollY + waveformTop;

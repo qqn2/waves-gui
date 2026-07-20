@@ -26,7 +26,6 @@ function minimal(overrides?: Partial<ViewState>): {
     showCodePanel: true,
     showRenderPanel: false,
     labelWidth: 160,
-    showTimeAxis: true,
     theme: 'light',
     accentColor: null,
     canvasColor: null,

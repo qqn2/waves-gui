@@ -107,8 +107,8 @@ export function isBitOrVector(sig: SignalOrGroup): sig is Signal {
   return sig.type === 'bit' || sig.type === 'vector';
 }
 
-function waveformTopPx(view: ViewState, diagram: DiagramState): number {
-  const axis = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+function waveformTopPx(diagram: DiagramState): number {
+  const axis = TIME_AXIS_HEIGHT;
   const { headHeight } = measureHeadFoot(diagram.config);
   return axis + headHeight;
 }
@@ -135,7 +135,7 @@ export function resolveNodeAnchor(
   if (!signal) return null;
 
   const scale = view.zoom * diagram.config.hscale;
-  const top = waveformTopPx(view, diagram);
+  const top = waveformTopPx(diagram);
   const x = stepLogicalCenter(signal, step) * scale - view.scrollX;
   const y = (row.y + row.height / 2) * view.zoom - view.scrollY + top;
   return { x, y };

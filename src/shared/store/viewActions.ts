@@ -32,7 +32,6 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'toggleCodePanel'
   | 'toggleRenderPanel'
   | 'setLabelWidth'
-  | 'toggleTimeAxis'
   | 'setTheme'
   | 'setAccentColor'
   | 'setCanvasColor'
@@ -119,12 +118,6 @@ export function createViewActions(set: ImmerSet): Pick<
         s.view.labelWidth = next;
       });
       saveLabelColumnWidth(next);
-    },
-
-    toggleTimeAxis() {
-      set((s) => {
-        s.view.showTimeAxis = !s.view.showTimeAxis;
-      });
     },
 
     setTheme(theme: Theme) {

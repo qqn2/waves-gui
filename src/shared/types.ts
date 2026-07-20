@@ -154,7 +154,6 @@ export interface ViewState {
   showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
   labelWidth: number;
-  showTimeAxis: boolean;
   theme: Theme;
   /** User accent override; null = preset default for active theme. */
   accentColor: string | null;

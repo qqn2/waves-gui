@@ -81,7 +81,7 @@ export class CanvasRenderer {
 
     const rows = buildRowLayout(diagram.signals);
     const contentH = totalContentHeight(rows);
-    const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+    const axisOffset = TIME_AXIS_HEIGHT;
     const { headHeight, footHeight } = measureHeadFoot(diagram.config);
     const waveformTop = axisOffset + headHeight;
     const showAnchorLetters =
@@ -97,9 +97,7 @@ export class CanvasRenderer {
       '#111';
     this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    if (view.showTimeAxis) {
-      renderTimeAxis(this.ctx, diagram.config.totalSteps, transform, canvasWidth);
-    }
+    renderTimeAxis(this.ctx, diagram.config.totalSteps, transform, canvasWidth);
 
     this.ctx.save();
     this.ctx.translate(0, waveformTop);

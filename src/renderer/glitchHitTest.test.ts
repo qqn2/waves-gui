@@ -41,7 +41,6 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     showCodePanel: false,
     showRenderPanel: false,
     labelWidth: 160,
-    showTimeAxis: true,
     theme: 'light-grey',
     accentColor: null,
     canvasColor: null,

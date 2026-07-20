@@ -31,7 +31,7 @@ export function hitTestStepGapBoundary(
     scrollX: view.scrollX,
     scrollY: view.scrollY,
   };
-  const axisOffset = view.showTimeAxis ? TIME_AXIS_HEIGHT : 0;
+  const axisOffset = TIME_AXIS_HEIGHT;
   const { headHeight } = measureHeadFoot(diagram.config);
   const waveformTop = axisOffset + headHeight;
   const logicalX = canvasToLogicalX(canvasX, transform);

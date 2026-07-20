@@ -54,7 +54,7 @@ describe('signal panel alignment', () => {
       head: { text: 'Clock and reset' },
     };
 
-    expect(getWaveformTopInsetPx(config, true)).toBe(48);
+    expect(getWaveformTopInsetPx(config)).toBe(48);
     expect(getSignalRowsTopInsetPx(config)).toBe(24);
   });
 });

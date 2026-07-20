@@ -335,17 +335,15 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
   const panelBg = themeColor('--bg-panel', '#242424');
 
   const waveformParts: string[] = [];
-  if (view.showTimeAxis) {
-    waveformParts.push(
-      svgTimeAxis(
-        diagram.config.totalSteps,
-        diagram.config.hscale,
-        dims.waveformWidth,
-        panelBg,
-        themeColor('--text-secondary', '#999999'),
-      ),
-    );
-  }
+  waveformParts.push(
+    svgTimeAxis(
+      diagram.config.totalSteps,
+      diagram.config.hscale,
+      dims.waveformWidth,
+      panelBg,
+      themeColor('--text-secondary', '#999999'),
+    ),
+  );
   waveformParts.push(
     svgGrid(
       diagram.config.totalSteps,

@@ -185,11 +185,9 @@ export function renderHeadFoot(
 /** Canvas Y offset (px) where the first signal row is drawn — below time axis and head text. */
 export function getWaveformTopInsetPx(
   config: DiagramConfig,
-  showTimeAxis: boolean,
 ): number {
-  const axis = showTimeAxis ? TIME_AXIS_HEIGHT : 0;
   const { headHeight } = measureHeadFoot(config);
-  return axis + headHeight;
+  return TIME_AXIS_HEIGHT + headHeight;
 }
 
 /** SignalPanel's filter bar occupies the same vertical band as the time axis. */

@@ -39,7 +39,6 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     showCodePanel: false,
     showRenderPanel: false,
     labelWidth: 160,
-    showTimeAxis: true,
     theme: 'light-grey',
     accentColor: null,
     canvasColor: null,
@@ -58,6 +57,14 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
 }
 
 describe('hitTest', () => {
+  it('always exposes the fixed time axis hit region', () => {
+    const diagram = bitDiagram();
+    const hit = hitTest(CELL_WIDTH * 2 + 5, TIME_AXIS_HEIGHT / 2, diagram, defaultView());
+    expect(hit.isTimeAxis).toBe(true);
+    expect(hit.step).toBe(2);
+    expect(hit.signalId).toBeNull();
+  });
+
   it('maps CSS coords to signal step and top half', () => {
     const diagram = bitDiagram();
     const y = TIME_AXIS_HEIGHT + 10;

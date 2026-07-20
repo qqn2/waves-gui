@@ -113,7 +113,6 @@ describe('resolveEdgeAnchors', () => {
       zoom: 1,
       scrollX: 0,
       scrollY: 0,
-      showTimeAxis: false,
     } as import('../shared/types').ViewState;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, idx);
     expect(anchors).not.toBeNull();
@@ -155,7 +154,6 @@ describe('hitTestDiagramEdge', () => {
       zoom: 1,
       scrollX: 0,
       scrollY: 0,
-      showTimeAxis: false,
     } as import('../shared/types').ViewState;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, idx)!;
     const mx = (anchors.from.x + anchors.to.x) / 2;
