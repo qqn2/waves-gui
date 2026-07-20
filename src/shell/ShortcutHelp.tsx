@@ -9,7 +9,7 @@ export interface ShortcutHelpProps {
 
 const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'V / D / E', action: 'Pointer / draw / erase tool' },
-  { keys: 'G / | / T', action: 'Glitch / timeline gap / toggle mode' },
+  { keys: 'G / | / T', action: 'Glitch / timeline gap / invert mode' },
   { keys: '1 / 0 / P / N / Z / X', action: 'Primary paint values' },
   { keys: 'Ctrl+Z / Ctrl+Y', action: 'Undo / redo' },
   { keys: 'Ctrl+S', action: 'Save to the opened file, or Save As' },
@@ -19,8 +19,8 @@ const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'Ctrl + + / − / 0', action: 'Zoom in / out / reset' },
 ];
 
-const BUG_REPORT_URL =
-  'https://github.com/qqn2/waves-gui/issues/new?template=bug_report.yml';
+const GITHUB_URL = 'https://github.com/qqn2/waves-gui';
+const BUG_REPORT_URL = `${GITHUB_URL}/issues/new?template=bug_report.yml`;
 
 export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
   useEffect(() => {
@@ -103,7 +103,7 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
         <footer className={styles.shortcutFooter}>
           <p>This independent community project is not affiliated with or endorsed by WaveDrom or its maintainers.</p>
           <nav className={styles.shortcutLinks} aria-label="Project links">
-            <a href="https://github.com/qqn2/waves-gui" target="_blank" rel="noreferrer"><Github size={13} aria-hidden /> Source</a>
+            <a href={GITHUB_URL} target="_blank" rel="noreferrer"><Github size={13} aria-hidden /> GitHub</a>
             <a href="/licenses/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer"><FileText size={13} aria-hidden /> Licenses</a>
           </nav>
         </footer>
