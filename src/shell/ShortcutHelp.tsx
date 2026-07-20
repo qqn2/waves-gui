@@ -81,7 +81,7 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
                 <h3>Browser-local privacy</h3>
               </div>
               <p className={styles.shortcutText}>
-                Editing and rendering stay in this browser. The full recovery draft and recent filenames are stored in localStorage, do not synchronize, and disappear when site data is cleared.
+                Editing and rendering stay in this browser. The full recovery draft and recent filenames are stored in localStorage, do not synchronize, and disappear when site data is cleared. Choosing <strong>Open in WaveDrom Editor</strong> is the exception: after a warning, it sends the complete diagram to wavedrom.com in the URL.
               </p>
             </section>
 

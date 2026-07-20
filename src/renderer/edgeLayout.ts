@@ -27,6 +27,7 @@ export interface NodeAnchor {
 export interface ParsedEdge {
   fromNode: string;
   toNode: string;
+  hasStartArrow: boolean;
   hasArrow: boolean;
   shape: string;
   label: string;
@@ -50,18 +51,17 @@ export function parsePathEndpoints(path: string): { from: string; to: string } |
   return { from: path[0]!, to: path[path.length - 1]! };
 }
 
-/** First char = from node, last = to; `>` before to enables arrowhead. */
+/** First/last chars are nodes; connector `<` / `>` enable start/end arrowheads. */
 export function parseEdgePath(pathWord: string): Omit<ParsedEdge, 'label'> {
   const fromNode = pathWord[0]!;
   const toNode = pathWord[pathWord.length - 1]!;
-  let hasArrow = false;
-  let shapeEnd = pathWord.length - 1;
-  if (pathWord.length >= 3 && pathWord[pathWord.length - 2] === '>') {
-    hasArrow = true;
-    shapeEnd = pathWord.length - 2;
-  }
-  const shape = pathWord.slice(1, shapeEnd);
-  return { fromNode, toNode, hasArrow, shape };
+  let connector = pathWord.slice(1, -1);
+  const hasStartArrow = connector.startsWith('<');
+  const hasArrow = connector.endsWith('>');
+  if (hasStartArrow) connector = connector.slice(1);
+  if (hasArrow) connector = connector.slice(0, -1);
+  const shape = connector || '-';
+  return { fromNode, toNode, hasStartArrow, hasArrow, shape };
 }
 
 export function parseEdge(edge: string): ParsedEdge | null {
@@ -286,7 +286,6 @@ export function buildEdgeDrawItems(
 
   for (let i = 0; i < edges.length; i++) {
     const edgeStr = edges[i]!;
-    const { path } = parseEdgeString(edgeStr);
     const parsed = parseEdge(edgeStr);
     if (!parsed) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
@@ -296,10 +295,10 @@ export function buildEdgeDrawItems(
       : undefined;
     const d = buildEdgePathD(anchors.from, anchors.to, parsed.shape, curve);
     const labelPos = labelPositionOnPath(anchors.from, anchors.to, parsed.shape);
-    const bidirectional = path.includes('<->');
+    const bidirectional = parsed.hasStartArrow;
     items.push({
       d,
-      hasArrow: parsed.hasArrow || bidirectional,
+      hasArrow: parsed.hasArrow,
       bidirectional,
       label: parsed.label,
       labelX: labelPos.x,

@@ -42,6 +42,10 @@ describe('nodeString', () => {
 
   it('formats WaveDrom edge strings', () => {
     expect(formatArrowEdge('a', 'b', 't1')).toBe('a->b t1');
+    expect(formatArrowEdge('c', 'd', 'time 3', '-~>')).toBe('c-~>d time 3');
+    expect(formatArrowEdge('d', 'e', undefined, '~-')).toBe('d~-e');
+    expect(formatArrowEdge('h', 'j', undefined, '~->')).toBe('h~->j');
+    expect(formatArrowEdge('g', 'h', '3 ms', '<->')).toBe('g<->h 3 ms');
     expect(formatTimespanEdge('I', 'J', '5 ms')).toBe('I+J 5 ms');
   });
 

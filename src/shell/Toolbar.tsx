@@ -52,8 +52,10 @@ export function Toolbar({
   const activeBit = useStore((s) => s.view.activeBitState);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
   const setActiveTimespanLabel = useStore((s) => s.setActiveTimespanLabel);
-  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
-  const setActiveEdgeShape = useStore((s) => s.setActiveEdgeShape);
+  const activeEdgeConnector = useStore((s) => s.view.activeEdgeConnector);
+  const setActiveEdgeConnector = useStore((s) => s.setActiveEdgeConnector);
+  const activeEdgeLabel = useStore((s) => s.view.activeEdgeLabel);
+  const setActiveEdgeLabel = useStore((s) => s.setActiveEdgeLabel);
   const showAnchorLetters = useStore((s) => s.view.showAnchorLetters);
   const setShowAnchorLetters = useStore((s) => s.setShowAnchorLetters);
   const activeBusColorIndex = useStore((s) => s.view.activeBusColorIndex);
@@ -227,7 +229,7 @@ export function Toolbar({
           className={`${styles.toolBtn} ${inspectorVisible ? styles.toolActive : ''}`}
           onClick={onToggleInspector}
           disabled={!inspectorAvailable}
-          title={inspectorAvailable ? 'Show or hide bus properties inspector' : 'Select a bus to inspect its properties'}
+          title={inspectorAvailable ? 'Show or hide signal properties inspector' : 'Select one signal to inspect its properties'}
           aria-pressed={inspectorVisible}
         >
           <PanelRight size={16} aria-hidden /> Inspector
@@ -270,10 +272,12 @@ export function Toolbar({
         <span className={styles.divider} />
         <ToolbarEdgeSection
           tool={tool}
-          activeEdgeShape={activeEdgeShape}
+          activeEdgeConnector={activeEdgeConnector}
+          activeEdgeLabel={activeEdgeLabel}
           showAnchorLetters={showAnchorLetters}
           activeTimespanLabel={activeTimespanLabel}
-          onEdgeShapeChange={setActiveEdgeShape}
+          onEdgeConnectorChange={setActiveEdgeConnector}
+          onEdgeLabelChange={setActiveEdgeLabel}
           onToggleAnchorLetters={() => setShowAnchorLetters(!showAnchorLetters)}
           onTimespanLabelChange={setActiveTimespanLabel}
         />

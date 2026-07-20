@@ -28,6 +28,7 @@ export function EdgeOverlay() {
       key: string;
       index: number;
       d: string;
+      hasStartArrow: boolean;
       hasArrow: boolean;
       label: string;
       labelX: number;
@@ -70,6 +71,7 @@ export function EdgeOverlay() {
         key: `edge-${i}`,
         index: i,
         d,
+        hasStartArrow: parsed.hasStartArrow,
         hasArrow: parsed.hasArrow,
         label: parsed.label,
         labelX: labelPos.x,
@@ -96,6 +98,7 @@ export function EdgeOverlay() {
           <path
             className={styles.edgePath}
             d={s.d}
+            markerStart={s.hasStartArrow ? `url(#${ARROW_ID})` : undefined}
             markerEnd={s.hasArrow ? `url(#${ARROW_ID})` : undefined}
           />
           {s.label ? (

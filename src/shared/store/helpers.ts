@@ -40,6 +40,7 @@ export function defaultView(): ViewState {
     activeBitState: '1',
     activeBusLabel: 'data',
     activeTimespanLabel: '5 ms',
+    activeEdgeLabel: '',
     activeBusColorIndex: 2,
     activeSignalIds: [],
     showCodePanel: true,
@@ -54,7 +55,7 @@ export function defaultView(): ViewState {
     paintDraft: null,
     edgeAnchorPending: null,
     edgeToolHover: null,
-    activeEdgeShape: '',
+    activeEdgeConnector: '~>',
     showAnchorLetters: false,
     diagramRevision: 0,
   };

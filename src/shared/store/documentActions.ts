@@ -1,6 +1,13 @@
 import { current } from 'immer';
 import { cancelPendingCodeToDiagramDebounce } from '../../codePanel/flushRegistry';
-import { pruneUnusedNodeAnchorsAfterEdgeRemoval } from '../../wavedromBridge/nodeString';
+import {
+  allocateNodeChars,
+  findSignalInDiagram,
+  formatArrowEdge,
+  pruneUnusedNodeAnchorsAfterEdgeRemoval,
+  setNodeCharAt,
+  visibleNodeCharAt,
+} from '../../wavedromBridge/nodeString';
 import type { AppState, DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
@@ -17,10 +24,11 @@ function resetTransientDocumentView(s: AppState & StoreActions): void {
 export function createEdgeActions(set: ImmerSet): Pick<
   StoreActions,
   | 'addDiagramEdge'
+  | 'addDiagramArrow'
   | 'updateDiagramEdge'
   | 'removeDiagramEdge'
   | 'setEdgeCurveControl'
-  | 'setActiveEdgeShape'
+  | 'setActiveEdgeConnector'
   | 'setShowAnchorLetters'
   | 'setEdgeAnchorPending'
 > {
@@ -30,6 +38,46 @@ export function createEdgeActions(set: ImmerSet): Pick<
         pushHistory(s);
         if (!s.diagram.edges) s.diagram.edges = [];
         s.diagram.edges.push(edge);
+        s.view.isDirty = true;
+      });
+    },
+
+    addDiagramArrow(from, to, connector = '->', label) {
+      set((s) => {
+        if (
+          from.signalId === to.signalId
+          && from.step === to.step
+        ) return;
+
+        const fromSignal = findSignalInDiagram(s.diagram, from.signalId);
+        const toSignal = findSignalInDiagram(s.diagram, to.signalId);
+        if (!fromSignal || !toSignal) return;
+        if (fromSignal.type === 'spacer' || toSignal.type === 'spacer') return;
+
+        const totalSteps = s.diagram.config.totalSteps;
+        if (
+          from.step < 0
+          || from.step >= totalSteps
+          || to.step < 0
+          || to.step >= totalSteps
+        ) return;
+
+        const existingFrom = visibleNodeCharAt(fromSignal, from.step, totalSteps);
+        const existingTo = visibleNodeCharAt(toSignal, to.step, totalSteps);
+        const missingCount = Number(existingFrom === null) + Number(existingTo === null);
+        const allocated = allocateNodeChars(current(s.diagram), missingCount);
+        if (allocated.length !== missingCount) return;
+
+        let nextAllocated = 0;
+        const fromChar = existingFrom ?? allocated[nextAllocated++]!;
+        const toChar = existingTo ?? allocated[nextAllocated++]!;
+        if (fromChar === toChar) return;
+
+        pushHistory(s);
+        if (!existingFrom) setNodeCharAt(fromSignal, from.step, fromChar, totalSteps);
+        if (!existingTo) setNodeCharAt(toSignal, to.step, toChar, totalSteps);
+        if (!s.diagram.edges) s.diagram.edges = [];
+        s.diagram.edges.push(formatArrowEdge(fromChar, toChar, label, connector));
         s.view.isDirty = true;
       });
     },
@@ -80,9 +128,9 @@ export function createEdgeActions(set: ImmerSet): Pick<
       });
     },
 
-    setActiveEdgeShape(shape) {
+    setActiveEdgeConnector(connector) {
       set((s) => {
-        s.view.activeEdgeShape = shape;
+        s.view.activeEdgeConnector = connector;
       });
     },
 

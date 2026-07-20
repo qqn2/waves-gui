@@ -19,12 +19,11 @@ Open `http://localhost:5173`. A production build is created with `npm run build`
 
 ## Privacy
 
-- Diagram editing and rendering happen in the browser. The app has no analytics and does not send diagrams to WaveDrom or any other remote service.
+- Diagram editing and rendering happen in the browser. The app has no analytics and does not send diagrams to a remote service unless you explicitly confirm **Open in WaveDrom Editor**.
+- **Open in WaveDrom Editor** puts the complete diagram JSON in a `wavedrom.com` query URL after showing a privacy warning. That URL may be retained in browser history, network infrastructure, or WaveDrom server logs. Do not use it for confidential diagrams.
 - For crash recovery, the complete current diagram is automatically stored in this browser's `localStorage`. Recent file **names** are stored there too.
 - This browser-local data does not synchronize to another browser or device. It disappears when site data is cleared.
 - Do not use shared browser profiles for confidential work. Clear this site's data after use on a shared machine.
-
-The former “Web” action was removed because putting a complete diagram in a third-party query URL could expose it through browser history, clipboard history, intermediary systems, or server logs.
 
 ## Architecture
 
@@ -68,7 +67,7 @@ npm run deploy
 
 For Cloudflare dashboard/Git deployment, import this GitHub repository as a Worker, use `npm run build` as the build command, and `dist` as the asset directory. Keep the checked-in Wrangler configuration as the deployment source of truth. Verify `/`, `/licenses/THIRD_PARTY_NOTICES.txt`, a nonexistent SPA route, and the response headers after every deployment.
 
-Clipboard image export requires HTTPS (or localhost). Blob-based downloads and the local SVG preview are permitted by the checked-in CSP; network connections, framing, camera, microphone, location, and other unnecessary capabilities are denied.
+Clipboard image export requires HTTPS (or localhost). Blob-based downloads and the local SVG preview are permitted by the checked-in CSP; background network connections, framing, camera, microphone, location, and other unnecessary capabilities are denied. The explicitly confirmed WaveDrom handoff is a top-level navigation to the external editor.
 
 ## Security reporting
 

@@ -2,9 +2,8 @@ import type { Signal } from '../shared/types';
 import { BUS_DIAGONAL, TRACE_PADDING } from '../shared/constants';
 import type { ViewTransform } from './coordinates';
 import { logicalToCanvasY } from './coordinates';
-import { isVectorUnknownValue } from './stateColors';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
-import { segmentBusFill, segmentBusStroke } from './vectorBusStyle';
+import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from './vectorBusStyle';
 import { labelOverflowsInWidth } from '../shared/vectorLabelFit';
 import { drawBusOverflowIndicator } from './drawBusOverflowIndicator';
 import { drawStepGap } from './drawStepGap';
@@ -28,15 +27,7 @@ export function renderVectorSignal(
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
 
-  const textPrimary =
-    getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
-    '#e8e8e8';
-  const textSecondary =
-    getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() ||
-    '#b0b0b0';
-
   for (const seg of signal.segments) {
-    const unknown = isVectorUnknownValue(seg.value);
     const fill = segmentBusFill(seg, signal);
     const stroke = segmentBusStroke(seg, signal);
     ctx.fillStyle = fill;
@@ -74,7 +65,7 @@ export function renderVectorSignal(
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = unknown ? textSecondary : textPrimary;
+    ctx.fillStyle = segmentBusTextColor(seg);
     ctx.font = `${fontPx}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

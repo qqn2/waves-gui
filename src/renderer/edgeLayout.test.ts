@@ -26,6 +26,7 @@ describe('parseEdgeString', () => {
     expect(parseEdge('a~b t1')).toEqual({
       fromNode: 'a',
       toNode: 'b',
+      hasStartArrow: false,
       hasArrow: false,
       shape: '~',
       label: 't1',
@@ -36,6 +37,7 @@ describe('parseEdgeString', () => {
     expect(parseEdgePath('c-~>d')).toEqual({
       fromNode: 'c',
       toNode: 'd',
+      hasStartArrow: false,
       hasArrow: true,
       shape: '-~',
     });
@@ -44,6 +46,13 @@ describe('parseEdgeString', () => {
       toNode: 'j',
       hasArrow: true,
       shape: '~-',
+    });
+    expect(parseEdgePath('a<~>b')).toEqual({
+      fromNode: 'a',
+      toNode: 'b',
+      hasStartArrow: true,
+      hasArrow: true,
+      shape: '~',
     });
   });
 });

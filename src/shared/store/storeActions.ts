@@ -98,6 +98,12 @@ export interface StoreActions {
 
   // ── WaveDrom edges ──
   addDiagramEdge(edge: string): void;
+  addDiagramArrow(
+    from: { signalId: string; step: number },
+    to: { signalId: string; step: number },
+    connector?: string,
+    label?: string,
+  ): void;
   updateDiagramEdge(index: number, edge: string): void;
   removeDiagramEdge(index: number): void;
   setEdgeCurveControl(
@@ -105,7 +111,7 @@ export interface StoreActions {
     control: { c1x: number; c2x: number } | undefined,
     options?: { recordHistory?: boolean },
   ): void;
-  setActiveEdgeShape(shape: string): void;
+  setActiveEdgeConnector(connector: string): void;
   setShowAnchorLetters(show: boolean): void;
   setEdgeAnchorPending(pending: EdgeAnchorPending | null): void;
 
@@ -127,6 +133,7 @@ export interface StoreActions {
   setActiveBitState(state: BitState): void;
   setActiveBusLabel(label: string): void;
   setActiveTimespanLabel(label: string): void;
+  setActiveEdgeLabel(label: string): void;
   setActiveBusColorIndex(index: WavedromColorIndex): void;
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
   setPaintMode(mode: PaintMode): void;

@@ -9,7 +9,7 @@ function selectedSignal(signals: ReturnType<typeof useStore.getState>['diagram']
   if (ids.length !== 1) return null;
   let result: Signal | null = null;
   findSignal(signals, ids[0]!, (signal) => { result = signal; });
-  return result?.type === 'vector' ? result : null;
+  return result?.type === 'bit' || result?.type === 'vector' ? result : null;
 }
 
 export function SignalInspector({ onClose }: { onClose: () => void }) {
@@ -27,20 +27,22 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
     setNameDraft(signal?.name ?? '');
   }, [signal?.id, signal?.name]);
 
+  const isBus = signal?.type === 'vector';
+
   return (
     <aside className={styles.inspector} aria-label="Properties inspector">
       <div className={styles.inspectorHeader}>
         <div>
-          <span className={styles.inspectorEyebrow}>Bus inspector</span>
-          <strong>{signal?.name ?? 'Bus properties'}</strong>
+          <span className={styles.inspectorEyebrow}>{isBus ? 'Bus inspector' : 'Signal inspector'}</span>
+          <strong>{signal?.name ?? 'Signal properties'}</strong>
         </div>
-        <button type="button" className={styles.inspectorClose} onClick={onClose} aria-label="Close bus inspector">
+        <button type="button" className={styles.inspectorClose} onClick={onClose} aria-label="Close signal inspector">
           <X size={14} aria-hidden />
         </button>
       </div>
 
       {signal ? (
-        <div className={styles.inspectorBody} aria-label="Bus inspector details">
+        <div className={styles.inspectorBody} aria-label="Signal inspector details">
           <section className={styles.inspectorSection}>
             <h2>Identity</h2>
             <label className={styles.inspectorField}>
@@ -64,7 +66,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
             </label>
             <label className={styles.inspectorField}>
               <span>Type</span>
-              <input type="text" value="Bus" readOnly />
+              <input type="text" value={isBus ? 'Bus' : 'Bit'} readOnly />
             </label>
             <label className={styles.inspectorField}>
               <span>Color</span>
@@ -75,25 +77,29 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
             </label>
           </section>
 
-          <section className={styles.inspectorSection}>
-            <h2>Drawing</h2>
-            <label className={styles.inspectorField}>
-              <span>Bus label</span>
-              <input
-                type="text"
-                value={activeBusLabel}
-                onChange={(event) => setActiveBusLabel(event.target.value)}
-                placeholder="data"
-                aria-label="Bus label"
-                spellCheck={false}
-              />
-            </label>
-            <p className={styles.inspectorFieldHint}>
-              Applied to new bus spans when drawing. Clicking an existing bus segment copies its value here.
-            </p>
-          </section>
+          {isBus ? (
+            <>
+              <section className={styles.inspectorSection}>
+                <h2>Drawing</h2>
+                <label className={styles.inspectorField}>
+                  <span>Bus label</span>
+                  <input
+                    type="text"
+                    value={activeBusLabel}
+                    onChange={(event) => setActiveBusLabel(event.target.value)}
+                    placeholder="data"
+                    aria-label="Bus label"
+                    spellCheck={false}
+                  />
+                </label>
+                <p className={styles.inspectorFieldHint}>
+                  Applied to new bus spans when drawing. Clicking an existing bus segment copies its value here.
+                </p>
+              </section>
 
-          <VectorSegmentEditor signalId={signal.id} />
+              <VectorSegmentEditor signalId={signal.id} />
+            </>
+          ) : null}
 
           <section className={styles.inspectorSection}>
             <h2>Timing</h2>
@@ -103,6 +109,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 type="number"
                 min={1}
                 placeholder="1"
+                aria-label="Signal period"
                 value={signal.period ?? ''}
                 onChange={(event) => setSignalPeriod(signal.id, event.target.value ? Number(event.target.value) : undefined)}
               />
@@ -113,19 +120,22 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 type="number"
                 step="any"
                 placeholder="0"
+                aria-label="Signal phase"
                 value={signal.phase ?? ''}
                 onChange={(event) => setSignalPhase(signal.id, event.target.value ? Number(event.target.value) : undefined)}
               />
             </label>
-            <div className={styles.inspectorMetric}>
-              <Activity size={15} aria-hidden />
-              <span>{signal.segments.length} bus segments</span>
-            </div>
+            {isBus ? (
+              <div className={styles.inspectorMetric}>
+                <Activity size={15} aria-hidden />
+                <span>{signal.segments.length} bus segments</span>
+              </div>
+            ) : null}
           </section>
         </div>
       ) : (
         <div className={styles.inspectorEmpty}>
-          <strong>The selected bus is no longer available.</strong>
+          <strong>The selected signal is no longer available.</strong>
         </div>
       )}
     </aside>

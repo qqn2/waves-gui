@@ -7,8 +7,8 @@ export function edgeToolHint(
 ): string | null {
   if (tool === 'arrow') {
     return pending?.kind === 'arrow'
-      ? `Anchor ${pending.char} at T${pending.step} — click end step (preview follows pointer · Esc cancel · Shift+click removes anchor)`
-      : 'Arrow: click start anchor, move to preview, click end anchor — no drag';
+      ? `Anchor ${pending.char} at T${pending.step} — drag to an end step and release (Esc cancels)`
+      : 'Edge: choose a connector and optional label, then drag from start to end';
   }
   if (tool === 'timespan') {
     const labelNote = timespanLabel?.trim()

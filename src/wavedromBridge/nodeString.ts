@@ -74,13 +74,15 @@ export function collectUsedNodeChars(signals: SignalOrGroup[]): Set<string> {
 
 /** Next free single-letter node id (WaveDrom edge anchor). */
 export function allocateNodeChar(diagram: DiagramState): string | null {
+  return allocateNodeChars(diagram, 1)[0] ?? null;
+}
+
+/** Next `count` free single-letter node ids, without mutating the diagram. */
+export function allocateNodeChars(diagram: DiagramState, count: number): string[] {
   const used = collectUsedNodeChars(diagram.signals);
   const idxUsed = buildNodeIndex(diagram.signals);
   for (const ch of idxUsed.keys()) used.add(ch);
-  for (const ch of LETTER_POOL) {
-    if (!used.has(ch)) return ch;
-  }
-  return null;
+  return LETTER_POOL.filter((ch) => !used.has(ch)).slice(0, Math.max(0, count));
 }
 
 export function setNodeCharAt(
@@ -139,10 +141,9 @@ export function formatArrowEdge(
   fromChar: string,
   toChar: string,
   label?: string,
-  shape = '',
+  connector = '->',
 ): string {
-  const path =
-    shape === '' ? `${fromChar}->${toChar}` : `${fromChar}${shape}>${toChar}`;
+  const path = `${fromChar}${connector}${toChar}`;
   const trimmed = label?.trim();
   return trimmed ? `${path} ${trimmed}` : path;
 }

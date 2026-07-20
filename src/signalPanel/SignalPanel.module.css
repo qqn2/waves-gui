@@ -5,7 +5,7 @@
   min-height: 0;
   color: var(--text-primary);
   background: var(--bg-panel, var(--bg-secondary, #1e1e1e));
-  border-right: 1px solid color-mix(in srgb, var(--border) 72%, white);
+  border-right: 1px solid var(--border);
 }
 
 .scroll {
@@ -67,8 +67,14 @@
 }
 
 .rowSelected {
-  background: linear-gradient(to right, color-mix(in srgb, var(--accent, #4a9eff) 18%, white), color-mix(in srgb, var(--accent, #4a9eff) 8%, var(--bg-panel)));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 38%, transparent);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent, #4a9eff) 24%, var(--bg-panel)),
+    color-mix(in srgb, var(--accent, #4a9eff) 10%, var(--bg-panel))
+  );
+  box-shadow:
+    inset 3px 0 0 var(--selection-stroke),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 38%, transparent);
 }
 
 .rowDropTarget {
@@ -96,7 +102,11 @@
   padding: 1px 4px;
   border: 1px solid color-mix(in srgb, var(--accent, #4a9eff) 22%, var(--border));
   border-radius: 2px;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--selection-fill) 50%, white), color-mix(in srgb, var(--selection-fill) 75%, var(--bg-panel)));
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 14%, var(--bg-control-top)),
+    color-mix(in srgb, var(--accent) 9%, var(--bg-panel))
+  );
   color: var(--accent-ink);
   flex-shrink: 0;
 }

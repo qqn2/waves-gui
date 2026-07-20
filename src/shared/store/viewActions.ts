@@ -25,6 +25,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setActiveBitState'
   | 'setActiveBusLabel'
   | 'setActiveTimespanLabel'
+  | 'setActiveEdgeLabel'
   | 'setActiveBusColorIndex'
   | 'setEdgeToolHover'
   | 'setPaintMode'
@@ -73,6 +74,12 @@ export function createViewActions(set: ImmerSet): Pick<
     setActiveTimespanLabel(label) {
       set((s) => {
         s.view.activeTimespanLabel = label;
+      });
+    },
+
+    setActiveEdgeLabel(label) {
+      set((s) => {
+        s.view.activeEdgeLabel = label;
       });
     },
 

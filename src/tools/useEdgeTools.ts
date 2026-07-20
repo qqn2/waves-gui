@@ -5,7 +5,6 @@ import type { HitTestResult } from '../renderer/hitTest';
 import {
   allocateNodeChar,
   findSignalInDiagram,
-  formatArrowEdge,
   formatTimespanEdge,
   visibleNodeCharAt,
 } from '../wavedromBridge/nodeString';
@@ -45,7 +44,7 @@ export function useEdgeTools(): {
   cancelEdgeEdit: () => void;
   onPointerDown: (e: PointerEvent, hit: HitTestResult) => void;
   onPointerMove: (e: PointerEvent, hit: HitTestResult) => void;
-  onPointerUp: () => void;
+  onPointerUp: (e: PointerEvent, hit: HitTestResult) => void;
 } {
   const tool = useStore((s) => s.view.selectedTool);
   const edgeAnchorPending = useStore((s) => s.view.edgeAnchorPending);
@@ -53,8 +52,10 @@ export function useEdgeTools(): {
   const setEdgeToolHover = useStore((s) => s.setEdgeToolHover);
   const setSignalNodeAt = useStore((s) => s.setSignalNodeAt);
   const addDiagramEdge = useStore((s) => s.addDiagramEdge);
+  const addDiagramArrow = useStore((s) => s.addDiagramArrow);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
-  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
+  const activeEdgeConnector = useStore((s) => s.view.activeEdgeConnector);
+  const activeEdgeLabel = useStore((s) => s.view.activeEdgeLabel);
 
   const cancelEdgeEdit = useCallback(() => {
     setEdgeAnchorPending(null);
@@ -141,41 +142,26 @@ export function useEdgeTools(): {
         return;
       }
 
-      if (!hit.signalId || hit.signalType === 'group' || hit.step === null) return;
-
-      if (e.shiftKey && pending?.kind === 'arrow') {
-        setSignalNodeAt(pending.signalId, pending.step, null);
+      if (!hit.signalId || hit.signalType === 'group' || hit.step === null) {
         cancelEdgeEdit();
         return;
       }
 
-      if (!pending || pending.kind !== 'arrow') {
-        const ch = placeAnchor(hit.signalId, hit.step);
-        if (!ch) return;
-        setEdgeAnchorPending({
-          kind: 'arrow',
-          char: ch,
-          signalId: hit.signalId,
-          step: hit.step,
-        });
-        setEdgeToolHover(pointerHover(hit, e.offsetX, e.offsetY, 'arrow'));
-        return;
-      }
+      const diagram = useStore.getState().diagram;
+      const signal = findSignalInDiagram(diagram, hit.signalId);
+      if (!signal || signal.type === 'spacer') return;
+      const char =
+        visibleNodeCharAt(signal, hit.step, diagram.config.totalSteps)
+        ?? allocateNodeChar(diagram);
+      if (!char) return;
 
-      if (
-        hit.signalId === pending.signalId &&
-        hit.step === pending.step
-      ) {
-        return;
-      }
-
-      const toChar = placeAnchor(hit.signalId, hit.step);
-      if (!toChar || toChar === pending.char) return;
-
-      addDiagramEdge(
-        formatArrowEdge(pending.char, toChar, undefined, activeEdgeShape),
-      );
-      cancelEdgeEdit();
+      setEdgeAnchorPending({
+        kind: 'arrow',
+        char,
+        signalId: hit.signalId,
+        step: hit.step,
+      });
+      setEdgeToolHover(pointerHover(hit, e.offsetX, e.offsetY, 'arrow'));
     },
     [
       tool,
@@ -185,7 +171,6 @@ export function useEdgeTools(): {
       cancelEdgeEdit,
       setEdgeAnchorPending,
       setEdgeToolHover,
-      activeEdgeShape,
       activeTimespanLabel,
     ],
   );
@@ -200,9 +185,28 @@ export function useEdgeTools(): {
     [tool, setEdgeToolHover],
   );
 
-  const onPointerUp = useCallback(() => {
-    // Arrow and timespan complete on click — no drag / pointer-up gesture.
-  }, []);
+  const onPointerUp = useCallback(
+    (_e: PointerEvent, hit: HitTestResult) => {
+      if (tool !== 'arrow') return;
+      const pending = useStore.getState().view.edgeAnchorPending;
+      if (
+        pending?.kind === 'arrow'
+        && hit.signalId
+        && hit.signalType !== 'group'
+        && hit.step !== null
+        && (hit.signalId !== pending.signalId || hit.step !== pending.step)
+      ) {
+        addDiagramArrow(
+          { signalId: pending.signalId, step: pending.step },
+          { signalId: hit.signalId, step: hit.step },
+          activeEdgeConnector,
+          activeEdgeLabel,
+        );
+      }
+      cancelEdgeEdit();
+    },
+    [tool, addDiagramArrow, activeEdgeConnector, activeEdgeLabel, cancelEdgeEdit],
+  );
 
   useEffect(() => {
     if (!isEdgeTool(tool)) cancelEdgeEdit();

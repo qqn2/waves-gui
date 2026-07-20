@@ -19,10 +19,45 @@ describe('App smoke', () => {
     expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
 
     const inspectorToggle = host.querySelector<HTMLButtonElement>(
-      'button[title="Select a bus to inspect its properties"]',
+      'button[title="Select one signal to inspect its properties"]',
     );
     expect(inspectorToggle).not.toBeNull();
     expect(inspectorToggle!.disabled).toBe(true);
+
+    const bitSignal = useStore.getState().diagram.signals.find((signal) => signal.type === 'bit');
+    expect(bitSignal).toBeDefined();
+    await act(async () => {
+      useStore.getState().setActiveSignalIds([bitSignal!.id]);
+    });
+    expect(inspectorToggle!.disabled).toBe(false);
+    expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
+
+    await act(async () => {
+      inspectorToggle!.click();
+    });
+    const inspector = host.querySelector('aside[aria-label="Properties inspector"]');
+    expect(inspector).not.toBeNull();
+    expect(inspector?.textContent).toContain('Signal inspector');
+    expect(inspector?.textContent).toContain('Timing');
+    expect(inspector?.querySelector('input[value="Bit"]')).not.toBeNull();
+
+    const periodInput = inspector?.querySelector<HTMLInputElement>(
+      'input[aria-label="Signal period"]',
+    );
+    expect(periodInput).not.toBeNull();
+    await act(async () => {
+      const valueSetter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      valueSetter?.call(periodInput, '3');
+      periodInput!.dispatchEvent(new Event('input', { bubbles: true }));
+      periodInput!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    const editedBit = useStore.getState().diagram.signals.find(
+      (signal) => signal.id === bitSignal!.id,
+    );
+    expect(editedBit?.type === 'bit' ? editedBit.period : undefined).toBe(3);
 
     const hscaleInput = host.querySelector<HTMLInputElement>(
       'input[aria-label="WaveDrom horizontal scale"]',

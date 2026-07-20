@@ -147,6 +147,8 @@ export interface ViewState {
   activeBusLabel: string;
   /** Label for new timespan edges (WaveDrom edge[] text after path) */
   activeTimespanLabel: string;
+  /** Optional label appended to new WaveDrom dependency edges. */
+  activeEdgeLabel: string;
   /** WaveDrom bus fill palette index (2–9) for new vector spans */
   activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
@@ -175,8 +177,8 @@ export interface ViewState {
     canvasX: number;
     canvasY: number;
   } | null;
-  /** Middle shape for new arrow edges (WaveDrom path between node letters, before `>`) */
-  activeEdgeShape: string;
+  /** WaveDrom connector placed between generated node letters, such as `~`, `-~>`, or `<->`. */
+  activeEdgeConnector: string;
   /** Show A–Z anchor letters on canvas (WaveDrom invisible nodes) */
   showAnchorLetters: boolean;
   /** Monotonic counter bumped on loadDiagram — drives JSON panel resync. */

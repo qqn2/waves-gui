@@ -76,7 +76,7 @@ export function PointerMarker({
           ? ` · → T${hit.step}`
           : '';
     } else {
-      edgeHint = ' · click start';
+      edgeHint = ' · press and drag';
     }
   } else if (tool === 'timespan') {
     if (edgePending?.kind === 'timespan') {

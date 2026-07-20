@@ -8,7 +8,7 @@ export const edgeArrowMarkerProps = {
   markerHeight: 10,
   refX: 10,
   refY: 5,
-  orient: 'auto' as const,
+  orient: 'auto-start-reverse' as const,
   markerUnits: 'userSpaceOnUse' as const,
 };
 

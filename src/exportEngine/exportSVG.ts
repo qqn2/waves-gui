@@ -14,8 +14,8 @@ import {
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import { isVectorUnknownValue, X_STROKE, zStrokeColor, resolveSignalColor } from '../renderer/stateColors';
-import { segmentBusFill, segmentBusStroke } from '../renderer/vectorBusStyle';
+import { X_STROKE, zStrokeColor, resolveSignalColor } from '../renderer/stateColors';
+import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from '../renderer/vectorBusStyle';
 import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
@@ -187,15 +187,12 @@ function svgVectorSignal(
   const yMid = axisOffset + rowY + rowH / 2;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
-  const textFill = esc(themeColor('--text-primary', '#e8e8e8'));
-  const textMuted = esc(themeColor('--text-secondary', '#b0b0b0'));
   const parts: string[] = [];
 
   for (const seg of signal.segments) {
     const x1 = stepLogicalX(signal, seg.startStep) * hscale;
     const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * hscale;
     const span = x2 - x1;
-    const unknown = isVectorUnknownValue(seg.value);
     const stroke = esc(segmentBusStroke(seg, signal));
     const fill = esc(segmentBusFill(seg, signal));
 
@@ -214,7 +211,7 @@ function svgVectorSignal(
     if (maxW > 4) {
       const fs = Math.max(10, rowH * 0.35);
       parts.push(
-        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${unknown ? textMuted : textFill}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
+        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${esc(segmentBusTextColor(seg))}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
       );
     }
   }

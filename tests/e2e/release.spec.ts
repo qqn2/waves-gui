@@ -166,16 +166,16 @@ test('applies visible text scaling and a real dark theme', async ({ page }) => {
     };
   });
   expect(colors).toEqual({
-    app: '#191b1f',
-    panel: '#272a30',
-    canvas: '#15171a',
-    text: '#f1f3f5',
+    app: '#17191d',
+    panel: '#23272d',
+    canvas: '#111418',
+    text: '#f3f5f7',
   });
   await expect.poll(() => page.locator('canvas').evaluate((canvas) => {
     const context = canvas.getContext('2d');
     if (!context || canvas.width < 2 || canvas.height < 2) return [];
     return Array.from(context.getImageData(canvas.width - 2, canvas.height - 2, 1, 1).data.slice(0, 3));
-  })).toEqual([21, 23, 26]);
+  })).toEqual([17, 20, 24]);
 });
 
 test('keeps bus segment editing exclusively in the selected bus inspector', async ({ page }) => {

@@ -121,6 +121,68 @@ describe('useStore', () => {
     ).toBe('1');
   });
 
+  it('adds a WaveDrom arrow and both node anchors as one undoable edit', () => {
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('bit');
+    const [from, to] = useStore.getState().diagram.signals;
+    const historyBefore = useStore.getState().history.length;
+
+    useStore.getState().addDiagramArrow(
+      { signalId: from!.id, step: 1 },
+      { signalId: to!.id, step: 4 },
+      '~>',
+    );
+
+    const after = useStore.getState();
+    expect(after.history).toHaveLength(historyBefore + 1);
+    expect(after.diagram.edges).toEqual(['A~>B']);
+    expect(after.diagram.signals[0]).toMatchObject({ node: '.A..................' });
+    expect(after.diagram.signals[1]).toMatchObject({ node: '....B...............' });
+    expect(toWavedromJSON(after.diagram)).toMatchObject({
+      edge: ['A~>B'],
+      signal: [
+        { node: '.A..................' },
+        { node: '....B...............' },
+      ],
+    });
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.edges).toEqual([]);
+    expect(useStore.getState().diagram.signals[0]).not.toHaveProperty('node');
+    expect(useStore.getState().diagram.signals[1]).not.toHaveProperty('node');
+  });
+
+  it('adds labeled edges without forcing an arrowhead', () => {
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('bit');
+    const [from, to] = useStore.getState().diagram.signals;
+
+    useStore.getState().addDiagramArrow(
+      { signalId: from!.id, step: 2 },
+      { signalId: to!.id, step: 5 },
+      '-~',
+      't2',
+    );
+
+    expect(useStore.getState().diagram.edges).toEqual(['A-~B t2']);
+  });
+
+  it('does not create an arrow when press and release resolve to one cell', () => {
+    useStore.getState().addSignal('bit');
+    const signal = useStore.getState().diagram.signals[0]!;
+    const historyBefore = useStore.getState().history.length;
+
+    useStore.getState().addDiagramArrow(
+      { signalId: signal.id, step: 2 },
+      { signalId: signal.id, step: 2 },
+      '~',
+    );
+
+    expect(useStore.getState().history).toHaveLength(historyBefore);
+    expect(useStore.getState().diagram.edges).toEqual([]);
+    expect(useStore.getState().diagram.signals[0]).not.toHaveProperty('node');
+  });
+
   it('removeSignal removes a signal nested inside a group', () => {
     useStore.getState().loadDiagram({
       version: 1,

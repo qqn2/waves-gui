@@ -165,18 +165,24 @@ function App() {
   const [inspectorVisible, setInspectorVisible] = useState(false);
   const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
 
-  const selectedBusId = useMemo(() => {
+  const selectedSignal = useMemo(() => {
     if (activeSignalIds.length !== 1) return null;
-    let busId: string | null = null;
+    let selected: import('./shared/types').Signal | null = null;
     findSignal(diagram.signals, activeSignalIds[0]!, (signal) => {
-      if (signal.type === 'vector') busId = signal.id;
+      if (signal.type === 'bit' || signal.type === 'vector') selected = signal;
     });
-    return busId;
+    return selected;
   }, [activeSignalIds, diagram.signals]);
+  const selectedSignalId = selectedSignal?.id ?? null;
+  const selectedSignalType = selectedSignal?.type ?? null;
 
   useEffect(() => {
-    setInspectorVisible(selectedBusId !== null);
-  }, [activeSignalIds, selectedBusId]);
+    if (!selectedSignalId) {
+      setInspectorVisible(false);
+    } else if (selectedSignalType === 'vector') {
+      setInspectorVisible(true);
+    }
+  }, [selectedSignalId, selectedSignalType]);
 
   useLayoutEffect(() => {
     applyThemeSettings(
@@ -191,7 +197,7 @@ function App() {
           <Toolbar
             onExport={() => setExportOpen(true)}
             inspectorVisible={inspectorVisible}
-            inspectorAvailable={selectedBusId !== null}
+            inspectorAvailable={selectedSignal !== null}
             onToggleInspector={() => setInspectorVisible((visible) => !visible)}
           />
           <HeadFootFields />
@@ -214,7 +220,7 @@ function App() {
                 )}
               />
             </div>
-            {inspectorVisible && selectedBusId ? (
+            {inspectorVisible && selectedSignal ? (
               <SignalInspector onClose={() => setInspectorVisible(false)} />
             ) : null}
           </div>

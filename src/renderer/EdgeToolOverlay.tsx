@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import { findSignal, useStore } from '../shared/store';
 import type { DiagramState } from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
-import { buildEdgePathD, labelPositionOnPath, resolveNodeAnchor } from './edgeLayout';
+import {
+  buildEdgePathD,
+  labelPositionOnPath,
+  parseEdgePath,
+  resolveNodeAnchor,
+} from './edgeLayout';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import { EDGE_ARROW_PATH, edgeArrowMarkerProps } from './edgeArrowMarker';
@@ -22,7 +27,8 @@ export function EdgeToolOverlay() {
   const pending = useStore((s) => s.view.edgeAnchorPending);
   const hover = useStore((s) => s.view.edgeToolHover);
   const timespanLabel = useStore((s) => s.view.activeTimespanLabel);
-  const activeEdgeShape = useStore((s) => s.view.activeEdgeShape);
+  const activeEdgeConnector = useStore((s) => s.view.activeEdgeConnector);
+  const activeEdgeLabel = useStore((s) => s.view.activeEdgeLabel);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
 
@@ -73,6 +79,8 @@ export function EdgeToolOverlay() {
     };
 
     let previewPath: string | null = null;
+    let previewStartArrow = false;
+    let previewEndArrow = false;
     let previewLabel: { x: number; y: number; text: string } | null = null;
     let hoverCol: { left: number; top: number; width: number; height: number } | null = null;
     let band: ReturnType<typeof rowBand> = null;
@@ -109,7 +117,19 @@ export function EdgeToolOverlay() {
             ? resolveNodeAnchor(diagram, view, hover.signalId, hover.step)
             : { x: hover.canvasX, y: hover.canvasY };
         if (from && to) {
-          previewPath = buildEdgePathD(from, to, activeEdgeShape);
+          const parsed = parseEdgePath(`A${activeEdgeConnector}B`);
+          previewPath = buildEdgePathD(from, to, parsed.shape);
+          previewStartArrow = parsed.hasStartArrow;
+          previewEndArrow = parsed.hasArrow;
+          const trimmed = activeEdgeLabel.trim();
+          if (trimmed) {
+            const labelPos = labelPositionOnPath(from, to, parsed.shape);
+            previewLabel = {
+              x: labelPos.x,
+              y: labelPos.y - 4,
+              text: trimmed,
+            };
+          }
         }
       }
     }
@@ -161,12 +181,37 @@ export function EdgeToolOverlay() {
       (m): m is { left: number; top: number; char: string } => m != null,
     );
 
-    return { hoverCol, markers, previewPath, previewLabel, band };
-  }, [tool, pending, hover, timespanLabel, activeEdgeShape, diagram, view]);
+    return {
+      hoverCol,
+      markers,
+      previewPath,
+      previewLabel,
+      previewStartArrow,
+      previewEndArrow,
+      band,
+    };
+  }, [
+    tool,
+    pending,
+    hover,
+    timespanLabel,
+    activeEdgeConnector,
+    activeEdgeLabel,
+    diagram,
+    view,
+  ]);
 
   if (!layout) return null;
 
-  const { hoverCol, markers, previewPath, previewLabel, band } = layout;
+  const {
+    hoverCol,
+    markers,
+    previewPath,
+    previewLabel,
+    previewStartArrow,
+    previewEndArrow,
+    band,
+  } = layout;
   const showSvg = previewPath != null;
 
   if (!hoverCol && markers.length === 0 && !band && !showSvg) return null;
@@ -226,9 +271,8 @@ export function EdgeToolOverlay() {
           <path
             className={styles.previewPath}
             d={previewPath!}
-            markerEnd={
-              tool === 'arrow' ? `url(#${PREVIEW_ARROW_ID})` : undefined
-            }
+            markerStart={previewStartArrow ? `url(#${PREVIEW_ARROW_ID})` : undefined}
+            markerEnd={previewEndArrow ? `url(#${PREVIEW_ARROW_ID})` : undefined}
           />
           {previewLabel ? (
             <text

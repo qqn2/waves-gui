@@ -7,7 +7,7 @@ import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
 import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
 import { BitStateButton } from './BitStateButton';
 import {
-  EDGE_SHAPES,
+  EDGE_CONNECTOR_GROUPS,
   MORE_BIT_STATES,
   PRIMARY_BIT_STATES,
 } from './bitStateConstants';
@@ -164,40 +164,57 @@ export function ToolbarBusSection({
 
 export interface ToolbarEdgeSectionProps {
   tool: string;
-  activeEdgeShape: string;
+  activeEdgeConnector: string;
+  activeEdgeLabel: string;
   showAnchorLetters: boolean;
   activeTimespanLabel: string;
-  onEdgeShapeChange: (shape: string) => void;
+  onEdgeConnectorChange: (connector: string) => void;
+  onEdgeLabelChange: (label: string) => void;
   onToggleAnchorLetters: () => void;
   onTimespanLabelChange: (label: string) => void;
 }
 
 export function ToolbarEdgeSection({
   tool,
-  activeEdgeShape,
+  activeEdgeConnector,
+  activeEdgeLabel,
   showAnchorLetters,
   activeTimespanLabel,
-  onEdgeShapeChange,
+  onEdgeConnectorChange,
+  onEdgeLabelChange,
   onToggleAnchorLetters,
   onTimespanLabelChange,
 }: ToolbarEdgeSectionProps) {
   if (tool === 'arrow') {
     return (
       <>
-        <label className={styles.hscaleWrap} title="Path shape between anchors (before >)">
-          <span className={styles.hscaleLabel}>shape</span>
+        <label className={styles.hscaleWrap} title="WaveDrom connector emitted between node anchors">
+          <span className={styles.hscaleLabel}>connector</span>
           <select
             className={styles.hscaleSelect}
-            value={activeEdgeShape}
-            onChange={(e) => onEdgeShapeChange(e.target.value)}
-            aria-label="Arrow edge shape"
+            value={activeEdgeConnector}
+            onChange={(e) => onEdgeConnectorChange(e.target.value)}
+            aria-label="WaveDrom edge connector"
           >
-            {EDGE_SHAPES.map((sh) => (
-              <option key={sh || 'default'} value={sh}>
-                {sh === '' ? '→' : sh}
-              </option>
+            {EDGE_CONNECTOR_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
+        </label>
+        <label className={styles.busLabelWrap} title="Optional text appended to the WaveDrom edge">
+          <span className={styles.busLabelTag}>Label</span>
+          <input
+            type="text"
+            className={styles.busLabelInput}
+            value={activeEdgeLabel}
+            onChange={(e) => onEdgeLabelChange(e.target.value)}
+            placeholder="time 3"
+            aria-label="Edge label"
+          />
         </label>
         <button
           type="button"

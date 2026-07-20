@@ -197,6 +197,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
       else if (tool === 'arrow' || tool === 'timespan') {
+        if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);
       } else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerDown(e, el, hit);
@@ -220,17 +221,19 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   );
 
   const onPointerUp = useCallback(
-    (e: PointerEvent) => {
+    (e: PointerEvent, hit: HitTestResult) => {
       curveDrag.onPointerUp(e);
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
       else if (tool === 'erase') erase.erasePointerUp(e, el);
+      else if (tool === 'arrow' || tool === 'timespan') edge.onPointerUp(e, hit);
       else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerUp(e, el);
         setSelectionOverlay(null);
       }
+      if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
     },
-    [tool, canvasRef, curveDrag],
+    [tool, canvasRef, edge, curveDrag],
   );
 
   const onContextMenu = useCallback(

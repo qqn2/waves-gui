@@ -18,4 +18,44 @@ export const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
   x: 'Unknown (x)',
 };
 
-export const EDGE_SHAPES = ['', '-', '-~', '~', '-|', '|-', '-|-'] as const;
+export const EDGE_CONNECTOR_GROUPS = [
+  {
+    label: 'Spline — no arrow',
+    options: [
+      { value: '~', label: '~  Smooth' },
+      { value: '-~', label: '-~  Curve into target' },
+      { value: '~-', label: '~-  Curve out of source' },
+    ],
+  },
+  {
+    label: 'Spline — arrow',
+    options: [
+      { value: '~>', label: '~>  Smooth →' },
+      { value: '-~>', label: '-~>  Curve into target →' },
+      { value: '~->', label: '~->  Curve out of source →' },
+      { value: '<~>', label: '<~>  Smooth ↔' },
+      { value: '<-~>', label: '<-~>  Curve ↔' },
+    ],
+  },
+  {
+    label: 'Sharp — no arrow',
+    options: [
+      { value: '-', label: '-  Straight' },
+      { value: '-|', label: '-|  Across, then down' },
+      { value: '|-', label: '|-  Down, then across' },
+      { value: '-|-', label: '-|-  Centered elbow' },
+    ],
+  },
+  {
+    label: 'Sharp — arrow',
+    options: [
+      { value: '->', label: '->  Straight →' },
+      { value: '-|>', label: '-|>  Across, then down →' },
+      { value: '|->', label: '|->  Down, then across →' },
+      { value: '-|->', label: '-|->  Centered elbow →' },
+      { value: '<->', label: '<->  Straight ↔' },
+      { value: '<-|>', label: '<-|>  Elbow ↔' },
+      { value: '<-|->', label: '<-|->  Centered elbow ↔' },
+    ],
+  },
+] as const;
