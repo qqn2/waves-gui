@@ -178,10 +178,10 @@ test('applies visible text scaling and a real dark theme', async ({ page }) => {
   })).toEqual([17, 20, 24]);
 });
 
-test('keeps bus segment editing exclusively in the selected bus inspector', async ({ page }) => {
+test('keeps bus segment editing exclusively in the selected signal inspector', async ({ page }) => {
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
   await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
-  await expect(page.getByTitle('Select a bus to inspect its properties')).toBeDisabled();
+  await expect(page.getByTitle('Select one signal to inspect its properties')).toBeDisabled();
 
   await replaceJson(page, JSON.stringify({
     signal: [
@@ -200,8 +200,8 @@ test('keeps bus segment editing exclusively in the selected bus inspector', asyn
   const widths = await Promise.all([inspector.boundingBox(), segments.boundingBox()]);
   expect(widths[0]).not.toBeNull();
   expect(widths[1]!.width).toBeGreaterThan(widths[0]!.width * 0.9);
-  await expect(inspector.getByLabel('Bus inspector details')).toHaveCSS('overflow-y', 'auto');
-  await expect(page.getByTitle('Show or hide bus properties inspector')).toBeEnabled();
+  await expect(inspector.getByLabel('Signal inspector details')).toHaveCSS('overflow-y', 'auto');
+  await expect(page.getByTitle('Show or hide signal properties inspector')).toBeEnabled();
   await expect(segments.getByLabel('Label for steps 0 to 2')).toHaveValue('A5');
   await expect(segments.getByLabel('Label for steps 2 to 4')).toHaveValue('5A');
   await expect(segments.getByLabel('Label for steps 4 to 6')).toHaveValue('FF');
@@ -216,11 +216,11 @@ test('keeps bus segment editing exclusively in the selected bus inspector', asyn
   await expect(busLabel).toHaveValue('data');
   await busLabel.fill('A5 payload');
 
-  await page.getByRole('button', { name: 'Close bus inspector' }).click();
+  await page.getByRole('button', { name: 'Close signal inspector' }).click();
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
   await expect(page.getByRole('banner').getByLabel('Bus label')).toHaveCount(0);
 
-  await signalRow(page, 'payload').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   await expect(page.getByLabel('Properties inspector')).toBeVisible();
   await expect(page.getByLabel('Properties inspector').getByLabel('Bus label')).toHaveValue('A5 payload');
 
@@ -230,7 +230,7 @@ test('keeps bus segment editing exclusively in the selected bus inspector', asyn
   await expect(page.getByLabel('Label for steps 0 to 2')).toHaveCount(0);
 
   await signalRow(page, 'control').click();
-  await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
+  await expect(page.getByLabel('Properties inspector')).toBeVisible();
   await expect(page.getByLabel('Bus segment labels')).toHaveCount(0);
 });
 
@@ -398,7 +398,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   });
 
   await page.getByRole('button', { name: /File/ }).click();
-  await page.getByRole('button', { name: /Open/ }).click();
+  await page.getByRole('button', { name: 'Open…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
