@@ -84,6 +84,22 @@ function parseDiagramJSON(value: unknown): {
   };
 }
 
+function parseDiagramFile(file: File, text: string): {
+  diagram: DiagramState;
+  format: JSONFileFormat;
+} | { error: string } {
+  if (file.name.toLowerCase().endsWith('.vcd')) {
+    const root = vcdToWavedromJSON(text);
+    const error = validateWavedromJSON(root);
+    if (error) return { error };
+    return {
+      diagram: fromWavedromJSON(root),
+      format: 'wavedrom-json',
+    };
+  }
+  return parseDiagramJSON(JSON.parse(text) as unknown);
+}
+
 function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
   if (scanExtensionContent(diagram).hasExtensions) return 'undulate-json';
   if (retainedFileFormat) return retainedFileFormat;
@@ -131,17 +147,14 @@ export async function openDiagramFile(): Promise<void> {
       const [handle] = await w.showOpenFilePicker({
         types: [
           {
-            description: 'Waveform file',
+            description: 'Waveform files',
             accept: { 'application/json': ['.json', '.wp'], 'text/plain': ['.vcd'] },
           },
         ],
       });
       const file = await handle.getFile();
       const text = await readFileAsText(file);
-      const json = file.name.toLowerCase().endsWith('.vcd')
-        ? vcdToWavedromJSON(text)
-        : JSON.parse(text) as unknown;
-      const parsed = parseDiagramJSON(json);
+      const parsed = parseDiagramFile(file, text);
       if ('error' in parsed) {
         window.alert(parsed.error);
         return;
@@ -160,7 +173,7 @@ export async function openDiagramFile(): Promise<void> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,.vcd,application/json,text/plain';
+    input.accept = '.json,.wp,.vcd,application/json,text/plain';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -169,10 +182,7 @@ export async function openDiagramFile(): Promise<void> {
       }
       try {
         const text = await readFileAsText(file);
-        const json = file.name.toLowerCase().endsWith('.vcd')
-          ? vcdToWavedromJSON(text)
-          : JSON.parse(text) as unknown;
-        const parsed = parseDiagramJSON(json);
+        const parsed = parseDiagramFile(file, text);
         if ('error' in parsed) window.alert(parsed.error);
         else {
           useStore.getState().loadDiagram(parsed.diagram);
