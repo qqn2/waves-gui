@@ -10,8 +10,35 @@ export function hasSubcycleSyntax(wave: string): boolean {
 
 const WAVE_BODY_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
 
+function hasValidSubcycleMarkers(wave: string): boolean {
+  let inSubcycle = false;
+  let subcycleHasState = false;
+
+  for (let i = 0; i < wave.length; i += 1) {
+    const ch = wave[i]!;
+    if (ch === '<') {
+      // The expansion algorithm needs a preceding state, and sub-cycles cannot nest.
+      if (inSubcycle || i === 0) return false;
+      inSubcycle = true;
+      subcycleHasState = false;
+      continue;
+    }
+    if (ch === '>') {
+      // `>` transitions back to a normal cell, so it also needs a following state.
+      if (!inSubcycle || !subcycleHasState || i === wave.length - 1) return false;
+      inSubcycle = false;
+      continue;
+    }
+    if (inSubcycle && ch !== '.' && ch !== '|') {
+      subcycleHasState = true;
+    }
+  }
+
+  return !inSubcycle;
+}
+
 export function isValidWaveString(wave: string): boolean {
-  return WAVE_BODY_CHARS.test(wave);
+  return WAVE_BODY_CHARS.test(wave) && hasValidSubcycleMarkers(wave);
 }
 
 export type LaneLevel = BitState;

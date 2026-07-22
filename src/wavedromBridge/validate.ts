@@ -26,7 +26,7 @@ function validateSignalEntry(entry: unknown): string | null {
       return `Invalid wave characters: ${sig.wave}`;
     }
     if (!isValidWaveString(sig.wave)) {
-      return `Invalid wave characters: ${sig.wave}`;
+      return `Invalid wave syntax: ${sig.wave}`;
     }
   }
   return null;
