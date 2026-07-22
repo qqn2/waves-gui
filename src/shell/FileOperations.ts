@@ -6,6 +6,7 @@ import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
 import { recordRecentFile } from './soloDesk/recentFiles';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
+import { vcdToWavedromJSON } from '../importers/vcd';
 
 type FilePickerWindow = Window & {
   showOpenFilePicker?: (options?: {
@@ -52,13 +53,15 @@ export async function openDiagramFile(): Promise<void> {
         types: [
           {
             description: 'WaveDrom JSON',
-            accept: { 'application/json': ['.json', '.wp'] },
+            accept: { 'application/json': ['.json', '.wp'], 'text/plain': ['.vcd'] },
           },
         ],
       });
       const file = await handle.getFile();
       const text = await readFileAsText(file);
-      const json = JSON.parse(text) as unknown;
+      const json = file.name.toLowerCase().endsWith('.vcd')
+        ? vcdToWavedromJSON(text)
+        : JSON.parse(text) as unknown;
       const err = validateWavedromJSON(json);
       if (err) {
         window.alert(err);
@@ -77,7 +80,7 @@ export async function openDiagramFile(): Promise<void> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,application/json';
+    input.accept = '.json,.vcd,application/json,text/plain';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -86,7 +89,9 @@ export async function openDiagramFile(): Promise<void> {
       }
       try {
         const text = await readFileAsText(file);
-        const json = JSON.parse(text) as unknown;
+        const json = file.name.toLowerCase().endsWith('.vcd')
+          ? vcdToWavedromJSON(text)
+          : JSON.parse(text) as unknown;
         const err = validateWavedromJSON(json);
         if (err) window.alert(err);
         else {
