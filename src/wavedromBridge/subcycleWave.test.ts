@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   expandWaveToColumns,
   hasSubcycleSyntax,
+  isValidWaveString,
   padWaveOverride,
   waveColumnCount,
 } from './subcycleWave';
@@ -21,6 +22,25 @@ describe('subcycleWave', () => {
     const cols = expandWaveToColumns('0<1>1', 1, 1);
     expect(cols.length).toBeGreaterThan(0);
     expect(cols.some((c) => c.levels.length > 1)).toBe(true);
+  });
+
+  it('accepts structurally valid sub-cycle markers', () => {
+    expect(isValidWaveString('0<1>1')).toBe(true);
+    expect(isValidWaveString('x74...<5|>5..9x')).toBe(true);
+    expect(isValidWaveString('0<1.|0>1')).toBe(true);
+  });
+
+  it.each([
+    '<1>0',
+    '0<1>',
+    '0<1',
+    '0>1',
+    '0<>1',
+    '0<...>1',
+    '0<|>1',
+    '0<1<0>1>0',
+  ])('rejects invalid sub-cycle markers in %s', (wave) => {
+    expect(isValidWaveString(wave)).toBe(false);
   });
 
   it('pads wave override with continuation dots', () => {
