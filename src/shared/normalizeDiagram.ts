@@ -9,6 +9,7 @@ import {
 } from './constants';
 import { isWaveModeLane, padWaveLaneToLength } from '../wavedromBridge/laneWaveOps';
 import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
+import { normalizeAnnotations } from './annotations';
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -107,6 +108,7 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     totalSteps,
     hscale: clampHscale(d.config?.hscale ?? DEFAULT_HSCALE),
   };
+  d.annotations = normalizeAnnotations(d.annotations, totalSteps);
 
   walkSignals(d.signals, totalSteps);
   return d;

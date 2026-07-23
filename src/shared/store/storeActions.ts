@@ -1,5 +1,6 @@
 import type {
   BitState,
+  TextAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -121,6 +122,14 @@ export interface StoreActions {
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
   setExtensionsEnabled(enabled: boolean): void;
+  addTextAnnotation(
+    annotation: Omit<TextAnnotation, 'id' | 'type'>,
+  ): string | null;
+  updateTextAnnotation(
+    id: string,
+    patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,
+  ): void;
+  removeAnnotation(id: string): void;
   markClean(fileName: string): void;
   undo(): void;
   redo(): void;

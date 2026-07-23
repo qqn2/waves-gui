@@ -79,6 +79,7 @@ describe('localDraft', () => {
       ...diagram,
       version: 2,
       compatibility: { extensionsEnabled: false },
+      annotations: [],
     });
   });
 

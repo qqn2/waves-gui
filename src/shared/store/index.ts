@@ -19,6 +19,7 @@ import { loadThemeSettings } from '../theme';
 import { createSignalActions } from './signalActions';
 import { createEdgeActions, createDocumentActions } from './documentActions';
 import { createViewActions } from './viewActions';
+import { createAnnotationActions } from './annotationActions';
 
 export type { StoreActions, Actions } from './storeActions';
 export {
@@ -50,6 +51,7 @@ export const useStore = create<AppState & StoreActions>()(
       ...createSignalActions(set),
       ...createEdgeActions(set),
       ...createDocumentActions(set),
+      ...createAnnotationActions(set),
       ...createViewActions(set),
     };
   }),
