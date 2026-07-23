@@ -2,7 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
-import { exportWavedromJSON } from './exportJSON';
+import { exportUndulateJSON, exportWavedromJSON } from './exportJSON';
+import {
+  undulateCompatibilityFindings,
+  waveDromCompatibilityFindings,
+} from '../shared/compatibility';
 import { computeExportDimensions } from './exportDimensions';
 import { drawSignalLabels } from './labelEntries';
 import { CanvasRenderer } from '../renderer/CanvasRenderer';
@@ -14,7 +18,7 @@ import {
 import { drawEdgesOnCanvas } from './exportEdges';
 import styles from './ExportDialog.module.css';
 
-export type ExportFormat = 'png' | 'svg' | 'jpg' | 'json';
+export type ExportFormat = 'png' | 'svg' | 'jpg' | 'json' | 'undulate-json';
 
 export interface ExportDialogProps {
   open: boolean;
@@ -67,6 +71,12 @@ export function ExportDialog({
   }, [open]);
 
   const isImage = format === 'png' || format === 'jpg';
+  const compatibilityFindings =
+    format === 'json'
+      ? waveDromCompatibilityFindings(diagram)
+      : format === 'undulate-json'
+        ? undulateCompatibilityFindings(diagram)
+        : [];
 
   const handleExport = useCallback(async () => {
     setBusy(true);
@@ -76,6 +86,8 @@ export function ExportDialog({
         exportSVG(diagram, view);
       } else if (format === 'json') {
         exportWavedromJSON(diagram, view);
+      } else if (format === 'undulate-json') {
+        exportUndulateJSON(diagram, view);
       } else {
         await exportImage(diagram, view, {
           format,
@@ -186,8 +198,23 @@ export function ExportDialog({
             <option value="svg">SVG</option>
             <option value="jpg">JPG</option>
             <option value="json">WaveDrom JSON</option>
+            <option value="undulate-json">Undulate JSON</option>
           </select>
         </div>
+
+        {compatibilityFindings.length > 0 && (
+          <div className={styles.compatibility} role="status">
+            <strong>Compatibility report</strong>
+            <ul>
+              {compatibilityFindings.map((finding, index) => (
+                <li key={`${finding.objectId ?? finding.feature}-${index}`}>
+                  {finding.message}
+                  {finding.consequence ? ` ${finding.consequence}` : ''}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {isImage && (
           <>
@@ -259,7 +286,11 @@ export function ExportDialog({
             disabled={busy}
             onClick={() => void handleExport()}
           >
-            {busy ? 'Exporting…' : 'Export'}
+            {busy
+              ? 'Exporting…'
+              : format === 'json' && compatibilityFindings.length > 0
+                ? 'Export compatible subset'
+                : 'Export'}
           </button>
         </div>
       </div>
