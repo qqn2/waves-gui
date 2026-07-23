@@ -9,7 +9,11 @@ function selectedSignal(signals: ReturnType<typeof useStore.getState>['diagram']
   if (ids.length !== 1) return null;
   let result: Signal | null = null;
   findSignal(signals, ids[0]!, (signal) => { result = signal; });
-  return result?.type === 'bit' || result?.type === 'vector' ? result : null;
+  return (
+    result?.type === 'bit'
+    || result?.type === 'vector'
+    || result?.type === 'analogue'
+  ) ? result : null;
 }
 
 export function SignalInspector({ onClose }: { onClose: () => void }) {
@@ -20,20 +24,29 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
   const setSignalPhase = useStore((s) => s.setSignalPhase);
   const setSignalPeriod = useStore((s) => s.setSignalPeriod);
+  const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
+  const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
   const signal = useMemo(() => selectedSignal(signals, activeIds), [signals, activeIds]);
   const [nameDraft, setNameDraft] = useState('');
+  const [analogueCellIndex, setAnalogueCellIndex] = useState(0);
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
+    setAnalogueCellIndex(0);
   }, [signal?.id, signal?.name]);
 
   const isBus = signal?.type === 'vector';
+  const isAnalogue = signal?.type === 'analogue';
+  const analogueCell =
+    isAnalogue ? signal.analogueCells?.[analogueCellIndex] : undefined;
 
   return (
     <aside className={styles.inspector} aria-label="Properties inspector">
       <div className={styles.inspectorHeader}>
         <div>
-          <span className={styles.inspectorEyebrow}>{isBus ? 'Bus inspector' : 'Signal inspector'}</span>
+          <span className={styles.inspectorEyebrow}>
+            {isBus ? 'Bus inspector' : isAnalogue ? 'Analog inspector' : 'Signal inspector'}
+          </span>
           <strong>{signal?.name ?? 'Signal properties'}</strong>
         </div>
         <button type="button" className={styles.inspectorClose} onClick={onClose} aria-label="Close signal inspector">
@@ -66,7 +79,11 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
             </label>
             <label className={styles.inspectorField}>
               <span>Type</span>
-              <input type="text" value={isBus ? 'Bus' : 'Bit'} readOnly />
+              <input
+                type="text"
+                value={isBus ? 'Bus' : isAnalogue ? 'Analog' : 'Bit'}
+                readOnly
+              />
             </label>
             <label className={styles.inspectorField}>
               <span>Color</span>
@@ -101,7 +118,135 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
             </>
           ) : null}
 
-          <section className={styles.inspectorSection}>
+          {isAnalogue ? (
+            <>
+              <section className={styles.inspectorSection}>
+                <h2>Analog range</h2>
+                <label className={styles.inspectorField}>
+                  <span>Minimum</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={signal.analogueMin ?? 0}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueSignal(signal.id, {
+                          analogueMin: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Maximum</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={signal.analogueMax ?? 1.8}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueSignal(signal.id, {
+                          analogueMax: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Vertical scale</span>
+                  <input
+                    type="number"
+                    min={0.25}
+                    max={16}
+                    step={0.25}
+                    value={signal.vscale ?? 1}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueSignal(signal.id, {
+                          vscale: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Slewing</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={signal.slewing ?? 0}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueSignal(signal.id, {
+                          slewing: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+              </section>
+
+              <section className={styles.inspectorSection}>
+                <h2>Cell</h2>
+                <label className={styles.inspectorField}>
+                  <span>Step</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={signal.analogueCells?.length ?? 1}
+                    value={analogueCellIndex + 1}
+                    onChange={(event) => {
+                      const next = Number(event.target.value) - 1;
+                      setAnalogueCellIndex(Math.max(
+                        0,
+                        Math.min((signal.analogueCells?.length ?? 1) - 1, next),
+                      ));
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Transition</span>
+                  <select
+                    value={analogueCell?.kind ?? 'hold'}
+                    onChange={(event) => updateAnalogueCell(
+                      signal.id,
+                      analogueCellIndex,
+                      {
+                        kind: event.target.value as
+                          | 'hold'
+                          | 'step'
+                          | 'capacitive'
+                          | 'samples',
+                      },
+                    )}
+                  >
+                    <option value="hold">Hold</option>
+                    <option value="step">Step</option>
+                    <option value="capacitive">Capacitive</option>
+                    <option value="samples">Samples</option>
+                  </select>
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Value</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={analogueCell?.value ?? 0}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueCell(signal.id, analogueCellIndex, {
+                          value: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+              </section>
+            </>
+          ) : null}
+
+          {!isAnalogue ? <section className={styles.inspectorSection}>
             <h2>Timing</h2>
             <label className={styles.inspectorField}>
               <span>Period</span>
@@ -131,7 +276,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 <span>{signal.segments.length} bus segments</span>
               </div>
             ) : null}
-          </section>
+          </section> : null}
         </div>
       ) : (
         <div className={styles.inspectorEmpty}>

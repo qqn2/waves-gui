@@ -1,5 +1,6 @@
 import type {
   BitState,
+  AnalogueCell,
   TextAnnotation,
   DiagramState,
   EdgeAnchorPending,
@@ -21,6 +22,22 @@ export interface StoreActions {
   addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;
+  updateAnalogueCell(
+    signalId: string,
+    index: number,
+    patch: Partial<Omit<AnalogueCell, 'id'>>,
+  ): void;
+  updateAnalogueSignal(
+    signalId: string,
+    patch: {
+      analogueMin?: number;
+      analogueMax?: number;
+      slewing?: number;
+      vscale?: number;
+      overlay?: boolean;
+      order?: number;
+    },
+  ): void;
   setSignalState(signalId: string, step: number, bitState: BitState): void;
   setSignalStateRange(
     signalId: string,

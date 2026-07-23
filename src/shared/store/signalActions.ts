@@ -33,6 +33,7 @@ import {
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
+import { normalizeAnalogueSignal } from '../analogue';
 import type { ImmerSet, StoreActions } from './storeActions';
 import {
   clearNodesAndEdges,
@@ -141,6 +142,11 @@ function duplicateSignalInDraft(
         })),
         stepGaps: item.stepGaps ? [...item.stepGaps] : undefined,
         stepGlitches: item.stepGlitches ? [...item.stepGlitches] : undefined,
+        analogueCells: item.analogueCells?.map((cell) => ({
+          ...cell,
+          id: nanoid(),
+          samples: cell.samples?.map((point) => ({ ...point })),
+        })),
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
@@ -163,6 +169,8 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
+  | 'updateAnalogueCell'
+  | 'updateAnalogueSignal'
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
@@ -362,6 +370,37 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         s.view.activeSignalIds = ids;
         if (ids.length > 0) s.view.activeAnnotationId = null;
+      });
+    },
+
+    updateAnalogueCell(signalId, index, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        const cell = target.analogueCells?.[index];
+        if (!cell) return;
+        pushHistory(s);
+        Object.assign(cell, patch);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+      });
+    },
+
+    updateAnalogueSignal(signalId, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        pushHistory(s);
+        Object.assign(target, patch);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+        target.rowHeight = ROW_HEIGHT * (target.vscale ?? 1);
       });
     },
 

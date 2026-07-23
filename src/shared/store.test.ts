@@ -67,6 +67,46 @@ describe('useStore', () => {
     );
   });
 
+  it('edits analogue cells and properties with undo and mode locking', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('analogue');
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'analogue') return;
+
+    useStore.getState().updateAnalogueCell(signal.id, 0, {
+      kind: 'capacitive',
+      value: 1.2,
+    });
+    useStore.getState().updateAnalogueSignal(signal.id, {
+      analogueMax: 3.3,
+      slewing: 8,
+      vscale: 2,
+    });
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      analogueMax: 3.3,
+      slewing: 8,
+      vscale: 2,
+      rowHeight: 80,
+    });
+    const edited = useStore.getState().diagram.signals[0];
+    expect(
+      edited?.type === 'analogue' && edited.analogueCells?.[0],
+    ).toMatchObject({ kind: 'capacitive', value: 1.2 });
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      analogueMax: 1.8,
+      rowHeight: 40,
+    });
+
+    useStore.getState().setExtensionsEnabled(false);
+    useStore.getState().updateAnalogueCell(signal.id, 0, { value: 99 });
+    const locked = useStore.getState().diagram.signals[0];
+    expect(
+      locked?.type === 'analogue' && locked.analogueCells?.[0]?.value,
+    ).toBe(1.2);
+  });
+
   it('records a raw diagram edit in unified undo history and dirtiness', () => {
     const edited = createDefaultDiagram();
     edited.config.head = { text: 'raw edit' };
