@@ -8,6 +8,14 @@ Last updated: 2026-07-22
 
 Target application: `waves-gui`
 
+## Implementation progress
+
+- [x] Validate supported WaveDrom sub-cycle marker structure.
+- [x] Add version 2 migration foundations and document compatibility metadata.
+- [x] Add an undoable document-level Undulate extensions toggle.
+- [ ] Add the typed annotation model and first free-text annotation.
+- [ ] Add Undulate JSON import/export and compatibility reporting.
+
 ## 1. Purpose
 
 This document preserves the product and engineering decisions for adding optional

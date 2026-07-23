@@ -4,6 +4,38 @@ import type { DiagramState } from './types';
 import { normalizeDiagram } from './normalizeDiagram';
 
 describe('normalizeDiagram', () => {
+  it('migrates version 1 diagrams with extensions disabled', () => {
+    const migrated = normalizeDiagram({
+      version: 1,
+      signals: [],
+      config: { totalSteps: 8, hscale: 1 },
+      edges: [],
+    });
+
+    expect(migrated.version).toBe(2);
+    expect(migrated.compatibility).toEqual({ extensionsEnabled: false });
+  });
+
+  it('preserves version 2 compatibility metadata', () => {
+    const normalized = normalizeDiagram({
+      version: 2,
+      compatibility: {
+        extensionsEnabled: true,
+        sourceFormat: 'undulate-json',
+        sourceRevision: '2024.1',
+      },
+      signals: [],
+      config: { totalSteps: 8, hscale: 1 },
+      edges: [],
+    });
+
+    expect(normalized.compatibility).toEqual({
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+      sourceRevision: '2024.1',
+    });
+  });
+
   it('preserves fractional hscale within 1–4', () => {
     const d = normalizeDiagram({
       version: 1,

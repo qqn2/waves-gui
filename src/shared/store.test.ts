@@ -63,6 +63,21 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
   });
 
+  it('toggles Undulate extensions as an undoable document edit', () => {
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
+
+    useStore.getState().setExtensionsEnabled(true);
+    expect(useStore.getState().diagram.version).toBe(2);
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+    expect(useStore.getState().view.isDirty).toBe(true);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
+
+    useStore.getState().redo();
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
   it('returns clean when undo reaches the saved snapshot', () => {
     useStore.getState().addSignal('bit');
     useStore.getState().markClean('saved.json');

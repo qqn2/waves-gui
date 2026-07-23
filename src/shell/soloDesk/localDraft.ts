@@ -34,7 +34,7 @@ function isDraftEnvelope(value: unknown): value is DraftEnvelope {
   }
   const diagram = record.diagram as Record<string, unknown>;
   return (
-    diagram.version === 1 &&
+    (diagram.version === 1 || diagram.version === 2) &&
     Array.isArray(diagram.signals) &&
     typeof diagram.config === 'object' &&
     diagram.config !== null

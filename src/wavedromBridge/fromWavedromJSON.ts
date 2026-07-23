@@ -273,7 +273,11 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
     foot: wd.foot ?? wd.config?.foot,
   };
   return {
-    version: 1,
+    version: 2,
+    compatibility: {
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+    },
     signals,
     config,
     edges: wd.edge ? [...wd.edge] : [],

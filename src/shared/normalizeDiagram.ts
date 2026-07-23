@@ -80,6 +80,17 @@ function walkSignals(signals: SignalOrGroup[], totalSteps: number): void {
 export function normalizeDiagram(diagram: DiagramState): DiagramState {
   const d = cloneDiagram(diagram);
 
+  d.version = 2;
+  d.compatibility = {
+    extensionsEnabled: d.compatibility?.extensionsEnabled === true,
+    ...(d.compatibility?.sourceFormat
+      ? { sourceFormat: d.compatibility.sourceFormat }
+      : {}),
+    ...(d.compatibility?.sourceRevision
+      ? { sourceRevision: d.compatibility.sourceRevision }
+      : {}),
+  };
+
   if (!Array.isArray(d.edges)) {
     d.edges = [];
   }

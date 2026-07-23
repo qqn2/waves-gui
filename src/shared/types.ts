@@ -101,8 +101,22 @@ export interface DiagramConfig {
 
 // ─── Diagram state (the saved document) ──────────────────────────────────────
 
+export type DiagramSourceFormat =
+  | 'wavedrom-json'
+  | 'undulate-json'
+  | 'undulate-yaml'
+  | 'undulate-toml';
+
+export interface DiagramCompatibility {
+  extensionsEnabled: boolean;
+  sourceFormat?: DiagramSourceFormat;
+  sourceRevision?: string;
+}
+
 export interface DiagramState {
-  version: 1;
+  /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
+  version: 1 | 2;
+  compatibility?: DiagramCompatibility;
   signals: SignalOrGroup[];
   config: DiagramConfig;
   /** WaveDrom edge[] dependency arrow strings */
