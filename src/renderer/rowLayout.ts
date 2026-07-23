@@ -14,15 +14,38 @@ export function buildRowLayout(signals: SignalOrGroup[]): RowLayoutEntry[] {
   let y = 0;
 
   const walk = (list: SignalOrGroup[]) => {
-    for (const item of list) {
+    for (let index = 0; index < list.length; index++) {
+      const item = list[index]!;
       if (item.type === 'group') {
         rows.push({ id: item.id, y, height: GROUP_HEADER_HEIGHT, type: 'group' });
         y += GROUP_HEADER_HEIGHT;
         if (!item.collapsed) walk(item.children);
       } else {
-        const rh = item.rowHeight ?? ROW_HEIGHT;
-        rows.push({ id: item.id, y, height: rh, type: item.type });
-        y += rh;
+        let chainEnd = index;
+        let rowHeight = item.rowHeight ?? ROW_HEIGHT;
+        while (chainEnd < list.length - 1) {
+          const current = list[chainEnd]!;
+          const next = list[chainEnd + 1]!;
+          if (
+            current.type !== 'analogue'
+            || current.overlay !== true
+            || next.type !== 'analogue'
+          ) break;
+          chainEnd++;
+          rowHeight = Math.max(rowHeight, next.rowHeight ?? ROW_HEIGHT);
+        }
+        for (let member = index; member <= chainEnd; member++) {
+          const signal = list[member]!;
+          if (signal.type === 'group') break;
+          rows.push({
+            id: signal.id,
+            y,
+            height: rowHeight,
+            type: signal.type,
+          });
+        }
+        y += rowHeight;
+        index = chainEnd;
       }
     }
   };

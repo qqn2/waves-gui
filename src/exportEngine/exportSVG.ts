@@ -275,7 +275,7 @@ function svgLabels(
   ];
   for (const entry of entries) {
     const x = 8 + entry.depth * 12;
-    const y = axisOffset + entry.y + entry.height / 2;
+    const y = axisOffset + entry.y + entry.height * entry.centerRatio;
     const weight = entry.isGroup ? ' font-weight="600" font-size="11"' : ' font-size="12"';
     parts.push(
       `<text x="${x}" y="${y}" fill="${esc(textColor)}" font-family="sans-serif" dominant-baseline="middle"${weight}>${esc(entry.name)}</text>`,

@@ -758,6 +758,12 @@
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
+.inspectorField input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+}
+
 .inspectorField textarea {
   resize: vertical;
   min-height: 4.5rem;

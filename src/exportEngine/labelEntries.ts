@@ -7,6 +7,11 @@ export interface LabelEntry {
   height: number;
   depth: number;
   isGroup: boolean;
+  centerRatio: number;
+}
+
+function overlayLabelRatio(order: number | undefined): number {
+  return [0.5, 0.14, 0.34, 0.66, 0.86][order ?? 0] ?? 0.5;
 }
 
 /** Visible signal/group rows aligned with `buildRowLayout` order. */
@@ -26,6 +31,7 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
           height: row.height,
           depth,
           isGroup: true,
+          centerRatio: 0.5,
         });
         if (!item.collapsed) walk(item.children, depth + 1);
       } else {
@@ -35,6 +41,7 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
           height: row.height,
           depth,
           isGroup: false,
+          centerRatio: overlayLabelRatio(item.order),
         });
       }
     }
@@ -63,7 +70,7 @@ export function drawSignalLabels(
 
   for (const entry of entries) {
     const x = 8 + entry.depth * 12;
-    const y = axisOffset + entry.y + entry.height / 2;
+    const y = axisOffset + entry.y + entry.height * entry.centerRatio;
     const maxW = labelWidth - x - 4;
     ctx.font = entry.isGroup ? '600 11px sans-serif' : '12px sans-serif';
     ctx.fillText(entry.name, x, y, maxW);
