@@ -13,8 +13,34 @@ Target application: `waves-gui`
 - [x] Validate supported WaveDrom sub-cycle marker structure.
 - [x] Add version 2 migration foundations and document compatibility metadata.
 - [x] Add an undoable document-level Undulate extensions toggle.
-- [ ] Add the typed annotation model and first free-text annotation.
-- [ ] Add Undulate JSON import/export and compatibility reporting.
+- [x] Add the typed annotation model and first free-text annotation.
+- [x] Add Undulate JSON import/export and compatibility reporting.
+
+### Current implemented slice
+
+The first vertical slice is complete on `rek-undulate`:
+
+- the target Undulate behavior is pinned to revision
+  `c8da7d48c48fc0bbc90113b6913611132bd96c01`;
+- version 2 documents store typed text annotations with a tick, an optional
+  semantic signal anchor, and a logical Y offset;
+- the Text tool creates annotations, and selection/property controls edit or
+  delete them with undo/redo support;
+- annotations render in the live canvas and PNG, JPEG, and safely escaped SVG
+  exports;
+- turning extensions off hides and locks annotations without deleting them;
+- autosave, raw WaveDrom code edits, file open, and file save preserve supported
+  annotation content;
+- Undulate JSON maps text annotations to upstream `text`, `x`, and `y` fields;
+- WaveDrom export reports annotations as unsupported and labels the action as
+  exporting a compatible subset.
+
+The current Undulate annotation bridge intentionally supports plain text
+annotations only. Shapes, styling fields such as `fill`, vertical/horizontal
+lines, and other unknown annotation properties are rejected explicitly rather
+than silently discarded. Opaque preservation of unsupported Undulate fields,
+YAML/TOML, fine timing, extended styling, and analogue features remain future
+phases.
 
 ## 1. Purpose
 
@@ -57,7 +83,8 @@ Important properties of the current design:
 - The existing model already supports bit lanes, vector lanes, spacers, nested
   groups, clocks, gaps, glitches, phase, period, nodes, edges, headers, footers,
   custom colors, and WaveDrom subcycle wave syntax.
-- File loading currently expects strict JSON and a WaveDrom-style root object.
+- File loading accepts strict JSON, detects WaveDrom versus Undulate annotation
+  roots, and validates the currently supported subset before import.
 - Image rendering and export are already implemented independently of the
   upstream WaveDrom renderer.
 
@@ -330,7 +357,7 @@ fixture and an automated support classification before release.
 | Dependency edges | Yes | Native `edge` | `edge`/`edges` adapter | Normalize internally |
 | Edge labels | Yes | Native subset | Supported | Preserve |
 | Long node names | No | Allocate temporary node chars | Native Undulate concept | Add semantic anchors |
-| Free text annotations | No | Unsupported | Native annotations | Add annotation model |
+| Free text annotations | Yes (plain text) | Unsupported with explicit report | Native `text`/`x`/`y` conversion | Implemented first slice |
 | Vertical/horizontal annotations | No | Unsupported | Native annotations | Add annotation model |
 | Global time compression | Lane gaps only | Approximate/unsupported | Native `||` annotation | Add diagram annotation |
 | Per-object styling | Partial internal colors | Mostly unsupported | Native style overrides | Add normalized style |
