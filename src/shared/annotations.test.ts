@@ -43,6 +43,7 @@ describe('annotations', () => {
   it('reports extension content independently from mode state', () => {
     expect(scanExtensionContent({ annotations: [] })).toEqual({
       annotationCount: 0,
+      analogueSignalCount: 0,
       totalCount: 0,
       hasExtensions: false,
     });
@@ -54,6 +55,7 @@ describe('annotations', () => {
       }),
     ).toEqual({
       annotationCount: 1,
+      analogueSignalCount: 0,
       totalCount: 1,
       hasExtensions: true,
     });

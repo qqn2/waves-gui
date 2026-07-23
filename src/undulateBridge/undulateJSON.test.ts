@@ -68,4 +68,67 @@ describe('Undulate JSON bridge', () => {
       annotations: [{ text: 'styled', x: 1, y: 1, fill: '#fff' }],
     })).toContain('Unsupported Undulate text annotation field: fill');
   });
+
+  it('imports and exports finite analogue step, capacitive, and sample cells', () => {
+    const root = {
+      signal: [{
+        name: 'vin',
+        wave: '0sca',
+        analogue: [
+          0.6,
+          1.2,
+          [[0, 1.2], [2, 0.4]],
+        ],
+        slewing: 32,
+        vscale: 2,
+      }],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(signal).toMatchObject({
+      type: 'analogue',
+      name: 'vin',
+      slewing: 32,
+      vscale: 2,
+      rowHeight: 80,
+    });
+    if (!signal || signal.type !== 'analogue') return;
+    expect(signal.analogueCells).toEqual([
+      expect.objectContaining({ kind: 'hold', value: 0 }),
+      expect.objectContaining({ kind: 'step', value: 0.6 }),
+      expect.objectContaining({ kind: 'capacitive', value: 1.2 }),
+      expect.objectContaining({
+        kind: 'samples',
+        value: 0.4,
+        samples: [
+          { offset: 0, value: 1.2 },
+          { offset: 1, value: 0.4 },
+        ],
+      }),
+    ]);
+
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      name: 'vin',
+      wave: '0sca',
+      analogue: [
+        0.6,
+        1.2,
+        [[0, 1.2], [1, 0.4]],
+      ],
+      slewing: 32,
+      vscale: 2,
+    });
+  });
+
+  it('rejects executable analogue expressions instead of evaluating them', () => {
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'unsafe',
+        wave: 's',
+        analogue: ['VDDA * 0.5'],
+      }],
+    })).toContain('expressions are not executed');
+  });
 });

@@ -6,5 +6,6 @@ export {
 } from './undulateJSON';
 export type {
   UndulateRoot,
+  UndulateAnalogueValue,
   UndulateTextAnnotation,
 } from './types';
