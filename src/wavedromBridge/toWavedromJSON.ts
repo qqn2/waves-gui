@@ -11,6 +11,7 @@ function signalToEntry(
   hscale: number,
 ): WdSignal | Record<string, never> {
   if (sig.type === 'spacer') return {};
+  if (sig.type === 'analogue') return {};
   if (sig.type === 'bit') {
     const wave = isWaveModeLane(sig)
       ? padWaveForDiagram(sig, totalSteps, hscale)

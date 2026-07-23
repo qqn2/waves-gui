@@ -6,6 +6,10 @@ export interface UndulateTextAnnotation {
   y: number;
 }
 
+export type UndulateAnalogueValue =
+  | number
+  | Array<[number, number]>;
+
 export interface UndulateRoot extends WdRoot {
   annotations?: UndulateTextAnnotation[];
 }

@@ -30,4 +30,32 @@ describe('source compatibility findings', () => {
       }),
     ]);
   });
+
+  it('reports analogue lanes for both export targets', () => {
+    const diagram = createDefaultDiagram();
+    diagram.signals = [{
+      id: 'ana',
+      name: 'vin',
+      type: 'analogue',
+      states: [],
+      segments: [],
+      color: '#4A9EFF',
+      rowHeight: 40,
+      analogueCells: [{ id: 'cell', kind: 'step', value: 0.9 }],
+    }];
+
+    expect(waveDromCompatibilityFindings(diagram)).toEqual([
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'analogue-signals',
+      }),
+    ]);
+    expect(undulateCompatibilityFindings(diagram)).toEqual([
+      expect.objectContaining({
+        level: 'converted',
+        feature: 'analogue-signal',
+        objectId: 'ana',
+      }),
+    ]);
+  });
 });

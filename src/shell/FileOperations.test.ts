@@ -133,4 +133,31 @@ describe('FileOperations', () => {
     };
     expect(saved.annotations?.[0]?.text).toBe('New note');
   });
+
+  it('detects and opens an Undulate analogue file without annotations', async () => {
+    const file = new File([
+      JSON.stringify({
+        signal: [{
+          name: 'vin',
+          wave: '0sc',
+          analogue: [0.5, 1.2],
+        }],
+      }),
+    ], 'analogue.json', { type: 'application/json' });
+    const handle = {
+      name: 'analogue.json',
+      getFile: vi.fn().mockResolvedValue(file),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([handle]);
+
+    await openDiagramFile();
+
+    expect(useStore.getState().diagram.compatibility?.sourceFormat).toBe(
+      'undulate-json',
+    );
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      type: 'analogue',
+      name: 'vin',
+    });
+  });
 });

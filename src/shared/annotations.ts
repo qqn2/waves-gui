@@ -59,18 +59,31 @@ export function normalizeAnnotations(
 
 export interface ExtensionContentSummary {
   annotationCount: number;
+  analogueSignalCount: number;
   totalCount: number;
   hasExtensions: boolean;
 }
 
 export function scanExtensionContent(
-  diagram: Pick<DiagramState, 'annotations'>,
+  diagram:
+    Pick<DiagramState, 'annotations'>
+    & Partial<Pick<DiagramState, 'signals'>>,
 ): ExtensionContentSummary {
   const annotationCount = diagram.annotations?.length ?? 0;
+  let analogueSignalCount = 0;
+  const countAnalogue = (signals: SignalOrGroup[]) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') countAnalogue(signal.children);
+      else if (signal.type === 'analogue') analogueSignalCount++;
+    }
+  };
+  countAnalogue(diagram.signals ?? []);
+  const totalCount = annotationCount + analogueSignalCount;
   return {
     annotationCount,
-    totalCount: annotationCount,
-    hasExtensions: annotationCount > 0,
+    analogueSignalCount,
+    totalCount,
+    hasExtensions: totalCount > 0,
   };
 }
 
