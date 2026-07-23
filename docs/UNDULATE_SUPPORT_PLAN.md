@@ -15,6 +15,11 @@ Target application: `waves-gui`
 - [x] Add an undoable document-level Undulate extensions toggle.
 - [x] Add the typed annotation model and first free-text annotation.
 - [x] Add Undulate JSON import/export and compatibility reporting.
+- [x] Add a bounded analogue signal/cell/sample model.
+- [x] Import and export numeric Undulate `s`, `c`, and explicit `a` cells.
+- [x] Render analogue lanes in the canvas and image/SVG exports.
+- [x] Add analogue creation, selection, property editing, and undo/redo.
+- [x] Add vertical scaling and initial consecutive-lane overlays.
 
 ### Current implemented slice
 
@@ -39,8 +44,29 @@ The current Undulate annotation bridge intentionally supports plain text
 annotations only. Shapes, styling fields such as `fill`, vertical/horizontal
 lines, and other unknown annotation properties are rejected explicitly rather
 than silently discarded. Opaque preservation of unsupported Undulate fields,
-YAML/TOML, fine timing, extended styling, and analogue features remain future
-phases.
+YAML/TOML, fine timing, and extended styling remain future phases.
+
+### Current analogue slice
+
+Analogue lanes now use finite per-step cells with `hold`, `step`, `capacitive`,
+or explicit `samples` transitions. The implementation:
+
+- uses the pinned Undulate `analogue` array with `s`, `c`, and `a` wave cells;
+- accepts numbers and finite `[time, value]` sample pairs only;
+- never evaluates imported Python-like expressions;
+- draws shared geometry in the live canvas, PNG/JPEG, and SVG;
+- exposes voltage range, cell transition/value, slew, vertical scale, overlay,
+  and label-order controls in the inspector;
+- overlays consecutive analogue lanes when each preceding lane enables
+  `overlay`, matching the upstream chain convention;
+- reports analogue lanes as unsupported in WaveDrom JSON and omits them only
+  through the explicitly labelled compatible-subset export.
+
+This is an initial safe subset, not complete Undulate analogue parity. Custom
+stroke/fill/dash/font fields are rejected until normalized styles or opaque
+preservation exist. Arbitrary expressions are rejected rather than preserved,
+sample-point editing is not yet a dedicated graphical tool, and pointer
+disambiguation for densely overlaid members needs further interaction polish.
 
 ## 1. Purpose
 
@@ -361,17 +387,17 @@ fixture and an automated support classification before release.
 | Vertical/horizontal annotations | No | Unsupported | Native annotations | Add annotation model |
 | Global time compression | Lane gaps only | Approximate/unsupported | Native `||` annotation | Add diagram annotation |
 | Per-object styling | Partial internal colors | Mostly unsupported | Native style overrides | Add normalized style |
-| Slewing | No | Unsupported | Native | Add signal timing style |
+| Slewing | Yes (analogue scalar) | Unsupported | Native numeric property | Implemented initial subset |
 | Duty cycle | Fixed clock behavior | Limited | Native | Add scalar/series values |
 | Per-cell periods | No | Limited/expanded | Native `periods` | Add tick durations |
 | Repeat | Encoded by wave length | Expanded | Native `repeat` | Canonicalize internally |
 | Metastability | No | Unsupported | Native `m`/`M` | Add extended state |
 | Impulse | No | Unsupported | Native `i`/`I` | Add extended state |
-| Analogue step | No | Unsupported | Native `s` | Add analogue lane |
-| Capacitive transition | No | Unsupported | Native `c` | Add analogue lane |
-| Arbitrary analogue curve | No | Unsupported | Native `a` | Samples first; expressions opaque |
-| Signal overlays | No | Unsupported | Native `overlay` | Add overlay groups/layout |
-| Vertical lane scale | Row height only | Unsupported | Native `vscale` | Map deliberately |
+| Analogue step | Yes | Unsupported with explicit report | Native numeric `s` | Implemented |
+| Capacitive transition | Yes | Unsupported with explicit report | Native numeric `c` | Implemented |
+| Arbitrary analogue curve | Finite samples | Unsupported with explicit report | Native explicit `a` points | Expressions rejected |
+| Signal overlays | Consecutive analogue chains | Unsupported | Native `overlay` | Initial layout implemented |
+| Vertical lane scale | Yes, bounded 0.25–16 | Unsupported | Native `vscale` | Implemented |
 | Sub-Steps | Partial subcycle foundations | Convert if possible | Expand with fractional period | App-native timebase |
 | YAML input/output | No | N/A | Native Undulate format | Later adapter |
 | TOML input/output | No | N/A | Native Undulate format | Later adapter |

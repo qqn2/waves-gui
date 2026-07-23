@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import type { AnalogueCell, AnaloguePoint, Signal } from './types';
+import { ROW_HEIGHT } from './constants';
 
 export const DEFAULT_ANALOGUE_MIN = 0;
 export const DEFAULT_ANALOGUE_MAX = 1.8;
@@ -88,6 +89,7 @@ export function normalizeAnalogueSignal(
   } else {
     delete signal.vscale;
   }
+  signal.rowHeight = ROW_HEIGHT * (signal.vscale ?? 1);
   if (typeof signal.order === 'number' && Number.isFinite(signal.order)) {
     signal.order = Math.max(0, Math.min(4, Math.round(signal.order)));
   } else {
