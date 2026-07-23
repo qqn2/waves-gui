@@ -77,6 +77,11 @@ function applyRectSelection(
 }
 
 function applyClickSelection(hit: HitTestResult, diagram: DiagramState): void {
+  if (hit.annotationId) {
+    useStore.getState().setActiveAnnotationId(hit.annotationId);
+    toolState.setStepSelection(null);
+    return;
+  }
   if (hit.signalId && hit.signalType !== 'group' && hit.signalType !== null) {
     setActiveSignalIds([hit.signalId]);
     if (hit.step !== null) {
@@ -170,6 +175,12 @@ export function deleteSelection(): void {
   const steps = toolState.getStepSelection();
   const { eraseSignalStateRange, removeSignal } = useStore.getState();
 
+  if (view.activeAnnotationId) {
+    useStore.getState().removeAnnotation(view.activeAnnotationId);
+    useStore.getState().setActiveAnnotationId(null);
+    return;
+  }
+
   if (steps && view.activeSignalIds.length > 0) {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
@@ -205,6 +216,7 @@ export function deleteSelection(): void {
 
 export function clearSelection(): void {
   setActiveSignalIds([]);
+  useStore.getState().setActiveAnnotationId(null);
   toolState.setStepSelection(null);
   toolState.clearSelectOverlay();
 }

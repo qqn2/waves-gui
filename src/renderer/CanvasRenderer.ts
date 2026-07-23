@@ -311,7 +311,13 @@ export class CanvasRenderer {
     };
 
     walkDraw(diagram.signals);
-    renderTextAnnotations(this.ctx, diagram, rows, transform);
+    renderTextAnnotations(
+      this.ctx,
+      diagram,
+      rows,
+      transform,
+      view.activeAnnotationId,
+    );
     this.ctx.restore();
 
     if (headHeight > 0 || footHeight > 0) {

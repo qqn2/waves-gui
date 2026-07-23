@@ -216,6 +216,10 @@ export function createDocumentActions(set: ImmerSet): Pick<
           ...s.diagram.compatibility,
           extensionsEnabled: enabled,
         };
+        if (!enabled) {
+          s.view.activeAnnotationId = null;
+          if (s.view.selectedTool === 'annotation') s.view.selectedTool = 'cursor';
+        }
       });
     },
 

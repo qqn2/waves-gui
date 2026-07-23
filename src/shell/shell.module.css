@@ -736,7 +736,9 @@
   font-size: calc(11px * var(--ui-font-scale, 1));
 }
 
-.inspectorField input {
+.inspectorField input,
+.inspectorField textarea,
+.inspectorField select {
   width: 100%;
   height: 29px;
   min-width: 0;
@@ -749,9 +751,30 @@
   font: inherit;
 }
 
-.inspectorField input:focus {
+.inspectorField input:focus,
+.inspectorField textarea:focus,
+.inspectorField select:focus {
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.inspectorField textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.inspectorDanger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid color-mix(in srgb, #d84a4a 55%, var(--border));
+  border-radius: 3px;
+  background: color-mix(in srgb, #d84a4a 10%, var(--bg-panel));
+  color: #b72f2f;
+  cursor: pointer;
 }
 
 .inspectorField input[readonly] {

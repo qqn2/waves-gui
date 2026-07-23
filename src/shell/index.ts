@@ -5,6 +5,7 @@ export type { ScrollSyncHandles } from './scrollSync';
 export { Toolbar } from './Toolbar';
 export { EditToolbar } from './EditToolbar';
 export { SignalInspector } from './SignalInspector';
+export { AnnotationInspector } from './AnnotationInspector';
 export { HeadFootFields } from './HeadFootFields';
 export { DiagramStepsControl } from './DiagramStepsControl';
 export { SignalTimingBar } from './SignalTimingBar';

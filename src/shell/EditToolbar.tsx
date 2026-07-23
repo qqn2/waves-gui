@@ -5,6 +5,7 @@ import {
   MousePointer2,
   MoveHorizontal,
   Paintbrush,
+  TextCursorInput,
   Plus,
   Rows3,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ const MODES: Array<{
   { id: 'cursor', label: 'Select', shortcut: 'V', Icon: MousePointer2 },
   { id: 'paint', label: 'Draw', shortcut: 'D', Icon: Paintbrush },
   { id: 'erase', label: 'Erase', shortcut: 'E', Icon: Eraser },
+  { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
   { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
 ];
@@ -30,12 +32,15 @@ export function EditToolbar() {
   const setTool = useStore((s) => s.setTool);
   const addSignal = useStore((s) => s.addSignal);
   const addGroup = useStore((s) => s.addGroup);
+  const extensionsEnabled = useStore(
+    (s) => s.diagram.compatibility?.extensionsEnabled === true,
+  );
 
   return (
     <nav className={styles.editRail} aria-label="Waveform editing tools">
       <div className={styles.editRailGroup}>
         <span className={styles.editRailLabel}>Tools</span>
-        {MODES.map(({ id, label, shortcut, Icon }) => {
+        {MODES.filter(({ id }) => id !== 'annotation' || extensionsEnabled).map(({ id, label, shortcut, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;

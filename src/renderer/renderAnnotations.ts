@@ -18,6 +18,7 @@ export function renderTextAnnotations(
   diagram: DiagramState,
   rows: RowLayoutEntry[],
   transform: ViewTransform,
+  selectedAnnotationId?: string | null,
 ): void {
   const layouts = layoutTextAnnotations(diagram, rows);
   if (layouts.length === 0) return;
@@ -40,6 +41,16 @@ export function renderTextAnnotations(
       width + paddingX * 2,
       height,
     );
+    if (annotation.id === selectedAnnotationId) {
+      ctx.strokeStyle = themeColor('--accent', '#4a9eff');
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(
+        canvasX - width / 2 - paddingX,
+        canvasY - height / 2,
+        width + paddingX * 2,
+        height,
+      );
+    }
     ctx.fillStyle = themeColor('--text-primary', '#e8e8e8');
     ctx.fillText(annotation.text, canvasX, canvasY);
   }

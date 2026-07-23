@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import {
   AppLayout,
   EditToolbar,
+  AnnotationInspector,
   SignalInspector,
   StatusBar,
   Toolbar,
@@ -175,14 +176,21 @@ function App() {
   }, [activeSignalIds, diagram.signals]);
   const selectedSignalId = selectedSignal?.id ?? null;
   const selectedSignalType = selectedSignal?.type ?? null;
+  const activeAnnotationId = view.activeAnnotationId ?? null;
+  const selectedAnnotation = useMemo(
+    () => diagram.annotations?.find((annotation) => annotation.id === activeAnnotationId) ?? null,
+    [activeAnnotationId, diagram.annotations],
+  );
 
   useEffect(() => {
-    if (!selectedSignalId) {
+    if (selectedAnnotation) {
+      setInspectorVisible(true);
+    } else if (!selectedSignalId) {
       setInspectorVisible(false);
     } else if (selectedSignalType === 'vector') {
       setInspectorVisible(true);
     }
-  }, [selectedSignalId, selectedSignalType]);
+  }, [selectedAnnotation, selectedSignalId, selectedSignalType]);
 
   useLayoutEffect(() => {
     applyThemeSettings(
@@ -197,7 +205,7 @@ function App() {
           <Toolbar
             onExport={() => setExportOpen(true)}
             inspectorVisible={inspectorVisible}
-            inspectorAvailable={selectedSignal !== null}
+            inspectorAvailable={selectedSignal !== null || selectedAnnotation !== null}
             onToggleInspector={() => setInspectorVisible((visible) => !visible)}
           />
           <HeadFootFields />
@@ -220,7 +228,9 @@ function App() {
                 )}
               />
             </div>
-            {inspectorVisible && selectedSignal ? (
+            {inspectorVisible && selectedAnnotation ? (
+              <AnnotationInspector onClose={() => setInspectorVisible(false)} />
+            ) : inspectorVisible && selectedSignal ? (
               <SignalInspector onClose={() => setInspectorVisible(false)} />
             ) : null}
           </div>

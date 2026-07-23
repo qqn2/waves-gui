@@ -19,7 +19,7 @@ describe('App smoke', () => {
     expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
 
     const inspectorToggle = host.querySelector<HTMLButtonElement>(
-      'button[title="Select one signal to inspect its properties"]',
+      'button[title="Select a signal or annotation to inspect its properties"]',
     );
     expect(inspectorToggle).not.toBeNull();
     expect(inspectorToggle!.disabled).toBe(true);
@@ -83,6 +83,19 @@ describe('App smoke', () => {
       extensionsToggle!.click();
     });
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+
+    await act(async () => {
+      const annotationId = useStore.getState().addTextAnnotation({
+        text: 'Setup note',
+        tick: 1,
+        signalId: bitSignal!.id,
+      });
+      useStore.getState().setActiveAnnotationId(annotationId);
+    });
+    expect(host.querySelector('aside[aria-label="Annotation inspector"]')).not.toBeNull();
+    expect(
+      host.querySelector<HTMLTextAreaElement>('textarea[aria-label="Annotation text"]')?.value,
+    ).toBe('Setup note');
 
     root.unmount();
     host.remove();

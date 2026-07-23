@@ -145,9 +145,11 @@ export function Toolbar({
         ? 'Draw'
         : tool === 'erase'
           ? 'Erase'
-          : tool === 'arrow'
-            ? 'Edge'
-            : 'Span';
+           : tool === 'arrow'
+             ? 'Edge'
+             : tool === 'annotation'
+               ? 'Text'
+             : 'Span';
 
 
   return (
@@ -231,7 +233,7 @@ export function Toolbar({
           className={`${styles.toolBtn} ${inspectorVisible ? styles.toolActive : ''}`}
           onClick={onToggleInspector}
           disabled={!inspectorAvailable}
-          title={inspectorAvailable ? 'Show or hide signal properties inspector' : 'Select one signal to inspect its properties'}
+          title={inspectorAvailable ? 'Show or hide properties inspector' : 'Select a signal or annotation to inspect its properties'}
           aria-pressed={inspectorVisible}
         >
           <PanelRight size={16} aria-hidden /> Inspector

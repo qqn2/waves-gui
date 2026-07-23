@@ -146,6 +146,7 @@ export type Tool =
   | 'paint'
   | 'erase'
   | 'select'
+  | 'annotation'
   | 'arrow'
   | 'timespan'
   | 'cursor';
@@ -181,6 +182,8 @@ export interface ViewState {
   /** WaveDrom bus fill palette index (2–9) for new vector spans */
   activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
+  /** Selected extended object, mutually exclusive with activeSignalIds. */
+  activeAnnotationId?: string | null;
   showCodePanel: boolean;
   showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
