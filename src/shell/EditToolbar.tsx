@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Activity,
   Eraser,
   Group,
   MousePointer2,
@@ -70,6 +71,16 @@ export function EditToolbar() {
           <Rows3 size={21} strokeWidth={1.8} aria-hidden />
           <span>Bus</span>
         </button>
+        {extensionsEnabled && (
+          <button
+            type="button"
+            className={styles.railBtn}
+            onClick={() => addSignal('analogue')}
+          >
+            <Activity size={21} strokeWidth={1.8} aria-hidden />
+            <span>Analog</span>
+          </button>
+        )}
         <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
           <Group size={21} strokeWidth={1.8} aria-hidden />
           <span>Group</span>

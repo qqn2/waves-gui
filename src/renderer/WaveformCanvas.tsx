@@ -80,7 +80,10 @@ export function WaveformCanvas({
   }, [diagram, view, redraw]);
 
   const focusableRows = buildRowLayout(diagram.signals).filter(
-    (row) => row.type === 'bit' || row.type === 'vector',
+    (row) =>
+      row.type === 'bit'
+      || row.type === 'vector'
+      || row.type === 'analogue',
   );
 
   const setKeyboardPosition = useCallback((rowIndex: number, step: number) => {
@@ -88,7 +91,12 @@ export function WaveformCanvas({
     if (!row) return;
     const next: HitTestResult = {
       signalId: row.id,
-      signalType: row.type === 'bit' ? 'bit' : 'vector',
+      signalType:
+        row.type === 'analogue'
+          ? 'analogue'
+          : row.type === 'bit'
+            ? 'bit'
+            : 'vector',
       step: Math.max(0, Math.min(diagram.config.totalSteps - 1, step)),
       half: null,
       isLabelArea: false,

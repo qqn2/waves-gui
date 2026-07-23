@@ -37,7 +37,7 @@ export function normalizeAnalogueCell(
     || value?.kind === 'samples'
       ? value.kind
       : 'hold';
-  const samples =
+  let samples =
     kind === 'samples' && Array.isArray(value?.samples)
       ? value.samples
           .slice(0, MAX_ANALOGUE_SAMPLES_PER_CELL)
@@ -46,13 +46,23 @@ export function normalizeAnalogueCell(
           .sort((a, b) => a.offset - b.offset)
       : undefined;
   const lastSample = samples?.[samples.length - 1];
+  const normalizedValue = finiteClamped(
+    value?.value,
+    lastSample?.value ?? fallbackValue,
+  );
+  if (kind === 'samples' && (!samples || samples.length === 0)) {
+    samples = [
+      { offset: 0, value: fallbackValue },
+      { offset: 1, value: normalizedValue },
+    ];
+  }
   return {
     id:
       typeof value?.id === 'string' && value.id.length > 0
         ? value.id
         : nanoid(),
     kind,
-    value: finiteClamped(value?.value, lastSample?.value ?? fallbackValue),
+    value: normalizedValue,
     ...(samples && samples.length > 0 ? { samples } : {}),
   };
 }
