@@ -120,6 +120,7 @@ export interface StoreActions {
   restoreDraft(diagram: DiagramState): void;
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
+  setExtensionsEnabled(enabled: boolean): void;
   markClean(fileName: string): void;
   undo(): void;
   redo(): void;

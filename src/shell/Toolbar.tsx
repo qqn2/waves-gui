@@ -25,6 +25,7 @@ import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
 import { measureHeadFoot } from '../renderer/renderHeadFoot';
 import { diagramLogicalWidth } from '../renderer/laneTiming';
 import { ThemeMenu } from './ThemeMenu';
+import { ExtensionsModeToggle } from './ExtensionsModeToggle';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import {
   ToolbarBusSection,
@@ -207,6 +208,7 @@ export function Toolbar({
         </div>
 
         <div className={styles.viewControls}>
+        <ExtensionsModeToggle />
         <button
           type="button"
           className={`${styles.toolBtn} ${view.showCodePanel ? styles.toolActive : ''}`}

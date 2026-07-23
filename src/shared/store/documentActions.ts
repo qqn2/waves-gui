@@ -154,6 +154,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
   | 'restoreDraft'
   | 'applyDiagramEdit'
   | 'clearAll'
+  | 'setExtensionsEnabled'
   | 'markClean'
   | 'undo'
   | 'redo'
@@ -202,6 +203,19 @@ export function createDocumentActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = [];
+      });
+    },
+
+    setExtensionsEnabled(enabled) {
+      set((s) => {
+        const currentValue = s.diagram.compatibility?.extensionsEnabled === true;
+        if (currentValue === enabled) return;
+        pushHistory(s);
+        s.diagram.version = 2;
+        s.diagram.compatibility = {
+          ...s.diagram.compatibility,
+          extensionsEnabled: enabled,
+        };
       });
     },
 

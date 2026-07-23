@@ -74,6 +74,16 @@ describe('App smoke', () => {
     });
     expect(useStore.getState().diagram.config.hscale).toBe(2);
 
+    const extensionsToggle = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Undulate extensions"]',
+    );
+    expect(extensionsToggle).not.toBeNull();
+    expect(extensionsToggle!.checked).toBe(false);
+    await act(async () => {
+      extensionsToggle!.click();
+    });
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+
     root.unmount();
     host.remove();
   });

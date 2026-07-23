@@ -413,6 +413,33 @@
   flex: 0 0 auto;
 }
 
+.extensionsMode {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: var(--toolbar-control-height, 28px);
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-size: calc(11px * var(--ui-font-scale, 1));
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.extensionsMode input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.extensionsModeActive {
+  border-color: var(--accent);
+  background: var(--selection-fill);
+  color: var(--text-primary);
+}
+
 .toolbarSpacer {
   flex: 1;
   min-width: 8px;
