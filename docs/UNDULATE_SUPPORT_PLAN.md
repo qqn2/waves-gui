@@ -169,13 +169,16 @@ details and must not become accidental interchange standards in this project.
 1. Preserve the current interface and WaveDrom-first workflow by default.
 2. Add one clear document-level toggle for Undulate extensions.
 3. Reveal extended controls contextually only while the toggle is enabled.
-4. Import, edit, render, and export a useful subset of Undulate diagrams.
+4. Import, edit, render, and export the full declarative/numeric Undulate
+   waveform feature set, excluding register diagrams.
 5. Preserve unsupported Undulate properties during lossless round trips where
    safely possible.
 6. Warn before any export or operation that would lose information.
 7. Keep all diagram processing local to the browser.
 8. Avoid executing code embedded in imported diagram files.
 9. Introduce features incrementally without destabilizing WaveDrom behavior.
+10. Pursue browser-native semantic and visual parity for Undulate waveform
+    features rather than treating the current safe subset as the final scope.
 
 ### 3.2 Engineering goals
 
@@ -186,22 +189,29 @@ details and must not become accidental interchange standards in this project.
 5. Make feature support inspectable through a capability report.
 6. Maintain deterministic exports and golden fixtures.
 7. Preserve undo/redo, autosave, dirty-state detection, and security guarantees.
+8. Implement supported Undulate waveform geometry in TypeScript so interactive
+   rendering and browser exports share one tested pipeline.
 
 ## 4. Non-goals
 
-The initial work will not:
+The project will not:
 
 - replace the existing WaveDrom mode;
-- reproduce the complete Undulate Python implementation;
+- embed or reproduce Undulate's Python execution runtime;
 - embed Python, Pyodide, Cairo, or a server-side renderer;
 - execute imported Python analogue expressions;
 - promise pixel-identical output with every Undulate renderer;
-- support Undulate register diagrams in the first implementation;
-- make PDF or PostScript a first-class browser export merely because Undulate
-  supports them;
+- support Undulate register diagrams; register descriptions are a separate
+  diagram product and are intentionally outside the waveform editor scope;
 - make YAML or TOML the canonical internal representation;
 - redesign the primary toolbar or general application layout;
 - silently delete, flatten, or approximate unsupported features.
+
+Except for register diagrams, arbitrary Python execution, and pixel-identical
+Cairo reproduction, standard Undulate waveform features and formats remain
+implementation targets. PDF, PostScript, and EPS may be added through safe
+browser-native exporters without requiring Cairo compatibility at the byte or
+pixel level.
 
 ## 5. Terminology
 
@@ -402,7 +412,7 @@ fixture and an automated support classification before release.
 | YAML input/output | No | N/A | Native Undulate format | Later adapter |
 | TOML input/output | No | N/A | Native Undulate format | Later adapter |
 | JSON-like comments | Code panel uses JSON5 in places | Nonstandard | Undulate accepts JSON-like input | Decide separately |
-| Register diagrams | No | WaveDrom has separate register form | Undulate supports register context | Out of initial scope |
+| Register diagrams | Intentionally unsupported | N/A | Separate Undulate register context | Permanently out of scope |
 
 ## 9. Internal model evolution
 
@@ -1367,7 +1377,6 @@ Candidates:
 - constrained mathematical expression language;
 - additional Undulate shapes and style properties;
 - richer analogue point editor;
-- register diagrams;
 - additional export formats where browser-native libraries are justified;
 - command-line companion or documented use with the external Undulate CLI.
 
@@ -1384,7 +1393,7 @@ For one developer working mostly full-time:
 | Annotations and styling | High | Several weeks |
 | Major digital timing extensions | High | Several additional weeks |
 | Analogue curves and overlays | High but substantial | One to two additional months |
-| Broad feature parity with all formats | Possible, not initially necessary | Multiple months |
+| Browser-native parity for declarative waveform features and formats | Target direction | Multiple months |
 
 These estimates are planning aids, not commitments. The implementation should
 be milestone-driven and may combine phases when shared refactors make that more
@@ -1476,6 +1485,9 @@ evidence warrants revisiting them:
 12. JSON support comes before YAML and TOML.
 13. Annotations and styling should precede analogue overlays.
 14. Python/Cairo is not embedded into the browser app.
+15. Register diagrams are permanently out of scope; all other declarative and
+    numeric Undulate waveform features remain browser-native implementation
+    targets.
 
 ## 27. Open design questions
 
