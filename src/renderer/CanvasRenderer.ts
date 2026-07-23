@@ -18,6 +18,7 @@ import { applyVectorSpan } from '../shared/vectorSegments';
 import { renderSignalNodes } from './renderNodes';
 import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
+import { renderTextAnnotations } from './renderAnnotations';
 
 function previewToggleGapColumns(signal: Signal, lo: number, hi: number): Signal {
   const len = signal.type === 'bit' ? signal.states.length : signal.stepGaps?.length ?? 0;
@@ -310,6 +311,7 @@ export class CanvasRenderer {
     };
 
     walkDraw(diagram.signals);
+    renderTextAnnotations(this.ctx, diagram, rows, transform);
     this.ctx.restore();
 
     if (headHeight > 0 || footHeight > 0) {
