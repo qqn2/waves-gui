@@ -19,6 +19,7 @@ import { renderSignalNodes } from './renderNodes';
 import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
 import { renderTextAnnotations } from './renderAnnotations';
+import { renderAnalogueSignal } from './renderAnalogueSignal';
 
 function previewToggleGapColumns(signal: Signal, lo: number, hi: number): Signal {
   const len = signal.type === 'bit' ? signal.states.length : signal.stepGaps?.length ?? 0;
@@ -301,6 +302,17 @@ export class CanvasRenderer {
               diagram.config.totalSteps,
               drawSignal.node,
               showAnchorLetters,
+            );
+          }
+          rowIndex++;
+        } else if (item.type === 'analogue') {
+          if (diagram.compatibility?.extensionsEnabled === true) {
+            renderAnalogueSignal(
+              this.ctx,
+              item,
+              row.y,
+              row.height,
+              transform,
             );
           }
           rowIndex++;

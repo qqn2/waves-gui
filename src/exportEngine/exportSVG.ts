@@ -29,6 +29,10 @@ import {
   glitchOppositeY,
 } from '../renderer/drawStepGlitch';
 import { layoutTextAnnotations } from '../renderer/annotationLayout';
+import {
+  analoguePathPoints,
+  analogueValueRatio,
+} from '../renderer/analogueGeometry';
 
 function esc(s: string): string {
   return s
@@ -298,6 +302,29 @@ function svgAnnotations(
     .join('\n');
 }
 
+function svgAnalogueSignal(
+  signal: Signal,
+  rowY: number,
+  rowHeight: number,
+  hscale: number,
+  axisOffset: number,
+): string {
+  const points = analoguePathPoints(signal);
+  if (points.length === 0) return '';
+  const usableHeight = Math.max(1, rowHeight - TRACE_PADDING * 2);
+  const path = points.map((point, index) => {
+    const x = point.step * CELL_WIDTH * hscale;
+    const y =
+      axisOffset
+      + rowY
+      + TRACE_PADDING
+      + (1 - analogueValueRatio(signal, point.value)) * usableHeight;
+    return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+  }).join(' ');
+  return `<path d="${path}" fill="none" stroke="${esc(signal.color)}" `
+    + 'stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+}
+
 function walkSignalSvg(
   list: SignalOrGroup[],
   rows: ReturnType<typeof buildRowLayout>,
@@ -332,6 +359,19 @@ function walkSignalSvg(
       parts.push(
         svgVectorSignal(item, row.y, row.height, hscale, axisOffset),
       );
+      rowIndex.i++;
+    } else if (item.type === 'analogue') {
+      if (diagram.compatibility?.extensionsEnabled === true) {
+        parts.push(
+          svgAnalogueSignal(
+            item,
+            row.y,
+            row.height,
+            hscale,
+            axisOffset,
+          ),
+        );
+      }
       rowIndex.i++;
     } else {
       rowIndex.i++;
