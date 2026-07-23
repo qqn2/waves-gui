@@ -4,6 +4,11 @@ import type {
   TextAnnotation,
 } from '../shared/types';
 import type { RowLayoutEntry } from './rowLayout';
+import {
+  logicalToCanvasX,
+  logicalToCanvasY,
+  type ViewTransform,
+} from './coordinates';
 
 export interface TextAnnotationLayout {
   annotation: TextAnnotation;
@@ -36,4 +41,29 @@ export function layoutTextAnnotations(
       y: row.y + row.height / 2 + (annotation.yOffset ?? 0),
     }];
   });
+}
+
+export function hitTestTextAnnotation(
+  canvasX: number,
+  canvasY: number,
+  diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
+  rows: RowLayoutEntry[],
+  transform: ViewTransform,
+  waveformTop: number,
+): string | null {
+  const layouts = layoutTextAnnotations(diagram, rows);
+  for (let index = layouts.length - 1; index >= 0; index -= 1) {
+    const { annotation, x, y } = layouts[index]!;
+    const centerX = logicalToCanvasX(x, transform);
+    const centerY = waveformTop + logicalToCanvasY(y, transform);
+    const width = Math.max(24, annotation.text.length * 7) * transform.zoom + 8;
+    const height = Math.max(14, 18 * transform.zoom);
+    if (
+      Math.abs(canvasX - centerX) <= width / 2
+      && Math.abs(canvasY - centerY) <= height / 2
+    ) {
+      return annotation.id;
+    }
+  }
+  return null;
 }

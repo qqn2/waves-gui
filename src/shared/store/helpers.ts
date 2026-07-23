@@ -43,6 +43,7 @@ export function defaultView(): ViewState {
     activeEdgeLabel: '',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    activeAnnotationId: null,
     showCodePanel: true,
     showRenderPanel: true,
     labelWidth: loadLabelColumnWidth(),

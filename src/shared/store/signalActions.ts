@@ -184,6 +184,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setSignalPhase'
   | 'setSignalPeriod'
   | 'setActiveSignalIds'
+  | 'setActiveAnnotationId'
   | 'setTotalSteps'
   | 'setHscale'
   | 'insertStepAt'
@@ -344,6 +345,14 @@ export function createSignalActions(set: ImmerSet): Pick<
     setActiveSignalIds(ids) {
       set((s) => {
         s.view.activeSignalIds = ids;
+        if (ids.length > 0) s.view.activeAnnotationId = null;
+      });
+    },
+
+    setActiveAnnotationId(id) {
+      set((s) => {
+        s.view.activeAnnotationId = id;
+        if (id !== null) s.view.activeSignalIds = [];
       });
     },
 

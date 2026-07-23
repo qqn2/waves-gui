@@ -94,6 +94,7 @@ export function WaveformCanvas({
       isLabelArea: false,
       isTimeAxis: false,
       edgeIndex: null,
+      annotationId: null,
     };
     setKeyboardHit(next);
     onKeyboardFocusHit?.(next);

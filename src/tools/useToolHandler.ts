@@ -21,6 +21,7 @@ import { useEdgeTools } from './useEdgeTools';
 import { useTimeAxisContextMenu } from '../shell/TimeAxisContextMenu';
 import { copyStepSelection, pasteStepSelection } from './stepClipboard';
 import { useEdgeCurveDrag } from './useEdgeCurveDrag';
+import { annotationPointerDown } from './annotationTool';
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -124,6 +125,10 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         setTool('paint');
       } else if (e.key === 'e' || e.key === 'E') {
         setTool('erase');
+      } else if (e.key === 'i' || e.key === 'I') {
+        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
+          setTool('annotation');
+        }
       } else if (e.key === 'g' || e.key === 'G') {
         setTool('paint');
         setPaintMode('glitch');
@@ -196,6 +201,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
+      else if (tool === 'annotation') annotationPointerDown(e, hit);
       else if (tool === 'arrow' || tool === 'timespan') {
         if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);
