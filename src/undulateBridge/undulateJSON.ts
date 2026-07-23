@@ -48,6 +48,7 @@ export function validateUndulateJSON(value: unknown): string | null {
   const root = value as { annotations?: unknown };
   if (root.annotations === undefined) return null;
   if (!Array.isArray(root.annotations)) return 'annotations must be an array';
+  const supportedFields = new Set(['text', 'x', 'y']);
   for (const annotation of root.annotations) {
     if (typeof annotation !== 'object' || annotation === null) {
       return 'Invalid Undulate annotation';
@@ -55,6 +56,12 @@ export function validateUndulateJSON(value: unknown): string | null {
     const record = annotation as Record<string, unknown>;
     if (record.shape !== undefined) {
       return `Unsupported Undulate annotation shape: ${String(record.shape)}`;
+    }
+    const unsupportedField = Object.keys(record).find(
+      (field) => !supportedFields.has(field),
+    );
+    if (unsupportedField) {
+      return `Unsupported Undulate text annotation field: ${unsupportedField}`;
     }
     if (typeof record.text !== 'string') {
       return 'Undulate text annotation requires text';

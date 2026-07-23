@@ -63,5 +63,9 @@ describe('Undulate JSON bridge', () => {
       signal: [],
       annotations: [{ text: 'bad', x: Number.NaN, y: 1 }],
     })).toContain('finite x and y');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'styled', x: 1, y: 1, fill: '#fff' }],
+    })).toContain('Unsupported Undulate text annotation field: fill');
   });
 });
