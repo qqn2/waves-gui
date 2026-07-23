@@ -11,7 +11,7 @@ import { hitTestTextAnnotation } from './annotationLayout';
 
 export interface HitTestResult {
   signalId: string | null;
-  signalType: 'bit' | 'vector' | 'group' | null;
+  signalType: 'bit' | 'vector' | 'analogue' | 'group' | null;
   step: number | null;
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;

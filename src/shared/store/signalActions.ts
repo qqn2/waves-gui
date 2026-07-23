@@ -199,9 +199,14 @@ export function createSignalActions(set: ImmerSet): Pick<
         const states = new Array<BitState>(s.diagram.config.totalSteps).fill('0');
         const signal: Signal = {
           id: nanoid(),
-          name: type === 'vector' ? 'bus' : 'sig',
+          name:
+            type === 'vector'
+              ? 'bus'
+              : type === 'analogue'
+                ? 'analog'
+                : 'sig',
           type,
-          states,
+          states: type === 'analogue' ? [] : states,
           segments:
             type === 'vector'
               ? [
@@ -213,6 +218,17 @@ export function createSignalActions(set: ImmerSet): Pick<
                   },
                 ]
               : [],
+          ...(type === 'analogue'
+            ? {
+                analogueMin: 0,
+                analogueMax: 1.8,
+                analogueCells: states.map(() => ({
+                  id: nanoid(),
+                  kind: 'step' as const,
+                  value: 0,
+                })),
+              }
+            : {}),
           color: DEFAULT_SIGNAL_COLOR,
           rowHeight: ROW_HEIGHT,
         };
