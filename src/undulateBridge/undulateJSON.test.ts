@@ -130,5 +130,13 @@ describe('Undulate JSON bridge', () => {
         analogue: ['VDDA * 0.5'],
       }],
     })).toContain('expressions are not executed');
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'styled',
+        wave: 's',
+        analogue: [0.5],
+        stroke: '#f00',
+      }],
+    })).toContain('Unsupported Undulate analogue field: stroke');
   });
 });

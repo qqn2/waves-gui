@@ -165,6 +165,25 @@ function isFinitePointList(value: unknown): value is Array<[number, number]> {
 
 function validateAnalogueSignal(signal: Record<string, unknown>): string | null {
   if (signal.analogue === undefined) return null;
+  const supportedFields = new Set([
+    'name',
+    'wave',
+    'analogue',
+    'repeat',
+    'slewing',
+    'vscale',
+    'overlay',
+    'order',
+    'period',
+    'phase',
+    'node',
+  ]);
+  const unsupportedField = Object.keys(signal).find(
+    (field) => !supportedFields.has(field),
+  );
+  if (unsupportedField) {
+    return `Unsupported Undulate analogue field: ${unsupportedField}`;
+  }
   if (!Array.isArray(signal.analogue)) {
     return 'Undulate analogue must be an array';
   }
@@ -204,6 +223,23 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
     ) {
       return `Undulate ${field} must be a finite number`;
     }
+  }
+  if (
+    signal.overlay !== undefined
+    && typeof signal.overlay !== 'boolean'
+  ) {
+    return 'Undulate overlay must be a boolean';
+  }
+  if (
+    signal.order !== undefined
+    && (
+      typeof signal.order !== 'number'
+      || !Number.isInteger(signal.order)
+      || signal.order < 0
+      || signal.order > 4
+    )
+  ) {
+    return 'Undulate order must be an integer from 0 to 4';
   }
   return null;
 }

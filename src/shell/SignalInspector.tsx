@@ -185,6 +185,33 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     }}
                   />
                 </label>
+                <label className={styles.inspectorField}>
+                  <span>Overlay next lane</span>
+                  <input
+                    type="checkbox"
+                    checked={signal.overlay === true}
+                    onChange={(event) => updateAnalogueSignal(signal.id, {
+                      overlay: event.target.checked,
+                    })}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Overlay label order</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={4}
+                    step={1}
+                    value={signal.order ?? 0}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueSignal(signal.id, {
+                          order: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
               </section>
 
               <section className={styles.inspectorSection}>
