@@ -1,7 +1,14 @@
 import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { toWavedromJSON } from '../wavedromBridge';
+import {
+  fromUndulateJSON,
+  toUndulateJSON,
+  validateUndulateJSON,
+  type UndulateRoot,
+} from '../undulateBridge';
+import { scanExtensionContent } from '../shared/annotations';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
-import type { DiagramState } from '../shared/types';
+import type { DiagramSourceFormat, DiagramState } from '../shared/types';
 import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
 import { recordRecentFile } from './soloDesk/recentFiles';
@@ -19,9 +26,64 @@ type FilePickerWindow = Window & {
 };
 
 let retainedFileHandle: FileSystemFileHandle | null = null;
+let retainedFileFormat: Extract<
+  DiagramSourceFormat,
+  'wavedrom-json' | 'undulate-json'
+> | null = null;
 
 export function forgetCurrentFileHandle(): void {
   retainedFileHandle = null;
+  retainedFileFormat = null;
+}
+
+type JSONFileFormat = NonNullable<typeof retainedFileFormat>;
+
+function detectJSONFormat(value: unknown): JSONFileFormat {
+  return (
+    typeof value === 'object'
+    && value !== null
+    && Object.prototype.hasOwnProperty.call(value, 'annotations')
+  )
+    ? 'undulate-json'
+    : 'wavedrom-json';
+}
+
+function parseDiagramJSON(value: unknown): {
+  diagram: DiagramState;
+  format: JSONFileFormat;
+} | { error: string } {
+  const format = detectJSONFormat(value);
+  const error =
+    format === 'undulate-json'
+      ? validateUndulateJSON(value)
+      : validateWavedromJSON(value);
+  if (error) return { error };
+  return {
+    diagram:
+      format === 'undulate-json'
+        ? fromUndulateJSON(value as UndulateRoot)
+        : fromWavedromJSON(value as Parameters<typeof fromWavedromJSON>[0]),
+    format,
+  };
+}
+
+function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
+  if (scanExtensionContent(diagram).hasExtensions) return 'undulate-json';
+  if (retainedFileFormat) return retainedFileFormat;
+  return diagram.compatibility?.sourceFormat === 'undulate-json'
+    ? 'undulate-json'
+    : 'wavedrom-json';
+}
+
+function diagramBlob(diagram: DiagramState, format: JSONFileFormat): Blob {
+  const root =
+    format === 'undulate-json'
+      ? toUndulateJSON(diagram)
+      : toWavedromJSON(diagram);
+  return new Blob(
+    [JSON.stringify(root, null, 2)],
+    { type: 'application/json;charset=utf-8' },
+  );
 }
 
 async function writeDiagramToHandle(
@@ -52,7 +114,7 @@ export async function openDiagramFile(): Promise<void> {
       const [handle] = await w.showOpenFilePicker({
         types: [
           {
-            description: 'WaveDrom JSON',
+            description: 'Waveform file',
             accept: { 'application/json': ['.json', '.wp'], 'text/plain': ['.vcd'] },
           },
         ],
@@ -62,14 +124,15 @@ export async function openDiagramFile(): Promise<void> {
       const json = file.name.toLowerCase().endsWith('.vcd')
         ? vcdToWavedromJSON(text)
         : JSON.parse(text) as unknown;
-      const err = validateWavedromJSON(json);
-      if (err) {
-        window.alert(err);
+      const parsed = parseDiagramJSON(json);
+      if ('error' in parsed) {
+        window.alert(parsed.error);
         return;
       }
-      useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
+      useStore.getState().loadDiagram(parsed.diagram);
       useStore.getState().markClean(handle.name);
       retainedFileHandle = handle;
+      retainedFileFormat = parsed.format;
       recordRecentFile(handle.name);
       return;
     } catch (e) {
@@ -92,10 +155,10 @@ export async function openDiagramFile(): Promise<void> {
         const json = file.name.toLowerCase().endsWith('.vcd')
           ? vcdToWavedromJSON(text)
           : JSON.parse(text) as unknown;
-        const err = validateWavedromJSON(json);
-        if (err) window.alert(err);
+        const parsed = parseDiagramJSON(json);
+        if ('error' in parsed) window.alert(parsed.error);
         else {
-          useStore.getState().loadDiagram(fromWavedromJSON(json as Parameters<typeof fromWavedromJSON>[0]));
+          useStore.getState().loadDiagram(parsed.diagram);
           useStore.getState().markClean(file.name);
           forgetCurrentFileHandle();
           recordRecentFile(file.name);
@@ -114,12 +177,13 @@ export async function saveDiagramFile(
   existingName?: string | null,
 ): Promise<void> {
   const w = window as FilePickerWindow;
-  const json = JSON.stringify(toWavedromJSON(diagram), null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const format = saveFormatForDiagram(diagram);
+  const blob = diagramBlob(diagram, format);
 
   if (retainedFileHandle) {
     try {
       await writeDiagramToHandle(retainedFileHandle, blob);
+      retainedFileFormat = format;
       return;
     } catch {
       // A revoked or unavailable handle falls through to Save As/download.
@@ -133,13 +197,14 @@ export async function saveDiagramFile(
         suggestedName: existingName ?? 'diagram.json',
         types: [
           {
-            description: 'WaveDrom JSON',
+            description: 'Waveform JSON',
             accept: { 'application/json': ['.json'] },
           },
         ],
       });
       await writeDiagramToHandle(handle, blob);
       retainedFileHandle = handle;
+      retainedFileFormat = format;
       return;
     } catch (e) {
       if ((e as DOMException).name === 'AbortError') return;

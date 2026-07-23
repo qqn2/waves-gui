@@ -9,6 +9,7 @@ import {
   visibleNodeCharAt,
 } from '../../wavedromBridge/nodeString';
 import type { AppState, DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
+import { preserveExtensionsAcrossDiagramEdit } from '../annotations';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
 import { diagramsEqual, pushHistory } from './helpers';
@@ -189,7 +190,11 @@ export function createDocumentActions(set: ImmerSet): Pick<
 
     applyDiagramEdit(diagram: DiagramState) {
       set((s) => {
-        const normalized = normalizeDiagram(diagram);
+        const preserved = preserveExtensionsAcrossDiagramEdit(
+          current(s.diagram),
+          diagram,
+        );
+        const normalized = normalizeDiagram(preserved);
         if (diagramsEqual(current(s.diagram), normalized)) return;
         pushHistory(s);
         s.diagram = normalized;
