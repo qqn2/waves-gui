@@ -113,12 +113,27 @@ export interface DiagramCompatibility {
   sourceRevision?: string;
 }
 
+export interface TextAnnotation {
+  id: string;
+  type: 'text';
+  text: string;
+  /** Integer document tick. Version 2 currently uses one tick per major step. */
+  tick: number;
+  /** Optional semantic row anchor. */
+  signalId?: string;
+  /** Logical pixel offset from the anchored row center. */
+  yOffset?: number;
+}
+
+export type DiagramAnnotation = TextAnnotation;
+
 export interface DiagramState {
   /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
   version: 1 | 2;
   compatibility?: DiagramCompatibility;
   signals: SignalOrGroup[];
   config: DiagramConfig;
+  annotations?: DiagramAnnotation[];
   /** WaveDrom edge[] dependency arrow strings */
   edges: string[];
   /** Per-edge cubic control bias for ~ curves (not exported to WaveDrom JSON). */
