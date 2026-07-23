@@ -10,6 +10,7 @@ import {
 import { isWaveModeLane, padWaveLaneToLength } from '../wavedromBridge/laneWaveOps';
 import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
 import { normalizeAnnotations } from './annotations';
+import { normalizeAnalogueSignal } from './analogue';
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -21,6 +22,11 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
   }
   if (!signal.color) {
     signal.color = DEFAULT_SIGNAL_COLOR;
+  }
+
+  if (signal.type === 'analogue') {
+    normalizeAnalogueSignal(signal, totalSteps);
+    return;
   }
 
   if (signal.type === 'vector') {

@@ -46,14 +46,44 @@ export interface VectorSegment {
   color?: string; // optional per-segment fill override
 }
 
+export interface AnaloguePoint {
+  /** Position within the cell, normalized to the inclusive 0..1 range. */
+  offset: number;
+  value: number;
+}
+
+export type AnalogueTransition = 'hold' | 'step' | 'capacitive' | 'samples';
+
+export interface AnalogueCell {
+  id: string;
+  kind: AnalogueTransition;
+  /** Settled value at the end of this cell. */
+  value: number;
+  /** Explicit points used by arbitrary sampled cells. */
+  samples?: AnaloguePoint[];
+}
+
 export interface Signal {
   id: string;
   name: string;
-  type: 'bit' | 'vector' | 'spacer';
+  type: 'bit' | 'vector' | 'analogue' | 'spacer';
   /** Bit signals: one entry per time step. Clock entries represent a complete WaveDrom cycle. */
   states: BitState[];
   /** Vector signals: non-overlapping segments covering all steps */
   segments: VectorSegment[];
+  /** Analogue lanes: one finite, normalized cell per document step. */
+  analogueCells?: AnalogueCell[];
+  /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
+  analogueMin?: number;
+  analogueMax?: number;
+  /** Undulate-compatible transition slew coefficient. */
+  slewing?: number;
+  /** Undulate-compatible vertical scale. */
+  vscale?: number;
+  /** Undulate overlay hint; layout support is introduced separately. */
+  overlay?: boolean;
+  /** Label order within an Undulate overlay. */
+  order?: number;
   color: string; // stroke color, default '#4A9EFF'
   fillColor?: string; // vector fill, default semi-transparent stroke
   rowHeight: number; // px at zoom=1, default 40

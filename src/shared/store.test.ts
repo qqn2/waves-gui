@@ -46,6 +46,27 @@ describe('useStore', () => {
     expect(useStore.getState().view.diagramRevision).toBe(revBeforeLoad + 1);
   });
 
+  it('adds and resizes a normalized analogue lane', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('analogue');
+    const signal = useStore.getState().diagram.signals[0];
+
+    expect(signal).toMatchObject({
+      type: 'analogue',
+      name: 'analog',
+      analogueMin: 0,
+      analogueMax: 1.8,
+    });
+    if (!signal || signal.type !== 'analogue') return;
+    expect(signal.analogueCells).toHaveLength(DEFAULT_STEPS);
+
+    useStore.getState().setTotalSteps(DEFAULT_STEPS + 2);
+    const resized = useStore.getState().diagram.signals[0];
+    expect(resized?.type === 'analogue' && resized.analogueCells).toHaveLength(
+      DEFAULT_STEPS + 2,
+    );
+  });
+
   it('records a raw diagram edit in unified undo history and dirtiness', () => {
     const edited = createDefaultDiagram();
     edited.config.head = { text: 'raw edit' };

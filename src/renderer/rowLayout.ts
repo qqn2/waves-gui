@@ -5,7 +5,7 @@ export interface RowLayoutEntry {
   id: string;
   y: number;
   height: number;
-  type: 'bit' | 'vector' | 'spacer' | 'group';
+  type: 'bit' | 'vector' | 'analogue' | 'spacer' | 'group';
 }
 
 /** Flat visible rows in logical pixels (zoom = 1). */

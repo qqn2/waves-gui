@@ -1,5 +1,6 @@
 import { current } from 'immer';
 import { resizeBitSignalToLength } from '../bitStepResize';
+import { resizeAnalogueCells } from '../analogue';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import { MAX_HISTORY } from '../constants';
 import { createDefaultDiagram } from '../defaultDiagram';
@@ -145,6 +146,8 @@ export function resizeAllStates(
       }
       const last = sg.segments[sg.segments.length - 1];
       if (last && last.endStep < newLen) last.endStep = newLen;
+    } else if (sg.type === 'analogue') {
+      resizeAnalogueCells(sg, newLen);
     }
   }
 }
