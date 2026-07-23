@@ -28,6 +28,7 @@ import {
   canDrawGlitch,
   glitchOppositeY,
 } from '../renderer/drawStepGlitch';
+import { layoutTextAnnotations } from '../renderer/annotationLayout';
 
 function esc(s: string): string {
   return s
@@ -279,6 +280,24 @@ function svgLabels(
   return parts.join('\n');
 }
 
+function svgAnnotations(
+  diagram: DiagramState,
+  rows: ReturnType<typeof buildRowLayout>,
+  axisOffset: number,
+  textColor: string,
+  panelBg: string,
+): string {
+  return layoutTextAnnotations(diagram, rows)
+    .map(({ annotation, x, y }) => (
+      `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
+      + `fill="${esc(textColor)}" stroke="${esc(panelBg)}" stroke-width="4" `
+      + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
+      + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
+      + `${esc(annotation.text)}</text>`
+    ))
+    .join('\n');
+}
+
 function walkSignalSvg(
   list: SignalOrGroup[],
   rows: ReturnType<typeof buildRowLayout>,
@@ -353,6 +372,14 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
   waveformParts.push(
     walkSignalSvg(diagram.signals, rows, diagram, dims.axisOffset, { i: 0 }),
   );
+  const annotationSvg = svgAnnotations(
+    diagram,
+    rows,
+    dims.axisOffset,
+    textColor,
+    panelBg,
+  );
+  if (annotationSvg) waveformParts.push(annotationSvg);
   const edgeSvg = svgEdges(diagram, view, 0);
   if (edgeSvg) waveformParts.push(edgeSvg);
 
