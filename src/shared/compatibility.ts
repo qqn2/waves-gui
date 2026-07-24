@@ -37,6 +37,36 @@ export function waveDromCompatibilityFindings(
       consequence: 'Analogue lanes will be omitted from the compatible subset.',
     });
   }
+  let extendedDigitalCount = 0;
+  const countExtendedDigital = (signals: DiagramState['signals']) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') {
+        countExtendedDigital(signal.children);
+      } else if (
+        signal.type === 'bit'
+        && signal.states.some((state) =>
+          state === 'X'
+          || state === '='
+          || (state >= '2' && state <= '9')
+          || state === 'i'
+          || state === 'I'
+          || state === 'm'
+          || state === 'M'
+        )
+      ) {
+        extendedDigitalCount++;
+      }
+    }
+  };
+  countExtendedDigital(diagram.signals);
+  if (extendedDigitalCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'extended-digital-signals',
+      message: `${extendedDigitalCount} extended digital signal${extendedDigitalCount === 1 ? '' : 's'} use Undulate-only mixed, impulse, or metastability states.`,
+      consequence: 'The WaveDrom Editor may reject these wave strings.',
+    });
+  }
   return findings;
 }
 

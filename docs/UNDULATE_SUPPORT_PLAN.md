@@ -151,6 +151,12 @@ Rules:
 - do not initially offer a lossy **Open supported subset** action;
 - continue allowing an explicitly requested WaveDrom compatible-subset export
   from an already valid internal document;
+- treat the online WaveDrom Editor as an external WaveDrom export target,
+  require explicit confirmation that diagram JSON will be sent to
+  `wavedrom.com`, and send nothing when confirmation is cancelled;
+- apply wave-character validation according to the active format so
+  Undulate-only digital states remain valid in Undulate mode but are reported
+  as incompatible in WaveDrom mode;
 - display all WIP, unsupported-by-design, invalid, and unknown findings in a
   readable report;
 - use `aria-live` or an equivalent accessible announcement for editor findings;

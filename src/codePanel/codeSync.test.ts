@@ -166,6 +166,26 @@ describe('codeSync', () => {
     expect(result.diagram.compatibility?.sourceFormat).toBe('undulate-json');
   });
 
+  it('accepts extended digital states only in Undulate mode', () => {
+    const code = JSON.stringify({
+      signal: [{
+        name: 'digital',
+        wave: '01.zx=ud.2.3.45XziIzmzM',
+      }],
+    });
+
+    expect(validateCodeString(code)).toMatch(/Invalid wave characters/);
+    expect(parseCodeToDiagram(code)).toEqual({
+      ok: false,
+      error: expect.stringMatching(/Invalid wave characters/),
+    });
+    expect(validateCodeString(code, { preferUndulate: true })).toBeNull();
+    const result = parseCodeToDiagram(code, { preferUndulate: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
   it('routes known WIP and unknown fields through loss-safe validation', () => {
     const code = JSON.stringify({
       signal: [{

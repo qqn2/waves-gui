@@ -587,7 +587,9 @@ function validateAnnotationStructure(value: unknown): string | null {
 }
 
 function structuralError(root: Record<string, unknown>): string | null {
-  const waveError = validateWavedromJSON(waveDromValidationView(root));
+  const waveError = validateWavedromJSON(waveDromValidationView(root), {
+    allowUndulateDigitalStates: true,
+  });
   if (waveError) return waveError;
   const analogueError = visitSignals(
     Array.isArray(root.signal) ? root.signal : [],

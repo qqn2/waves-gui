@@ -69,6 +69,10 @@ contract live in
   properties are rejected before import instead of being silently discarded.
 - [x] JSON editor and File Open rejection leave the current diagram, history,
   dirty state, and retained file handle unchanged.
+- [x] JSON validation follows the active format: Undulate-only digital states
+  are accepted in Undulate mode and reported as errors in WaveDrom mode.
+- [x] Online WaveDrom Editor export requires an explicit warning that the
+  exported JSON is sent to `wavedrom.com`; cancelling sends nothing.
 
 ### Partial or unsupported
 

@@ -58,4 +58,19 @@ describe('source compatibility findings', () => {
       }),
     ]);
   });
+
+  it('warns when a WaveDrom target receives Undulate-only digital states', () => {
+    const diagram = createDefaultDiagram();
+    const signal = diagram.signals[0];
+    if (!signal || signal.type === 'group') throw new Error('Expected signal');
+    signal.states = ['0', '=', 'i', 'm', 'M'];
+
+    expect(waveDromCompatibilityFindings(diagram)).toEqual([
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'extended-digital-signals',
+        consequence: 'The WaveDrom Editor may reject these wave strings.',
+      }),
+    ]);
+  });
 });

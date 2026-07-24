@@ -1,7 +1,7 @@
 export const WAVEDROM_EDITOR_BASE_URL = 'https://wavedrom.com/editor.html';
 
 export const WAVEDROM_DATA_WARNING =
-  'Privacy warning: this sends the complete diagram JSON to wavedrom.com in the URL. ' +
+  'Privacy warning: this sends the exported diagram JSON to wavedrom.com in the URL. ' +
   'It may be recorded in browser history, network logs, or WaveDrom server logs. ' +
   'Do not continue with confidential data.\n\nOpen in WaveDrom Editor?';
 

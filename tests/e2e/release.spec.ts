@@ -743,6 +743,27 @@ for (const format of ['json', 'svg', 'png'] as const) {
   });
 }
 
+test('opens the online WaveDrom editor only after the data warning', async ({ page }) => {
+  await page.evaluate(() => {
+    const target = window as typeof window & { openedWaveDromUrl?: string };
+    target.open = ((url?: string | URL) => {
+      target.openedWaveDromUrl = String(url);
+      return null;
+    }) as typeof window.open;
+  });
+
+  await page.getByRole('button', { name: /File/ }).click();
+  await page.getByRole('button', { name: /Export/ }).click();
+  await page.locator('#export-format').selectOption('wavedrom-editor');
+  await page.getByRole('button', { name: 'Review warning & open' }).click();
+
+  const openedUrl = await page.evaluate(
+    () => (window as typeof window & { openedWaveDromUrl?: string }).openedWaveDromUrl,
+  );
+  expect(openedUrl).toMatch(/^https:\/\/wavedrom\.com\/editor\.html\?/);
+  expect(decodeURIComponent(openedUrl!.split('?')[1]!)).toContain('"signal"');
+});
+
 test('Help/About exposes privacy and project routes', async ({ page }) => {
   await page.getByTitle('Help and keyboard shortcuts').click();
   await expect(page.getByRole('heading', { name: 'Help & About' })).toBeVisible();

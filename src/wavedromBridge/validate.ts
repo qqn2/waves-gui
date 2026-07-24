@@ -1,19 +1,27 @@
 import type { WdRoot } from './wdTypes';
 import { isValidWaveString } from './subcycleWave';
 
-const WAVE_CHARS = /^[0-9.xXzZuUdDpPnNiImM.=|2-9<>]*$/;
+const WAVEDROM_WAVE_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
+const UNDULATE_WAVE_CHARS = /^[0-9.xXzZuUdDpPnNiImM.=|2-9<>]*$/;
+
+export interface WavedromValidationOptions {
+  allowUndulateDigitalStates?: boolean;
+}
 
 function isWdGroup(entry: unknown): entry is [string, ...unknown[]] {
   return Array.isArray(entry) && typeof entry[0] === 'string';
 }
 
-function validateSignalEntry(entry: unknown): string | null {
+function validateSignalEntry(
+  entry: unknown,
+  options: WavedromValidationOptions,
+): string | null {
   if (entry === null || typeof entry !== 'object') {
     return 'Invalid signal entry';
   }
   if (isWdGroup(entry)) {
     for (const child of entry.slice(1)) {
-      const err = validateSignalEntry(child);
+      const err = validateSignalEntry(child, options);
       if (err) return err;
     }
     return null;
@@ -22,7 +30,10 @@ function validateSignalEntry(entry: unknown): string | null {
   const sig = entry as { wave?: string };
   if (sig.wave !== undefined) {
     if (typeof sig.wave !== 'string') return 'wave must be a string';
-    if (!WAVE_CHARS.test(sig.wave)) {
+    const waveChars = options.allowUndulateDigitalStates
+      ? UNDULATE_WAVE_CHARS
+      : WAVEDROM_WAVE_CHARS;
+    if (!waveChars.test(sig.wave)) {
       return `Invalid wave characters: ${sig.wave}`;
     }
     if (!isValidWaveString(sig.wave)) {
@@ -33,7 +44,10 @@ function validateSignalEntry(entry: unknown): string | null {
 }
 
 /** Returns null if valid, or an error message string */
-export function validateWavedromJSON(json: unknown): string | null {
+export function validateWavedromJSON(
+  json: unknown,
+  options: WavedromValidationOptions = {},
+): string | null {
   if (typeof json !== 'object' || json === null) {
     return 'Root must be an object';
   }
@@ -42,7 +56,7 @@ export function validateWavedromJSON(json: unknown): string | null {
     return 'Missing or invalid signal array';
   }
   for (const entry of root.signal) {
-    const err = validateSignalEntry(entry);
+    const err = validateSignalEntry(entry, options);
     if (err) return err;
   }
   if (root.config?.hscale !== undefined) {
