@@ -21,6 +21,7 @@ Target application: `waves-gui`
 - [x] Add analogue creation, selection, property editing, and undo/redo.
 - [x] Add vertical scaling and initial consecutive-lane overlays.
 - [x] Add native vertical and horizontal line annotations.
+- [x] Make the JSON editor and local preview Undulate-aware end to end.
 
 ### Current implemented slice
 
@@ -35,9 +36,15 @@ The first vertical slice is complete on `rek-undulate`:
 - annotations render in the live canvas and PNG, JPEG, and safely escaped SVG
   exports;
 - turning extensions off hides and locks annotations without deleting them;
-- autosave, raw WaveDrom code edits, file open, and file save preserve supported
+- autosave, format-aware raw JSON edits, file open, and file save preserve supported
   annotation content;
 - Undulate JSON maps text annotations to upstream `text`, `x`, and `y` fields;
+- enabling extensions switches the code panel to editable Undulate JSON, so
+  canvas-authored annotations and analogue cells are visible immediately;
+- supported Undulate JSON edits update the document model and canvas without a
+  lossy WaveDrom conversion;
+- the local render panel uses the browser-native SVG renderer for Undulate
+  documents, including text/line annotations and analogue geometry;
 - WaveDrom export reports annotations as unsupported and labels the action as
   exporting a compatible subset.
 

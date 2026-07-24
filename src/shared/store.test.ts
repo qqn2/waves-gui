@@ -124,11 +124,11 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
   });
 
-  it('preserves and remaps annotations across WaveDrom code edits', () => {
+  it('applies extension-aware JSON edits without preserving deleted annotations', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     useStore.getState().setExtensionsEnabled(true);
     const oldSignalId = useStore.getState().diagram.signals[0]!.id;
-    const annotationId = useStore.getState().addTextAnnotation({
+    useStore.getState().addTextAnnotation({
       text: 'preserved',
       tick: 1,
       signalId: oldSignalId,
@@ -139,16 +139,9 @@ describe('useStore', () => {
 
     useStore.getState().applyDiagramEdit(edited);
 
-    expect(useStore.getState().diagram.annotations).toEqual([
-      expect.objectContaining({
-        id: annotationId,
-        text: 'preserved',
-        signalId: newSignalId,
-      }),
-    ]);
-    expect(
-      useStore.getState().diagram.compatibility?.extensionsEnabled,
-    ).toBe(true);
+    expect(newSignalId).not.toBe(oldSignalId);
+    expect(useStore.getState().diagram.annotations).toEqual([]);
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
   });
 
   it('toggles Undulate extensions as an undoable document edit', () => {

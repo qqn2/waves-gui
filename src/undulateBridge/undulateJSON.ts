@@ -153,6 +153,21 @@ function visitRawSignals(
   return null;
 }
 
+export function isUndulateJSON(value: unknown): value is UndulateRoot {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+  const root = value as { annotations?: unknown; signal?: unknown };
+  if (Object.prototype.hasOwnProperty.call(root, 'annotations')) return true;
+  if (!Array.isArray(root.signal)) return false;
+  return visitRawSignals(
+    root.signal,
+    (signal) => (
+      Object.prototype.hasOwnProperty.call(signal, 'analogue') ? 'found' : null
+    ),
+  ) === 'found';
+}
+
 function isFinitePointList(value: unknown): value is Array<[number, number]> {
   return (
     Array.isArray(value)
@@ -254,12 +269,14 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
 
 function waveDromValidationView(root: UndulateRoot): UndulateRoot {
   const clone = JSON.parse(JSON.stringify(root)) as UndulateRoot;
-  visitRawSignals(clone.signal, (signal) => {
-    if (signal.analogue !== undefined && typeof signal.wave === 'string') {
-      signal.wave = signal.wave.replace(/[sca mMlLhH]/g, '.');
-    }
-    return null;
-  });
+  if (Array.isArray(clone.signal)) {
+    visitRawSignals(clone.signal, (signal) => {
+      if (signal.analogue !== undefined && typeof signal.wave === 'string') {
+        signal.wave = signal.wave.replace(/[sca mMlLhH]/g, '.');
+      }
+      return null;
+    });
+  }
   return clone;
 }
 

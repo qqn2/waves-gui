@@ -1,6 +1,7 @@
 export {
   UNDULATE_TARGET_REVISION,
   fromUndulateJSON,
+  isUndulateJSON,
   toUndulateJSON,
   validateUndulateJSON,
 } from './undulateJSON';

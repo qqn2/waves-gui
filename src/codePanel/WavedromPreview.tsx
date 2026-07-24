@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { buildSVGString } from '../exportEngine/exportSVG';
 import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
+import { useStore } from '../shared/store';
+import { parseCodeToDiagram, type DiagramCodeFormat } from './codeSync';
 import styles from './CodePanel.module.css';
 
 const SKIN_LOADERS: Record<string, () => Promise<unknown>> = {
@@ -11,11 +14,20 @@ const SKIN_LOADERS: Record<string, () => Promise<unknown>> = {
 
 export interface WavedromPreviewProps {
   code: string;
+  format: DiagramCodeFormat;
   error: string | null;
 }
 
-export function WavedromPreview({ code, error }: WavedromPreviewProps) {
+export function WavedromPreview({
+  code,
+  format,
+  error,
+}: WavedromPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const labelWidth = useStore((state) => state.view.labelWidth);
+  const theme = useStore((state) => state.view.theme);
+  const accentColor = useStore((state) => state.view.accentColor);
+  const canvasColor = useStore((state) => state.view.canvasColor);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -29,6 +41,37 @@ export function WavedromPreview({ code, error }: WavedromPreviewProps) {
 
     void (async () => {
       try {
+        if (format === 'undulate') {
+          const result = parseCodeToDiagram(code, { preferUndulate: true });
+          if (result.ok === false) throw new Error(result.error);
+          const currentView = useStore.getState().view;
+          const previewView = {
+            ...currentView,
+            labelWidth,
+            zoom: 1,
+            scrollX: 0,
+            scrollY: 0,
+            paintDraft: null,
+            edgeAnchorPending: null,
+            edgeToolHover: null,
+            activeAnnotationId: null,
+          };
+          const svgText = buildSVGString(result.diagram, previewView);
+          const svgDocument = new DOMParser().parseFromString(
+            svgText,
+            'image/svg+xml',
+          );
+          if (svgDocument.querySelector('parsererror')) {
+            throw new Error('Could not build Undulate preview');
+          }
+          const staging = document.createElement('div');
+          staging.append(document.importNode(svgDocument.documentElement, true));
+          sanitizeDetachedSvg(staging);
+          if (cancelled) return;
+          el.replaceChildren(...Array.from(staging.childNodes));
+          return;
+        }
+
         const parsed = JSON.parse(code) as { config?: { skin?: string } };
         const skinName = parsed.config?.skin ?? 'default';
         const WaveDrom = await import('wavedrom');
@@ -48,11 +91,23 @@ export function WavedromPreview({ code, error }: WavedromPreviewProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, error]);
+  }, [
+    accentColor,
+    canvasColor,
+    code,
+    error,
+    format,
+    labelWidth,
+    theme,
+  ]);
 
   return (
     <div className={styles.previewWrap}>
-      <div className={styles.previewLabel}>WaveDrom render (local)</div>
+      <div className={styles.previewLabel}>
+        {format === 'undulate'
+          ? 'Undulate render (local)'
+          : 'WaveDrom render (local)'}
+      </div>
       {error ? (
         <div className={styles.preview}>
           <p className={styles.previewError}>Fix JSON to preview: {error}</p>

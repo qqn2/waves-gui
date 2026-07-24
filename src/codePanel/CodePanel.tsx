@@ -5,7 +5,13 @@ import { useDiagramCode } from './useDiagramCode';
 import styles from './CodePanel.module.css';
 
 export function CodePanel() {
-  const { code, error, onCodeChange, flushCodeToDiagram } = useDiagramCode();
+  const {
+    code,
+    format,
+    error,
+    onCodeChange,
+    flushCodeToDiagram,
+  } = useDiagramCode();
 
   const handleCopy = async () => {
     try {
@@ -18,16 +24,22 @@ export function CodePanel() {
   return (
     <div className={styles.panel}>
       <div className={`${styles.toolbar} ${styles.toolbarCompact}`}>
+        <span className={styles.title}>
+          {format === 'undulate' ? 'Undulate JSON' : 'WaveDrom JSON'}
+        </span>
+        <span className={styles.toolbarSpacer} />
         <div className={styles.toolbarActions}>
-          <button
-            type="button"
-            className={styles.iconBtn}
-            onClick={() => confirmAndOpenInWavedrom(code)}
-            title="Open this JSON in the external WaveDrom Editor (privacy warning shown first)"
-          >
-            <ExternalLink size={14} aria-hidden />
-            <span>Open in WaveDrom Editor</span>
-          </button>
+          {format === 'wavedrom' ? (
+            <button
+              type="button"
+              className={styles.iconBtn}
+              onClick={() => confirmAndOpenInWavedrom(code)}
+              title="Open this JSON in the external WaveDrom Editor (privacy warning shown first)"
+            >
+              <ExternalLink size={14} aria-hidden />
+              <span>Open in WaveDrom Editor</span>
+            </button>
+          ) : null}
           <button type="button" className={styles.iconBtn} onClick={handleCopy} title="Copy">
             <Copy size={14} aria-hidden />
             <span>Copy</span>

@@ -51,6 +51,38 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
+test('round-trips Undulate canvas edits through JSON and the local render', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await page.getByRole('button', { name: 'Analog', exact: true }).click();
+
+  const editor = page.locator('.cm-content');
+  await expect(page.getByText('Undulate JSON', { exact: true })).toBeVisible();
+  await expect(editor).toContainText('"analogue"');
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(preview.locator('svg')).toBeVisible();
+  await expect(preview.locator('svg')).toContainText('analog');
+
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      {
+        name: 'supply',
+        wave: 'sc.',
+        analogue: [0.6, 1.2],
+        slewing: 4,
+      },
+    ],
+    annotations: [
+      { text: 'Settled', x: 1.5, y: 0.5 },
+      { shape: '|', x: 2.5 },
+    ],
+  }, null, 2));
+
+  await expect(signalRow(page, 'supply')).toBeVisible();
+  await expect(preview.locator('svg')).toContainText('Settled');
+  await expect(editor).toContainText('"slewing": 4');
+});
+
 test('keeps signal names aligned with their waveform rows', async ({ page }) => {
   const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
   const firstSignalBox = await signalRow(page, 'clk').boundingBox();

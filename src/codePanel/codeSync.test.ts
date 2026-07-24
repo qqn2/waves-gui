@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { nanoid } from 'nanoid';
 import type { DiagramState, Signal } from '../shared/types';
 import {
+  detectCodeFormat,
+  diagramCodeFormat,
   diagramToCodeString,
   validateCodeString,
   parseCodeToDiagram,
@@ -39,6 +41,7 @@ describe('codeSync', () => {
   it('validateCodeString rejects invalid JSON and schema errors', () => {
     expect(validateCodeString('{not json')).toMatch(/Invalid JSON/);
     expect(validateCodeString('{"foo":1}')).toMatch(/signal/);
+    expect(validateCodeString('{"annotations":[]}')).toMatch(/signal/);
   });
 
   it('parseCodeToDiagram round-trips diagram state', () => {
@@ -55,6 +58,81 @@ describe('codeSync', () => {
     expect(result.ok).toBe(false);
     if (result.ok !== false) return;
     expect(result.error.length).toBeGreaterThan(0);
+  });
+
+  it('shows and round-trips Undulate annotations in the JSON editor', () => {
+    const diagram = sampleDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.annotations = [
+      {
+        id: 'note',
+        type: 'text',
+        text: 'Setup window',
+        tick: 1,
+        signalId: diagram.signals[0]!.id,
+      },
+      { id: 'deadline', type: 'vertical-line', tick: 2 },
+    ];
+
+    const code = diagramToCodeString(diagram);
+    expect(diagramCodeFormat(diagram)).toBe('undulate');
+    expect(detectCodeFormat(code)).toBe('undulate');
+    expect(validateCodeString(code)).toBeNull();
+    expect(JSON.parse(code)).toMatchObject({
+      annotations: [
+        { text: 'Setup window', x: 1.5 },
+        { shape: '|', x: 2.5 },
+      ],
+    });
+
+    const result = parseCodeToDiagram(code);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.diagram.annotations).toEqual([
+      expect.objectContaining({ type: 'text', text: 'Setup window', tick: 1 }),
+      expect.objectContaining({ type: 'vertical-line', tick: 2 }),
+    ]);
+  });
+
+  it('shows and applies Undulate analogue cells from JSON', () => {
+    const code = JSON.stringify({
+      signal: [
+        {
+          name: 'supply',
+          wave: 'sc.',
+          analogue: [0.6, 1.2],
+          slewing: 4,
+        },
+      ],
+    });
+
+    expect(detectCodeFormat(code)).toBe('undulate');
+    expect(validateCodeString(code)).toBeNull();
+    const result = parseCodeToDiagram(code);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.diagram.signals[0]).toMatchObject({
+      name: 'supply',
+      type: 'analogue',
+      slewing: 4,
+      analogueCells: [
+        expect.objectContaining({ kind: 'step', value: 0.6 }),
+        expect.objectContaining({ kind: 'capacitive', value: 1.2 }),
+        expect.objectContaining({ kind: 'hold', value: 1.2 }),
+      ],
+    });
+  });
+
+  it('keeps Undulate mode while editing a shared-subset document', () => {
+    const code = JSON.stringify({
+      signal: [{ name: 'clk', wave: '01' }],
+    });
+    expect(detectCodeFormat(code, { preferUndulate: true })).toBe('undulate');
+    const result = parseCodeToDiagram(code, { preferUndulate: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.diagram.compatibility?.extensionsEnabled).toBe(true);
+    expect(result.diagram.compatibility?.sourceFormat).toBe('undulate-json');
   });
 });
 
