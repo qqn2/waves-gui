@@ -7,9 +7,10 @@ Last audited: 2026-07-24
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
 
-This is the current support contract for `waves-gui`. It compares the
+This is the current implementation audit for `waves-gui`. It compares the
 implementation and automated tests with Undulate's pinned documentation and
-examples. The broader design and roadmap remain in
+examples. The classification policy, delivery rules, and authoritative working
+contract live in
 [`UNDULATE_SUPPORT_PLAN.md`](./UNDULATE_SUPPORT_PLAN.md).
 
 ## Status legend
@@ -18,7 +19,8 @@ examples. The broader design and roadmap remain in
   coverage unless a narrower scope is stated.
 - [ ] Partial: a useful subset works, but the documented Undulate feature is
   not complete.
-- [ ] Unsupported: rejected or unavailable.
+- [ ] Unsupported: unavailable in the current implementation. Unless the item
+  is explicitly marked **Out of scope**, the main plan classifies it as WIP.
 - [ ] Out of scope: intentionally not planned.
 - [ ] Round-trip risk: currently accepted without an error but not preserved.
   Treat this as unsupported until validation blocks it or the bridge preserves

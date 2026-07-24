@@ -11,6 +11,442 @@ Target application: `waves-gui`
 Current audited support contract:
 [`UNDULATE_SUPPORT_CHECKLIST.md`](./UNDULATE_SUPPORT_CHECKLIST.md)
 
+## 0. Implementation contract
+
+This section is the working agreement for all future Undulate work. Read it
+before selecting or implementing a feature. It takes precedence over older
+tentative language elsewhere in this plan when the two conflict.
+
+### 0.1 Core rule
+
+Every documented Undulate property, value form, annotation shape, input
+format, and output capability must be classified before the application accepts
+it.
+
+The application must follow this decision tree:
+
+1. Detect every property and relevant value form known to the pinned Undulate
+   revision.
+2. Import normally only when the feature is classified as **Supported**.
+3. Reject planned but incomplete features with
+   `[WIP] Feature not supported yet`.
+4. Reject intentionally excluded features with
+   `Unsupported by design`.
+5. Reject malformed, unsafe, or over-limit content as **Invalid**.
+6. Reject unrecognized properties as **Unknown**.
+7. Never accept and silently discard any of these categories.
+
+The absence of a validation error is a product promise: applying the document
+and saving it again must not silently remove semantics.
+
+### 0.2 Classification taxonomy
+
+Every feature has exactly one current classification:
+
+#### Supported
+
+The implemented subset is explicitly described and has completed every
+applicable item in the per-feature acceptance checklist below.
+
+Recognition or parsing alone does not count as support.
+
+#### WIP
+
+The feature is documented by the pinned Undulate revision and remains a product
+target, but one or more required layers are incomplete.
+
+Required message form:
+
+```text
+[WIP] <object path> uses <feature>, which is planned but not supported yet.
+```
+
+Examples:
+
+```text
+[WIP] signal[2].duty_cycles is planned but not supported yet.
+[WIP] annotations[0].shape "||" is planned but not supported yet.
+```
+
+WIP means temporary. It must not be used for invalid syntax, typos, or
+intentionally excluded behavior.
+
+#### Unsupported by design
+
+The feature is intentionally outside the product scope. The rejection must
+include the reason and, when useful, a safe alternative.
+
+Examples include register diagrams and executing imported Python expressions.
+
+Required message form:
+
+```text
+Unsupported by design: <feature>. <reason or alternative>
+```
+
+#### Invalid
+
+The property is understood, but its value is malformed, non-finite, unsafe, or
+outside an enforced application limit.
+
+Examples include a non-array `annotations` value, infinite coordinates,
+excessive nesting, over-limit sample arrays, and invalid wave syntax.
+
+Required message form:
+
+```text
+Invalid <object path>: <specific constraint>.
+```
+
+#### Unknown
+
+The property is not documented by the pinned revision and is not an
+app-specific field in the native document schema. It may be a typo or a feature
+from a newer Undulate revision.
+
+Unknown properties are not automatically WIP.
+
+Required message form:
+
+```text
+Unknown Undulate property <object path> for target revision <revision>.
+```
+
+### 0.3 Validation and import behavior
+
+Validation must return structured findings rather than a single unstructured
+error string.
+
+Tentative finding contract:
+
+```ts
+type UndulateFindingKind =
+  | 'wip'
+  | 'unsupported-by-design'
+  | 'invalid'
+  | 'unknown'
+  | 'converted';
+
+interface UndulateFinding {
+  kind: UndulateFindingKind;
+  feature: string;
+  path: string;
+  message: string;
+  sourceRevision: string;
+  consequence?: string;
+}
+```
+
+Rules:
+
+- scan the complete document and report all findings in one pass;
+- include stable object paths such as `signal[2].duty_cycles` and
+  `annotations[0].stroke`;
+- preserve the order in which findings occur in the source;
+- never partially replace the current diagram after a blocked File Open;
+- never apply a blocked JSON editor change to the diagram or history;
+- leave pending valid document state, dirty state, and the retained file handle
+  unchanged after rejection;
+- never save a blocked source as if it had imported successfully;
+- do not initially offer a lossy **Open supported subset** action;
+- continue allowing an explicitly requested WaveDrom compatible-subset export
+  from an already valid internal document;
+- display all WIP, unsupported-by-design, invalid, and unknown findings in a
+  readable report;
+- use `aria-live` or an equivalent accessible announcement for editor findings;
+- keep the raw invalid editor text visible so the user can correct it, while
+  the canvas continues to show the last valid document.
+
+### 0.4 Detection scope
+
+The known-property manifest must be derived from and pinned to:
+
+```text
+c8da7d48c48fc0bbc90113b6913611132bd96c01
+```
+
+It must cover at least:
+
+- root properties;
+- ordinary digital signal properties;
+- analogue signal properties;
+- groups and spacers;
+- node and edge forms;
+- annotation fields and shapes;
+- style properties;
+- register roots so they can be rejected by design;
+- JSON/JSONML, YAML, and TOML entry points;
+- renderer/output capabilities when exposed through the application.
+
+Format detection must not rely only on `annotations` or `analogue`. Known
+Undulate-only fields such as `duty_cycles`, `periods`, `overlay`, extended
+states, styles, or plural `edges` must also route the document through the
+Undulate classifier.
+
+### 0.5 Normalization and conversion policy
+
+Normalization is part of the support contract. A parser must not quietly make
+content fit the internal model.
+
+Every transformation is classified as:
+
+- **Exact**: representation changes but Undulate semantics do not;
+- **Converted**: semantics are retained through a documented deterministic
+  conversion;
+- **WIP**: equivalence is not yet proven, so import is blocked;
+- **Invalid**: the input exceeds a safety or product limit and is rejected.
+
+Rules:
+
+- do not truncate imported annotation text or annotation counts;
+- do not silently clamp imported coordinates, analogue values, slew, scale,
+  periods, or sample counts;
+- reject over-limit imported values with the limit in the message;
+- UI controls may clamp values while the user is authoring inside the app;
+- canonical spelling changes are allowed only when semantics are proven equal;
+- conversions need a deterministic round-trip or semantic-equivalence fixture;
+- converted findings may be informational, but must not be confused with WIP;
+- analogue `repeat` expansion, arbitrary sample-time normalization, and
+  fractional annotation snapping remain WIP until fixtures prove the intended
+  semantics;
+- do not preserve executable expressions as supported rendered content;
+- any future opaque preservation must have explicit invalidation and conflict
+  rules before it is enabled.
+
+### 0.6 Definition of supported
+
+A user-visible waveform feature is **Supported** only after every applicable
+item in its own feature checklist is complete:
+
+- [ ] **Known manifest**: property names, value forms, and aliases are recorded
+  from the pinned upstream revision.
+- [ ] **Detection**: the feature reliably routes input through the Undulate
+  classifier.
+- [ ] **Validation**: valid values are accepted and malformed, unsafe, unknown,
+  and over-limit values produce structured findings.
+- [ ] **Import**: supported input reaches the internal model without unintended
+  loss.
+- [ ] **Model**: semantics have a typed, normalized internal representation.
+- [ ] **Main canvas**: the feature renders in the interactive editor.
+- [ ] **Local render**: the render panel shows the same semantics.
+- [ ] **Editing**: creation and property editing exist where product-relevant;
+  otherwise the checklist states why editing is not applicable.
+- [ ] **History**: creation, editing, conversion, and deletion are undoable
+  where applicable.
+- [ ] **Undulate export**: supported semantics export deterministically.
+- [ ] **Image export**: SVG, PNG, and JPEG include the feature where applicable.
+- [ ] **WaveDrom compatibility**: exact, converted, approximated, or
+  unsupported behavior is reported correctly.
+- [ ] **Upstream fixtures**: pinned valid examples cover import, render, and
+  semantic round-trip.
+- [ ] **Negative fixtures**: malformed, hostile, over-limit, WIP, unknown, and
+  unsupported-by-design cases are tested.
+- [ ] **Documentation**: the support checklist, compatibility matrix, and UI
+  wording agree.
+
+No single checklist may cover several distinct features merely because they
+share code. For example, `repeat`, `periods`, and `duty_cycles` each require
+their own copied checklist and evidence.
+
+If an item is genuinely not applicable, replace it in that feature's checklist
+with:
+
+```text
+- [x] N/A — <reason>
+```
+
+Do not leave an item unchecked and still classify the feature as Supported.
+
+### 0.7 Per-feature delivery record template
+
+Before implementation begins, copy this template into the relevant feature
+section. Keep it there after delivery as the durable evidence record.
+
+```markdown
+#### <Feature name>
+
+Classification: WIP
+
+Upstream revision: c8da7d48c48fc0bbc90113b6913611132bd96c01
+
+Upstream properties/shapes/values:
+
+- `<field or value>`
+
+Current rejection:
+
+- Kind: `wip`
+- Path example: `<object path>`
+- Message: `[WIP] ...`
+
+Acceptance:
+
+- [ ] Known manifest
+- [ ] Detection
+- [ ] Validation
+- [ ] Import
+- [ ] Typed model
+- [ ] Main canvas
+- [ ] Local render
+- [ ] Editing or explicit N/A
+- [ ] Undo/redo or explicit N/A
+- [ ] Undulate export
+- [ ] SVG/PNG/JPEG or explicit N/A
+- [ ] WaveDrom compatibility classification
+- [ ] Pinned upstream fixtures
+- [ ] Negative and hostile fixtures
+- [ ] Documentation synchronized
+
+Evidence:
+
+- Implementation:
+- Tests:
+- Fixtures:
+- UX:
+- Remaining limitations:
+```
+
+### 0.8 Feature ledger
+
+This ledger defines the current queue. The detailed audit remains in
+`UNDULATE_SUPPORT_CHECKLIST.md`. Each WIP row must receive its own delivery
+record from section 0.7 before code is implemented.
+
+#### Supported subsets requiring retroactive checklist evidence
+
+- [ ] Strict Undulate JSON for the currently typed subset.
+- [ ] Shared WaveDrom-compatible digital states and buses.
+- [ ] Shared clocks `p`, `P`, `n`, and `N`.
+- [ ] Shared scalar `phase` and `period`.
+- [ ] Shared groups and spacers.
+- [ ] Shared single-character nodes and WaveDrom `edge` strings.
+- [ ] Plain text annotations on the integer app step grid.
+- [ ] Plain vertical-line annotations on the integer app step grid.
+- [ ] Plain horizontal-line annotations on the app logical Y grid.
+- [ ] Numeric analogue `s` cells.
+- [ ] Numeric analogue `c` cells.
+- [ ] Explicit finite sampled analogue `a` cells.
+- [ ] Analogue numeric `slewing`.
+- [ ] Analogue bounded `vscale`.
+- [ ] Consecutive analogue overlays and label `order`.
+- [ ] Browser-native SVG, PNG, and JPEG output for typed extensions.
+- [ ] Three-action Undulate disable flow.
+
+These features work today, but this retroactive ledger remains unchecked until
+each has a copied acceptance record with direct evidence for every applicable
+layer. Existing behavior is not removed while the audit is completed.
+
+#### WIP — safety gate before new feature work
+
+- [ ] Complete known root-property manifest.
+- [ ] Complete digital-signal property manifest.
+- [ ] Complete analogue-signal property manifest.
+- [ ] Complete annotation shape/property manifest.
+- [ ] Structured multi-finding validator.
+- [ ] Unknown-property rejection.
+- [ ] WIP-property rejection.
+- [ ] Unsupported-by-design rejection.
+- [ ] Non-mutating File Open rejection report.
+- [ ] Non-mutating JSON editor rejection report.
+- [ ] Replace imported truncation/clamping with explicit invalid findings.
+- [ ] Pinned fixtures proving every known incomplete feature is blocked.
+
+#### WIP — input formats
+
+- [ ] Relaxed JSON/JSONML comments and unquoted keys.
+- [ ] YAML input and output using a safe schema.
+- [ ] TOML input and output.
+- [ ] Opaque preservation of safe unknown declarative data.
+
+#### WIP — extended digital signals
+
+- [ ] Digital high/low symbols `h`, `H`, `l`, and `L`.
+- [ ] Metastability symbols `m` and `M`.
+- [ ] Impulse symbols `i` and `I`.
+- [ ] Digital `repeat`.
+- [ ] Per-cell `periods`.
+- [ ] Scalar duty cycle.
+- [ ] Duty-cycle arrays.
+- [ ] Digital and clock `slewing`.
+- [ ] General fine-timing timebase.
+- [ ] App-native Sub-Steps exported safely to Undulate.
+
+#### WIP — nodes and edges
+
+- [ ] Long node identifiers.
+- [ ] Plural Undulate `edges`.
+- [ ] Extended edge markers `#` and `*`.
+- [ ] Complete extended connector/path set.
+- [ ] Structured edge annotation `from` and `to`.
+- [ ] Edge `dx` and `dy`.
+- [ ] Styled edges.
+
+#### WIP — annotations
+
+- [ ] Fractional text X coordinates.
+- [ ] Fractional and absolute annotation Y coordinates without snapping loss.
+- [ ] Vertical-line `from` and `to` ranges.
+- [ ] Horizontal-line `from` and `to` ranges.
+- [ ] Global time compression `shape: "||"`.
+- [ ] General arrow and shape annotations.
+- [ ] Annotation `dx` and `dy`.
+- [ ] Annotation `fill` and `stroke`.
+- [ ] Annotation `stroke-width`.
+- [ ] Annotation `stroke-dasharray`.
+- [ ] Annotation font sizing.
+- [ ] Annotation `text_background`.
+
+#### WIP — analogue
+
+- [ ] Proven semantic conversion for analogue `repeat`.
+- [ ] Proven semantic conversion for arbitrary `a` sample times.
+- [ ] Explicit `VDDA` and `VSSA` context.
+- [ ] Dedicated graphical sampled-curve editor.
+- [ ] Explicit overlay-group model.
+- [ ] Four-wave interoperability constraint.
+- [ ] Ambiguous overlay selection and cycling.
+- [ ] Safe opaque preservation of unexecuted expressions, if retained as a
+  product goal.
+
+#### WIP — styling and additional output
+
+- [ ] Strict normalized signal styles.
+- [ ] Strict normalized annotation styles.
+- [ ] Strict normalized edge styles.
+- [ ] Safe global style configuration.
+- [ ] PDF export.
+- [ ] PostScript/EPS export, if still product-relevant when PDF lands.
+
+#### Unsupported by design
+
+- [ ] Register diagrams — separate diagram product outside this waveform
+  editor.
+- [ ] Executing imported Python-like expressions — violates the local safe-data
+  model.
+- [ ] Embedding Python, Pyodide, Cairo, or a server renderer.
+- [ ] Byte-for-byte source preservation.
+- [ ] Pixel-identical reproduction of every Undulate renderer.
+
+### 0.9 Required work order
+
+The implementation sequence is:
+
+1. complete the known-property manifest;
+2. implement structured multi-finding validation;
+3. block every known WIP, unknown, invalid, and unsupported-by-design path
+   without mutating the current document;
+4. eliminate silent truncation and clamping on import;
+5. add negative fixtures for all blocked feature families;
+6. retroactively complete the per-feature acceptance records for features
+   currently described as supported;
+7. select the next WIP feature;
+8. copy its individual delivery record;
+9. implement every applicable layer;
+10. mark it Supported only when the full record is complete.
+
+Do not begin a new Undulate waveform feature while a known silent-loss path
+remains open.
+
 ## Implementation progress
 
 - [x] Validate supported WaveDrom sub-cycle marker structure.
