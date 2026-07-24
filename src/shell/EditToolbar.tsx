@@ -45,15 +45,12 @@ export function EditToolbar() {
   const extensionsEnabled = useStore(
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
-  const modes = extensionsEnabled
-    ? [...CORE_MODES, ...UNDULATE_MODES]
-    : CORE_MODES;
 
   return (
     <nav className={styles.editRail} aria-label="Waveform editing tools">
-      <div className={styles.editRailGroup}>
+      <div className={styles.editRailGroup} role="group" aria-label="Tools">
         <span className={styles.editRailLabel}>Tools</span>
-        {modes.map(({ id, label, shortcut, Icon }) => {
+        {CORE_MODES.map(({ id, label, shortcut, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;
@@ -73,7 +70,7 @@ export function EditToolbar() {
         })}
       </div>
 
-      <div className={styles.editRailGroup}>
+      <div className={styles.editRailGroup} role="group" aria-label="Insert">
         <span className={styles.editRailLabel}>Insert</span>
         <button type="button" className={styles.railBtn} onClick={() => addSignal('bit')}>
           <Plus size={21} strokeWidth={1.8} aria-hidden />
@@ -87,7 +84,27 @@ export function EditToolbar() {
           <Group size={21} strokeWidth={1.8} aria-hidden />
           <span>Group</span>
         </button>
-        {extensionsEnabled && (
+      </div>
+
+      {extensionsEnabled && (
+        <div className={styles.editRailGroup} role="group" aria-label="Undulate">
+          <span className={styles.editRailLabel}>Undulate</span>
+          {UNDULATE_MODES.map(({ id, label, shortcut, Icon }) => {
+            const active = tool === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`${styles.railBtn} ${active ? styles.railBtnActive : ''}`}
+                aria-pressed={active}
+                title={`${label} (${shortcut})`}
+                onClick={() => setTool(id)}
+              >
+                <Icon size={21} strokeWidth={1.8} aria-hidden />
+                <span>{label}</span>
+              </button>
+            );
+          })}
           <button
             type="button"
             className={styles.railBtn}
@@ -96,8 +113,8 @@ export function EditToolbar() {
             <Activity size={21} strokeWidth={1.8} aria-hidden />
             <span>Analog</span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

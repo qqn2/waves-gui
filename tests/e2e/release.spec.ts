@@ -121,37 +121,56 @@ test('offers preserve, cancel, and remove choices when hiding Undulate', async (
   await expect(page.getByText('WaveDrom JSON', { exact: true })).toBeVisible();
 });
 
-test('appends Undulate tools after core tools', async ({ page }) => {
-  const toolTitles = () => page
-    .getByLabel('Waveform editing tools')
+test('appends an Undulate section after the core toolbar sections', async ({ page }) => {
+  const toolbar = page.getByLabel('Waveform editing tools');
+  const coreTools = toolbar.getByRole('group', { name: 'Tools', exact: true });
+  const insertTools = toolbar.getByRole('group', { name: 'Insert', exact: true });
+  const titlesIn = (group: typeof coreTools) => group
     .locator('button[title]')
     .evaluateAll((buttons) => buttons.map((button) => button.getAttribute('title')));
 
-  await expect.poll(toolTitles).toEqual([
+  await expect(toolbar.locator(':scope > [role="group"] > span:first-child')).toHaveText([
+    'Tools',
+    'Insert',
+  ]);
+  await expect.poll(() => titlesIn(coreTools)).toEqual([
     'Select (V)',
     'Draw (D)',
     'Erase (E)',
     'Edge (A)',
     'Span (T)',
   ]);
+  await expect(
+    toolbar.getByRole('group', { name: 'Undulate', exact: true }),
+  ).toHaveCount(0);
 
   await page.getByLabel('Undulate extensions').check();
-  await expect.poll(toolTitles).toEqual([
-    'Select (V)',
-    'Draw (D)',
-    'Erase (E)',
-    'Edge (A)',
-    'Span (T)',
+  const undulateTools = toolbar.getByRole('group', {
+    name: 'Undulate',
+    exact: true,
+  });
+  await expect(toolbar.locator(':scope > [role="group"] > span:first-child')).toHaveText([
+    'Tools',
+    'Insert',
+    'Undulate',
+  ]);
+  await expect.poll(() => titlesIn(undulateTools)).toEqual([
     'Text (I)',
     'V line (L)',
     'H line (Shift+L)',
   ]);
 
-  const insertLabels = await page
-    .getByLabel('Waveform editing tools')
-    .locator('button:not([title]) span')
-    .allTextContents();
-  expect(insertLabels).toEqual(['Signal', 'Bus', 'Group', 'Analog']);
+  await expect(insertTools.locator('button span')).toHaveText([
+    'Signal',
+    'Bus',
+    'Group',
+  ]);
+  await expect(undulateTools.locator('button span')).toHaveText([
+    'Text',
+    'V line',
+    'H line',
+    'Analog',
+  ]);
 });
 
 test('deletes a section from its actions menu and restores it with undo', async ({ page }) => {
