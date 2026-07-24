@@ -33,7 +33,10 @@ function isBlank(entry: WdSignalEntry): boolean {
 }
 
 function isVectorWave(wave: string): boolean {
-  return /[=2-9]/.test(wave);
+  // Undulate permits data, impulse, metastability, and scalar logic cells in
+  // one digital lane. Keep such lanes wave-canonical instead of coercing the
+  // entire row to a WaveDrom vector bus.
+  return /[=2-9]/.test(wave) && !/[iImM]/.test(wave);
 }
 
 function normalizeDataLabel(entry: string | string[]): string {

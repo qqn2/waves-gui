@@ -18,14 +18,20 @@
 
 // ─── Signal states ────────────────────────────────────────────────────────────
 
-/** All possible states for a single bit signal at one time step */
-export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N' | '.';
+/** All supported states for a scalar or mixed Undulate digital lane cell. */
+export type BitState =
+  | '0' | '1' | 'x' | 'X' | 'z' | 'u' | 'd'
+  | 'p' | 'n' | 'P' | 'N'
+  | '=' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+  | 'i' | 'I' | 'm' | 'M'
+  | '.';
 
 /** Map to WaveDrom wave characters (`.` is paint-only — resolved before storing in states[]) */
 export const BIT_STATE_CHARS: Record<BitState, string> = {
   '0': '0',
   '1': '1',
   'x': 'x',
+  'X': 'X',
   'z': 'z',
   'u': 'u',
   'd': 'd',
@@ -33,6 +39,19 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'n': 'n',
   'P': 'P',
   'N': 'N',
+  '=': '=',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '7': '7',
+  '8': '8',
+  '9': '9',
+  'i': 'i',
+  'I': 'I',
+  'm': 'm',
+  'M': 'M',
   '.': '.',
 };
 

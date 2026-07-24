@@ -32,6 +32,7 @@ export function isSubcycleWaveLane(sig: Signal): boolean {
 /** Import-time: clock runs and sub-cycle syntax use wave-canonical storage. */
 export function shouldImportAsWaveMode(wave: string): boolean {
   return (
+    /[iImM]/.test(wave) ||
     hasSubcycleSyntax(wave) ||
     isClockWaveString(wave) ||
     isRepeatingClockWave(wave)

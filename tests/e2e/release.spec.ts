@@ -103,6 +103,26 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(preview.locator('svg')).toHaveCSS('max-width', '100%');
 });
 
+test('round-trips and renders Undulate extended digital states', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  const wave = '01.zx=ud.2.3.45XziIzmzM';
+  await replaceJson(page, JSON.stringify({
+    signal: [{ name: 'digital', wave }],
+  }, null, 2));
+
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(signalRow(page, 'digital')).toBeVisible();
+  await expect(page.locator('.cm-content')).toContainText(wave);
+  await expect(preview.locator('path[data-wave-state="i"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="I"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="m"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="M"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="2"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="3"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="X"]')).toHaveCount(1);
+});
+
 test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
   await replaceJson(page, JSON.stringify({

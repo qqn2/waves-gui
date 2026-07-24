@@ -35,9 +35,9 @@ contract live in
 - [x] Browser-native live rendering plus SVG, PNG, and JPEG export.
 - [x] Undo/redo, autosave, JSON editing, compatibility reporting, and the
   three-action disable flow for supported extension content.
-- [ ] Partial: ordinary digital WaveDrom-compatible lanes and timing are
-  available in Undulate JSON, but Undulate-only digital states and timing
-  arrays are not.
+- [ ] Partial: ordinary and mixed extended digital lanes are available in
+  Undulate JSON, including data, impulse, and metastability cells; high/low
+  clock aliases and extended timing arrays remain incomplete.
 - [ ] Unsupported: styled signals, Undulate annotation arrows, long node
   identifiers, YAML, TOML, relaxed JSON/JSONML, and opaque preservation.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
@@ -111,13 +111,15 @@ Upstream references:
 - [x] WaveDrom-compatible `edge` dependency strings and labels.
 - [x] Supported WaveDrom sub-cycle marker syntax on scalar bit lanes.
 - [x] Diagram `hscale`, supported skins, headers, footers, ticks, and tocks.
+- [x] Mixed logic and data cells (`x`, `X`, `=`, and `2`–`9`) in one digital
+  lane.
+- [x] Metastability states `m` and `M`, resolving to zero and one.
+- [x] Impulse states `i` and `I`.
 
 ### Partial or unsupported
 
 - [ ] Partial: Undulate uses additional digital symbols such as `h`, `H`, `l`,
   and `L`; these are not ordinary editable digital states in the app.
-- [ ] Unsupported: metastability states `m` and `M`.
-- [ ] Unsupported: impulse states `i` and `I`.
 - [ ] Unsupported: Undulate long node identifiers.
 - [ ] Unsupported: Undulate-only edge markers `#` and `*` and the complete
   extended path set as structured annotations.
@@ -357,8 +359,8 @@ Upstream reference:
   `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
 - [x] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
-- [ ] **P1 — Extended digital timing and states.** Add `repeat`, variable
-  periods, duty cycles, digital slew, `m`/`M`, and `i`/`I`.
+- [ ] **P1 — Extended digital timing and remaining states.** Add `repeat`,
+  variable periods, duty cycles, digital slew, and `h`/`H`/`l`/`L`.
 - [ ] **P1 — Complete annotation geometry.** Add `from`/`to`, global
   compression, structured arrows, and fractional coordinates.
 - [ ] **P2 — Safe normalized styling.** Add a strict allowlist for colors,

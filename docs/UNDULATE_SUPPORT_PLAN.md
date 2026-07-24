@@ -453,8 +453,9 @@ Evidence:
 #### WIP — extended digital signals
 
 - [ ] Digital high/low symbols `h`, `H`, `l`, and `L`.
-- [ ] Metastability symbols `m` and `M`.
-- [ ] Impulse symbols `i` and `I`.
+- [x] Mixed scalar/data cells (`x`, `X`, `=`, and `2`–`9`).
+- [x] Metastability symbols `m` and `M`.
+- [x] Impulse symbols `i` and `I`.
 - [ ] Digital `repeat`.
 - [ ] Per-cell `periods`.
 - [ ] Scalar duty cycle.

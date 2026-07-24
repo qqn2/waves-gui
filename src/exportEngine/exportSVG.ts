@@ -45,6 +45,7 @@ import {
   analoguePathPoints,
   analogueValueRatio,
 } from '../renderer/analogueGeometry';
+import { fillHexForWaveChar } from '../shared/vectorSegments';
 
 function esc(s: string): string {
   return s
@@ -84,6 +85,79 @@ function bitY(
   }
 }
 
+function isExtendedDataState(state: BitState): boolean {
+  return state === 'x' || state === 'X' || state === '='
+    || (state >= '2' && state <= '9');
+}
+
+function isExtendedTransientState(state: BitState): boolean {
+  return state === 'i' || state === 'I' || state === 'm' || state === 'M';
+}
+
+function svgExtendedDataCell(
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+): string {
+  const d = Math.min(8, Math.max(2, (nextX - x) * 0.2));
+  const yMid = (yHigh + yLow) / 2;
+  const path =
+    `M${x},${yMid} L${x + d},${yHigh} L${nextX - d},${yHigh} `
+    + `L${nextX},${yMid} L${nextX - d},${yLow} L${x + d},${yLow} Z`;
+  const unknown = state === 'x' || state === 'X';
+  const fill = unknown
+    ? 'url(#hatch-x)'
+    : esc(fillHexForWaveChar(state) ?? '#ffffff');
+  const stroke = unknown ? esc(X_STROKE) : '#6b7280';
+  return `<path data-wave-state="${esc(state)}" d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+}
+
+function svgTransientCell(
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+  previousY: number,
+  color: string,
+): { svg: string; endY: number } {
+  const width = nextX - x;
+  if (state === 'i' || state === 'I') {
+    const baseY = state === 'i' ? yHigh : yLow;
+    const pulseY = state === 'i' ? yLow : yHigh;
+    const settleX = Math.min(x + TRANSITION_WIDTH, x + width * 0.25);
+    const pulseX = x + width / 2;
+    const d =
+      `M${x},${previousY} L${settleX},${baseY} L${pulseX},${baseY} `
+      + `L${pulseX},${pulseY} L${pulseX},${baseY} L${nextX},${baseY}`;
+    return {
+      svg: `<path data-wave-state="${state}" d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
+      endY: baseY,
+    };
+  }
+
+  const resolvesHigh = state === 'M';
+  const samples = 28;
+  let d = `M${x},${previousY}`;
+  for (let sample = 0; sample <= samples; sample++) {
+    const t = (sample / samples) * 0.75;
+    const amplitude = Math.exp(2 * (t - 1));
+    const phase = resolvesHigh ? Math.PI : 0;
+    const normalized = (1 + amplitude * Math.sin(phase + 8 * Math.PI * t)) / 2;
+    d += ` L${x + t * width},${yHigh + normalized * (yLow - yHigh)}`;
+  }
+  const targetY = resolvesHigh ? yHigh : yLow;
+  d +=
+    ` C${x + width * 0.85},${targetY} ${x + width * 0.9},${targetY} `
+    + `${nextX},${targetY}`;
+  return {
+    svg: `<path data-wave-state="${state}" d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
+    endY: targetY,
+  };
+}
+
 function svgBitSignal(
   signal: Signal,
   rowY: number,
@@ -102,7 +176,13 @@ function svgBitSignal(
   let pathD = '';
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = false;
+  let resumeAtCurrentState = false;
   const color = esc(resolveSignalColor(signal.color));
+  const extendedDigital = states.some(
+    (state) => state === 'X' || state === '='
+      || (state >= '2' && state <= '9')
+      || isExtendedTransientState(state),
+  );
 
   const flushPath = () => {
     if (pathOpen && pathD) {
@@ -118,6 +198,40 @@ function svgBitSignal(
     const st = states[i] ?? '0';
     const x = stepLogicalX(signal, i) * hscale;
     const nextX = stepLogicalXEnd(signal, i) * hscale;
+
+    if (extendedDigital && isExtendedDataState(st)) {
+      flushPath();
+      let runEnd = i + 1;
+      while (
+        runEnd < totalSteps
+        && states[runEnd] === st
+        && !signal.stepGaps?.[runEnd]
+      ) {
+        runEnd++;
+      }
+      const dataNextX = stepLogicalXEnd(signal, runEnd - 1) * hscale;
+      parts.push(svgExtendedDataCell(st, x, dataNextX, yHigh, yLow));
+      i = runEnd - 1;
+      resumeAtCurrentState = true;
+      continue;
+    }
+
+    if (isExtendedTransientState(st)) {
+      flushPath();
+      const transient = svgTransientCell(
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        resumeAtCurrentState ? yMid : prevY,
+        color,
+      );
+      parts.push(transient.svg);
+      prevY = transient.endY;
+      resumeAtCurrentState = false;
+      continue;
+    }
 
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
@@ -158,8 +272,10 @@ function svgBitSignal(
 
     const y = bitY(st, yHigh, yLow, yMid);
     if (!pathOpen) {
+      if (resumeAtCurrentState) prevY = y;
       pathD = `M${x},${prevY}`;
       pathOpen = true;
+      resumeAtCurrentState = false;
     }
     if (y !== prevY) {
       pathD += ` L${x + tw / 2},${prevY} L${x + tw},${y}`;

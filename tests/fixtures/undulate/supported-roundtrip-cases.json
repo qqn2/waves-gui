@@ -37,6 +37,38 @@
       "renderIncludes": ["digital"]
     },
     {
+      "id": "extended-digital-states",
+      "features": [
+        "mixed digital and data cells",
+        "impulse states",
+        "metastability states"
+      ],
+      "source": "docs-srcs/tutorial_dig_step1.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.zx=ud.2.3.45XziIzmzM"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.zx=ud.2.3.45XziIzmzM"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["digital", "url(#hatch-x)", "#ffffb4"]
+    },
+    {
       "id": "clocks-and-spacer",
       "features": [
         "p/P/n/N clocks",

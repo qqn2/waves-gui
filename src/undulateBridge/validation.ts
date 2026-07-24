@@ -144,8 +144,6 @@ const HEAD_FIELDS = new Set(['text', 'tick', 'every']);
 const FOOT_FIELDS = new Set(['text', 'tock', 'every']);
 const EXTENDED_WAVE_FEATURES = [
   { pattern: /[hHlL]/, feature: 'digital high/low states' },
-  { pattern: /[mM]/, feature: 'metastability states' },
-  { pattern: /[iI]/, feature: 'impulse states' },
 ] as const;
 
 function finding(

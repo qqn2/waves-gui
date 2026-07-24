@@ -60,6 +60,17 @@ describe('encodeWaveString / decodeWaveString', () => {
     expect(decodeWaveString('XzP')).toEqual(['x', 'z', 'P']);
   });
 
+  it('round-trips Undulate mixed digital, data, impulse, and metastability cells', () => {
+    const wave = '01.zx=ud.2.3.45XziIzmzM';
+    const decoded = decodeWaveString(wave);
+    expect(decoded).toHaveLength(wave.length);
+    expect(decoded).toEqual([
+      '0', '1', '1', 'z', 'x', '=', 'u', 'd', 'd', '2', '2', '3', '3',
+      '4', '5', 'X', 'z', 'i', 'I', 'z', 'm', 'z', 'M',
+    ]);
+    expect(encodeWaveString(decoded)).toBe(wave);
+  });
+
   it('preserves adjacent WaveDrom clock phase changes', () => {
     expect(encodeWaveString(['P', 'n', 'P', 'n'])).toBe('PnPn');
     expect(encodeWaveString(['p', 'n', 'p', 'n'])).toBe('pnpn');

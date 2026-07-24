@@ -1,7 +1,7 @@
 import type { WdRoot } from './wdTypes';
 import { isValidWaveString } from './subcycleWave';
 
-const WAVE_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
+const WAVE_CHARS = /^[0-9.xXzZuUdDpPnNiImM.=|2-9<>]*$/;
 
 function isWdGroup(entry: unknown): entry is [string, ...unknown[]] {
   return Array.isArray(entry) && typeof entry[0] === 'string';
