@@ -302,8 +302,15 @@ The extensions will remain in the document but will be hidden and locked while
 WaveDrom mode is active.
 ```
 
-The initial action should be **Hide extensions**, not remove them. A separate,
-explicit command may later offer conversion or deletion with an exact preview.
+The implemented confirmation offers three explicit actions:
+
+- **Hide features and preserve JSON** disables the Undulate authoring tools,
+  hides the extended canvas content, keeps the Undulate JSON unchanged, and
+  switches the local preview to the WaveDrom-compatible subset;
+- **Cancel** leaves the document and mode unchanged;
+- **Remove Undulate features** deletes supported annotations and analogue lanes,
+  changes the code panel back to WaveDrom JSON, and records the entire removal
+  as one undoable document edit.
 
 When hidden extension content exists, show a small persistent status affordance:
 

@@ -8,7 +8,13 @@ import {
   setNodeCharAt,
   visibleNodeCharAt,
 } from '../../wavedromBridge/nodeString';
-import type { AppState, DiagramState, EdgeAnchorPending, PaintDraft } from '../types';
+import type {
+  AppState,
+  DiagramState,
+  EdgeAnchorPending,
+  PaintDraft,
+  SignalOrGroup,
+} from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
 import { diagramsEqual, pushHistory } from './helpers';
@@ -19,6 +25,32 @@ function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.paintDraft = null;
   s.view.edgeAnchorPending = null;
   s.view.edgeToolHover = null;
+}
+
+function disableExtensionView(s: AppState & StoreActions): void {
+  s.view.activeAnnotationId = null;
+  s.view.activeSignalIds = [];
+  if (
+    s.view.selectedTool === 'annotation'
+    || s.view.selectedTool === 'vertical-line'
+    || s.view.selectedTool === 'horizontal-line'
+  ) {
+    s.view.selectedTool = 'cursor';
+  }
+}
+
+function removeAnalogueSignals(signals: SignalOrGroup[]): SignalOrGroup[] {
+  const remaining: SignalOrGroup[] = [];
+  for (const signal of signals) {
+    if (signal.type === 'analogue') continue;
+    if (signal.type !== 'group') {
+      remaining.push(signal);
+      continue;
+    }
+    const children = removeAnalogueSignals(signal.children);
+    if (children.length > 0) remaining.push({ ...signal, children });
+  }
+  return remaining;
 }
 
 export function createEdgeActions(set: ImmerSet): Pick<
@@ -155,6 +187,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
   | 'applyDiagramEdit'
   | 'clearAll'
   | 'setExtensionsEnabled'
+  | 'removeUndulateFeatures'
   | 'markClean'
   | 'undo'
   | 'redo'
@@ -216,16 +249,23 @@ export function createDocumentActions(set: ImmerSet): Pick<
           ...s.diagram.compatibility,
           extensionsEnabled: enabled,
         };
-        if (!enabled) {
-          s.view.activeAnnotationId = null;
-          if (
-            s.view.selectedTool === 'annotation'
-            || s.view.selectedTool === 'vertical-line'
-            || s.view.selectedTool === 'horizontal-line'
-          ) {
-            s.view.selectedTool = 'cursor';
-          }
-        }
+        if (!enabled) disableExtensionView(s);
+      });
+    },
+
+    removeUndulateFeatures() {
+      set((s) => {
+        pushHistory(s);
+        s.diagram.annotations = [];
+        s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
+        s.diagram.version = 2;
+        s.diagram.compatibility = {
+          ...s.diagram.compatibility,
+          extensionsEnabled: false,
+          sourceFormat: 'wavedrom-json',
+        };
+        delete s.diagram.compatibility.sourceRevision;
+        disableExtensionView(s);
       });
     },
 

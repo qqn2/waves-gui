@@ -3,6 +3,7 @@ import type { BitState, DiagramState } from './types';
 import { DEFAULT_STEPS } from './constants';
 import { createDefaultDiagram } from './defaultDiagram';
 import { toWavedromJSON } from '../wavedromBridge';
+import { diagramToCodeString } from '../codePanel/codeSync';
 import { useStore } from './store';
 
 function emptyDiagram(): DiagramState {
@@ -157,6 +158,62 @@ describe('useStore', () => {
 
     useStore.getState().redo();
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
+  it('hides Undulate features without changing their JSON', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('analogue');
+    const bit = useStore.getState().diagram.signals[0]!;
+    useStore.getState().addTextAnnotation({
+      text: 'preserved',
+      tick: 1,
+      signalId: bit.id,
+    });
+    const before = diagramToCodeString(useStore.getState().diagram);
+
+    useStore.getState().setExtensionsEnabled(false);
+
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
+    expect(diagramToCodeString(useStore.getState().diagram)).toBe(before);
+    expect(useStore.getState().diagram.annotations).toHaveLength(1);
+    expect(useStore.getState().diagram.signals).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
+  });
+
+  it('removes all supported Undulate features as one undoable edit', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('analogue');
+    const bit = useStore.getState().diagram.signals[0]!;
+    useStore.getState().addTextAnnotation({
+      text: 'remove me',
+      tick: 1,
+      signalId: bit.id,
+    });
+
+    useStore.getState().removeUndulateFeatures();
+
+    const stripped = useStore.getState().diagram;
+    expect(stripped.compatibility).toMatchObject({
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+    });
+    expect(stripped.compatibility).not.toHaveProperty('sourceRevision');
+    expect(stripped.annotations).toEqual([]);
+    expect(stripped.signals).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
+    const json = JSON.parse(diagramToCodeString(stripped)) as Record<string, unknown>;
+    expect(json).not.toHaveProperty('annotations');
+    expect(JSON.stringify(json)).not.toContain('"analogue"');
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.annotations).toHaveLength(1);
+    expect(useStore.getState().diagram.signals).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
   });
 
   it('returns clean when undo reaches the saved snapshot', () => {

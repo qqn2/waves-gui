@@ -142,6 +142,7 @@ export interface StoreActions {
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
   setExtensionsEnabled(enabled: boolean): void;
+  removeUndulateFeatures(): void;
   addTextAnnotation(
     annotation: Omit<TextAnnotation, 'id' | 'type'>,
   ): string | null;

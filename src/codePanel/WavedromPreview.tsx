@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { buildSVGString } from '../exportEngine/exportSVG';
 import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
 import { useStore } from '../shared/store';
+import { toWavedromJSON } from '../wavedromBridge';
 import { parseCodeToDiagram, type DiagramCodeFormat } from './codeSync';
 import styles from './CodePanel.module.css';
 
@@ -28,6 +29,9 @@ export function WavedromPreview({
   const theme = useStore((state) => state.view.theme);
   const accentColor = useStore((state) => state.view.accentColor);
   const canvasColor = useStore((state) => state.view.canvasColor);
+  const extensionsEnabled = useStore(
+    (state) => state.diagram.compatibility?.extensionsEnabled === true,
+  );
 
   useEffect(() => {
     const el = containerRef.current;
@@ -41,38 +45,43 @@ export function WavedromPreview({
 
     void (async () => {
       try {
+        let parsed: { config?: { skin?: string } };
         if (format === 'undulate') {
           const result = parseCodeToDiagram(code, { preferUndulate: true });
           if (result.ok === false) throw new Error(result.error);
-          const currentView = useStore.getState().view;
-          const previewView = {
-            ...currentView,
-            labelWidth,
-            zoom: 1,
-            scrollX: 0,
-            scrollY: 0,
-            paintDraft: null,
-            edgeAnchorPending: null,
-            edgeToolHover: null,
-            activeAnnotationId: null,
-          };
-          const svgText = buildSVGString(result.diagram, previewView);
-          const svgDocument = new DOMParser().parseFromString(
-            svgText,
-            'image/svg+xml',
-          );
-          if (svgDocument.querySelector('parsererror')) {
-            throw new Error('Could not build Undulate preview');
+          if (extensionsEnabled) {
+            const currentView = useStore.getState().view;
+            const previewView = {
+              ...currentView,
+              labelWidth,
+              zoom: 1,
+              scrollX: 0,
+              scrollY: 0,
+              paintDraft: null,
+              edgeAnchorPending: null,
+              edgeToolHover: null,
+              activeAnnotationId: null,
+            };
+            const svgText = buildSVGString(result.diagram, previewView);
+            const svgDocument = new DOMParser().parseFromString(
+              svgText,
+              'image/svg+xml',
+            );
+            if (svgDocument.querySelector('parsererror')) {
+              throw new Error('Could not build Undulate preview');
+            }
+            const staging = document.createElement('div');
+            staging.append(document.importNode(svgDocument.documentElement, true));
+            sanitizeDetachedSvg(staging);
+            if (cancelled) return;
+            el.replaceChildren(...Array.from(staging.childNodes));
+            return;
           }
-          const staging = document.createElement('div');
-          staging.append(document.importNode(svgDocument.documentElement, true));
-          sanitizeDetachedSvg(staging);
-          if (cancelled) return;
-          el.replaceChildren(...Array.from(staging.childNodes));
-          return;
+          parsed = toWavedromJSON(result.diagram);
+        } else {
+          parsed = JSON.parse(code) as { config?: { skin?: string } };
         }
 
-        const parsed = JSON.parse(code) as { config?: { skin?: string } };
         const skinName = parsed.config?.skin ?? 'default';
         const WaveDrom = await import('wavedrom');
         const skinMod = await (SKIN_LOADERS[skinName] ?? SKIN_LOADERS.default!)();
@@ -96,6 +105,7 @@ export function WavedromPreview({
     canvasColor,
     code,
     error,
+    extensionsEnabled,
     format,
     labelWidth,
     theme,
@@ -104,8 +114,10 @@ export function WavedromPreview({
   return (
     <div className={styles.previewWrap}>
       <div className={styles.previewLabel}>
-        {format === 'undulate'
+        {format === 'undulate' && extensionsEnabled
           ? 'Undulate render (local)'
+          : format === 'undulate'
+            ? 'WaveDrom compatibility render (local)'
           : 'WaveDrom render (local)'}
       </div>
       {error ? (

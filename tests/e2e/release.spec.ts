@@ -83,6 +83,44 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(editor).toContainText('"slewing": 4');
 });
 
+test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {
+  const toggle = page.getByLabel('Undulate extensions');
+  const editor = page.locator('.cm-content');
+  await toggle.check();
+  await page.getByRole('button', { name: 'Analog', exact: true }).click();
+  await expect(editor).toContainText('"analogue"');
+
+  await toggle.click();
+  let dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await expect(dialog).toContainText('1 analogue signal');
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(toggle).toBeChecked();
+  await expect(editor).toContainText('"analogue"');
+
+  await toggle.click();
+  dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await dialog.getByRole('button', {
+    name: 'Hide features and preserve JSON',
+    exact: true,
+  }).click();
+  await expect(toggle).not.toBeChecked();
+  await expect(editor).toContainText('"analogue"');
+  await expect(
+    page.getByText('WaveDrom compatibility render (local)', { exact: true }),
+  ).toBeVisible();
+
+  await toggle.check();
+  await toggle.click();
+  dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await dialog.getByRole('button', {
+    name: 'Remove Undulate features',
+    exact: true,
+  }).click();
+  await expect(toggle).not.toBeChecked();
+  await expect(editor).not.toContainText('"analogue"');
+  await expect(page.getByText('WaveDrom JSON', { exact: true })).toBeVisible();
+});
+
 test('keeps signal names aligned with their waveform rows', async ({ page }) => {
   const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
   const firstSignalBox = await signalRow(page, 'clk').boundingBox();
