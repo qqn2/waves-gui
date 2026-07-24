@@ -13,6 +13,7 @@ import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
 import { GroupRow } from './GroupRow';
+import { GroupContextMenu } from './GroupContextMenu';
 import { SignalContextMenu } from './SignalContextMenu';
 import {
   collectAllGroups,
@@ -47,6 +48,10 @@ function renderTree(
     onDragOver: (e: React.DragEvent, id: string) => void;
     onDrop: (e: React.DragEvent, id: string) => void;
     onOpenMenu: (signal: Signal, anchor: { x: number; y: number }) => void;
+    onOpenGroupMenu: (
+      group: Extract<SignalOrGroup, { type: 'group' }>,
+      anchor: { x: number; y: number },
+    ) => void;
     onSelect: (id: string) => void;
   },
   renameId: string | null,
@@ -63,6 +68,9 @@ function renderTree(
           depth={depth}
           dropHighlight={dropTargetId === item.id}
           {...dragHandlers}
+          onOpenMenu={dragHandlers.onOpenGroupMenu}
+          forceEdit={renameId === item.id}
+          onEditEnd={onEditEnd}
         />,
       );
       if (!item.collapsed) {
@@ -137,6 +145,9 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const [drag, setDrag] = useState<DragState | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   const [menuSignal, setMenuSignal] = useState<Signal | null>(null);
+  const [menuGroup, setMenuGroup] = useState<
+    Extract<SignalOrGroup, { type: 'group' }> | null
+  >(null);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -252,6 +263,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   const closeMenu = () => {
     setMenuSignal(null);
+    setMenuGroup(null);
     setMenuAnchor(null);
   };
 
@@ -315,6 +327,12 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
             onDrop,
             onOpenMenu: (signal, anchor) => {
               setMenuSignal(signal);
+              setMenuGroup(null);
+              setMenuAnchor(anchor);
+            },
+            onOpenGroupMenu: (group, anchor) => {
+              setMenuGroup(group);
+              setMenuSignal(null);
               setMenuAnchor(anchor);
             },
             onSelect: (id) => setActiveSignalIds([id]),
@@ -431,6 +449,19 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
         }}
         onRemoveFromGroup={() => {
           if (menuSignalId) moveSignalToParent(menuSignalId, undefined);
+          closeMenu();
+        }}
+      />
+      <GroupContextMenu
+        anchor={menuAnchor}
+        group={menuGroup}
+        onClose={closeMenu}
+        onRename={() => {
+          if (menuGroup) setRenameId(menuGroup.id);
+          closeMenu();
+        }}
+        onDelete={() => {
+          if (menuGroup) removeSignal(menuGroup.id);
           closeMenu();
         }}
       />

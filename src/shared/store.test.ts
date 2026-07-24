@@ -372,6 +372,45 @@ describe('useStore', () => {
     }
   });
 
+  it('removeSignal deletes a section with its children and supports undo', () => {
+    useStore.getState().loadDiagram({
+      version: 1,
+      config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+      signals: [
+        {
+          id: 'section-1',
+          name: 'Section',
+          type: 'group',
+          collapsed: false,
+          children: [
+            {
+              id: 'nested-sig',
+              name: 'nested',
+              type: 'bit',
+              states: bitStates(),
+              segments: [],
+              color: '#4A9EFF',
+              rowHeight: 40,
+            },
+          ],
+        },
+      ],
+      edges: [],
+    });
+
+    useStore.getState().removeSignal('section-1');
+    expect(useStore.getState().diagram.signals).toEqual([]);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.signals).toEqual([
+      expect.objectContaining({
+        id: 'section-1',
+        type: 'group',
+        children: [expect.objectContaining({ id: 'nested-sig' })],
+      }),
+    ]);
+  });
+
   it('setVectorSpanRange paints bus data across steps', () => {
     useStore.getState().addSignal('vector');
     const id = useStore.getState().diagram.signals[0]!.id;

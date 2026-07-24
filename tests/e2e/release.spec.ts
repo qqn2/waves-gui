@@ -121,6 +121,55 @@ test('offers preserve, cancel, and remove choices when hiding Undulate', async (
   await expect(page.getByText('WaveDrom JSON', { exact: true })).toBeVisible();
 });
 
+test('appends Undulate tools after core tools', async ({ page }) => {
+  const toolTitles = () => page
+    .getByLabel('Waveform editing tools')
+    .locator('button[title]')
+    .evaluateAll((buttons) => buttons.map((button) => button.getAttribute('title')));
+
+  await expect.poll(toolTitles).toEqual([
+    'Select (V)',
+    'Draw (D)',
+    'Erase (E)',
+    'Edge (A)',
+    'Span (T)',
+  ]);
+
+  await page.getByLabel('Undulate extensions').check();
+  await expect.poll(toolTitles).toEqual([
+    'Select (V)',
+    'Draw (D)',
+    'Erase (E)',
+    'Edge (A)',
+    'Span (T)',
+    'Text (I)',
+    'V line (L)',
+    'H line (Shift+L)',
+  ]);
+
+  const insertLabels = await page
+    .getByLabel('Waveform editing tools')
+    .locator('button:not([title]) span')
+    .allTextContents();
+  expect(insertLabels).toEqual(['Signal', 'Bus', 'Group', 'Analog']);
+});
+
+test('deletes a section from its actions menu and restores it with undo', async ({ page }) => {
+  await page.getByRole('button', { name: '+ Add signal', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Section (group)', exact: true }).click();
+
+  const section = page.locator('[data-group-row="true"]').filter({
+    hasText: 'Section',
+  });
+  await expect(section).toBeVisible();
+  await section.getByRole('button', { name: 'Section actions' }).click();
+  await page.getByRole('menuitem', { name: 'Delete section', exact: true }).click();
+  await expect(section).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(section).toBeVisible();
+});
+
 test('keeps signal names aligned with their waveform rows', async ({ page }) => {
   const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
   const firstSignalBox = await signalRow(page, 'clk').boundingBox();

@@ -16,20 +16,25 @@ import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
 import styles from './shell.module.css';
 
-const MODES: Array<{
+type ToolMode = {
   id: Tool;
   label: string;
   shortcut: string;
   Icon: typeof MousePointer2;
-}> = [
+};
+
+const CORE_MODES: ToolMode[] = [
   { id: 'cursor', label: 'Select', shortcut: 'V', Icon: MousePointer2 },
   { id: 'paint', label: 'Draw', shortcut: 'D', Icon: Paintbrush },
   { id: 'erase', label: 'Erase', shortcut: 'E', Icon: Eraser },
+  { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
+  { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
+];
+
+const UNDULATE_MODES: ToolMode[] = [
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
   { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
-  { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
-  { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
 ];
 
 export function EditToolbar() {
@@ -40,14 +45,15 @@ export function EditToolbar() {
   const extensionsEnabled = useStore(
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
+  const modes = extensionsEnabled
+    ? [...CORE_MODES, ...UNDULATE_MODES]
+    : CORE_MODES;
 
   return (
     <nav className={styles.editRail} aria-label="Waveform editing tools">
       <div className={styles.editRailGroup}>
         <span className={styles.editRailLabel}>Tools</span>
-        {MODES.filter(({ id }) =>
-          !['annotation', 'vertical-line', 'horizontal-line'].includes(id)
-          || extensionsEnabled).map(({ id, label, shortcut, Icon }) => {
+        {modes.map(({ id, label, shortcut, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;
@@ -77,6 +83,10 @@ export function EditToolbar() {
           <Rows3 size={21} strokeWidth={1.8} aria-hidden />
           <span>Bus</span>
         </button>
+        <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
+          <Group size={21} strokeWidth={1.8} aria-hidden />
+          <span>Group</span>
+        </button>
         {extensionsEnabled && (
           <button
             type="button"
@@ -87,10 +97,6 @@ export function EditToolbar() {
             <span>Analog</span>
           </button>
         )}
-        <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
-          <Group size={21} strokeWidth={1.8} aria-hidden />
-          <span>Group</span>
-        </button>
       </div>
     </nav>
   );

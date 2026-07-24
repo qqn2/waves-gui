@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
 import type { SignalGroup } from '../shared/types';
 import { GROUP_HEADER_HEIGHT } from '../shared/constants';
 import { useStore } from '../shared/store';
@@ -18,6 +18,9 @@ export interface GroupRowProps {
   onDragEnd: () => void;
   onDragOver: (e: React.DragEvent, id: string) => void;
   onDrop: (e: React.DragEvent, id: string) => void;
+  onOpenMenu: (group: SignalGroup, anchor: { x: number; y: number }) => void;
+  forceEdit?: boolean;
+  onEditEnd?: () => void;
 }
 
 export function GroupRow({
@@ -29,9 +32,16 @@ export function GroupRow({
   onDragEnd,
   onDragOver,
   onDrop,
+  onOpenMenu,
+  forceEdit = false,
+  onEditEnd,
 }: GroupRowProps) {
   const setState = useStore.setState;
   const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (forceEdit) setEditing(true);
+  }, [forceEdit]);
 
   const h = GROUP_HEADER_HEIGHT * zoom;
   const rowClass = [styles.groupRow, dropHighlight ? styles.rowDropTarget : '']
@@ -41,9 +51,14 @@ export function GroupRow({
   return (
     <div
       className={rowClass}
+      data-group-row="true"
       style={{ height: h, paddingLeft: 8 + depth * 12 }}
       onDragOver={(e) => onDragOver(e, group.id)}
       onDrop={(e) => onDrop(e, group.id)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onOpenMenu(group, { x: e.clientX, y: e.clientY });
+      }}
     >
       <DragHandle
         onDragStart={(e) => onDragStart(e, group.id)}
@@ -67,8 +82,12 @@ export function GroupRow({
           onCommit={(name) => {
             renameGroupInStore(setState, group.id, name);
             setEditing(false);
+            onEditEnd?.();
           }}
-          onCancel={() => setEditing(false)}
+          onCancel={() => {
+            setEditing(false);
+            onEditEnd?.();
+          }}
         />
       ) : (
         <OverflowText
@@ -78,6 +97,17 @@ export function GroupRow({
           onDoubleClick={() => setEditing(true)}
         />
       )}
+      <button
+        type="button"
+        className={styles.menuBtn}
+        aria-label="Section actions"
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          onOpenMenu(group, { x: rect.left, y: rect.bottom });
+        }}
+      >
+        <MoreHorizontal size={16} />
+      </button>
     </div>
   );
 }
