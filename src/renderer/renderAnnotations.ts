@@ -34,11 +34,20 @@ export function renderTextAnnotations(
     : 0;
   const contentWidth = diagram.config.totalSteps * CELL_WIDTH;
   for (const layout of lineLayouts) {
+    const style = layout.annotation.style;
+    ctx.strokeStyle = style?.stroke ?? themeColor('--accent', '#4a9eff');
+    ctx.lineWidth = style?.strokeWidth ?? 1.5;
+    ctx.setLineDash(style?.strokeDasharray ?? [5, 4]);
     ctx.beginPath();
-    if (layout.orientation === 'vertical') {
+    if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = logicalToCanvasX(layout.position, transform);
-      ctx.moveTo(x, logicalToCanvasY(0, transform));
-      ctx.lineTo(x, logicalToCanvasY(contentHeight, transform));
+      const offset = layout.orientation === 'compression' ? 3 * transform.zoom : 0;
+      ctx.moveTo(x - offset, logicalToCanvasY(0, transform));
+      ctx.lineTo(x - offset, logicalToCanvasY(contentHeight, transform));
+      if (layout.orientation === 'compression') {
+        ctx.moveTo(x + offset, logicalToCanvasY(0, transform));
+        ctx.lineTo(x + offset, logicalToCanvasY(contentHeight, transform));
+      }
     } else {
       const y = logicalToCanvasY(layout.position, transform);
       ctx.moveTo(logicalToCanvasX(0, transform), y);
@@ -74,7 +83,15 @@ export function renderTextAnnotations(
         height,
       );
     }
-    ctx.fillStyle = themeColor('--text-primary', '#e8e8e8');
+    ctx.fillStyle = annotation.style?.fill
+      ?? themeColor('--text-primary', '#e8e8e8');
+    if (annotation.style?.stroke) {
+      ctx.strokeStyle = annotation.style.stroke;
+      ctx.lineWidth = annotation.style.strokeWidth ?? 1;
+      ctx.setLineDash(annotation.style.strokeDasharray ?? []);
+      ctx.strokeText(annotation.text, canvasX, canvasY);
+      ctx.setLineDash([]);
+    }
     ctx.fillText(annotation.text, canvasX, canvasY);
   }
 

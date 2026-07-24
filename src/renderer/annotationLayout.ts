@@ -2,6 +2,7 @@ import { CELL_WIDTH } from '../shared/constants';
 import type {
   DiagramState,
   HorizontalLineAnnotation,
+  GlobalCompressionAnnotation,
   TextAnnotation,
   VerticalLineAnnotation,
 } from '../shared/types';
@@ -20,6 +21,7 @@ export interface TextAnnotationLayout {
 
 export type LineAnnotationLayout =
   | { annotation: VerticalLineAnnotation; orientation: 'vertical'; position: number }
+  | { annotation: GlobalCompressionAnnotation; orientation: 'compression'; position: number }
   | { annotation: HorizontalLineAnnotation; orientation: 'horizontal'; position: number };
 
 export function layoutLineAnnotations(
@@ -30,12 +32,20 @@ export function layoutLineAnnotations(
   const rowById = new Map(rows.map((row) => [row.id, row]));
   const layouts: LineAnnotationLayout[] = [];
   for (const annotation of diagram.annotations ?? []) {
-    if (annotation.type === 'vertical-line') {
-      layouts.push({
-        annotation,
-        orientation: 'vertical',
-        position: (annotation.tick + 0.5) * CELL_WIDTH,
-      });
+    if (annotation.type === 'vertical-line' || annotation.type === 'global-compression') {
+      if (annotation.type === 'vertical-line') {
+        layouts.push({
+          annotation,
+          orientation: 'vertical',
+          position: (annotation.tick + 0.5) * CELL_WIDTH,
+        });
+      } else {
+        layouts.push({
+          annotation,
+          orientation: 'compression',
+          position: (annotation.tick + 0.5) * CELL_WIDTH,
+        });
+      }
       continue;
     }
     if (annotation.type !== 'horizontal-line') continue;
@@ -96,7 +106,7 @@ export function hitTestAnnotation(
   const lineLayouts = layoutLineAnnotations(diagram, rows);
   for (let index = lineLayouts.length - 1; index >= 0; index -= 1) {
     const layout = lineLayouts[index]!;
-    if (layout.orientation === 'vertical') {
+    if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = logicalToCanvasX(layout.position, transform);
       if (Math.abs(canvasX - x) <= 5) return layout.annotation.id;
     } else {

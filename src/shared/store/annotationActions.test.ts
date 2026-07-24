@@ -85,9 +85,16 @@ describe('annotation actions', () => {
       signalId: signal?.id,
       yOffset: 3,
     });
+    const compressionId = useStore.getState().addGlobalCompressionAnnotation({
+      tick: 1,
+    });
     useStore.getState().updateVerticalLineAnnotation(verticalId!, { tick: 4 });
     useStore.getState().updateHorizontalLineAnnotation(horizontalId!, {
       yOffset: -2,
+    });
+    useStore.getState().updateGlobalCompressionAnnotation(compressionId!, {
+      tick: 3,
+      style: { stroke: '#ff0000', strokeWidth: 2 },
     });
     expect(useStore.getState().diagram.annotations).toEqual([
       expect.objectContaining({ id: verticalId, type: 'vertical-line', tick: 4 }),
@@ -95,6 +102,12 @@ describe('annotation actions', () => {
         id: horizontalId,
         type: 'horizontal-line',
         yOffset: -2,
+      }),
+      expect.objectContaining({
+        id: compressionId,
+        type: 'global-compression',
+        tick: 3,
+        style: { stroke: '#ff0000', strokeWidth: 2 },
       }),
     ]);
   });

@@ -2,11 +2,13 @@ import { nanoid } from 'nanoid';
 import {
   MAX_ANNOTATIONS,
   normalizeHorizontalLineAnnotation,
+  normalizeGlobalCompressionAnnotation,
   normalizeTextAnnotation,
   normalizeVerticalLineAnnotation,
 } from '../annotations';
 import type {
   HorizontalLineAnnotation,
+  GlobalCompressionAnnotation,
   TextAnnotation,
   VerticalLineAnnotation,
 } from '../types';
@@ -18,9 +20,11 @@ export function createAnnotationActions(set: ImmerSet): Pick<
   | 'addTextAnnotation'
   | 'addVerticalLineAnnotation'
   | 'addHorizontalLineAnnotation'
+  | 'addGlobalCompressionAnnotation'
   | 'updateTextAnnotation'
   | 'updateVerticalLineAnnotation'
   | 'updateHorizontalLineAnnotation'
+  | 'updateGlobalCompressionAnnotation'
   | 'removeAnnotation'
 > {
   return {
@@ -83,6 +87,26 @@ export function createAnnotationActions(set: ImmerSet): Pick<
       return added ? id : null;
     },
 
+    addGlobalCompressionAnnotation(annotation) {
+      const id = nanoid();
+      let added = false;
+      set((state) => {
+        if (state.diagram.compatibility?.extensionsEnabled !== true) return;
+        const annotations = state.diagram.annotations ?? [];
+        if (annotations.length >= MAX_ANNOTATIONS) return;
+        pushHistory(state);
+        state.diagram.annotations = annotations;
+        state.diagram.annotations.push(
+          normalizeGlobalCompressionAnnotation(
+            { ...annotation, id, type: 'global-compression' },
+            state.diagram.config.totalSteps,
+          ),
+        );
+        added = true;
+      });
+      return added ? id : null;
+    },
+
     updateTextAnnotation(id, patch) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
@@ -128,6 +152,24 @@ export function createAnnotationActions(set: ImmerSet): Pick<
         if (!annotation) return;
         const normalized = normalizeHorizontalLineAnnotation(
           { ...annotation, ...patch, id, type: 'horizontal-line' },
+        );
+        if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
+        pushHistory(state);
+        Object.assign(annotation, normalized);
+      });
+    },
+
+    updateGlobalCompressionAnnotation(id, patch) {
+      set((state) => {
+        if (state.diagram.compatibility?.extensionsEnabled !== true) return;
+        const annotation = state.diagram.annotations?.find(
+          (item): item is GlobalCompressionAnnotation =>
+            item.id === id && item.type === 'global-compression',
+        );
+        if (!annotation) return;
+        const normalized = normalizeGlobalCompressionAnnotation(
+          { ...annotation, ...patch, id, type: 'global-compression' },
+          state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
         pushHistory(state);

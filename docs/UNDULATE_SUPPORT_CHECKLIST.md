@@ -152,7 +152,11 @@ Upstream reference:
 - [x] Plain text annotations with finite numeric `x` and `y`.
 - [x] Vertical line annotations with `shape: "|"` and finite numeric `x`.
 - [x] Horizontal line annotations with `shape: "-"` and finite numeric `y`.
-- [x] Creation through dedicated Text, V line, and H line tools.
+- [x] Full-span global time compression with `shape: "||"` and finite numeric
+  `x`.
+- [x] Safe annotation `fill`, `stroke`, `stroke-width`, and
+  `stroke-dasharray` on typed text, line, and global-compression annotations.
+- [x] Creation through dedicated Text, V line, H line, and Compress tools.
 - [x] Selection, property editing, deletion, undo, and redo.
 - [x] Rendering in the live canvas, local render, SVG, PNG, and JPEG.
 - [x] Text is escaped in generated SVG.
@@ -168,17 +172,16 @@ Upstream reference:
   2000 characters.
 - [ ] Partial: line annotations always span the app's full relevant canvas;
   Undulate `from` and `to` range limits are not supported.
-- [ ] Partial: plain annotations use the app's fixed presentation rather than
-  Undulate renderer styling.
+- [ ] Partial: colors are deliberately limited to local hex, `rgb()`, and
+  `rgba()` values; remote resources, gradients, CSS variables, and arbitrary
+  CSS are rejected.
+- [ ] Partial: stroke width is bounded to 0..32 and dash arrays to 1..16
+  finite values in the 0..1000 range.
 
 ### Unsupported
 
-- [ ] Unsupported: global time compression with `shape: "||"`.
 - [ ] Unsupported: arrows and other shape annotations using `from`, `to`, and
   extended connector patterns.
-- [ ] Unsupported: `dx` and `dy`.
-- [ ] Unsupported: `fill`, `stroke`, `stroke-width`, and
-  `stroke-dasharray`.
 - [ ] Unsupported: `font-size` and other text styles.
 - [ ] Unsupported: `text_background`.
 - [ ] Unsupported: unknown annotation shapes or fields. These are explicitly
@@ -256,14 +259,16 @@ Upstream references:
 
 - [x] App-native themes, accent color, canvas color, and existing WaveDrom bus
   palette choices affect browser rendering.
+- [x] Typed annotations accept bounded local `fill`, `stroke`,
+  `stroke-width`, and `stroke-dasharray` overrides.
 - [x] Generated SVG text is escaped and output is sanitized.
 
 ### Unsupported
 
-- [ ] Unsupported: Undulate per-object CSS-style fields on signals,
-  annotations, and edges.
-- [ ] Unsupported: imported `stroke`, `fill`, `stroke-width`,
-  `stroke-dasharray`, `font-size`, and `text_background`.
+- [ ] Unsupported: Undulate per-object CSS-style fields on signals and edges.
+- [ ] Unsupported: imported `font-size` and `text_background`.
+- [ ] Unsupported: remote resources, gradients, CSS variables, named colors,
+  and arbitrary CSS in annotation style values.
 - [ ] Unsupported: global Undulate CSS files and renderer style overloading.
 - [ ] Unsupported: lossless translation between app-native visual settings
   and Undulate style fields.

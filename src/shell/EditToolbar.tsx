@@ -11,6 +11,7 @@ import {
   TextCursorInput,
   Plus,
   Rows3,
+  ChevronsLeftRight,
 } from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
@@ -35,6 +36,7 @@ const UNDULATE_MODES: ToolMode[] = [
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
   { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
+  { id: 'global-compression', label: 'Compress', shortcut: 'Shift+C', Icon: ChevronsLeftRight },
 ];
 
 export function EditToolbar() {

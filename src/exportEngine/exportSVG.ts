@@ -295,26 +295,42 @@ function svgAnnotations(
   panelBg: string,
 ): string {
   const text = layoutTextAnnotations(diagram, rows)
-    .map(({ annotation, x, y }) => (
-      `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
-      + `fill="${esc(textColor)}" stroke="${esc(panelBg)}" stroke-width="4" `
-      + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
-      + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
-      + `${esc(annotation.text)}</text>`
-    ))
+    .map(({ annotation, x, y }) => {
+      const style = annotation.style;
+      const stroke = style?.stroke ?? panelBg;
+      const strokeWidth = style?.stroke
+        ? (style.strokeWidth ?? 1)
+        : 4;
+      const dash = style?.strokeDasharray
+        ? ` stroke-dasharray="${style.strokeDasharray.join(' ')}"`
+        : '';
+      return `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
+        + `fill="${esc(style?.fill ?? textColor)}" stroke="${esc(stroke)}" `
+        + `stroke-width="${strokeWidth}"${dash} `
+        + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
+        + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
+        + `${esc(annotation.text)}</text>`;
+    })
     .join('\n');
   const contentHeight = totalContentHeight(rows);
   const contentWidth = diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
   const lines = layoutLineAnnotations(diagram, rows).map((layout) => {
-    if (layout.orientation === 'vertical') {
+    const style = layout.annotation.style;
+    const stroke = esc(style?.stroke ?? textColor);
+    const width = style?.strokeWidth ?? 1.5;
+    const dash = style?.strokeDasharray?.join(' ') ?? '5 4';
+    if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = layout.position * diagram.config.hscale;
-      return `<line x1="${x}" y1="${axisOffset}" x2="${x}" `
-        + `y2="${axisOffset + contentHeight}" stroke="${esc(textColor)}" `
-        + 'stroke-width="1.5" stroke-dasharray="5 4"/>';
+      const line = (lineX: number) => `<line x1="${lineX}" y1="${axisOffset}" x2="${lineX}" `
+        + `y2="${axisOffset + contentHeight}" stroke="${stroke}" `
+        + `stroke-width="${width}" stroke-dasharray="${dash}"/>`;
+      return layout.orientation === 'compression'
+        ? `${line(x - 3)}\n${line(x + 3)}`
+        : line(x);
     }
     const y = axisOffset + layout.position;
     return `<line x1="0" y1="${y}" x2="${contentWidth}" y2="${y}" `
-      + `stroke="${esc(textColor)}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+      + `stroke="${stroke}" stroke-width="${width}" stroke-dasharray="${dash}"/>`;
   }).join('\n');
   return [lines, text].filter(Boolean).join('\n');
 }

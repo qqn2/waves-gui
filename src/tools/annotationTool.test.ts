@@ -3,6 +3,7 @@ import { createDefaultDiagram } from '../shared/defaultDiagram';
 import { useStore } from '../shared/store';
 import {
   annotationPointerDown,
+  globalCompressionPointerDown,
   horizontalLinePointerDown,
   verticalLinePointerDown,
 } from './annotationTool';
@@ -77,15 +78,17 @@ describe('annotation tool', () => {
     };
     verticalLinePointerDown({ button: 0 } as PointerEvent, hit);
     horizontalLinePointerDown({ button: 0 } as PointerEvent, hit);
+    globalCompressionPointerDown({ button: 0 } as PointerEvent, hit);
     expect(useStore.getState().diagram.annotations).toEqual([
       expect.objectContaining({ type: 'vertical-line', tick: 2 }),
       expect.objectContaining({
         type: 'horizontal-line',
         signalId: signal.id,
       }),
+      expect.objectContaining({ type: 'global-compression', tick: 2 }),
     ]);
     expect(useStore.getState().view.activeAnnotationId).toBe(
-      useStore.getState().diagram.annotations?.[1]?.id,
+      useStore.getState().diagram.annotations?.[2]?.id,
     );
   });
 });

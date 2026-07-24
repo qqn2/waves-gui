@@ -28,6 +28,7 @@ const diagram: DiagramState = {
       yOffset: 12,
     },
     { id: 'vline', type: 'vertical-line', tick: 3 },
+    { id: 'compression', type: 'global-compression', tick: 4 },
     {
       id: 'hline',
       type: 'horizontal-line',
@@ -72,6 +73,10 @@ describe('layoutTextAnnotations', () => {
       expect.objectContaining({
         orientation: 'vertical',
         position: 140,
+      }),
+      expect.objectContaining({
+        orientation: 'compression',
+        position: 180,
       }),
       expect.objectContaining({
         orientation: 'horizontal',

@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
 import type { UndulateRoot } from './types';
 import {
@@ -8,6 +10,15 @@ import {
 } from './undulateJSON';
 
 describe('Undulate JSON bridge', () => {
+  it('round-trips the pinned styled compression fixture', () => {
+    const root = JSON.parse(readFileSync(
+      join(process.cwd(), 'tests/fixtures/undulate/annotations-styles.json'),
+      'utf8',
+    )) as UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    expect(toUndulateJSON(fromUndulateJSON(root))).toEqual(root);
+  });
+
   it('exports and reimports text annotations semantically', () => {
     const diagram = createDefaultDiagram();
     const signal = diagram.signals.find((item) => item.type === 'bit')!;
@@ -54,12 +65,19 @@ describe('Undulate JSON bridge', () => {
     });
   });
 
-  it('imports and exports vertical and horizontal line annotations', () => {
+  it('imports and exports line, compression, and safe annotation styles', () => {
     const root: UndulateRoot = {
       signal: [{ name: 'a', wave: '01' }],
       annotations: [
-        { shape: '|', x: 1.5 },
+        {
+          shape: '|',
+          x: 1.5,
+          stroke: '#123456',
+          'stroke-width': 2,
+          'stroke-dasharray': [3, 2],
+        },
         { shape: '-', y: 0.5 },
+        { shape: '||', x: 0.5, fill: 'rgba(1, 2, 3, 0.5)' },
       ],
     };
     expect(validateUndulateJSON(root)).toBeNull();
@@ -67,6 +85,7 @@ describe('Undulate JSON bridge', () => {
     expect(diagram.annotations).toEqual([
       expect.objectContaining({ type: 'vertical-line', tick: 1 }),
       expect.objectContaining({ type: 'horizontal-line' }),
+      expect.objectContaining({ type: 'global-compression', tick: 0 }),
     ]);
     expect(toUndulateJSON(diagram).annotations).toEqual(root.annotations);
   });
@@ -87,7 +106,19 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ text: 'styled', x: 1, y: 1, fill: '#fff' }],
-    })).toContain('Unsupported Undulate annotation field: fill');
+    })).toBeNull();
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'hostile', x: 1, y: 1, fill: 'url(https://x)' }],
+    })).toContain('safe hex');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '||', x: 1, from: 0 }],
+    })).toContain('[WIP]');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '|', x: 1, 'stroke-dasharray': [1, -2] }],
+    })).toContain('1 to 16');
   });
 
   it('imports and exports finite analogue step, capacitive, and sample cells', () => {

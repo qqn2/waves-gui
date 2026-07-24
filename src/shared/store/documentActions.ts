@@ -34,6 +34,7 @@ function disableExtensionView(s: AppState & StoreActions): void {
     s.view.selectedTool === 'annotation'
     || s.view.selectedTool === 'vertical-line'
     || s.view.selectedTool === 'horizontal-line'
+    || s.view.selectedTool === 'global-compression'
   ) {
     s.view.selectedTool = 'cursor';
   }

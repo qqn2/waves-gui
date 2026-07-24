@@ -387,14 +387,91 @@ layer. Existing behavior is not removed while the audit is completed.
 - [ ] Fractional and absolute annotation Y coordinates without snapping loss.
 - [ ] Vertical-line `from` and `to` ranges.
 - [ ] Horizontal-line `from` and `to` ranges.
-- [ ] Global time compression `shape: "||"`.
+- [x] Global time compression `shape: "||"` for the full waveform span.
 - [ ] General arrow and shape annotations.
 - [ ] Annotation `dx` and `dy`.
-- [ ] Annotation `fill` and `stroke`.
-- [ ] Annotation `stroke-width`.
-- [ ] Annotation `stroke-dasharray`.
+- [x] Safe annotation `fill` and `stroke`.
+- [x] Bounded annotation `stroke-width`.
+- [x] Bounded annotation `stroke-dasharray`.
 - [ ] Annotation font sizing.
 - [ ] Annotation `text_background`.
+
+##### Global time compression — full-span subset
+
+Classification: Supported subset
+
+Scope: `shape: "||"` with a finite numeric `x`, spanning the complete waveform
+content. The optional upstream `from` and `to` range fields remain a separate
+WIP feature.
+
+Acceptance:
+
+- [x] Known manifest
+- [x] Detection
+- [x] Validation
+- [x] Import
+- [x] Typed model
+- [x] Main canvas
+- [x] Local render
+- [x] Editing
+- [x] Undo/redo
+- [x] Undulate export
+- [x] SVG/PNG/JPEG
+- [x] WaveDrom compatibility classification
+- [x] Pinned upstream fixtures
+- [x] Negative and hostile fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: `src/shared/types.ts`, `src/shared/annotations.ts`,
+  `src/undulateBridge/undulateJSON.ts`, and the shared canvas/SVG annotation
+  renderers.
+- Tests: bridge, normalization, store, tool, layout, SVG export, and release
+  browser tests.
+- Fixtures: `tests/fixtures/undulate/annotations-styles.json`, pinned by its
+  README to Undulate revision `c8da7d48`.
+- UX: an Undulate-only **Compress** tool creates and selects the marker; its
+  anchor and style remain editable in the annotation inspector.
+- Remaining limitations: `from` and `to` ranges remain WIP.
+
+##### Safe annotation paint and line styles
+
+Classification: Supported safe subset
+
+Scope: safe declarative `fill`, `stroke`, `stroke-width`, and
+`stroke-dasharray` fields on the currently typed text, vertical-line,
+horizontal-line, and full-span global-compression annotations. Remote
+resources, CSS variables, gradients, and arbitrary CSS remain invalid.
+
+Acceptance:
+
+- [x] Known manifest
+- [x] Detection
+- [x] Validation
+- [x] Import
+- [x] Typed model
+- [x] Main canvas
+- [x] Local render
+- [x] Editing
+- [x] Undo/redo
+- [x] Undulate export
+- [x] SVG/PNG/JPEG
+- [x] WaveDrom compatibility classification
+- [x] Pinned upstream fixtures
+- [x] Negative and hostile fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: normalized `AnnotationStyle` values are shared by typed
+  annotations, the Undulate bridge, canvas renderer, and SVG exporter.
+- Tests: safe round trips, normalization limits, hostile resource rejection,
+  editor/store actions, SVG output, and Chromium/Firefox release coverage.
+- Fixtures: `tests/fixtures/undulate/annotations-styles.json`.
+- UX: Fill, Stroke, Stroke width, and Dash pattern fields appear in the
+  annotation inspector.
+- Remaining limitations: font sizing and `text_background` remain WIP.
 
 #### WIP — analogue
 
@@ -411,7 +488,7 @@ layer. Existing behavior is not removed while the audit is completed.
 #### WIP — styling and additional output
 
 - [ ] Strict normalized signal styles.
-- [ ] Strict normalized annotation styles.
+- [x] Strict normalized annotation paint and line styles.
 - [ ] Strict normalized edge styles.
 - [ ] Safe global style configuration.
 - [ ] PDF export.
@@ -460,6 +537,8 @@ remains open.
 - [x] Add analogue creation, selection, property editing, and undo/redo.
 - [x] Add vertical scaling and initial consecutive-lane overlays.
 - [x] Add native vertical and horizontal line annotations.
+- [x] Add full-span global time-compression annotations.
+- [x] Add safe normalized annotation fill/stroke/width/dash styles.
 - [x] Make the JSON editor and local preview Undulate-aware end to end.
 
 ### Current implemented slice
@@ -487,11 +566,13 @@ The first vertical slice is complete on `rek-undulate`:
 - WaveDrom export reports annotations as unsupported and labels the action as
   exporting a compatible subset.
 
-The current Undulate annotation bridge supports plain text plus vertical and
-horizontal line annotations. Other shapes, styling fields such as `fill`, and
-unknown annotation properties are rejected explicitly rather than silently
-discarded. Opaque preservation of unsupported Undulate fields, YAML/TOML, fine
-timing, global compression, arrows, and extended styling remain future phases.
+The current Undulate annotation bridge supports plain text, vertical and
+horizontal lines, full-span global compression, and bounded local
+fill/stroke/width/dash styles. Compression `from`/`to` ranges, font sizing,
+text backgrounds, other shapes, and unknown annotation properties are
+rejected explicitly rather than silently discarded. Opaque preservation of
+unsupported Undulate fields, YAML/TOML, fine timing, arrows, and broader
+styling remain future phases.
 
 ### Current analogue slice
 
@@ -849,8 +930,8 @@ fixture and an automated support classification before release.
 | Long node names | No | Allocate temporary node chars | Native Undulate concept | Add semantic anchors |
 | Free text annotations | Yes (plain text) | Unsupported with explicit report | Native `text`/`x`/`y` conversion | Implemented first slice |
 | Vertical/horizontal annotations | Yes (plain lines) | Unsupported with explicit report | Native `|`/`-` conversion | Implemented initial subset |
-| Global time compression | Lane gaps only | Approximate/unsupported | Native `||` annotation | Add diagram annotation |
-| Per-object styling | Partial internal colors | Mostly unsupported | Native style overrides | Add normalized style |
+| Global time compression | Full-span marker | Unsupported | Native `||` annotation | Supported full-span subset |
+| Per-object styling | Typed annotations | Mostly unsupported | Native annotation overrides | Supported safe annotation subset |
 | Slewing | Yes (analogue scalar) | Unsupported | Native numeric property | Implemented initial subset |
 | Duty cycle | Fixed clock behavior | Limited | Native | Add scalar/series values |
 | Per-cell periods | No | Limited/expanded | Native `periods` | Add tick durations |

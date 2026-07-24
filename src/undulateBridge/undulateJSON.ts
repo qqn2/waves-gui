@@ -7,7 +7,13 @@ import {
   DEFAULT_ANALOGUE_MIN,
   MAX_ANALOGUE_SAMPLES_PER_CELL,
 } from '../shared/analogue';
+import {
+  isSafeAnnotationColor,
+  isSafeAnnotationDasharray,
+  isSafeAnnotationStrokeWidth,
+} from '../shared/annotations';
 import type {
+  AnnotationStyle,
   AnalogueCell,
   DiagramAnnotation,
   DiagramState,
@@ -34,8 +40,39 @@ import type {
 export const UNDULATE_TARGET_REVISION =
   'c8da7d48c48fc0bbc90113b6913611132bd96c01';
 
+function annotationStyleToUndulate(
+  style: AnnotationStyle | undefined,
+): Record<string, unknown> {
+  if (!style) return {};
+  return {
+    ...(style.fill !== undefined ? { fill: style.fill } : {}),
+    ...(style.stroke !== undefined ? { stroke: style.stroke } : {}),
+    ...(style.strokeWidth !== undefined
+      ? { 'stroke-width': style.strokeWidth }
+      : {}),
+    ...(style.strokeDasharray !== undefined
+      ? { 'stroke-dasharray': [...style.strokeDasharray] }
+      : {}),
+  };
+}
+
+function annotationStyleFromUndulate(
+  annotation: Record<string, unknown>,
+): AnnotationStyle | undefined {
+  const style: AnnotationStyle = {};
+  if (typeof annotation.fill === 'string') style.fill = annotation.fill;
+  if (typeof annotation.stroke === 'string') style.stroke = annotation.stroke;
+  if (typeof annotation['stroke-width'] === 'number') {
+    style.strokeWidth = annotation['stroke-width'];
+  }
+  if (Array.isArray(annotation['stroke-dasharray'])) {
+    style.strokeDasharray = annotation['stroke-dasharray'] as number[];
+  }
+  return Object.keys(style).length > 0 ? style : undefined;
+}
+
 function annotationLogicalY(
-  annotation: Exclude<DiagramAnnotation, { type: 'vertical-line' }>,
+  annotation: Extract<DiagramAnnotation, { type: 'text' | 'horizontal-line' }>,
   rows: ReturnType<typeof buildRowLayout>,
 ): number | null {
   if (!annotation.signalId) return annotation.yOffset ?? 16;
@@ -108,18 +145,30 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const annotations: UndulateAnnotation[] = [];
 
   for (const annotation of diagram.annotations ?? []) {
-    if (annotation.type === 'vertical-line') {
-      annotations.push({ shape: '|', x: annotation.tick + 0.5 });
+    if (
+      annotation.type === 'vertical-line'
+      || annotation.type === 'global-compression'
+    ) {
+      annotations.push({
+        shape: annotation.type === 'vertical-line' ? '|' : '||',
+        x: annotation.tick + 0.5,
+        ...annotationStyleToUndulate(annotation.style),
+      });
     } else {
       const logicalY = annotationLogicalY(annotation, rows);
       if (logicalY === null) continue;
       if (annotation.type === 'horizontal-line') {
-        annotations.push({ shape: '-', y: logicalY / ROW_HEIGHT });
+        annotations.push({
+          shape: '-',
+          y: logicalY / ROW_HEIGHT,
+          ...annotationStyleToUndulate(annotation.style),
+        });
       } else {
         annotations.push({
           text: annotation.text,
           x: annotation.tick + 0.5,
           y: logicalY / ROW_HEIGHT,
+          ...annotationStyleToUndulate(annotation.style),
         });
       }
     }
@@ -296,19 +345,31 @@ export function validateUndulateJSON(value: unknown): string | null {
   const root = value as { annotations?: unknown };
   if (root.annotations === undefined) return null;
   if (!Array.isArray(root.annotations)) return 'annotations must be an array';
-  const textFields = new Set(['text', 'x', 'y']);
-  const verticalFields = new Set(['shape', 'x']);
-  const horizontalFields = new Set(['shape', 'y']);
+  const styleFields = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray'];
+  const textFields = new Set(['text', 'x', 'y', ...styleFields]);
+  const verticalFields = new Set(['shape', 'x', ...styleFields]);
+  const horizontalFields = new Set(['shape', 'y', ...styleFields]);
   for (const annotation of root.annotations) {
     if (typeof annotation !== 'object' || annotation === null) {
       return 'Invalid Undulate annotation';
     }
     const record = annotation as Record<string, unknown>;
+    const wipField = Object.keys(record).find((field) => (
+      ['from', 'to', 'dx', 'dy', 'font-size', 'text_background'].includes(field)
+    ));
+    if (wipField) {
+      return `[WIP] Undulate annotation ${wipField} is planned but not supported yet`;
+    }
     const fields =
-      record.shape === '|' ? verticalFields
+      record.shape === '|' || record.shape === '||' ? verticalFields
         : record.shape === '-' ? horizontalFields
           : textFields;
-    if (record.shape !== undefined && record.shape !== '|' && record.shape !== '-') {
+    if (
+      record.shape !== undefined
+      && record.shape !== '|'
+      && record.shape !== '||'
+      && record.shape !== '-'
+    ) {
       return `Unsupported Undulate annotation shape: ${String(record.shape)}`;
     }
     const unsupportedField = Object.keys(record).find(
@@ -317,9 +378,26 @@ export function validateUndulateJSON(value: unknown): string | null {
     if (unsupportedField) {
       return `Unsupported Undulate annotation field: ${unsupportedField}`;
     }
-    if (record.shape === '|') {
+    for (const field of ['fill', 'stroke']) {
+      if (record[field] !== undefined && !isSafeAnnotationColor(record[field])) {
+        return `Undulate annotation ${field} must be a safe hex, rgb(), or rgba() color`;
+      }
+    }
+    if (
+      record['stroke-width'] !== undefined
+      && !isSafeAnnotationStrokeWidth(record['stroke-width'])
+    ) {
+      return 'Undulate annotation stroke-width must be a finite number from 0 to 32';
+    }
+    if (
+      record['stroke-dasharray'] !== undefined
+      && !isSafeAnnotationDasharray(record['stroke-dasharray'])
+    ) {
+      return 'Undulate annotation stroke-dasharray must contain 1 to 16 finite values from 0 to 1000';
+    }
+    if (record.shape === '|' || record.shape === '||') {
       if (typeof record.x !== 'number' || !Number.isFinite(record.x)) {
-        return 'Undulate vertical line requires a finite x coordinate';
+        return `Undulate ${record.shape === '||' ? 'global compression' : 'vertical line'} requires a finite x coordinate`;
       }
       continue;
     }
@@ -449,11 +527,21 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     (row) => row.type === 'bit' || row.type === 'vector',
   );
   const annotations = (root.annotations ?? []).map((annotation): DiagramAnnotation => {
-    if ('shape' in annotation && annotation.shape === '|') {
+    const style = annotationStyleFromUndulate(
+      annotation as unknown as Record<string, unknown>,
+    );
+    if (
+      'shape' in annotation
+      && (annotation.shape === '|' || annotation.shape === '||')
+    ) {
       return {
         id: nanoid(),
-        type: 'vertical-line',
+        type:
+          annotation.shape === '|'
+            ? 'vertical-line'
+            : 'global-compression',
         tick: Math.round(annotation.x - 0.5),
+        ...(style ? { style } : {}),
       };
     }
     const logicalY = annotation.y * ROW_HEIGHT;
@@ -467,6 +555,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
       const base: HorizontalLineAnnotation = {
         id: nanoid(),
         type: 'horizontal-line',
+        ...(style ? { style } : {}),
       };
       return row
         ? {
@@ -481,6 +570,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
       type: 'text' as const,
       text: annotation.text,
       tick: Math.round(annotation.x - 0.5),
+      ...(style ? { style } : {}),
     };
     return row
       ? {

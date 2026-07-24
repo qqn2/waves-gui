@@ -73,14 +73,24 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
       },
     ],
     annotations: [
-      { text: 'Settled', x: 1.5, y: 0.5 },
+      { text: 'Settled', x: 1.5, y: 0.5, fill: '#123456' },
       { shape: '|', x: 2.5 },
+      {
+        shape: '||',
+        x: 0.5,
+        stroke: '#ff0000',
+        'stroke-width': 2,
+        'stroke-dasharray': [3, 2],
+      },
     ],
   }, null, 2));
 
   await expect(signalRow(page, 'supply')).toBeVisible();
   await expect(preview.locator('svg')).toContainText('Settled');
   await expect(editor).toContainText('"slewing": 4');
+  await expect(editor).toContainText('"shape": "||"');
+  await expect(preview.locator('text[fill="#123456"]')).toContainText('Settled');
+  await expect(preview.locator('line[stroke="#ff0000"]')).toHaveCount(2);
 });
 
 test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {
@@ -158,6 +168,7 @@ test('appends an Undulate section after the core toolbar sections', async ({ pag
     'Text (I)',
     'V line (L)',
     'H line (Shift+L)',
+    'Compress (Shift+C)',
   ]);
 
   await expect(insertTools.locator('button span')).toHaveText([
@@ -169,6 +180,7 @@ test('appends an Undulate section after the core toolbar sections', async ({ pag
     'Text',
     'V line',
     'H line',
+    'Compress',
     'Analog',
   ]);
 });

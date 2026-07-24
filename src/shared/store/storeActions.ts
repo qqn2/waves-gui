@@ -4,6 +4,7 @@ import type {
   TextAnnotation,
   VerticalLineAnnotation,
   HorizontalLineAnnotation,
+  GlobalCompressionAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -152,6 +153,9 @@ export interface StoreActions {
   addHorizontalLineAnnotation(
     annotation: Omit<HorizontalLineAnnotation, 'id' | 'type'>,
   ): string | null;
+  addGlobalCompressionAnnotation(
+    annotation: Omit<GlobalCompressionAnnotation, 'id' | 'type'>,
+  ): string | null;
   updateVerticalLineAnnotation(
     id: string,
     patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
@@ -159,6 +163,10 @@ export interface StoreActions {
   updateHorizontalLineAnnotation(
     id: string,
     patch: Partial<Omit<HorizontalLineAnnotation, 'id' | 'type'>>,
+  ): void;
+  updateGlobalCompressionAnnotation(
+    id: string,
+    patch: Partial<Omit<GlobalCompressionAnnotation, 'id' | 'type'>>,
   ): void;
   updateTextAnnotation(
     id: string,

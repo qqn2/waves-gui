@@ -143,6 +143,13 @@ export interface DiagramCompatibility {
   sourceRevision?: string;
 }
 
+export interface AnnotationStyle {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  strokeDasharray?: number[];
+}
+
 export interface TextAnnotation {
   id: string;
   type: 'text';
@@ -153,6 +160,7 @@ export interface TextAnnotation {
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
   yOffset?: number;
+  style?: AnnotationStyle;
 }
 
 export interface VerticalLineAnnotation {
@@ -160,6 +168,7 @@ export interface VerticalLineAnnotation {
   type: 'vertical-line';
   /** Integer document tick. The line is centered on this step. */
   tick: number;
+  style?: AnnotationStyle;
 }
 
 export interface HorizontalLineAnnotation {
@@ -169,12 +178,22 @@ export interface HorizontalLineAnnotation {
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
   yOffset?: number;
+  style?: AnnotationStyle;
+}
+
+export interface GlobalCompressionAnnotation {
+  id: string;
+  type: 'global-compression';
+  /** Integer document tick. The compression marker is centered on this step. */
+  tick: number;
+  style?: AnnotationStyle;
 }
 
 export type DiagramAnnotation =
   | TextAnnotation
   | VerticalLineAnnotation
-  | HorizontalLineAnnotation;
+  | HorizontalLineAnnotation
+  | GlobalCompressionAnnotation;
 
 export interface DiagramState {
   /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
@@ -198,6 +217,7 @@ export type Tool =
   | 'annotation'
   | 'vertical-line'
   | 'horizontal-line'
+  | 'global-compression'
   | 'arrow'
   | 'timespan'
   | 'cursor';

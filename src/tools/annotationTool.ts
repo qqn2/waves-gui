@@ -38,3 +38,14 @@ export function horizontalLinePointerDown(
   });
   if (id) setActiveAnnotationId(id);
 }
+
+export function globalCompressionPointerDown(
+  event: PointerEvent,
+  hit: HitTestResult,
+): void {
+  if (event.button !== 0 || hit.step === null) return;
+  const { addGlobalCompressionAnnotation, setActiveAnnotationId } =
+    useStore.getState();
+  const id = addGlobalCompressionAnnotation({ tick: hit.step });
+  if (id) setActiveAnnotationId(id);
+}

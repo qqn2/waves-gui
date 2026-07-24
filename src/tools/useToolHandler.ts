@@ -23,6 +23,7 @@ import { copyStepSelection, pasteStepSelection } from './stepClipboard';
 import { useEdgeCurveDrag } from './useEdgeCurveDrag';
 import {
   annotationPointerDown,
+  globalCompressionPointerDown,
   horizontalLinePointerDown,
   verticalLinePointerDown,
 } from './annotationTool';
@@ -137,6 +138,10 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
           setTool(e.shiftKey ? 'horizontal-line' : 'vertical-line');
         }
+      } else if (e.key === 'C') {
+        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
+          setTool('global-compression');
+        }
       } else if (e.key === 'g' || e.key === 'G') {
         setTool('paint');
         setPaintMode('glitch');
@@ -212,6 +217,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       else if (tool === 'annotation') annotationPointerDown(e, hit);
       else if (tool === 'vertical-line') verticalLinePointerDown(e, hit);
       else if (tool === 'horizontal-line') horizontalLinePointerDown(e, hit);
+      else if (tool === 'global-compression') globalCompressionPointerDown(e, hit);
       else if (tool === 'arrow' || tool === 'timespan') {
         if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);

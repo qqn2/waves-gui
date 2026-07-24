@@ -52,7 +52,9 @@ export function undulateCompatibilityFindings(
         ? 'Text annotation anchor will be converted to Undulate x/y coordinates.'
         : annotation.type === 'vertical-line'
           ? 'Vertical line will be converted to Undulate shape "|" with an x coordinate.'
-          : 'Horizontal line will be converted to Undulate shape "-" with a y coordinate.',
+          : annotation.type === 'horizontal-line'
+            ? 'Horizontal line will be converted to Undulate shape "-" with a y coordinate.'
+            : 'Global compression will be converted to Undulate shape "||" with an x coordinate.',
   }));
   const appendAnalogue = (signals: DiagramState['signals']) => {
     for (const signal of signals) {
