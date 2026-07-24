@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
 import { useStore } from '../shared/store';
-import { annotationPointerDown } from './annotationTool';
+import {
+  annotationPointerDown,
+  horizontalLinePointerDown,
+  verticalLinePointerDown,
+} from './annotationTool';
 
 describe('annotation tool', () => {
   beforeEach(() => {
@@ -55,5 +59,33 @@ describe('annotation tool', () => {
       { ...miss, signalId: 'sig', signalType: 'bit', step: 0 },
     );
     expect(useStore.getState().diagram.annotations).toEqual([]);
+  });
+
+  it('creates selectable vertical and horizontal lines', () => {
+    const signal = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit',
+    )!;
+    const hit = {
+      signalId: signal.id,
+      signalType: 'bit' as const,
+      step: 2,
+      half: 'top' as const,
+      isLabelArea: false,
+      isTimeAxis: false,
+      edgeIndex: null,
+      annotationId: null,
+    };
+    verticalLinePointerDown({ button: 0 } as PointerEvent, hit);
+    horizontalLinePointerDown({ button: 0 } as PointerEvent, hit);
+    expect(useStore.getState().diagram.annotations).toEqual([
+      expect.objectContaining({ type: 'vertical-line', tick: 2 }),
+      expect.objectContaining({
+        type: 'horizontal-line',
+        signalId: signal.id,
+      }),
+    ]);
+    expect(useStore.getState().view.activeAnnotationId).toBe(
+      useStore.getState().diagram.annotations?.[1]?.id,
+    );
   });
 });

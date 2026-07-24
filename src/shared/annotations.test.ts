@@ -27,7 +27,9 @@ describe('annotations', () => {
       tick: 7,
       signalId: 'sig-1',
     });
-    expect(annotation?.text).toHaveLength(MAX_ANNOTATION_TEXT_LENGTH);
+    expect(annotation?.type).toBe('text');
+    if (annotation?.type !== 'text') return;
+    expect(annotation.text).toHaveLength(MAX_ANNOTATION_TEXT_LENGTH);
     expect(annotation).not.toHaveProperty('yOffset');
   });
 

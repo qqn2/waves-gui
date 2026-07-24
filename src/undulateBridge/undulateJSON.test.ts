@@ -54,11 +54,32 @@ describe('Undulate JSON bridge', () => {
     });
   });
 
+  it('imports and exports vertical and horizontal line annotations', () => {
+    const root: UndulateRoot = {
+      signal: [{ name: 'a', wave: '01' }],
+      annotations: [
+        { shape: '|', x: 1.5 },
+        { shape: '-', y: 0.5 },
+      ],
+    };
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.annotations).toEqual([
+      expect.objectContaining({ type: 'vertical-line', tick: 1 }),
+      expect.objectContaining({ type: 'horizontal-line' }),
+    ]);
+    expect(toUndulateJSON(diagram).annotations).toEqual(root.annotations);
+  });
+
   it('rejects unsupported shapes and non-finite coordinates explicitly', () => {
     expect(validateUndulateJSON({
       signal: [],
-      annotations: [{ shape: '|', x: 1 }],
+      annotations: [{ shape: 'box', x: 1 }],
     })).toContain('Unsupported Undulate annotation shape');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '|', x: Number.NaN }],
+    })).toContain('finite x');
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ text: 'bad', x: Number.NaN, y: 1 }],
@@ -66,7 +87,7 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ text: 'styled', x: 1, y: 1, fill: '#fff' }],
-    })).toContain('Unsupported Undulate text annotation field: fill');
+    })).toContain('Unsupported Undulate annotation field: fill');
   });
 
   it('imports and exports finite analogue step, capacitive, and sample cells', () => {

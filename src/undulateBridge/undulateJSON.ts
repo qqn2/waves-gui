@@ -11,6 +11,7 @@ import type {
   AnalogueCell,
   DiagramAnnotation,
   DiagramState,
+  HorizontalLineAnnotation,
   Signal,
   SignalOrGroup,
 } from '../shared/types';
@@ -21,8 +22,8 @@ import {
 } from '../wavedromBridge';
 import type {
   UndulateAnalogueValue,
+  UndulateAnnotation,
   UndulateRoot,
-  UndulateTextAnnotation,
 } from './types';
 import type {
   WdGroup,
@@ -34,7 +35,7 @@ export const UNDULATE_TARGET_REVISION =
   'c8da7d48c48fc0bbc90113b6913611132bd96c01';
 
 function annotationLogicalY(
-  annotation: DiagramAnnotation,
+  annotation: Exclude<DiagramAnnotation, { type: 'vertical-line' }>,
   rows: ReturnType<typeof buildRowLayout>,
 ): number | null {
   if (!annotation.signalId) return annotation.yOffset ?? 16;
@@ -104,17 +105,24 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const root: UndulateRoot = toWavedromJSON(diagram);
   root.signal = mergeUndulateSignalEntries(diagram.signals, root.signal);
   const rows = buildRowLayout(diagram.signals);
-  const annotations: UndulateTextAnnotation[] = [];
+  const annotations: UndulateAnnotation[] = [];
 
   for (const annotation of diagram.annotations ?? []) {
-    if (annotation.type !== 'text') continue;
-    const logicalY = annotationLogicalY(annotation, rows);
-    if (logicalY === null) continue;
-    annotations.push({
-      text: annotation.text,
-      x: annotation.tick + 0.5,
-      y: logicalY / ROW_HEIGHT,
-    });
+    if (annotation.type === 'vertical-line') {
+      annotations.push({ shape: '|', x: annotation.tick + 0.5 });
+    } else {
+      const logicalY = annotationLogicalY(annotation, rows);
+      if (logicalY === null) continue;
+      if (annotation.type === 'horizontal-line') {
+        annotations.push({ shape: '-', y: logicalY / ROW_HEIGHT });
+      } else {
+        annotations.push({
+          text: annotation.text,
+          x: annotation.tick + 0.5,
+          y: logicalY / ROW_HEIGHT,
+        });
+      }
+    }
   }
   if (annotations.length > 0) root.annotations = annotations;
   return root;
@@ -271,20 +279,38 @@ export function validateUndulateJSON(value: unknown): string | null {
   const root = value as { annotations?: unknown };
   if (root.annotations === undefined) return null;
   if (!Array.isArray(root.annotations)) return 'annotations must be an array';
-  const supportedFields = new Set(['text', 'x', 'y']);
+  const textFields = new Set(['text', 'x', 'y']);
+  const verticalFields = new Set(['shape', 'x']);
+  const horizontalFields = new Set(['shape', 'y']);
   for (const annotation of root.annotations) {
     if (typeof annotation !== 'object' || annotation === null) {
       return 'Invalid Undulate annotation';
     }
     const record = annotation as Record<string, unknown>;
-    if (record.shape !== undefined) {
+    const fields =
+      record.shape === '|' ? verticalFields
+        : record.shape === '-' ? horizontalFields
+          : textFields;
+    if (record.shape !== undefined && record.shape !== '|' && record.shape !== '-') {
       return `Unsupported Undulate annotation shape: ${String(record.shape)}`;
     }
     const unsupportedField = Object.keys(record).find(
-      (field) => !supportedFields.has(field),
+      (field) => !fields.has(field),
     );
     if (unsupportedField) {
-      return `Unsupported Undulate text annotation field: ${unsupportedField}`;
+      return `Unsupported Undulate annotation field: ${unsupportedField}`;
+    }
+    if (record.shape === '|') {
+      if (typeof record.x !== 'number' || !Number.isFinite(record.x)) {
+        return 'Undulate vertical line requires a finite x coordinate';
+      }
+      continue;
+    }
+    if (record.shape === '-') {
+      if (typeof record.y !== 'number' || !Number.isFinite(record.y)) {
+        return 'Undulate horizontal line requires a finite y coordinate';
+      }
+      continue;
     }
     if (typeof record.text !== 'string') {
       return 'Undulate text annotation requires text';
@@ -405,7 +431,14 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   const laneRows = rows.filter(
     (row) => row.type === 'bit' || row.type === 'vector',
   );
-  const annotations = (root.annotations ?? []).map((annotation) => {
+  const annotations = (root.annotations ?? []).map((annotation): DiagramAnnotation => {
+    if ('shape' in annotation && annotation.shape === '|') {
+      return {
+        id: nanoid(),
+        type: 'vertical-line',
+        tick: Math.round(annotation.x - 0.5),
+      };
+    }
     const logicalY = annotation.y * ROW_HEIGHT;
     const row = laneRows.find(
       (candidate) => (
@@ -413,6 +446,19 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         && logicalY <= candidate.y + candidate.height
       ),
     );
+    if ('shape' in annotation && annotation.shape === '-') {
+      const base: HorizontalLineAnnotation = {
+        id: nanoid(),
+        type: 'horizontal-line',
+      };
+      return row
+        ? {
+            ...base,
+            signalId: row.id,
+            yOffset: logicalY - (row.y + row.height / 2),
+          }
+        : { ...base, yOffset: logicalY };
+    }
     const base = {
       id: nanoid(),
       type: 'text' as const,

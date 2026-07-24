@@ -2,6 +2,8 @@ import type {
   BitState,
   AnalogueCell,
   TextAnnotation,
+  VerticalLineAnnotation,
+  HorizontalLineAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -143,6 +145,20 @@ export interface StoreActions {
   addTextAnnotation(
     annotation: Omit<TextAnnotation, 'id' | 'type'>,
   ): string | null;
+  addVerticalLineAnnotation(
+    annotation: Omit<VerticalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addHorizontalLineAnnotation(
+    annotation: Omit<HorizontalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  updateVerticalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
+  ): void;
+  updateHorizontalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<HorizontalLineAnnotation, 'id' | 'type'>>,
+  ): void;
   updateTextAnnotation(
     id: string,
     patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,

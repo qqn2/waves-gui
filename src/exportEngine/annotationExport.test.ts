@@ -35,4 +35,16 @@ describe('annotation image export', () => {
 
     expect(buildSVGString(diagram, defaultView())).not.toContain('hidden-note');
   });
+
+  it('exports vertical and horizontal annotation lines to SVG', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    const signal = diagram.signals.find((item) => item.type === 'bit');
+    diagram.annotations = [
+      { id: 'v', type: 'vertical-line', tick: 1 },
+      { id: 'h', type: 'horizontal-line', signalId: signal?.id },
+    ];
+    const svg = buildSVGString(diagram, defaultView());
+    expect(svg.match(/stroke-dasharray="5 4"/g)).toHaveLength(2);
+  });
 });

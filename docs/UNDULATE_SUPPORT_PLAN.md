@@ -20,6 +20,7 @@ Target application: `waves-gui`
 - [x] Render analogue lanes in the canvas and image/SVG exports.
 - [x] Add analogue creation, selection, property editing, and undo/redo.
 - [x] Add vertical scaling and initial consecutive-lane overlays.
+- [x] Add native vertical and horizontal line annotations.
 
 ### Current implemented slice
 
@@ -40,11 +41,11 @@ The first vertical slice is complete on `rek-undulate`:
 - WaveDrom export reports annotations as unsupported and labels the action as
   exporting a compatible subset.
 
-The current Undulate annotation bridge intentionally supports plain text
-annotations only. Shapes, styling fields such as `fill`, vertical/horizontal
-lines, and other unknown annotation properties are rejected explicitly rather
-than silently discarded. Opaque preservation of unsupported Undulate fields,
-YAML/TOML, fine timing, and extended styling remain future phases.
+The current Undulate annotation bridge supports plain text plus vertical and
+horizontal line annotations. Other shapes, styling fields such as `fill`, and
+unknown annotation properties are rejected explicitly rather than silently
+discarded. Opaque preservation of unsupported Undulate fields, YAML/TOML, fine
+timing, global compression, arrows, and extended styling remain future phases.
 
 ### Current analogue slice
 

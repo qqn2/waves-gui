@@ -223,7 +223,13 @@ export function createDocumentActions(set: ImmerSet): Pick<
         };
         if (!enabled) {
           s.view.activeAnnotationId = null;
-          if (s.view.selectedTool === 'annotation') s.view.selectedTool = 'cursor';
+          if (
+            s.view.selectedTool === 'annotation'
+            || s.view.selectedTool === 'vertical-line'
+            || s.view.selectedTool === 'horizontal-line'
+          ) {
+            s.view.selectedTool = 'cursor';
+          }
         }
       });
     },

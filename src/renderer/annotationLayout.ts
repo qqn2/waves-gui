@@ -1,7 +1,9 @@
 import { CELL_WIDTH } from '../shared/constants';
 import type {
   DiagramState,
+  HorizontalLineAnnotation,
   TextAnnotation,
+  VerticalLineAnnotation,
 } from '../shared/types';
 import type { RowLayoutEntry } from './rowLayout';
 import {
@@ -14,6 +16,46 @@ export interface TextAnnotationLayout {
   annotation: TextAnnotation;
   x: number;
   y: number;
+}
+
+export type LineAnnotationLayout =
+  | { annotation: VerticalLineAnnotation; orientation: 'vertical'; position: number }
+  | { annotation: HorizontalLineAnnotation; orientation: 'horizontal'; position: number };
+
+export function layoutLineAnnotations(
+  diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
+  rows: RowLayoutEntry[],
+): LineAnnotationLayout[] {
+  if (diagram.compatibility?.extensionsEnabled !== true) return [];
+  const rowById = new Map(rows.map((row) => [row.id, row]));
+  const layouts: LineAnnotationLayout[] = [];
+  for (const annotation of diagram.annotations ?? []) {
+    if (annotation.type === 'vertical-line') {
+      layouts.push({
+        annotation,
+        orientation: 'vertical',
+        position: (annotation.tick + 0.5) * CELL_WIDTH,
+      });
+      continue;
+    }
+    if (annotation.type !== 'horizontal-line') continue;
+    if (!annotation.signalId) {
+      layouts.push({
+        annotation,
+        orientation: 'horizontal',
+        position: annotation.yOffset ?? 16,
+      });
+      continue;
+    }
+    const row = rowById.get(annotation.signalId);
+    if (!row) continue;
+    layouts.push({
+      annotation,
+      orientation: 'horizontal',
+      position: row.y + row.height / 2 + (annotation.yOffset ?? 0),
+    });
+  }
+  return layouts;
 }
 
 export function layoutTextAnnotations(
@@ -43,7 +85,7 @@ export function layoutTextAnnotations(
   });
 }
 
-export function hitTestTextAnnotation(
+export function hitTestAnnotation(
   canvasX: number,
   canvasY: number,
   diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
@@ -51,6 +93,17 @@ export function hitTestTextAnnotation(
   transform: ViewTransform,
   waveformTop: number,
 ): string | null {
+  const lineLayouts = layoutLineAnnotations(diagram, rows);
+  for (let index = lineLayouts.length - 1; index >= 0; index -= 1) {
+    const layout = lineLayouts[index]!;
+    if (layout.orientation === 'vertical') {
+      const x = logicalToCanvasX(layout.position, transform);
+      if (Math.abs(canvasX - x) <= 5) return layout.annotation.id;
+    } else {
+      const y = waveformTop + logicalToCanvasY(layout.position, transform);
+      if (Math.abs(canvasY - y) <= 5) return layout.annotation.id;
+    }
+  }
   const layouts = layoutTextAnnotations(diagram, rows);
   for (let index = layouts.length - 1; index >= 0; index -= 1) {
     const { annotation, x, y } = layouts[index]!;

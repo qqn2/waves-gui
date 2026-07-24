@@ -28,7 +28,10 @@ import {
   canDrawGlitch,
   glitchOppositeY,
 } from '../renderer/drawStepGlitch';
-import { layoutTextAnnotations } from '../renderer/annotationLayout';
+import {
+  layoutLineAnnotations,
+  layoutTextAnnotations,
+} from '../renderer/annotationLayout';
 import {
   analoguePathPoints,
   analogueValueRatio,
@@ -291,7 +294,7 @@ function svgAnnotations(
   textColor: string,
   panelBg: string,
 ): string {
-  return layoutTextAnnotations(diagram, rows)
+  const text = layoutTextAnnotations(diagram, rows)
     .map(({ annotation, x, y }) => (
       `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
       + `fill="${esc(textColor)}" stroke="${esc(panelBg)}" stroke-width="4" `
@@ -300,6 +303,20 @@ function svgAnnotations(
       + `${esc(annotation.text)}</text>`
     ))
     .join('\n');
+  const contentHeight = totalContentHeight(rows);
+  const contentWidth = diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
+  const lines = layoutLineAnnotations(diagram, rows).map((layout) => {
+    if (layout.orientation === 'vertical') {
+      const x = layout.position * diagram.config.hscale;
+      return `<line x1="${x}" y1="${axisOffset}" x2="${x}" `
+        + `y2="${axisOffset + contentHeight}" stroke="${esc(textColor)}" `
+        + 'stroke-width="1.5" stroke-dasharray="5 4"/>';
+    }
+    const y = axisOffset + layout.position;
+    return `<line x1="0" y1="${y}" x2="${contentWidth}" y2="${y}" `
+      + `stroke="${esc(textColor)}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  }).join('\n');
+  return [lines, text].filter(Boolean).join('\n');
 }
 
 function svgAnalogueSignal(

@@ -2,8 +2,10 @@ import { nanoid } from 'nanoid';
 import type {
   DiagramAnnotation,
   DiagramState,
+  HorizontalLineAnnotation,
   SignalOrGroup,
   TextAnnotation,
+  VerticalLineAnnotation,
 } from './types';
 
 export const MAX_ANNOTATIONS = 1000;
@@ -42,6 +44,37 @@ export function normalizeTextAnnotation(
   };
 }
 
+export function normalizeVerticalLineAnnotation(
+  value: Partial<VerticalLineAnnotation>,
+  totalSteps: number,
+): VerticalLineAnnotation {
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'vertical-line',
+    tick: Math.max(
+      0,
+      Math.min(Math.max(0, totalSteps - 1), finiteInteger(value.tick, 0)),
+    ),
+  };
+}
+
+export function normalizeHorizontalLineAnnotation(
+  value: Partial<HorizontalLineAnnotation>,
+): HorizontalLineAnnotation {
+  const yOffset = Math.max(
+    -MAX_ANNOTATION_Y_OFFSET,
+    Math.min(MAX_ANNOTATION_Y_OFFSET, finiteInteger(value.yOffset, 0)),
+  );
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'horizontal-line',
+    ...(typeof value.signalId === 'string' && value.signalId.length > 0
+      ? { signalId: value.signalId }
+      : {}),
+    ...(yOffset !== 0 ? { yOffset } : {}),
+  };
+}
+
 export function normalizeAnnotations(
   value: unknown,
   totalSteps: number,
@@ -50,9 +83,23 @@ export function normalizeAnnotations(
   const annotations: DiagramAnnotation[] = [];
   for (const raw of value.slice(0, MAX_ANNOTATIONS)) {
     if (typeof raw !== 'object' || raw === null) continue;
-    const record = raw as Partial<TextAnnotation>;
-    if (record.type !== 'text') continue;
-    annotations.push(normalizeTextAnnotation(record, totalSteps));
+    const record = raw as Partial<DiagramAnnotation>;
+    if (record.type === 'text') {
+      annotations.push(normalizeTextAnnotation(record as Partial<TextAnnotation>, totalSteps));
+    } else if (record.type === 'vertical-line') {
+      annotations.push(
+        normalizeVerticalLineAnnotation(
+          record as Partial<VerticalLineAnnotation>,
+          totalSteps,
+        ),
+      );
+    } else if (record.type === 'horizontal-line') {
+      annotations.push(
+        normalizeHorizontalLineAnnotation(
+          record as Partial<HorizontalLineAnnotation>,
+        ),
+      );
+    }
   }
   return annotations;
 }
@@ -117,6 +164,7 @@ export function preserveExtensionsAcrossDiagramEdit(
   const previousIds = leafSignalIds(previous.signals);
   const incomingIds = leafSignalIds(incoming.signals);
   const annotations = previous.annotations!.map((annotation) => {
+    if (annotation.type === 'vertical-line') return { ...annotation };
     if (!annotation.signalId) return { ...annotation };
     const laneIndex = previousIds.indexOf(annotation.signalId);
     const signalId = laneIndex >= 0 ? incomingIds[laneIndex] : undefined;

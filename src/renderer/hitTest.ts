@@ -7,7 +7,7 @@ import { stepAtLogicalXForSignal } from './laneTiming';
 import { hitTestDiagramEdge } from './edgeLayout';
 import { hitTestStepGlitchBoundary } from './glitchHitTest';
 import { hitTestStepGapBoundary } from './stepGapHitTest';
-import { hitTestTextAnnotation } from './annotationLayout';
+import { hitTestAnnotation } from './annotationLayout';
 
 export interface HitTestResult {
   signalId: string | null;
@@ -73,7 +73,7 @@ export function hitTest(
   const rows = buildRowLayout(diagram.signals);
 
   if (view.selectedTool === 'cursor' || view.selectedTool === 'select') {
-    const annotationId = hitTestTextAnnotation(
+    const annotationId = hitTestAnnotation(
       canvasX,
       canvasY,
       diagram,

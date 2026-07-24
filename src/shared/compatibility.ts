@@ -24,8 +24,8 @@ export function waveDromCompatibilityFindings(
   if (summary.annotationCount > 0) {
     findings.push({
       level: 'unsupported',
-      feature: 'text-annotations',
-      message: `${summary.annotationCount} text annotation${summary.annotationCount === 1 ? '' : 's'} cannot be represented in WaveDrom JSON.`,
+      feature: 'annotations',
+      message: `${summary.annotationCount} annotation${summary.annotationCount === 1 ? '' : 's'} cannot be represented in WaveDrom JSON.`,
       consequence: 'Annotations will be omitted from the compatible subset.',
     });
   }
@@ -45,9 +45,14 @@ export function undulateCompatibilityFindings(
 ): CompatibilityFinding[] {
   const findings: CompatibilityFinding[] = (diagram.annotations ?? []).map((annotation) => ({
     level: 'converted',
-    feature: 'text-annotation',
+    feature: annotation.type,
     objectId: annotation.id,
-    message: 'Text annotation anchor will be converted to Undulate x/y coordinates.',
+    message:
+      annotation.type === 'text'
+        ? 'Text annotation anchor will be converted to Undulate x/y coordinates.'
+        : annotation.type === 'vertical-line'
+          ? 'Vertical line will be converted to Undulate shape "|" with an x coordinate.'
+          : 'Horizontal line will be converted to Undulate shape "-" with a y coordinate.',
   }));
   const appendAnalogue = (signals: DiagramState['signals']) => {
     for (const signal of signals) {

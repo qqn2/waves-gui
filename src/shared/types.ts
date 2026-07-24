@@ -155,7 +155,26 @@ export interface TextAnnotation {
   yOffset?: number;
 }
 
-export type DiagramAnnotation = TextAnnotation;
+export interface VerticalLineAnnotation {
+  id: string;
+  type: 'vertical-line';
+  /** Integer document tick. The line is centered on this step. */
+  tick: number;
+}
+
+export interface HorizontalLineAnnotation {
+  id: string;
+  type: 'horizontal-line';
+  /** Optional semantic row anchor. */
+  signalId?: string;
+  /** Logical pixel offset from the anchored row center. */
+  yOffset?: number;
+}
+
+export type DiagramAnnotation =
+  | TextAnnotation
+  | VerticalLineAnnotation
+  | HorizontalLineAnnotation;
 
 export interface DiagramState {
   /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
@@ -177,6 +196,8 @@ export type Tool =
   | 'erase'
   | 'select'
   | 'annotation'
+  | 'vertical-line'
+  | 'horizontal-line'
   | 'arrow'
   | 'timespan'
   | 'cursor';

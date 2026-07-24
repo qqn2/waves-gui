@@ -5,6 +5,8 @@ import {
   Group,
   MousePointer2,
   MoveHorizontal,
+  MoveVertical,
+  Minus,
   Paintbrush,
   TextCursorInput,
   Plus,
@@ -24,6 +26,8 @@ const MODES: Array<{
   { id: 'paint', label: 'Draw', shortcut: 'D', Icon: Paintbrush },
   { id: 'erase', label: 'Erase', shortcut: 'E', Icon: Eraser },
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
+  { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
+  { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
   { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
   { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
 ];
@@ -41,7 +45,9 @@ export function EditToolbar() {
     <nav className={styles.editRail} aria-label="Waveform editing tools">
       <div className={styles.editRailGroup}>
         <span className={styles.editRailLabel}>Tools</span>
-        {MODES.filter(({ id }) => id !== 'annotation' || extensionsEnabled).map(({ id, label, shortcut, Icon }) => {
+        {MODES.filter(({ id }) =>
+          !['annotation', 'vertical-line', 'horizontal-line'].includes(id)
+          || extensionsEnabled).map(({ id, label, shortcut, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;
