@@ -119,14 +119,6 @@ function svgBitSignal(
     const x = stepLogicalX(signal, i) * hscale;
     const nextX = stepLogicalXEnd(signal, i) * hscale;
 
-    if (signal.stepGaps?.[i]) {
-      flushPath();
-      const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
-      const gapFill = esc(themeColor('--bg-canvas', '#121212'));
-      parts.push(svgStepGap(x, nextX, yHigh, yLow, gapStroke, gapFill));
-      continue;
-    }
-
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
       parts.push(...clockCycleSvg(st, x, nextX, yHigh, yLow, color));
@@ -166,11 +158,8 @@ function svgBitSignal(
 
     const y = bitY(st, yHigh, yLow, yMid);
     if (!pathOpen) {
-      const resumeY =
-        i > 0 && (signal.stepGaps?.[i - 1] ?? false) ? y : prevY;
-      pathD = `M${x},${resumeY}`;
+      pathD = `M${x},${prevY}`;
       pathOpen = true;
-      prevY = resumeY;
     }
     if (y !== prevY) {
       pathD += ` L${x + tw / 2},${prevY} L${x + tw},${y}`;
@@ -189,6 +178,15 @@ function svgBitSignal(
     prevY = y;
   }
   flushPath();
+
+  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapFill = esc(themeColor('--bg-canvas', '#121212'));
+  for (let i = 0; i < totalSteps; i++) {
+    if (!signal.stepGaps?.[i]) continue;
+    const x1 = stepLogicalX(signal, i) * hscale;
+    const x2 = stepLogicalXEnd(signal, i) * hscale;
+    parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
+  }
 
   return parts.join('\n');
 }

@@ -106,15 +106,6 @@ export function renderBitSignal(
     const x = stepLogicalX(signal, i) * scale - transform.scrollX;
     const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
 
-    if (signal.stepGaps?.[i]) {
-      if (pathOpen) {
-        ctx.stroke();
-        pathOpen = false;
-      }
-      drawStepGap(ctx, x, nextX, yHigh, yLow, gapStroke, gapFill);
-      continue;
-    }
-
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       if (pathOpen) {
         ctx.stroke();
@@ -154,13 +145,8 @@ export function renderBitSignal(
 
     if (!pathOpen) {
       ctx.beginPath();
-      const resumeY =
-        i > 0 && (signal.stepGaps?.[i - 1] ?? false)
-          ? stateToY(st, yHigh, yLow, yMid)
-          : prevY;
-      ctx.moveTo(x, resumeY);
+      ctx.moveTo(x, prevY);
       pathOpen = true;
-      prevY = resumeY;
       ctx.strokeStyle = stateStrokeColor(st, signal.color);
       const dash = stateLineDash(st);
       ctx.setLineDash(dash ?? []);
@@ -209,5 +195,14 @@ export function renderBitSignal(
     ctx.moveTo(x1, yLow);
     ctx.lineTo(x2, yLow);
     ctx.stroke();
+  }
+
+  // WaveDrom's `|` is a held column with a gap symbol overlaid on the trace.
+  // Draw it last so the narrow mask breaks the line without erasing the cycle.
+  for (let i = 0; i < totalSteps; i++) {
+    if (!signal.stepGaps?.[i]) continue;
+    const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
+    const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke, gapFill);
   }
 }

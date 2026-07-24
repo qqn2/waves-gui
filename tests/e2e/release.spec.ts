@@ -103,21 +103,32 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(preview.locator('svg')).toHaveCSS('max-width', '100%');
 });
 
-test('renders vector pipe gaps in the local Undulate preview', async ({ page }) => {
+test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
   await replaceJson(page, JSON.stringify({
-    signal: [{
-      name: 'bus',
-      wave: 'x.3|.5x',
-      data: 'head body tail',
-    }],
+    signal: [
+      {
+        name: 'enable',
+        wave: '0..1|.0',
+      },
+      {
+        name: 'bus',
+        wave: 'x.3|.5x',
+        data: 'head body tail',
+      },
+    ],
   }, null, 2));
 
   const preview = page.getByText('Undulate render (local)', { exact: true })
     .locator('..');
+  await expect(signalRow(page, 'enable')).toBeVisible();
   await expect(signalRow(page, 'bus')).toBeVisible();
   await expect(preview.locator('svg')).toBeVisible();
-  await expect(preview.locator('path[d^="M7,-2"]')).toHaveCount(1);
+  await expect(preview.locator('path[d^="M-3.5,-2"]')).toHaveCount(2);
+  const heldBitTrace = preview.locator('path[stroke-width="2"]').filter({
+    hasNot: page.locator('[fill]'),
+  }).first();
+  await expect(heldBitTrace).toHaveAttribute('d', /L200,/);
 });
 
 test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {

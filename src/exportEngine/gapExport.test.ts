@@ -38,8 +38,10 @@ describe('gap image export', () => {
 
     const svg = buildSVGString(diagram, defaultView());
 
-    expect(svg.match(/M7,-2/g)).toHaveLength(2);
+    expect(svg.match(/M-3.5,-2/g)).toHaveLength(2);
     expect(svg.match(/M-7,22/g)).toHaveLength(2);
-    expect(svg.match(/M-3,22/g)).toHaveLength(2);
+    expect(svg.match(/M-6,22/g)).toHaveLength(2);
+    // A `|` column keeps the held trace beneath the narrow overlay.
+    expect(svg).toContain('M0,80 L40,80 L80,80');
   });
 });
