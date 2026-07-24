@@ -48,7 +48,15 @@ contract live in
 ### Supported
 
 - [x] Strict JSON input through File Open and the code editor.
-- [x] Strict JSON output through Save and Undulate JSON export.
+- [x] Strict JSON output for newly generated documents.
+- [x] WaveDrom JSON5 input through File Open and the code editor, including
+  line/block comments, unquoted keys, single-quoted strings, and trailing
+  commas.
+- [x] Retained JSON5 source is updated through a concrete syntax tree so
+  comments, key order, quoting, and surrounding formatting survive supported
+  GUI edits, undo/redo, recovery drafts, and Save.
+- [x] Comments orphaned by a deliberately removed property or array entry are
+  relocated to the nearest surviving container instead of being discarded.
 - [x] Automatic Undulate detection when `annotations` or an `analogue` signal
   is present.
 - [x] The code editor stays in Undulate JSON while the extensions toggle is
@@ -66,11 +74,10 @@ contract live in
 
 - [ ] Partial: Undulate JSON is supported, but only the schema subset listed
   in this document. This is not full Undulate JSON compatibility.
-- [ ] Unsupported: relaxed JSON/JSONML with comments or unquoted keys.
 - [ ] Unsupported: YAML input and output.
 - [ ] Unsupported: TOML input and output.
-- [ ] Unsupported: preservation of comments, whitespace, source ordering, or
-  other format trivia.
+- [ ] Partial: changed or newly inserted values follow the retained document's
+  detected style, but byte-for-byte source preservation is not promised.
 - [ ] Unsupported: opaque preservation of unknown Undulate fields.
 - [x] Unknown fields on ordinary digital signals and unknown top-level fields
   route through the Undulate classifier and are rejected with revision-pinned
@@ -93,7 +100,8 @@ Upstream references:
 - [x] Bus states `x`, `X`, `=`, and color indices `2` through `9`.
 - [x] Bus data labels supplied as space-delimited strings or arrays; string
   input exports deterministically as the canonical array form.
-- [x] Lane gaps with `|`.
+- [x] Lane gaps with `|` on bit and vector lanes, including the canvas,
+  local Undulate render, and image exports.
 - [x] Explicit repeated transitions represented by the app as glitches.
 - [x] Blank spacer rows.
 - [x] Nested groups in the shared WaveDrom JSON array form.
@@ -364,6 +372,9 @@ Upstream reference:
 
 Primary implementation:
 
+- `src/codePanel/json5Source.ts`
+- `src/codePanel/codeSync.ts`
+- `src/shell/FileOperations.ts`
 - `src/undulateBridge/undulateJSON.ts`
 - `src/undulateBridge/types.ts`
 - `src/shared/types.ts`
@@ -378,15 +389,18 @@ Primary implementation:
 
 Primary automated coverage:
 
-- `src/undulateBridge/undulateJSON.test.ts`
-- `src/undulateBridge/upstreamRoundTrip.test.ts`
+- `src/codePanel/json5Source.test.ts`
 - `src/codePanel/codeSync.test.ts`
 - `src/shell/FileOperations.test.ts`
+- `src/shell/soloDesk/soloDesk.test.ts`
+- `src/undulateBridge/undulateJSON.test.ts`
+- `src/undulateBridge/upstreamRoundTrip.test.ts`
 - `src/shared/store.test.ts`
 - `src/shared/store/annotationActions.test.ts`
 - `src/shared/compatibility.test.ts`
 - `src/exportEngine/analogueExport.test.ts`
 - `src/exportEngine/annotationExport.test.ts`
+- `src/exportEngine/gapExport.test.ts`
 - `src/exportEngine/headFootImageExport.test.ts`
 - `tests/e2e/release.spec.ts`
 - `tests/fixtures/undulate/supported-roundtrip-cases.json`

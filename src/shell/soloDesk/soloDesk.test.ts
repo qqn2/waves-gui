@@ -83,6 +83,24 @@ describe('localDraft', () => {
     });
   });
 
+  it('retains JSON5 source text in recovery drafts', () => {
+    const diagram = sampleDiagram();
+    diagram.compatibility = {
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+      sourceText: `{
+  // retained draft comment
+  signal: [{ name: 'clk', wave: '0.1' }],
+}`,
+    };
+
+    saveDraft(diagram, storage);
+
+    expect(loadDraft(storage)?.compatibility?.sourceText).toContain(
+      '// retained draft comment',
+    );
+  });
+
   it('serializeDraftEnvelope includes envelope and diagram version fields', () => {
     const diagram = sampleDiagram();
     saveDraft(diagram, storage);

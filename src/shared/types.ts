@@ -141,6 +141,11 @@ export interface DiagramCompatibility {
   extensionsEnabled: boolean;
   sourceFormat?: DiagramSourceFormat;
   sourceRevision?: string;
+  /**
+   * Original JSON5 concrete syntax. It is document metadata, not an exported
+   * WaveDrom property, and lets GUI edits retain comments and formatting.
+   */
+  sourceText?: string;
 }
 
 export interface AnnotationStyle {

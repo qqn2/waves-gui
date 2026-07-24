@@ -53,6 +53,37 @@ describe('codeSync', () => {
     expect(toWavedromJSON(result.diagram)).toEqual(toWavedromJSON(diagram));
   });
 
+  it('accepts WaveDrom JSON5 and retains comments through GUI edits', () => {
+    const source = `{ signal : [
+    // clock signal
+    { name: "clk",  wave: "p......" },
+    // bus data
+    { name: "bus",  wave: "x.34.5x", data: "head body tail" },
+    // request signal
+    { name: "wire", wave: "0.1..0." },
+] }`;
+
+    expect(validateCodeString(source)).toBeNull();
+    expect(detectCodeFormat(source)).toBe('wavedrom');
+    const result = parseCodeToDiagram(source);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.diagram.compatibility?.sourceText).toBe(source);
+
+    const clock = result.diagram.signals[0];
+    expect(clock?.type).toBe('bit');
+    if (!clock || clock.type === 'group') return;
+    clock.name = 'system clock';
+
+    const updated = diagramToCodeString(result.diagram);
+    expect(updated).toContain('// clock signal');
+    expect(updated).toContain('// bus data');
+    expect(updated).toContain('// request signal');
+    expect(updated).toContain('signal : [');
+    expect(updated).toContain('name: "system clock"');
+    expect(validateCodeString(updated)).toBeNull();
+  });
+
   it('parseCodeToDiagram returns error without throwing on bad input', () => {
     const result = parseCodeToDiagram('[]');
     expect(result.ok).toBe(false);

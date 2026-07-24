@@ -103,6 +103,23 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(preview.locator('svg')).toHaveCSS('max-width', '100%');
 });
 
+test('renders vector pipe gaps in the local Undulate preview', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [{
+      name: 'bus',
+      wave: 'x.3|.5x',
+      data: 'head body tail',
+    }],
+  }, null, 2));
+
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(signalRow(page, 'bus')).toBeVisible();
+  await expect(preview.locator('svg')).toBeVisible();
+  await expect(preview.locator('path[d^="M7,-2"]')).toHaveCount(1);
+});
+
 test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {
   const toggle = page.getByLabel('Undulate extensions');
   const editor = page.locator('.cm-content');
@@ -488,6 +505,36 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   expect(recoveryDialogs).toEqual([]);
 });
 
+test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page }) => {
+  const commentedSource = `{ signal : [
+  // clock signal
+  { name: "clk", wave: "p......" },
+  // bus data
+  { name: "bus", wave: "x.34.5x", data: "head body tail" },
+  // request signal
+  { name: "wire", wave: "0.1..0." },
+] }`;
+  const editor = page.locator('.cm-content');
+
+  await replaceJson(page, commentedSource);
+  await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
+  await expect(signalRow(page, 'bus')).toBeVisible();
+
+  await page.getByLabel('More steps').click();
+  await expect(editor).toContainText('// clock signal');
+  await expect(editor).toContainText('// bus data');
+  await expect(editor).toContainText('// request signal');
+  await expect(editor).toContainText('p.......');
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(editor).toContainText('// clock signal');
+  await expect(editor).toContainText('p......');
+
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(editor).toContainText('// request signal');
+  await expect(editor).toContainText('p.......');
+});
+
 test('raw JSON edits are dirty and participate in unified undo/redo', async ({ page }) => {
   await replaceJson(page, editedDiagram);
   await expect(signalRow(page, 'safe_bus')).toBeVisible();
@@ -584,7 +631,9 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await page.keyboard.insertText('{"signal": [');
   await page.waitForTimeout(500);
 
-  await expect(page.getByText('Invalid JSON syntax', { exact: true })).toBeVisible();
+  await expect(page.locator('[role="alert"]').filter({
+    hasText: 'Invalid JSON/JSON5 syntax',
+  })).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);

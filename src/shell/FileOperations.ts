@@ -1,9 +1,7 @@
 import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
-import { toWavedromJSON } from '../wavedromBridge';
 import {
   fromUndulateJSON,
   isUndulateJSON,
-  toUndulateJSON,
   validateUndulateJSON,
   type UndulateRoot,
 } from '../undulateBridge';
@@ -14,6 +12,14 @@ import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
 import { recordRecentFile } from './soloDesk/recentFiles';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
+import {
+  diagramToCodeStringForFormat,
+  type DiagramCodeFormat,
+} from '../codePanel/codeSync';
+import {
+  json5SyntaxError,
+  parseJSON5Source,
+} from '../codePanel/json5Source';
 import { vcdToWavedromJSON } from '../importers/vcd';
 
 type FilePickerWindow = Window & {
@@ -45,7 +51,7 @@ function detectJSONFormat(value: unknown): JSONFileFormat {
     : 'wavedrom-json';
 }
 
-function parseDiagramJSON(value: unknown): {
+function parseDiagramJSON(value: unknown, sourceText?: string): {
   diagram: DiagramState;
   format: JSONFileFormat;
 } | { error: string } {
@@ -55,11 +61,20 @@ function parseDiagramJSON(value: unknown): {
       ? validateUndulateJSON(value)
       : validateWavedromJSON(value);
   if (error) return { error };
+  const diagram =
+    format === 'undulate-json'
+      ? fromUndulateJSON(value as UndulateRoot)
+      : fromWavedromJSON(value as Parameters<typeof fromWavedromJSON>[0]);
+  if (sourceText !== undefined) {
+    diagram.compatibility = {
+      ...diagram.compatibility,
+      extensionsEnabled:
+        diagram.compatibility?.extensionsEnabled === true,
+      sourceText,
+    };
+  }
   return {
-    diagram:
-      format === 'undulate-json'
-        ? fromUndulateJSON(value as UndulateRoot)
-        : fromWavedromJSON(value as Parameters<typeof fromWavedromJSON>[0]),
+    diagram,
     format,
   };
 }
@@ -77,7 +92,11 @@ function parseDiagramFile(file: File, text: string): {
       format: 'wavedrom-json',
     };
   }
-  return parseDiagramJSON(JSON.parse(text) as unknown);
+  try {
+    return parseDiagramJSON(parseJSON5Source(text), text);
+  } catch (error) {
+    return { error: json5SyntaxError(error) };
+  }
 }
 
 function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
@@ -89,12 +108,10 @@ function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
 }
 
 function diagramBlob(diagram: DiagramState, format: JSONFileFormat): Blob {
-  const root =
-    format === 'undulate-json'
-      ? toUndulateJSON(diagram)
-      : toWavedromJSON(diagram);
+  const codeFormat: DiagramCodeFormat =
+    format === 'undulate-json' ? 'undulate' : 'wavedrom';
   return new Blob(
-    [JSON.stringify(root, null, 2)],
+    [diagramToCodeStringForFormat(diagram, codeFormat)],
     { type: 'application/json;charset=utf-8' },
   );
 }

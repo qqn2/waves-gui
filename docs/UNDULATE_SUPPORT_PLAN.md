@@ -403,7 +403,9 @@ Evidence:
 
 #### WIP — input formats
 
-- [ ] Relaxed JSON/JSONML comments and unquoted keys.
+- [x] Relaxed WaveDrom JSON5 comments, unquoted keys, single-quoted strings,
+  and trailing commas, with concrete-syntax preservation through supported
+  GUI edits and Save.
 - [ ] YAML input and output using a safe schema.
 - [ ] TOML input and output.
 - [ ] Opaque preservation of safe unknown declarative data.
@@ -1078,7 +1080,7 @@ fixture and an automated support classification before release.
 | Spacers | Yes | Native | Supported | Preserve |
 | Phase | Yes | Native | Supported | Preserve |
 | Period | Yes | Native | Supported | Preserve |
-| Gaps | Yes | Native | Supported | Preserve |
+| Gaps | Yes, bit/vector canvas and local render | Native | Supported | Preserve and verify image exports |
 | Glitches/repeated transitions | Yes | Native subset | Supported subset | Verify rendering |
 | Clock states | Yes | Native | Supported | Preserve |
 | Subcycle wave syntax | Yes | Native supported subset | Convert/verify | Keep bridge-specific |
@@ -1103,15 +1105,18 @@ fixture and an automated support classification before release.
 | Sub-Steps | Partial subcycle foundations | Convert if possible | Expand with fractional period | App-native timebase |
 | YAML input/output | No | N/A | Native Undulate format | Later adapter |
 | TOML input/output | No | N/A | Native Undulate format | Later adapter |
-| JSON-like comments | No; strict JSON only | Nonstandard | Undulate accepts JSON-like input | Later parser decision |
+| JSON-like comments | Yes; retained JSON5 CST source | Native supported syntax | Undulate accepts JSON-like input | Preserve comments; relocate orphans on deletion |
 | Register diagrams | Intentionally unsupported | N/A | Separate Undulate register context | Permanently out of scope |
 
 ## 9. Internal model evolution
 
 ### 9.1 General direction
 
-Do not store a raw Undulate document as the editor's source of truth. Evolve the
-internal model into a format-neutral superset and add adapters:
+Do not use a raw Undulate document as the editor's semantic source of truth.
+The format-neutral internal model remains authoritative, while the original
+JSON5 source text is retained as lossless concrete-syntax metadata and patched
+from the semantic model after GUI edits. Evolve the model and adapters as
+follows:
 
 ```text
 WaveDrom JSON  <-> wavedromBridge --+
@@ -1182,10 +1187,14 @@ Rules:
 4. Known properties must not also remain in `SourceExtras`.
 5. If native editing invalidates an opaque field, warn and remove only that
    field rather than silently emitting stale contradictory data.
-6. Cross-format export may not be able to preserve format-specific trivia such
-   as comments, whitespace, key ordering, or TOML structure.
+6. Same-format JSON5 editing preserves comments, local whitespace, quoting,
+   and key ordering where the corresponding syntax survives.
+7. A comment orphaned by intentional deletion is moved to the nearest
+   surviving container; comment text is never silently discarded.
+8. Cross-format export may not preserve JSON5 trivia or TOML/YAML structure.
 
-Lossless **semantic** round-trip is the target. Byte-for-byte round-trip is not.
+Lossless **semantic** round-trip plus retained JSON5 comments is the target.
+Byte-for-byte round-trip after a semantic edit is not.
 
 ## 10. Time model and Sub-Steps
 
@@ -1614,14 +1623,22 @@ existing WaveDrom object model and easiest to test.
 ### 16.3 JSON dialects
 
 Undulate accepts a relaxed JSON/JSONML-like dialect with comments and unquoted
-keys. The application must decide explicitly whether to:
+keys. The application now accepts the defined JSON5 grammar for both File Open
+and the code editor:
 
-- accept strict JSON only for `.json`;
-- accept JSON5 for `.json5` or a clearly described relaxed mode;
-- accept Undulate's exact preprocessing quirks.
+- strict JSON remains a valid subset;
+- `//` and block comments, unquoted keys, single quotes, and trailing commas
+  are accepted;
+- reserved prototype keys are rejected;
+- the exact source text is retained in undoable/autosaved compatibility
+  metadata;
+- a concrete-syntax updater patches supported GUI changes into that source;
+- comments that lose their original node through deletion are relocated to
+  the nearest surviving container.
 
-Recommendation: use a maintained parser with a defined grammar, not a set of
-regular expressions that attempts to reproduce Undulate's Python preprocessor.
+Implementation uses the MIT-licensed `jju` JSON5 tokenizer/updater with a
+browser-safe assertion shim. It does not use regular expressions to strip
+comments or attempt to reproduce executable preprocessing quirks.
 
 ### 16.4 YAML
 

@@ -3,7 +3,10 @@ import type { BitState, DiagramState } from './types';
 import { DEFAULT_STEPS } from './constants';
 import { createDefaultDiagram } from './defaultDiagram';
 import { toWavedromJSON } from '../wavedromBridge';
-import { diagramToCodeString } from '../codePanel/codeSync';
+import {
+  diagramToCodeString,
+  parseCodeToDiagram,
+} from '../codePanel/codeSync';
 import { useStore } from './store';
 
 function emptyDiagram(): DiagramState {
@@ -123,6 +126,42 @@ describe('useStore', () => {
     useStore.getState().redo();
     expect(useStore.getState().view.isDirty).toBe(true);
     expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
+  });
+
+  it('keeps retained JSON5 comments in undo and redo snapshots', () => {
+    const source = `{
+  signal: [
+    // user clock note
+    { name: 'clk', wave: '01' },
+  ],
+}`;
+    const parsed = parseCodeToDiagram(source);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    useStore.getState().loadDiagram(parsed.diagram);
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type === 'group') return;
+
+    useStore.getState().renameSignal(signal.id, 'renamed');
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      '// user clock note',
+    );
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "name: 'renamed'",
+    );
+
+    useStore.getState().undo();
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "{ name: 'clk', wave: '01' }",
+    );
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      '// user clock note',
+    );
+
+    useStore.getState().redo();
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "name: 'renamed'",
+    );
   });
 
   it('applies extension-aware JSON edits without preserving deleted annotations', () => {

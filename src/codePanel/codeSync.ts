@@ -25,6 +25,11 @@ import type { WdRoot } from '../wavedromBridge';
 import type { UndulateRoot } from '../undulateBridge';
 import { scanExtensionContent } from '../shared/annotations';
 import type { DiagramState } from '../shared/types';
+import {
+  json5SyntaxError,
+  parseJSON5Source,
+  updateJSON5Source,
+} from './json5Source';
 
 export const CODE_DEBOUNCE_MS = 400;
 
@@ -43,12 +48,19 @@ export function diagramCodeFormat(diagram: DiagramState): DiagramCodeFormat {
     : 'wavedrom';
 }
 
-export function diagramToCodeString(diagram: DiagramState): string {
+export function diagramToCodeStringForFormat(
+  diagram: DiagramState,
+  format: DiagramCodeFormat,
+): string {
   const root =
-    diagramCodeFormat(diagram) === 'undulate'
+    format === 'undulate'
       ? toUndulateJSON(diagram)
       : toWavedromJSON(diagram);
-  return JSON.stringify(root, null, 2);
+  return updateJSON5Source(diagram.compatibility?.sourceText, root);
+}
+
+export function diagramToCodeString(diagram: DiagramState): string {
+  return diagramToCodeStringForFormat(diagram, diagramCodeFormat(diagram));
 }
 
 export interface ParseCodeOptions {
@@ -60,7 +72,7 @@ export function detectCodeFormat(
   options: ParseCodeOptions = {},
 ): DiagramCodeFormat {
   try {
-    return isUndulateJSON(JSON.parse(code)) || options.preferUndulate
+    return isUndulateJSON(parseJSON5Source(code)) || options.preferUndulate
       ? 'undulate'
       : 'wavedrom';
   } catch {
@@ -75,9 +87,9 @@ export function validateCodeString(
 ): string | null {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(code);
-  } catch {
-    return 'Invalid JSON syntax';
+    parsed = parseJSON5Source(code);
+  } catch (error) {
+    return json5SyntaxError(error);
   }
   return isUndulateJSON(parsed) || options.preferUndulate
     ? validateUndulateJSON(parsed)
@@ -94,9 +106,9 @@ export function parseCodeToDiagram(
 ): ApplyCodeResult {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(code);
-  } catch {
-    return { ok: false, error: 'Invalid JSON syntax' };
+    parsed = parseJSON5Source(code);
+  } catch (error) {
+    return { ok: false, error: json5SyntaxError(error) };
   }
   const undulate = isUndulateJSON(parsed) || options.preferUndulate;
   const err = undulate
@@ -106,6 +118,14 @@ export function parseCodeToDiagram(
   const diagram = undulate
     ? fromUndulateJSON(parsed as UndulateRoot)
     : fromWavedromJSON(parsed as WdRoot);
+  diagram.compatibility = {
+    ...diagram.compatibility,
+    extensionsEnabled:
+      diagram.compatibility?.extensionsEnabled === true || (
+        undulate && options.preferUndulate === true
+      ),
+    sourceText: code,
+  };
   if (undulate && options.preferUndulate && diagram.compatibility) {
     diagram.compatibility.extensionsEnabled = true;
   }

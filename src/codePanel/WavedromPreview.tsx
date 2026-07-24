@@ -4,6 +4,7 @@ import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
 import { useStore } from '../shared/store';
 import { toWavedromJSON } from '../wavedromBridge';
 import { parseCodeToDiagram, type DiagramCodeFormat } from './codeSync';
+import { parseJSON5Source } from './json5Source';
 import styles from './CodePanel.module.css';
 
 const SKIN_LOADERS: Record<string, () => Promise<unknown>> = {
@@ -83,7 +84,9 @@ export function WavedromPreview({
           }
           parsed = toWavedromJSON(result.diagram);
         } else {
-          parsed = JSON.parse(code) as { config?: { skin?: string } };
+          parsed = parseJSON5Source(code) as {
+            config?: { skin?: string };
+          };
         }
 
         const skinName = parsed.config?.skin ?? 'default';

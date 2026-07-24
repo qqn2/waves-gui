@@ -232,6 +232,17 @@ function svgVectorSignal(
       );
     }
   }
+
+  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapFill = esc(themeColor('--bg-canvas', '#121212'));
+  const gaps = signal.stepGaps ?? [];
+  for (let i = 0; i < gaps.length; i++) {
+    if (!gaps[i]) continue;
+    const x1 = stepLogicalX(signal, i) * hscale;
+    const x2 = stepLogicalXEnd(signal, i) * hscale;
+    parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
+  }
+
   return parts.join('\n');
 }
 
