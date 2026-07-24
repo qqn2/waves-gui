@@ -161,7 +161,11 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
   return (
     <div className={styles.editorWrap}>
       <div ref={containerRef} className={styles.editor} />
-      <div className={`${styles.statusBar} ${statusClass}`}>
+      <div
+        className={`${styles.statusBar} ${statusClass}`}
+        role={error ? 'alert' : 'status'}
+        aria-live="polite"
+      >
         {error ? error : '✓ Valid'}
       </div>
     </div>

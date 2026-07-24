@@ -1,0 +1,35 @@
+{
+  "signal": [
+    {
+      "name": "clock",
+      "wave": "hMi",
+      "repeat": 4,
+      "periods": [1, 2, 1],
+      "duty_cycles": [0.5, 0.25, 0.75],
+      "slewing": 2,
+      "stroke": "#336699",
+      "future_lane": true
+    },
+    {
+      "name": "analogue-expression",
+      "wave": "s",
+      "analogue": ["0.5*VDDA"]
+    }
+  ],
+  "edges": ["clock.a -> clock.b"],
+  "reg": [],
+  "future_root": true,
+  "config": {
+    "vscale": 2,
+    "future_config": true
+  },
+  "annotations": [
+    {
+      "shape": "->",
+      "from": "clock.a",
+      "to": "clock.b",
+      "font-size": "12px",
+      "future_annotation": true
+    }
+  ]
+}

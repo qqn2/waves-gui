@@ -6,6 +6,7 @@ import type { UndulateRoot } from './types';
 import {
   fromUndulateJSON,
   toUndulateJSON,
+  validateUndulateFindings,
   validateUndulateJSON,
 } from './undulateJSON';
 
@@ -119,7 +120,7 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: 'box', x: 1 }],
-    })).toContain('Unsupported Undulate annotation shape');
+    })).toContain('[WIP] annotations[0].shape');
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: '|', x: Number.NaN }],
@@ -158,7 +159,7 @@ describe('Undulate JSON bridge', () => {
         analogue: [
           0.6,
           1.2,
-          [[0, 1.2], [2, 0.4]],
+          [[0, 1.2], [1, 0.4]],
         ],
         slewing: 32,
         vscale: 2,
@@ -218,6 +219,89 @@ describe('Undulate JSON bridge', () => {
         analogue: [0.5],
         stroke: '#f00',
       }],
-    })).toContain('Unsupported Undulate analogue field: stroke');
+    })).toContain('[WIP] signal[0].stroke');
+  });
+
+  it('reports every known WIP and unknown property without accepting loss', () => {
+    const findings = validateUndulateFindings({
+      signal: [{
+        name: 'clk',
+        wave: 'p',
+        repeat: 8,
+        duty_cycles: [0.5],
+        typo_style: '#f00',
+      }],
+      edges: ['a->b'],
+      future_root: true,
+    });
+
+    expect(findings.map((finding) => [finding.kind, finding.path])).toEqual([
+      ['wip', 'signal[0].repeat'],
+      ['wip', 'signal[0].duty_cycles'],
+      ['unknown', 'signal[0].typo_style'],
+      ['wip', 'edges'],
+      ['unknown', 'future_root'],
+    ]);
+  });
+
+  it('classifies the pinned blocked-feature fixture in one pass', () => {
+    const root = JSON.parse(readFileSync(
+      join(process.cwd(), 'tests/fixtures/undulate/blocked-features.json'),
+      'utf8',
+    )) as unknown;
+    const findings = validateUndulateFindings(root);
+
+    expect(new Set(findings.map((finding) => finding.kind))).toEqual(new Set([
+      'wip',
+      'unsupported-by-design',
+      'unknown',
+    ]));
+    expect(findings.map((finding) => finding.path)).toEqual(
+      expect.arrayContaining([
+        'edges',
+        'reg',
+        'future_root',
+        'signal[0].repeat',
+        'signal[0].periods',
+        'signal[0].duty_cycles',
+        'signal[0].slewing',
+        'signal[0].stroke',
+        'signal[0].future_lane',
+        'signal[0].wave',
+        'signal[1].analogue[0]',
+        'config.vscale',
+        'config.future_config',
+        'annotations[0].shape',
+        'annotations[0].from',
+        'annotations[0].to',
+        'annotations[0].font-size',
+        'annotations[0].future_annotation',
+      ]),
+    );
+  });
+
+  it('rejects normalization and truncation losses before import', () => {
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'curve',
+        wave: 'a',
+        analogue: [[[0, 0], [2, 1]]],
+      }],
+    })).toContain('implicit time normalization is not lossless');
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'curve',
+        wave: 's',
+        analogue: [1_000_000_001],
+      }],
+    })).toContain('within ±1000000000');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{
+        text: 'x'.repeat(2001),
+        x: 0,
+        y: 0,
+      }],
+    })).toContain('maximum is 2000');
   });
 });

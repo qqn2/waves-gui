@@ -593,6 +593,32 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await expect(steps).toHaveValue(before);
 });
 
+test('WIP and unknown Undulate properties report together without data loss', async ({ page }) => {
+  const steps = page.getByLabel('Diagram step count');
+  const before = await steps.inputValue();
+  await replaceJson(page, JSON.stringify({
+    signal: [{
+      name: 'blocked',
+      wave: 'p',
+      repeat: 8,
+      duty_cycles: [0.5],
+      future_lane: true,
+    }],
+    edges: ['a->b'],
+  }, null, 2));
+
+  const report = page.locator('[role="alert"]').filter({
+    hasText: '[WIP] signal[0].repeat',
+  });
+  await expect(report).toContainText('[WIP] signal[0].duty_cycles');
+  await expect(report).toContainText('Unknown Undulate property signal[0].future_lane');
+  await expect(report).toContainText('[WIP] edges');
+  await expect(signalRow(page, 'clk')).toBeVisible();
+  await expect(signalRow(page, 'blocked')).toHaveCount(0);
+  await expect(steps).toHaveValue(before);
+  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+});
+
 test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {
   await page.evaluate(() => {
     Object.defineProperty(window, 'showSaveFilePicker', {

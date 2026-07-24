@@ -134,6 +134,33 @@ describe('codeSync', () => {
     expect(result.diagram.compatibility?.extensionsEnabled).toBe(true);
     expect(result.diagram.compatibility?.sourceFormat).toBe('undulate-json');
   });
+
+  it('routes known WIP and unknown fields through loss-safe validation', () => {
+    const code = JSON.stringify({
+      signal: [{
+        name: 'clk',
+        wave: 'p',
+        repeat: 8,
+        unknown_lane_field: true,
+      }],
+      edges: ['a->b'],
+    });
+    expect(detectCodeFormat(code)).toBe('undulate');
+    const error = validateCodeString(code);
+    expect(error).toContain('[WIP] edges');
+    expect(error).toContain('[WIP] signal[0].repeat');
+    expect(error).toContain('Unknown Undulate property signal[0].unknown_lane_field');
+    expect(parseCodeToDiagram(code)).toEqual({
+      ok: false,
+      error,
+    });
+    const configOnly = JSON.stringify({
+      signal: [{ name: 'clk', wave: 'p' }],
+      config: { hscale: 1, vscale: 2 },
+    });
+    expect(detectCodeFormat(configOnly)).toBe('undulate');
+    expect(validateCodeString(configOnly)).toContain('[WIP] config.vscale');
+  });
 });
 
 describe('flushRegistry', () => {

@@ -338,18 +338,68 @@ layer. Existing behavior is not removed while the audit is completed.
 
 #### WIP — safety gate before new feature work
 
-- [ ] Complete known root-property manifest.
-- [ ] Complete digital-signal property manifest.
-- [ ] Complete analogue-signal property manifest.
-- [ ] Complete annotation shape/property manifest.
-- [ ] Structured multi-finding validator.
-- [ ] Unknown-property rejection.
-- [ ] WIP-property rejection.
-- [ ] Unsupported-by-design rejection.
-- [ ] Non-mutating File Open rejection report.
-- [ ] Non-mutating JSON editor rejection report.
-- [ ] Replace imported truncation/clamping with explicit invalid findings.
+- [x] Complete known root-property manifest.
+- [x] Complete digital-signal property manifest.
+- [x] Complete analogue-signal property manifest.
+- [x] Complete annotation shape/property manifest.
+- [x] Structured multi-finding validator.
+- [x] Unknown-property rejection.
+- [x] WIP-property rejection.
+- [x] Unsupported-by-design rejection.
+- [x] Non-mutating File Open rejection report.
+- [x] Non-mutating JSON editor rejection report.
+- [x] Replace identified imported truncation/clamping with explicit invalid
+  findings.
 - [ ] Pinned fixtures proving every known incomplete feature is blocked.
+
+##### Revision-pinned silent-loss safety gate
+
+Classification: Supported safety boundary
+
+Scope: classify known root, digital-signal, analogue-signal, configuration,
+and annotation properties from revision
+`c8da7d48c48fc0bbc90113b6913611132bd96c01`; collect all findings in source
+order; and reject the complete edit or file before import when any blocking
+finding exists.
+
+Acceptance:
+
+- [x] Known root manifest
+- [x] Known digital signal manifest
+- [x] Known analogue signal manifest
+- [x] Known annotation manifest
+- [x] Undulate-only detection without relying on annotations or analogue
+- [x] Ordered structured findings with stable object paths
+- [x] WIP classification
+- [x] Unsupported-by-design classification
+- [x] Invalid classification
+- [x] Unknown classification pinned to the source revision
+- [x] Non-mutating JSON editor rejection
+- [x] Non-mutating File Open rejection
+- [x] Accessible multi-line editor report
+- [x] Annotation count/text/coordinate limits reject before normalization
+- [x] Analogue value/slew/scale limits reject before normalization
+- [x] Lossy arbitrary sample-time normalization is blocked
+- [x] Pinned mixed negative fixture
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: `src/undulateBridge/validation.ts` owns the property
+  manifest, detection, ordered findings, structural limits, and legacy
+  string-report adapter. Import remains a separate operation reached only
+  after validation succeeds.
+- Tests: bridge coverage exercises every finding category and multi-finding
+  order; code-sync coverage proves blocked JSON is not parsed; File Open
+  coverage proves the current diagram, file name, and retained handle remain
+  unchanged.
+- Fixtures: `tests/fixtures/undulate/blocked-features.json` combines pinned
+  WIP, unsupported-by-design, and unknown families.
+- UX: the JSON status region announces and scrolls a readable multi-line
+  report; File Open displays the same complete report.
+- Remaining limitations: negative fixtures are not yet exhaustive for every
+  individual WIP value form, so the final safety-ledger fixture item remains
+  open.
 
 #### WIP — input formats
 

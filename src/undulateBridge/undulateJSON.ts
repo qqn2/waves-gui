@@ -9,13 +9,8 @@ import { normalizeDiagram } from '../shared/normalizeDiagram';
 import {
   DEFAULT_ANALOGUE_MAX,
   DEFAULT_ANALOGUE_MIN,
-  MAX_ANALOGUE_SAMPLES_PER_CELL,
 } from '../shared/analogue';
 import {
-  isSafeAnnotationColor,
-  isSafeAnnotationDasharray,
-  isSafeAnnotationStrokeWidth,
-  MAX_ANNOTATION_COORDINATE,
 } from '../shared/annotations';
 import type {
   AnnotationStyle,
@@ -26,11 +21,7 @@ import type {
   Signal,
   SignalOrGroup,
 } from '../shared/types';
-import {
-  fromWavedromJSON,
-  toWavedromJSON,
-  validateWavedromJSON,
-} from '../wavedromBridge';
+import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
 import type {
   UndulateAnalogueValue,
   UndulateAnnotation,
@@ -42,8 +33,13 @@ import type {
   WdSignalEntry,
 } from '../wavedromBridge';
 
-export const UNDULATE_TARGET_REVISION =
-  'c8da7d48c48fc0bbc90113b6913611132bd96c01';
+export {
+  UNDULATE_TARGET_REVISION,
+  isUndulateJSON,
+  validateUndulateFindings,
+  validateUndulateJSON,
+} from './validation';
+import { UNDULATE_TARGET_REVISION } from './validation';
 
 function annotationStyleToUndulate(
   style: AnnotationStyle | undefined,
@@ -170,261 +166,6 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   }
   if (annotations.length > 0) root.annotations = annotations;
   return root;
-}
-
-function isWdGroup(entry: unknown): entry is [string, ...unknown[]] {
-  return Array.isArray(entry) && typeof entry[0] === 'string';
-}
-
-function visitRawSignals(
-  entries: unknown[],
-  visit: (signal: Record<string, unknown>) => string | null,
-): string | null {
-  for (const entry of entries) {
-    if (isWdGroup(entry)) {
-      const error = visitRawSignals(entry.slice(1), visit);
-      if (error) return error;
-    } else if (
-      typeof entry === 'object'
-      && entry !== null
-      && !Array.isArray(entry)
-      && Object.keys(entry).length > 0
-    ) {
-      const error = visit(entry as Record<string, unknown>);
-      if (error) return error;
-    }
-  }
-  return null;
-}
-
-export function isUndulateJSON(value: unknown): value is UndulateRoot {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-  const root = value as { annotations?: unknown; signal?: unknown };
-  if (Object.prototype.hasOwnProperty.call(root, 'annotations')) return true;
-  if (!Array.isArray(root.signal)) return false;
-  return visitRawSignals(
-    root.signal,
-    (signal) => (
-      Object.prototype.hasOwnProperty.call(signal, 'analogue') ? 'found' : null
-    ),
-  ) === 'found';
-}
-
-function isFinitePointList(value: unknown): value is Array<[number, number]> {
-  return (
-    Array.isArray(value)
-    && value.length > 0
-    && value.length <= MAX_ANALOGUE_SAMPLES_PER_CELL
-    && value.every(
-      (point) => (
-        Array.isArray(point)
-        && point.length === 2
-        && typeof point[0] === 'number'
-        && Number.isFinite(point[0])
-        && typeof point[1] === 'number'
-        && Number.isFinite(point[1])
-      ),
-    )
-  );
-}
-
-function validateAnalogueSignal(signal: Record<string, unknown>): string | null {
-  if (signal.analogue === undefined) return null;
-  const supportedFields = new Set([
-    'name',
-    'wave',
-    'analogue',
-    'repeat',
-    'slewing',
-    'vscale',
-    'overlay',
-    'order',
-    'period',
-    'phase',
-    'node',
-  ]);
-  const unsupportedField = Object.keys(signal).find(
-    (field) => !supportedFields.has(field),
-  );
-  if (unsupportedField) {
-    return `Unsupported Undulate analogue field: ${unsupportedField}`;
-  }
-  if (!Array.isArray(signal.analogue)) {
-    return 'Undulate analogue must be an array';
-  }
-  if (typeof signal.wave !== 'string') {
-    return 'Undulate analogue signal requires a wave string';
-  }
-  const repeat = signal.repeat ?? 1;
-  if (
-    typeof repeat !== 'number'
-    || !Number.isInteger(repeat)
-    || repeat < 1
-    || repeat > 10_000
-  ) {
-    return 'Undulate analogue repeat must be an integer from 1 to 10000';
-  }
-  const expandedWave = signal.wave.repeat(repeat);
-  const consumingKinds = [...expandedWave].filter((char) => /[sca]/.test(char));
-  if (consumingKinds.length !== signal.analogue.length) {
-    return 'Undulate analogue value count must match s/c/a wave cells';
-  }
-  for (let index = 0; index < consumingKinds.length; index++) {
-    const kind = consumingKinds[index]!;
-    const value = signal.analogue[index];
-    if (kind === 'a') {
-      if (!isFinitePointList(value)) {
-        return 'Undulate arbitrary analogue cells require finite [time, value] points';
-      }
-    } else if (typeof value !== 'number' || !Number.isFinite(value)) {
-      return 'Undulate step/capacitive values must be finite numbers; expressions are not executed';
-    }
-  }
-  for (const field of ['slewing', 'vscale']) {
-    const value = signal[field];
-    if (
-      value !== undefined
-      && (typeof value !== 'number' || !Number.isFinite(value))
-    ) {
-      return `Undulate ${field} must be a finite number`;
-    }
-  }
-  if (
-    signal.overlay !== undefined
-    && typeof signal.overlay !== 'boolean'
-  ) {
-    return 'Undulate overlay must be a boolean';
-  }
-  if (
-    signal.order !== undefined
-    && (
-      typeof signal.order !== 'number'
-      || !Number.isInteger(signal.order)
-      || signal.order < 0
-      || signal.order > 4
-    )
-  ) {
-    return 'Undulate order must be an integer from 0 to 4';
-  }
-  return null;
-}
-
-function waveDromValidationView(root: UndulateRoot): UndulateRoot {
-  const clone = JSON.parse(JSON.stringify(root)) as UndulateRoot;
-  if (Array.isArray(clone.signal)) {
-    visitRawSignals(clone.signal, (signal) => {
-      if (signal.analogue !== undefined && typeof signal.wave === 'string') {
-        signal.wave = signal.wave.replace(/[sca mMlLhH]/g, '.');
-      }
-      return null;
-    });
-  }
-  return clone;
-}
-
-export function validateUndulateJSON(value: unknown): string | null {
-  if (typeof value !== 'object' || value === null) {
-    return validateWavedromJSON(value);
-  }
-  const waveError = validateWavedromJSON(
-    waveDromValidationView(value as UndulateRoot),
-  );
-  if (waveError) return waveError;
-  const analogueError = visitRawSignals(
-    (value as UndulateRoot).signal,
-    validateAnalogueSignal,
-  );
-  if (analogueError) return analogueError;
-  const root = value as { annotations?: unknown };
-  if (root.annotations === undefined) return null;
-  if (!Array.isArray(root.annotations)) return 'annotations must be an array';
-  const styleFields = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray'];
-  const textFields = new Set(['text', 'x', 'y', ...styleFields]);
-  const verticalFields = new Set(['shape', 'x', ...styleFields]);
-  const horizontalFields = new Set(['shape', 'y', ...styleFields]);
-  for (const annotation of root.annotations) {
-    if (typeof annotation !== 'object' || annotation === null) {
-      return 'Invalid Undulate annotation';
-    }
-    const record = annotation as Record<string, unknown>;
-    const wipField = Object.keys(record).find((field) => (
-      ['from', 'to', 'dx', 'dy', 'font-size', 'text_background'].includes(field)
-    ));
-    if (wipField) {
-      return `[WIP] Undulate annotation ${wipField} is planned but not supported yet`;
-    }
-    const fields =
-      record.shape === '|' || record.shape === '||' ? verticalFields
-        : record.shape === '-' ? horizontalFields
-          : textFields;
-    if (
-      record.shape !== undefined
-      && record.shape !== '|'
-      && record.shape !== '||'
-      && record.shape !== '-'
-    ) {
-      return `Unsupported Undulate annotation shape: ${String(record.shape)}`;
-    }
-    const unsupportedField = Object.keys(record).find(
-      (field) => !fields.has(field),
-    );
-    if (unsupportedField) {
-      return `Unsupported Undulate annotation field: ${unsupportedField}`;
-    }
-    for (const field of ['fill', 'stroke']) {
-      if (record[field] !== undefined && !isSafeAnnotationColor(record[field])) {
-        return `Undulate annotation ${field} must be a safe hex, rgb(), or rgba() color`;
-      }
-    }
-    if (
-      record['stroke-width'] !== undefined
-      && !isSafeAnnotationStrokeWidth(record['stroke-width'])
-    ) {
-      return 'Undulate annotation stroke-width must be a finite number from 0 to 32';
-    }
-    if (
-      record['stroke-dasharray'] !== undefined
-      && !isSafeAnnotationDasharray(record['stroke-dasharray'])
-    ) {
-      return 'Undulate annotation stroke-dasharray must contain 1 to 16 finite values from 0 to 1000';
-    }
-    if (record.shape === '|' || record.shape === '||') {
-      if (
-        typeof record.x !== 'number'
-        || !Number.isFinite(record.x)
-        || Math.abs(record.x) > MAX_ANNOTATION_COORDINATE
-      ) {
-        return `Undulate ${record.shape === '||' ? 'global compression' : 'vertical line'} requires a finite x coordinate`;
-      }
-      continue;
-    }
-    if (record.shape === '-') {
-      if (
-        typeof record.y !== 'number'
-        || !Number.isFinite(record.y)
-        || Math.abs(record.y) > MAX_ANNOTATION_COORDINATE
-      ) {
-        return 'Undulate horizontal line requires a finite y coordinate';
-      }
-      continue;
-    }
-    if (typeof record.text !== 'string') {
-      return 'Undulate text annotation requires text';
-    }
-    if (
-      typeof record.x !== 'number'
-      || !Number.isFinite(record.x)
-      || Math.abs(record.x) > MAX_ANNOTATION_COORDINATE
-      || typeof record.y !== 'number'
-      || !Number.isFinite(record.y)
-      || Math.abs(record.y) > MAX_ANNOTATION_COORDINATE
-    ) {
-      return 'Undulate text annotation requires finite x and y coordinates';
-    }
-  }
-  return null;
 }
 
 function flattenRawSignals(entries: WdSignalEntry[]): WdSignal[] {

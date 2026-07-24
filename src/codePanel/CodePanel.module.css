@@ -132,8 +132,11 @@
 .statusBar {
   flex-shrink: 0;
   padding: 4px 8px;
+  max-height: 8lh;
+  overflow: auto;
   font-size: calc(11px * var(--ui-font-scale, 1));
   border-top: 1px solid var(--border, #333);
+  white-space: pre-wrap;
 }
 
 .statusOk {

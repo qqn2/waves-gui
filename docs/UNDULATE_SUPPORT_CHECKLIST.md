@@ -38,9 +38,8 @@ contract live in
 - [ ] Partial: ordinary digital WaveDrom-compatible lanes and timing are
   available in Undulate JSON, but Undulate-only digital states and timing
   arrays are not.
-- [ ] Unsupported: styled annotations/signals, global compression, Undulate
-  annotation arrows, long node identifiers, YAML, TOML, relaxed JSON/JSONML,
-  and opaque preservation.
+- [ ] Unsupported: styled signals, Undulate annotation arrows, long node
+  identifiers, YAML, TOML, relaxed JSON/JSONML, and opaque preservation.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
   expressions.
 
@@ -58,6 +57,10 @@ contract live in
   each other without a WaveDrom-only conversion.
 - [x] Supported Undulate content participates in dirty-state tracking,
   autosave, undo, and redo.
+- [x] Known WIP, unsupported-by-design, invalid, and unknown Undulate
+  properties are rejected before import instead of being silently discarded.
+- [x] JSON editor and File Open rejection leave the current diagram, history,
+  dirty state, and retained file handle unchanged.
 
 ### Partial or unsupported
 
@@ -69,8 +72,9 @@ contract live in
 - [ ] Unsupported: preservation of comments, whitespace, source ordering, or
   other format trivia.
 - [ ] Unsupported: opaque preservation of unknown Undulate fields.
-- [ ] Round-trip risk: unknown fields on ordinary digital signals and unknown
-  top-level fields are not comprehensively rejected and may be dropped.
+- [x] Unknown fields on ordinary digital signals and unknown top-level fields
+  route through the Undulate classifier and are rejected with revision-pinned
+  object paths.
 
 Upstream references:
 [supported syntax](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/supported_syntax.rst),
@@ -110,8 +114,8 @@ Upstream references:
   extended path set as structured annotations.
 - [ ] Unsupported: the Undulate `edges` plural field. The shared WaveDrom
   `edge` field is supported.
-- [ ] Round-trip risk: a digital `edges` field may be accepted as an unknown
-  top-level property and then omitted.
+- [x] The plural `edges` field and known extended edge/node forms are detected
+  and rejected as WIP before import.
 
 Upstream references:
 [digital symbols](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step1.rst),
@@ -138,9 +142,9 @@ Upstream references:
 - [ ] Unsupported: digital/clock `slewing`.
 - [ ] Unsupported: a general fine-timing timebase or app-native Sub-Steps
   control.
-- [ ] Round-trip risk: digital `repeat`, `periods`, `duty_cycle`,
-  `duty_cycles`, and `slewing` are not comprehensively rejected and may be
-  silently dropped.
+- [x] Digital `repeat`, `periods`, `duty_cycle`, `duty_cycles`, and `slewing`
+  are comprehensively detected and rejected with WIP findings and stable
+  signal paths.
 
 Upstream reference:
 [period, duty cycle, phase, and repeat](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step5.rst).
@@ -187,11 +191,10 @@ Upstream reference:
   extended connector patterns.
 - [ ] Unsupported: `font-size` and other text styles.
 - [ ] Unsupported: `text_background`.
-- [ ] Unsupported: unknown annotation shapes or fields. These are explicitly
-  rejected and are not preserved opaquely.
-- [ ] Round-trip risk: over-limit annotation counts, text, coordinates, or
-  offsets are currently normalized or truncated rather than rejected before
-  import.
+- [ ] Unsupported: known but incomplete annotation shapes are rejected as WIP;
+  unrecognized fields are rejected as unknown and are not preserved opaquely.
+- [x] Over-limit annotation counts, text, and coordinates are rejected before
+  normalization can truncate or clamp them.
 
 Upstream references:
 [annotation tutorial](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_ann_step2.rst),
@@ -222,15 +225,16 @@ Upstream references:
 
 ### Partial
 
-- [ ] Partial: analogue `repeat` is expanded on import rather than preserved
-  and emitted as `repeat`.
-- [ ] Partial: sampled `a` cell times are normalized into the inclusive 0..1
-  cell range; the original absolute time coordinates are not retained.
+- [ ] Partial: analogue `repeat` is recognized but rejected as WIP until its
+  expansion has a proven semantic-equivalence and export contract.
+- [ ] Partial: sampled `a` cells are accepted only when their time coordinates
+  already use the lossless inclusive 0..1 cell range. Other finite timebases
+  are rejected until an explicit conversion model exists.
 - [ ] Partial: imported voltage context defaults to 0..1.8 because upstream
   `VDDA`/`VSSA` context is not represented in the source bridge.
-- [ ] Partial: analogue values are clamped to the app's finite
-  ±1,000,000,000 range; negative slew becomes zero and `vscale` is clamped to
-  0.25..16.
+- [x] Imported analogue values outside ±1,000,000,000, negative slew, and
+  `vscale` outside 0.25..16 are rejected before normalization; GUI-authored
+  values may still use bounded controls.
 - [ ] Partial: overlays are inferred from consecutive analogue lanes; there is
   no explicit overlay-group object or polished ambiguous-curve picker.
 - [ ] Partial: the upstream four-wave overlay limit is not enforced as an
@@ -339,7 +343,7 @@ Upstream reference:
 
 ## 10. Highest-priority gaps
 
-- [ ] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
+- [x] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
   and digital-signal fields, especially `edges`, `repeat`, `periods`,
   `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
 - [ ] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned

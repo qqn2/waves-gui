@@ -160,4 +160,49 @@ describe('FileOperations', () => {
       name: 'vin',
     });
   });
+
+  it('rejects WIP file content without mutating the open document or handle', async () => {
+    const firstFile = new File([
+      JSON.stringify({ signal: [{ name: 'kept', wave: '01' }] }),
+    ], 'kept.json', { type: 'application/json' });
+    const firstHandle = {
+      name: 'kept.json',
+      getFile: vi.fn().mockResolvedValue(firstFile),
+      createWritable: vi.fn(),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn()
+      .mockResolvedValueOnce([firstHandle]);
+    await openDiagramFile();
+    const before = useStore.getState().diagram;
+
+    const blockedFile = new File([
+      JSON.stringify({
+        signal: [{
+          name: 'lost',
+          wave: 'p',
+          repeat: 8,
+          duty_cycles: [0.5],
+        }],
+      }),
+    ], 'blocked.json', { type: 'application/json' });
+    const blockedHandle = {
+      name: 'blocked.json',
+      getFile: vi.fn().mockResolvedValue(blockedFile),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn()
+      .mockResolvedValueOnce([blockedHandle]);
+    const alert = vi.fn();
+    Object.defineProperty(window, 'alert', {
+      configurable: true,
+      value: alert,
+      writable: true,
+    });
+
+    await openDiagramFile();
+
+    expect(alert).toHaveBeenCalledWith(expect.stringContaining('[WIP] signal[0].repeat'));
+    expect(alert).toHaveBeenCalledWith(expect.stringContaining('signal[0].duty_cycles'));
+    expect(useStore.getState().diagram).toBe(before);
+    expect(useStore.getState().view.fileName).toBe('kept.json');
+  });
 });

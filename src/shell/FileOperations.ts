@@ -2,6 +2,7 @@ import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { toWavedromJSON } from '../wavedromBridge';
 import {
   fromUndulateJSON,
+  isUndulateJSON,
   toUndulateJSON,
   validateUndulateJSON,
   type UndulateRoot,
@@ -38,29 +39,8 @@ export function forgetCurrentFileHandle(): void {
 
 type JSONFileFormat = NonNullable<typeof retainedFileFormat>;
 
-function containsUndulateSignal(entries: unknown): boolean {
-  if (!Array.isArray(entries)) return false;
-  return entries.some((entry) => {
-    if (Array.isArray(entry)) return containsUndulateSignal(entry.slice(1));
-    return (
-      typeof entry === 'object'
-      && entry !== null
-      && Object.prototype.hasOwnProperty.call(entry, 'analogue')
-    );
-  });
-}
-
 function detectJSONFormat(value: unknown): JSONFileFormat {
-  return (
-    typeof value === 'object'
-    && value !== null
-    && (
-      Object.prototype.hasOwnProperty.call(value, 'annotations')
-      || containsUndulateSignal(
-        (value as { signal?: unknown }).signal,
-      )
-    )
-  )
+  return isUndulateJSON(value)
     ? 'undulate-json'
     : 'wavedrom-json';
 }
