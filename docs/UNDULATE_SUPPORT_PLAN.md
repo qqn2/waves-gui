@@ -4,7 +4,7 @@ Status: design and implementation plan
 
 Audience: maintainers and future contributors
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
 Target application: `waves-gui`
 
@@ -1547,12 +1547,12 @@ assumptions:
 
 Before beginning Phase 1:
 
-- [ ] Choose and pin the initial Undulate target revision.
+- [x] Choose and pin the initial Undulate target revision.
 - [ ] Add a license/attribution note for imported upstream fixtures.
-- [ ] Create synthetic fixtures for each planned feature.
+- [x] Create synthetic fixtures for each implemented feature.
 - [ ] Decide the native project file contract.
-- [ ] Specify `DiagramState` version 2 migration behavior.
-- [ ] Specify compatibility finding types and UI language.
+- [x] Specify `DiagramState` version 2 migration behavior.
+- [x] Specify compatibility finding types and UI language.
 - [ ] Decide maximum input and timebase limits provisionally.
 - [ ] Verify current exported WaveJSON with the pinned Undulate CLI.
 - [ ] Record exact handling of `edge` versus `edges`.
@@ -1561,15 +1561,15 @@ Before beginning Phase 1:
 
 Before releasing any extension feature:
 
-- [ ] Import, export, and semantic round-trip tests pass.
+- [x] Import, export, and semantic round-trip tests pass for the implemented subset.
 - [ ] Golden renderer tests pass.
-- [ ] Existing WaveDrom tests pass unchanged or with reviewed migrations.
+- [x] Existing WaveDrom tests pass unchanged or with reviewed migrations.
 - [ ] Security fixtures pass.
-- [ ] Undo/redo and dirty-state behavior are covered.
-- [ ] Toggle-off behavior preserves extension data.
-- [ ] Compatibility report correctly classifies the feature.
-- [ ] Image export contains the feature.
-- [ ] Documentation names native versus translated support accurately.
+- [x] Undo/redo and dirty-state behavior are covered.
+- [x] Toggle-off behavior preserves extension data.
+- [x] Compatibility report correctly classifies the implemented features.
+- [x] Image export contains the implemented features.
+- [x] Documentation names native versus translated support accurately.
 - [ ] Privacy and CSP guarantees remain unchanged.
 
 ## 29. Suggested first implementation slice
