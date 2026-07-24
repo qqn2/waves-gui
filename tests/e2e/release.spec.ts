@@ -106,14 +106,16 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
 test('round-trips and renders Undulate extended digital states', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
   const wave = '01.zx=ud.2.3.45XziIzmzM';
-  await replaceJson(page, JSON.stringify({
-    signal: [{ name: 'digital', wave }],
-  }, null, 2));
+  await replaceJson(page, `{signal: [
+    {name: "digital", wave: "${wave}"}
+  ]}`);
 
   const preview = page.getByText('Undulate render (local)', { exact: true })
     .locator('..');
   await expect(signalRow(page, 'digital')).toBeVisible();
   await expect(page.locator('.cm-content')).toContainText(wave);
+  await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
+  await expect(page.locator('.cm-lintRange-error')).toHaveCount(0);
   await expect(preview.locator('path[data-wave-state="i"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="I"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="m"]')).toHaveCount(1);

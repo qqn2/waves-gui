@@ -53,6 +53,7 @@ export function CodePanel() {
             onChange={onCodeChange}
             onBlur={flushCodeToDiagram}
             error={error}
+            format={format}
           />
         </div>
       </div>
