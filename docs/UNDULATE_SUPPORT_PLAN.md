@@ -383,8 +383,8 @@ layer. Existing behavior is not removed while the audit is completed.
 
 #### WIP — annotations
 
-- [ ] Fractional text X coordinates.
-- [ ] Fractional and absolute annotation Y coordinates without snapping loss.
+- [x] Fractional annotation X coordinates.
+- [x] Fractional and absolute annotation Y coordinates without snapping loss.
 - [ ] Vertical-line `from` and `to` ranges.
 - [ ] Horizontal-line `from` and `to` ranges.
 - [x] Global time compression `shape: "||"` for the full waveform span.
@@ -395,6 +395,73 @@ layer. Existing behavior is not removed while the audit is completed.
 - [x] Bounded annotation `stroke-dasharray`.
 - [ ] Annotation font sizing.
 - [ ] Annotation `text_background`.
+
+##### Lossless annotation X/Y coordinates and direct positioning
+
+Classification: Supported
+
+Scope: preserve finite Undulate annotation `x` and `y` coordinates without
+integer-step or integer-pixel rounding. Existing tick/signal anchors remain
+available as an editing convenience. The inspector exposes exact coordinates
+and snap behavior; dragging a positioned annotation updates the same values.
+
+Acceptance:
+
+- [x] Detection and validation
+- [x] Lossless import
+- [x] Typed model and legacy normalization
+- [x] Main canvas and hit testing
+- [x] Inspector X/Y editing
+- [x] Direct dragging with one undo step
+- [x] Optional step snapping and fine movement
+- [x] Local render
+- [x] Undulate export and semantic round trip
+- [x] SVG/PNG/JPEG
+- [x] Negative and boundary fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: exact cell-unit `x` and row-unit `y` coordinates are carried
+  by typed annotations and shared by the Undulate bridge, layout, canvas, hit
+  testing, local render, and export.
+- Tests: fractional semantic round trips, layout, inspector controls, direct
+  dragging, single-step undo, keyboard nudging, SVG export, and browser release
+  coverage.
+- UX: X/Y fields, Diagram coordinate versus Signal anchor mode, per-annotation
+  step snapping, direct dragging, and arrow-key nudging with Shift for fine
+  movement.
+- Remaining limitations: ranged `from`/`to` geometry remains WIP.
+
+##### Local render navigation and compression clarity
+
+Classification: Supported
+
+Scope: make the browser-local render useful for detailed inspection through
+Fit, 100%, zoom, and scroll controls. Full-span `shape: "||"` must read as a
+time break rather than an ordinary pair of guide lines while retaining safe
+annotation styling.
+
+Acceptance:
+
+- [x] Fit mode
+- [x] 100% mode
+- [x] Zoom in/out
+- [x] Horizontal and vertical scrolling
+- [x] Theme/canvas background consistency
+- [x] Clear compression break geometry
+- [x] Safe style rendering
+- [x] Browser regression coverage
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: the local SVG preview applies intrinsic-width scaling inside
+  its scroll viewport; compression masks underlying waveform/grid pixels and
+  draws a solid styled double break.
+- Tests: SVG geometry/export tests and Chromium/Firefox preview-control
+  coverage.
+- UX: compact −, 100%, Fit, and + controls in the render header.
 
 ##### Global time compression — full-span subset
 

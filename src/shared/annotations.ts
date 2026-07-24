@@ -13,6 +13,7 @@ import type {
 export const MAX_ANNOTATIONS = 1000;
 export const MAX_ANNOTATION_TEXT_LENGTH = 2000;
 export const MAX_ANNOTATION_Y_OFFSET = 10_000;
+export const MAX_ANNOTATION_COORDINATE = 10_000;
 export const MAX_ANNOTATION_STROKE_WIDTH = 32;
 export const MAX_ANNOTATION_DASH_ITEMS = 16;
 export const MAX_ANNOTATION_DASH_VALUE = 1000;
@@ -84,17 +85,46 @@ function finiteInteger(value: unknown, fallback: number): number {
     : fallback;
 }
 
+function finiteCoordinate(
+  value: unknown,
+  min: number,
+  max: number,
+): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
+  return Math.max(min, Math.min(max, value));
+}
+
 export function normalizeTextAnnotation(
   value: Partial<TextAnnotation>,
   totalSteps: number,
 ): TextAnnotation {
   const maxTick = Math.max(0, totalSteps - 1);
-  const tick = Math.max(0, Math.min(maxTick, finiteInteger(value.tick, 0)));
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const tick = Math.max(
+    0,
+    Math.min(
+      maxTick,
+      x === undefined ? finiteInteger(value.tick, 0) : Math.round(x - 0.5),
+    ),
+  );
   const yOffset = Math.max(
     -MAX_ANNOTATION_Y_OFFSET,
     Math.min(MAX_ANNOTATION_Y_OFFSET, finiteInteger(value.yOffset, 0)),
   );
   const style = normalizeAnnotationStyle(value.style);
+  const y = finiteCoordinate(
+    value.y,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const coordinateMode =
+    value.coordinateMode === 'diagram' || value.coordinateMode === 'signal'
+      ? value.coordinateMode
+      : undefined;
 
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
@@ -104,6 +134,12 @@ export function normalizeTextAnnotation(
         ? value.text.slice(0, MAX_ANNOTATION_TEXT_LENGTH)
         : '',
     tick,
+    ...(x !== undefined ? { x } : {}),
+    ...(y !== undefined ? { y } : {}),
+    ...(coordinateMode ? { coordinateMode } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
     ...(typeof value.signalId === 'string' && value.signalId.length > 0
       ? { signalId: value.signalId }
       : {}),
@@ -117,13 +153,27 @@ export function normalizeVerticalLineAnnotation(
   totalSteps: number,
 ): VerticalLineAnnotation {
   const style = normalizeAnnotationStyle(value.style);
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'vertical-line',
     tick: Math.max(
       0,
-      Math.min(Math.max(0, totalSteps - 1), finiteInteger(value.tick, 0)),
+      Math.min(
+        Math.max(0, totalSteps - 1),
+        x === undefined
+          ? finiteInteger(value.tick, 0)
+          : Math.round(x - 0.5),
+      ),
     ),
+    ...(x !== undefined ? { x } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
     ...(style ? { style } : {}),
   };
 }
@@ -136,9 +186,20 @@ export function normalizeHorizontalLineAnnotation(
     Math.min(MAX_ANNOTATION_Y_OFFSET, finiteInteger(value.yOffset, 0)),
   );
   const style = normalizeAnnotationStyle(value.style);
+  const y = finiteCoordinate(
+    value.y,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const coordinateMode =
+    value.coordinateMode === 'diagram' || value.coordinateMode === 'signal'
+      ? value.coordinateMode
+      : undefined;
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'horizontal-line',
+    ...(y !== undefined ? { y } : {}),
+    ...(coordinateMode ? { coordinateMode } : {}),
     ...(typeof value.signalId === 'string' && value.signalId.length > 0
       ? { signalId: value.signalId }
       : {}),
@@ -152,13 +213,27 @@ export function normalizeGlobalCompressionAnnotation(
   totalSteps: number,
 ): GlobalCompressionAnnotation {
   const style = normalizeAnnotationStyle(value.style);
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'global-compression',
     tick: Math.max(
       0,
-      Math.min(Math.max(0, totalSteps - 1), finiteInteger(value.tick, 0)),
+      Math.min(
+        Math.max(0, totalSteps - 1),
+        x === undefined
+          ? finiteInteger(value.tick, 0)
+          : Math.round(x - 0.5),
+      ),
     ),
+    ...(x !== undefined ? { x } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
     ...(style ? { style } : {}),
   };
 }

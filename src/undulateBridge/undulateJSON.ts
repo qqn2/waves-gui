@@ -1,5 +1,9 @@
 import { nanoid } from 'nanoid';
 import { buildRowLayout } from '../renderer/rowLayout';
+import {
+  annotationXCells,
+  annotationYLogical,
+} from '../renderer/annotationLayout';
 import { ROW_HEIGHT } from '../shared/constants';
 import { normalizeDiagram } from '../shared/normalizeDiagram';
 import {
@@ -11,6 +15,7 @@ import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
   isSafeAnnotationStrokeWidth,
+  MAX_ANNOTATION_COORDINATE,
 } from '../shared/annotations';
 import type {
   AnnotationStyle,
@@ -69,16 +74,6 @@ function annotationStyleFromUndulate(
     style.strokeDasharray = annotation['stroke-dasharray'] as number[];
   }
   return Object.keys(style).length > 0 ? style : undefined;
-}
-
-function annotationLogicalY(
-  annotation: Extract<DiagramAnnotation, { type: 'text' | 'horizontal-line' }>,
-  rows: ReturnType<typeof buildRowLayout>,
-): number | null {
-  if (!annotation.signalId) return annotation.yOffset ?? 16;
-  const row = rows.find((candidate) => candidate.id === annotation.signalId);
-  if (!row) return null;
-  return row.y + row.height / 2 + (annotation.yOffset ?? 0);
 }
 
 function analogueToUndulateEntry(signal: Signal): WdSignal {
@@ -151,11 +146,11 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
     ) {
       annotations.push({
         shape: annotation.type === 'vertical-line' ? '|' : '||',
-        x: annotation.tick + 0.5,
+        x: annotationXCells(annotation),
         ...annotationStyleToUndulate(annotation.style),
       });
     } else {
-      const logicalY = annotationLogicalY(annotation, rows);
+      const logicalY = annotationYLogical(annotation, rows);
       if (logicalY === null) continue;
       if (annotation.type === 'horizontal-line') {
         annotations.push({
@@ -166,7 +161,7 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
       } else {
         annotations.push({
           text: annotation.text,
-          x: annotation.tick + 0.5,
+          x: annotationXCells(annotation),
           y: logicalY / ROW_HEIGHT,
           ...annotationStyleToUndulate(annotation.style),
         });
@@ -396,13 +391,21 @@ export function validateUndulateJSON(value: unknown): string | null {
       return 'Undulate annotation stroke-dasharray must contain 1 to 16 finite values from 0 to 1000';
     }
     if (record.shape === '|' || record.shape === '||') {
-      if (typeof record.x !== 'number' || !Number.isFinite(record.x)) {
+      if (
+        typeof record.x !== 'number'
+        || !Number.isFinite(record.x)
+        || Math.abs(record.x) > MAX_ANNOTATION_COORDINATE
+      ) {
         return `Undulate ${record.shape === '||' ? 'global compression' : 'vertical line'} requires a finite x coordinate`;
       }
       continue;
     }
     if (record.shape === '-') {
-      if (typeof record.y !== 'number' || !Number.isFinite(record.y)) {
+      if (
+        typeof record.y !== 'number'
+        || !Number.isFinite(record.y)
+        || Math.abs(record.y) > MAX_ANNOTATION_COORDINATE
+      ) {
         return 'Undulate horizontal line requires a finite y coordinate';
       }
       continue;
@@ -413,8 +416,10 @@ export function validateUndulateJSON(value: unknown): string | null {
     if (
       typeof record.x !== 'number'
       || !Number.isFinite(record.x)
+      || Math.abs(record.x) > MAX_ANNOTATION_COORDINATE
       || typeof record.y !== 'number'
       || !Number.isFinite(record.y)
+      || Math.abs(record.y) > MAX_ANNOTATION_COORDINATE
     ) {
       return 'Undulate text annotation requires finite x and y coordinates';
     }
@@ -522,10 +527,6 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     diagram.config.totalSteps,
     ...parsedSignals.map((signal) => signal.analogueCells?.length ?? 0),
   );
-  const rows = buildRowLayout(diagram.signals);
-  const laneRows = rows.filter(
-    (row) => row.type === 'bit' || row.type === 'vector',
-  );
   const annotations = (root.annotations ?? []).map((annotation): DiagramAnnotation => {
     const style = annotationStyleFromUndulate(
       annotation as unknown as Record<string, unknown>,
@@ -541,47 +542,33 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
             ? 'vertical-line'
             : 'global-compression',
         tick: Math.round(annotation.x - 0.5),
+        x: annotation.x,
+        snapToGrid: false,
         ...(style ? { style } : {}),
       };
     }
-    const logicalY = annotation.y * ROW_HEIGHT;
-    const row = laneRows.find(
-      (candidate) => (
-        logicalY >= candidate.y
-        && logicalY <= candidate.y + candidate.height
-      ),
-    );
     if ('shape' in annotation && annotation.shape === '-') {
       const base: HorizontalLineAnnotation = {
         id: nanoid(),
         type: 'horizontal-line',
+        y: annotation.y,
+        coordinateMode: 'diagram',
         ...(style ? { style } : {}),
       };
-      return row
-        ? {
-            ...base,
-            signalId: row.id,
-            yOffset: logicalY - (row.y + row.height / 2),
-          }
-        : { ...base, yOffset: logicalY };
+      return base;
     }
     const base = {
       id: nanoid(),
       type: 'text' as const,
       text: annotation.text,
       tick: Math.round(annotation.x - 0.5),
+      x: annotation.x,
+      y: annotation.y,
+      coordinateMode: 'diagram' as const,
+      snapToGrid: false,
       ...(style ? { style } : {}),
     };
-    return row
-      ? {
-          ...base,
-          signalId: row.id,
-          yOffset: logicalY - (row.y + row.height / 2),
-        }
-      : {
-          ...base,
-          yOffset: logicalY,
-        };
+    return base;
   });
 
   return normalizeDiagram({

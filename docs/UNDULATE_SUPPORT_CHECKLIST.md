@@ -162,12 +162,15 @@ Upstream reference:
 - [x] Text is escaped in generated SVG.
 - [x] Supported annotations within the app's bounds round-trip through
   Undulate JSON.
+- [x] Fractional `x` and `y` coordinates are preserved through import,
+  inspector editing, local rendering, and Undulate export.
+- [x] Selected annotations can be dragged directly; arrow keys nudge and
+  Shift provides fine movement.
 
 ### Partial
 
-- [ ] Partial: imported `x` positions snap to the app's integer step grid.
-- [ ] Partial: `y` is converted to a signal-relative or diagram-relative
-  logical offset and normalized to integer pixels.
+- [ ] Partial: step snapping remains the default for annotations created in
+  the GUI, but can be disabled per annotation.
 - [ ] Partial: annotations are limited to 1000 objects and text is limited to
   2000 characters.
 - [ ] Partial: line annotations always span the app's full relevant canvas;
@@ -279,6 +282,7 @@ Upstream references:
 
 - [x] Interactive browser canvas rendering.
 - [x] Browser-local preview of the current Undulate JSON subset.
+- [x] Local preview Fit, 100%, zoom, and scroll navigation.
 - [x] SVG export from the app renderer.
 - [x] PNG export at 1x, 2x, and 3x.
 - [x] JPEG export at 1x, 2x, and 3x.

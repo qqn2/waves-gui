@@ -123,6 +123,18 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         return;
       }
 
+      if (
+        e.key === 'ArrowLeft'
+        || e.key === 'ArrowRight'
+        || e.key === 'ArrowUp'
+        || e.key === 'ArrowDown'
+      ) {
+        if (select.nudgeSelectedAnnotation(e.key, e.shiftKey)) {
+          e.preventDefault();
+          return;
+        }
+      }
+
       if (e.key === 'v' || e.key === 'V') {
         if (e.ctrlKey || e.metaKey) return;
         setTool('cursor');

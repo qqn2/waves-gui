@@ -156,6 +156,12 @@ export interface TextAnnotation {
   text: string;
   /** Integer document tick. Version 2 currently uses one tick per major step. */
   tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
+  snapToGrid?: boolean;
   /** Optional semantic row anchor. */
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
@@ -168,12 +174,18 @@ export interface VerticalLineAnnotation {
   type: 'vertical-line';
   /** Integer document tick. The line is centered on this step. */
   tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
   style?: AnnotationStyle;
 }
 
 export interface HorizontalLineAnnotation {
   id: string;
   type: 'horizontal-line';
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
   /** Optional semantic row anchor. */
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
@@ -186,6 +198,9 @@ export interface GlobalCompressionAnnotation {
   type: 'global-compression';
   /** Integer document tick. The compression marker is centered on this step. */
   tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
   style?: AnnotationStyle;
 }
 

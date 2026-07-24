@@ -73,7 +73,7 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
       },
     ],
     annotations: [
-      { text: 'Settled', x: 1.5, y: 0.5, fill: '#123456' },
+      { text: 'Settled', x: 1.125, y: 0.375, fill: '#123456' },
       { shape: '|', x: 2.5 },
       {
         shape: '||',
@@ -89,8 +89,18 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(preview.locator('svg')).toContainText('Settled');
   await expect(editor).toContainText('"slewing": 4');
   await expect(editor).toContainText('"shape": "||"');
+  await expect(editor).toContainText('"x": 1.125');
+  await expect(editor).toContainText('"y": 0.375');
   await expect(preview.locator('text[fill="#123456"]')).toContainText('Settled');
   await expect(preview.locator('line[stroke="#ff0000"]')).toHaveCount(2);
+
+  const renderScale = page.getByLabel('Local render scale controls');
+  await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
+    .toHaveAttribute('aria-pressed', 'true');
+  await renderScale.getByRole('button', { name: '100%', exact: true }).click();
+  await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
+  await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
+  await expect(preview.locator('svg')).toHaveCSS('max-width', '100%');
 });
 
 test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {

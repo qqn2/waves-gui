@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { buildSVGString } from '../exportEngine/exportSVG';
 import { sanitizeDetachedSvg } from '../security/sanitizeSvg';
 import { useStore } from '../shared/store';
@@ -32,6 +32,9 @@ export function WavedromPreview({
   const extensionsEnabled = useStore(
     (state) => state.diagram.compatibility?.extensionsEnabled === true,
   );
+  const [previewZoom, setPreviewZoom] = useState<'fit' | number>('fit');
+  const previewZoomRef = useRef<'fit' | number>(previewZoom);
+  previewZoomRef.current = previewZoom;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -75,6 +78,7 @@ export function WavedromPreview({
             sanitizeDetachedSvg(staging);
             if (cancelled) return;
             el.replaceChildren(...Array.from(staging.childNodes));
+            sizePreviewSvg(el, previewZoomRef.current);
             return;
           }
           parsed = toWavedromJSON(result.diagram);
@@ -92,6 +96,7 @@ export function WavedromPreview({
         sanitizeDetachedSvg(staging);
         if (cancelled) return;
         el.replaceChildren(...Array.from(staging.childNodes));
+        sizePreviewSvg(el, previewZoomRef.current);
       } catch {
         if (!cancelled) el.replaceChildren();
       }
@@ -111,14 +116,58 @@ export function WavedromPreview({
     theme,
   ]);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el) sizePreviewSvg(el, previewZoom);
+  }, [previewZoom]);
+
+  const changeZoom = (factor: number) => {
+    setPreviewZoom((current) => {
+      const base = current === 'fit' ? 1 : current;
+      return Math.max(0.25, Math.min(4, base * factor));
+    });
+  };
+
   return (
     <div className={styles.previewWrap}>
-      <div className={styles.previewLabel}>
+      <span className={styles.previewLabel}>
         {format === 'undulate' && extensionsEnabled
           ? 'Undulate render (local)'
           : format === 'undulate'
             ? 'WaveDrom compatibility render (local)'
           : 'WaveDrom render (local)'}
+      </span>
+      <div className={styles.previewControls} aria-label="Local render scale controls">
+        <button
+          type="button"
+          onClick={() => changeZoom(0.8)}
+          aria-label="Zoom local render out"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          className={previewZoom === 1 ? styles.previewControlActive : ''}
+          onClick={() => setPreviewZoom(1)}
+          aria-pressed={previewZoom === 1}
+        >
+          100%
+        </button>
+        <button
+          type="button"
+          className={previewZoom === 'fit' ? styles.previewControlActive : ''}
+          onClick={() => setPreviewZoom('fit')}
+          aria-pressed={previewZoom === 'fit'}
+        >
+          Fit
+        </button>
+        <button
+          type="button"
+          onClick={() => changeZoom(1.25)}
+          aria-label="Zoom local render in"
+        >
+          +
+        </button>
       </div>
       {error ? (
         <div className={styles.preview}>
@@ -129,4 +178,25 @@ export function WavedromPreview({
       )}
     </div>
   );
+}
+
+function sizePreviewSvg(
+  container: HTMLDivElement,
+  zoom: 'fit' | number,
+): void {
+  const svg = container.querySelector('svg');
+  if (!svg) return;
+  svg.style.height = 'auto';
+  if (zoom === 'fit') {
+    svg.style.width = '';
+    svg.style.maxWidth = '100%';
+    return;
+  }
+  const viewBoxWidth = svg.viewBox.baseVal.width;
+  const attributeWidth = Number.parseFloat(svg.getAttribute('width') ?? '');
+  const naturalWidth = viewBoxWidth || attributeWidth;
+  svg.style.maxWidth = 'none';
+  if (Number.isFinite(naturalWidth) && naturalWidth > 0) {
+    svg.style.width = `${naturalWidth * zoom}px`;
+  }
 }

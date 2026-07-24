@@ -37,11 +37,26 @@ export function renderTextAnnotations(
     const style = layout.annotation.style;
     ctx.strokeStyle = style?.stroke ?? themeColor('--accent', '#4a9eff');
     ctx.lineWidth = style?.strokeWidth ?? 1.5;
-    ctx.setLineDash(style?.strokeDasharray ?? [5, 4]);
+    ctx.setLineDash(
+      style?.strokeDasharray
+      ?? (layout.orientation === 'compression' ? [] : [5, 4]),
+    );
     ctx.beginPath();
     if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = logicalToCanvasX(layout.position, transform);
       const offset = layout.orientation === 'compression' ? 3 * transform.zoom : 0;
+      if (layout.orientation === 'compression') {
+        ctx.save();
+        ctx.fillStyle = themeColor('--bg-canvas', '#111111');
+        ctx.fillRect(
+          x - 6 * transform.zoom,
+          logicalToCanvasY(0, transform),
+          12 * transform.zoom,
+          contentHeight * transform.zoom,
+        );
+        ctx.restore();
+        ctx.beginPath();
+      }
       ctx.moveTo(x - offset, logicalToCanvasY(0, transform));
       ctx.lineTo(x - offset, logicalToCanvasY(contentHeight, transform));
       if (layout.orientation === 'compression') {
@@ -66,7 +81,7 @@ export function renderTextAnnotations(
     const width = ctx.measureText(annotation.text).width;
     const paddingX = 4;
     const height = Math.max(14, 16 * transform.zoom);
-    ctx.fillStyle = themeColor('--bg-panel', '#242424');
+    ctx.fillStyle = themeColor('--bg-canvas', '#111111');
     ctx.fillRect(
       canvasX - width / 2 - paddingX,
       canvasY - height / 2,

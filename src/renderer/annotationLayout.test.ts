@@ -17,6 +17,7 @@ const diagram: DiagramState = {
       type: 'text',
       text: 'Setup',
       tick: 2,
+      x: 2.25,
       signalId: 'sig-1',
       yOffset: -5,
     },
@@ -25,7 +26,8 @@ const diagram: DiagramState = {
       type: 'text',
       text: 'Start',
       tick: 0,
-      yOffset: 12,
+      y: 0.3,
+      coordinateMode: 'diagram',
     },
     { id: 'vline', type: 'vertical-line', tick: 3 },
     { id: 'compression', type: 'global-compression', tick: 4 },
@@ -48,7 +50,7 @@ describe('layoutTextAnnotations', () => {
       x,
       y,
     }))).toEqual([
-      { id: 'anchored', x: 100, y: 55 },
+      { id: 'anchored', x: 90, y: 55 },
       { id: 'global', x: 20, y: 12 },
     ]);
   });

@@ -1,5 +1,9 @@
 import type { DiagramState, SignalOrGroup, ViewState } from '../shared/types';
-import { CELL_WIDTH } from '../shared/constants';
+import {
+  CELL_WIDTH,
+  ROW_HEIGHT,
+  TIME_AXIS_HEIGHT,
+} from '../shared/constants';
 import { useStore } from '../shared/store';
 import { buildRowLayout } from '../renderer/rowLayout';
 import {
@@ -11,6 +15,18 @@ import { pickBusLabelFromHit } from './busLabelPick';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { setActiveSignalIds, toolState, SELECT_DRAG_THRESHOLD_PX } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
+import { measureHeadFoot } from '../renderer/renderHeadFoot';
+import {
+  annotationXCells,
+  annotationYLogical,
+} from '../renderer/annotationLayout';
+
+interface AnnotationDrag {
+  id: string;
+  historyRecorded: boolean;
+}
+
+let annotationDrag: AnnotationDrag | null = null;
 
 function viewTransform(diagram: DiagramState, view: ViewState): ViewTransform {
   return {
@@ -104,6 +120,12 @@ export function selectPointerDown(
   hit: HitTestResult,
 ): void {
   flushPendingCodeToDiagram();
+  if (hit.annotationId) {
+    useStore.getState().setActiveAnnotationId(hit.annotationId);
+    annotationDrag = { id: hit.annotationId, historyRecorded: false };
+    if (canvas) canvas.setPointerCapture(e.pointerId);
+    return;
+  }
   toolState.setSelectClickHit(hit);
   const x = e.offsetX;
   const y = e.offsetY;
@@ -112,6 +134,46 @@ export function selectPointerDown(
 }
 
 export function selectPointerMove(e: PointerEvent): void {
+  if (annotationDrag) {
+    const state = useStore.getState();
+    const annotation = state.diagram.annotations?.find(
+      (candidate) => candidate.id === annotationDrag?.id,
+    );
+    if (!annotation) return;
+    const transform = viewTransform(state.diagram, state.view);
+    const rawX = canvasToLogicalX(e.offsetX, transform) / CELL_WIDTH;
+    const snapToGrid =
+      annotation.type !== 'horizontal-line'
+      && annotation.snapToGrid !== false;
+    const x = snapToGrid && !e.shiftKey
+      ? Math.round(rawX - 0.5) + 0.5
+      : Math.round(rawX * 100) / 100;
+    const { headHeight } = measureHeadFoot(state.diagram.config);
+    const rawY = canvasToLogicalY(
+      e.offsetY - TIME_AXIS_HEIGHT - headHeight,
+      transform,
+    ) / ROW_HEIGHT;
+    const y = Math.round(rawY * 100) / 100;
+    const options = { recordHistory: !annotationDrag.historyRecorded };
+    if (annotation.type === 'text') {
+      state.updateTextAnnotation(annotation.id, {
+        x,
+        y,
+        coordinateMode: 'diagram',
+      }, options);
+    } else if (annotation.type === 'vertical-line') {
+      state.updateVerticalLineAnnotation(annotation.id, { x }, options);
+    } else if (annotation.type === 'horizontal-line') {
+      state.updateHorizontalLineAnnotation(annotation.id, {
+        y,
+        coordinateMode: 'diagram',
+      }, options);
+    } else {
+      state.updateGlobalCompressionAnnotation(annotation.id, { x }, options);
+    }
+    annotationDrag.historyRecorded = true;
+    return;
+  }
   if (!toolState.isSelectDragging()) return;
   toolState.updateSelectDrag(e.offsetX, e.offsetY);
 }
@@ -120,6 +182,11 @@ export function selectPointerUp(
   e: PointerEvent,
   canvas: HTMLCanvasElement | null,
 ): void {
+  if (annotationDrag) {
+    releasePointer(canvas, e);
+    annotationDrag = null;
+    return;
+  }
   if (!toolState.isSelectDragging()) return;
   releasePointer(canvas, e);
   toolState.endSelectDrag();
@@ -150,6 +217,9 @@ export function selectPointerUp(
 }
 
 export function selectCancel(canvas: HTMLCanvasElement | null): void {
+  if (annotationDrag) {
+    annotationDrag = null;
+  }
   if (!toolState.isSelectDragging()) return;
   const pid = toolState.getCapturedPointerId();
   if (canvas && pid !== null && canvas.hasPointerCapture(pid)) {
@@ -168,6 +238,50 @@ export function selectAllSignals(): void {
     start: 0,
     end: diagram.config.totalSteps - 1,
   });
+}
+
+export function nudgeSelectedAnnotation(
+  key: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
+  fine: boolean,
+): boolean {
+  const state = useStore.getState();
+  const annotation = state.diagram.annotations?.find(
+    (candidate) => candidate.id === state.view.activeAnnotationId,
+  );
+  if (!annotation) return false;
+  const horizontal = key === 'ArrowLeft' || key === 'ArrowRight';
+  const direction = key === 'ArrowLeft' || key === 'ArrowUp' ? -1 : 1;
+
+  if (horizontal) {
+    if (annotation.type === 'horizontal-line') return false;
+    const snapToGrid = annotation.snapToGrid !== false;
+    const delta = fine ? 0.01 : snapToGrid ? 1 : 0.1;
+    const x = annotationXCells(annotation) + direction * delta;
+    if (annotation.type === 'text') {
+      state.updateTextAnnotation(annotation.id, { x });
+    } else if (annotation.type === 'vertical-line') {
+      state.updateVerticalLineAnnotation(annotation.id, { x });
+    } else {
+      state.updateGlobalCompressionAnnotation(annotation.id, { x });
+    }
+    return true;
+  }
+
+  if (annotation.type === 'vertical-line' || annotation.type === 'global-compression') {
+    return false;
+  }
+  const rows = buildRowLayout(state.diagram.signals);
+  const currentY = (annotationYLogical(annotation, rows) ?? 0) / ROW_HEIGHT;
+  state[annotation.type === 'text'
+    ? 'updateTextAnnotation'
+    : 'updateHorizontalLineAnnotation'](
+    annotation.id,
+    {
+      y: currentY + direction * (fine ? 0.01 : 0.1),
+      coordinateMode: 'diagram',
+    },
+  );
+  return true;
 }
 
 export function deleteSelection(): void {

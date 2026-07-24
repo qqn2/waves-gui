@@ -4,8 +4,15 @@ import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
 } from '../shared/annotations';
+import { ROW_HEIGHT } from '../shared/constants';
 import { useStore } from '../shared/store';
-import type { AnnotationStyle, SignalOrGroup } from '../shared/types';
+import type {
+  AnnotationStyle,
+  DiagramAnnotation,
+  SignalOrGroup,
+} from '../shared/types';
+import { annotationXCells, annotationYLogical } from '../renderer/annotationLayout';
+import { buildRowLayout } from '../renderer/rowLayout';
 import styles from './shell.module.css';
 
 function signalOptions(signals: SignalOrGroup[]): Array<{ id: string; name: string }> {
@@ -38,6 +45,7 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const annotation = diagram.annotations?.find((item) => item.id === activeId) ?? null;
   const textAnnotation = annotation?.type === 'text' ? annotation : null;
   const options = useMemo(() => signalOptions(diagram.signals), [diagram.signals]);
+  const rows = useMemo(() => buildRowLayout(diagram.signals), [diagram.signals]);
   const [textDraft, setTextDraft] = useState('');
   const [fillDraft, setFillDraft] = useState('');
   const [strokeDraft, setStrokeDraft] = useState('');
@@ -63,6 +71,19 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
       updateHorizontalLineAnnotation(annotation.id, { style });
     } else {
       updateGlobalCompressionAnnotation(annotation.id, { style });
+    }
+  };
+
+  const updatePosition = (patch: Partial<DiagramAnnotation>) => {
+    if (!annotation) return;
+    if (annotation.type === 'text') {
+      updateTextAnnotation(annotation.id, patch);
+    } else if (annotation.type === 'vertical-line') {
+      updateVerticalLineAnnotation(annotation.id, patch);
+    } else if (annotation.type === 'horizontal-line') {
+      updateHorizontalLineAnnotation(annotation.id, patch);
+    } else {
+      updateGlobalCompressionAnnotation(annotation.id, patch);
     }
   };
 
@@ -114,57 +135,110 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
           ) : null}
 
           <section className={styles.inspectorSection}>
-            <h2>Anchor</h2>
-            {annotation.type === 'text' || annotation.type === 'horizontal-line' ? (
+            <h2>Position</h2>
+            {annotation.type !== 'horizontal-line' ? (
               <label className={styles.inspectorField}>
-              <span>Signal</span>
-              <select
-                value={annotation.signalId ?? ''}
-                onChange={(event) => {
-                  const patch = { signalId: event.target.value || undefined };
-                  if (annotation.type === 'text') {
-                    updateTextAnnotation(annotation.id, patch);
-                  } else {
-                    updateHorizontalLineAnnotation(annotation.id, patch);
-                  }
-                }}
-                aria-label="Annotation signal anchor"
-              >
-                <option value="">Diagram</option>
-                {options.map((option) => (
-                  <option key={option.id} value={option.id}>{option.name}</option>
-                ))}
-              </select>
+                <span>X</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={diagram.config.totalSteps}
+                  step={0.01}
+                  value={annotationXCells(annotation)}
+                  onChange={(event) => updatePosition({
+                    x: Number(event.target.value),
+                  })}
+                  aria-label="Annotation X coordinate"
+                />
               </label>
             ) : null}
             {annotation.type !== 'horizontal-line' ? (
               <label className={styles.inspectorField}>
-              <span>Step</span>
-              <input
-                type="number"
-                min={1}
-                max={diagram.config.totalSteps}
-                value={annotation.tick + 1}
-                onChange={(event) => {
-                  const patch = { tick: Number(event.target.value) - 1 };
-                  if (annotation.type === 'text') {
-                    updateTextAnnotation(annotation.id, patch);
-                  } else if (annotation.type === 'global-compression') {
-                    updateGlobalCompressionAnnotation(annotation.id, patch);
-                  } else {
-                    updateVerticalLineAnnotation(annotation.id, patch);
-                  }
-                }}
-                aria-label="Annotation step"
-              />
+                <span>Snap to steps</span>
+                <input
+                  type="checkbox"
+                  checked={annotation.snapToGrid !== false}
+                  onChange={(event) => updatePosition({
+                    snapToGrid: event.target.checked,
+                  })}
+                  aria-label="Snap annotation X to steps"
+                />
               </label>
             ) : null}
             {annotation.type === 'text' || annotation.type === 'horizontal-line' ? (
               <label className={styles.inspectorField}>
-              <span>Y offset</span>
-              <input
-                type="number"
-                value={annotation.yOffset ?? 0}
+                <span>Y mode</span>
+                <select
+                  value={
+                    annotation.coordinateMode
+                    ?? (annotation.signalId ? 'signal' : 'diagram')
+                  }
+                  onChange={(event) => {
+                    const coordinateMode = event.target.value as 'diagram' | 'signal';
+                    if (coordinateMode === 'diagram') {
+                      const logicalY = annotationYLogical(annotation, rows) ?? 0;
+                      updatePosition({
+                        coordinateMode,
+                        y: logicalY / ROW_HEIGHT,
+                      });
+                    } else {
+                      updatePosition({
+                        coordinateMode,
+                        signalId: annotation.signalId ?? options[0]?.id,
+                      });
+                    }
+                  }}
+                  aria-label="Annotation Y coordinate mode"
+                >
+                  <option value="diagram">Diagram coordinate</option>
+                  <option value="signal">Signal anchor</option>
+                </select>
+              </label>
+            ) : null}
+            {(annotation.type === 'text' || annotation.type === 'horizontal-line')
+              && (annotation.coordinateMode ?? (annotation.signalId ? 'signal' : 'diagram'))
+                === 'diagram' ? (
+              <label className={styles.inspectorField}>
+                <span>Y</span>
+                <input
+                  type="number"
+                  step={0.01}
+                  value={
+                    annotation.y
+                    ?? (annotationYLogical(annotation, rows) ?? 0) / ROW_HEIGHT
+                  }
+                  onChange={(event) => updatePosition({
+                    y: Number(event.target.value),
+                    coordinateMode: 'diagram',
+                  })}
+                  aria-label="Annotation Y coordinate"
+                />
+              </label>
+            ) : null}
+            {(annotation.type === 'text' || annotation.type === 'horizontal-line')
+              && (annotation.coordinateMode ?? (annotation.signalId ? 'signal' : 'diagram'))
+                === 'signal' ? (
+              <>
+                <label className={styles.inspectorField}>
+                  <span>Signal</span>
+                  <select
+                    value={annotation.signalId ?? ''}
+                    onChange={(event) => updatePosition({
+                      signalId: event.target.value || undefined,
+                      coordinateMode: 'signal',
+                    })}
+                    aria-label="Annotation signal anchor"
+                  >
+                    {options.map((option) => (
+                      <option key={option.id} value={option.id}>{option.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.inspectorField}>
+                <span>Y offset</span>
+                <input
+                  type="number"
+                  value={annotation.yOffset ?? 0}
                 onChange={(event) => {
                   const patch = { yOffset: Number(event.target.value) };
                   if (annotation.type === 'text') {
@@ -174,8 +248,9 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                   }
                 }}
                 aria-label="Annotation vertical offset"
-              />
+                />
               </label>
+              </>
             ) : null}
           </section>
 

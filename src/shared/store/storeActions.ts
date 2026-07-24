@@ -159,18 +159,22 @@ export interface StoreActions {
   updateVerticalLineAnnotation(
     id: string,
     patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
   ): void;
   updateHorizontalLineAnnotation(
     id: string,
     patch: Partial<Omit<HorizontalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
   ): void;
   updateGlobalCompressionAnnotation(
     id: string,
     patch: Partial<Omit<GlobalCompressionAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
   ): void;
   updateTextAnnotation(
     id: string,
     patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
   ): void;
   removeAnnotation(id: string): void;
   markClean(fileName: string): void;

@@ -318,19 +318,23 @@ function svgAnnotations(
     const style = layout.annotation.style;
     const stroke = esc(style?.stroke ?? textColor);
     const width = style?.strokeWidth ?? 1.5;
-    const dash = style?.strokeDasharray?.join(' ') ?? '5 4';
+    const dash = style?.strokeDasharray?.join(' ')
+      ?? (layout.orientation === 'compression' ? '' : '5 4');
+    const dashAttribute = dash ? ` stroke-dasharray="${dash}"` : '';
     if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = layout.position * diagram.config.hscale;
       const line = (lineX: number) => `<line x1="${lineX}" y1="${axisOffset}" x2="${lineX}" `
         + `y2="${axisOffset + contentHeight}" stroke="${stroke}" `
-        + `stroke-width="${width}" stroke-dasharray="${dash}"/>`;
+        + `stroke-width="${width}"${dashAttribute}/>`;
       return layout.orientation === 'compression'
-        ? `${line(x - 3)}\n${line(x + 3)}`
+        ? `<rect x="${x - 6}" y="${axisOffset}" width="12" `
+          + `height="${contentHeight}" fill="${esc(panelBg)}"/>\n`
+          + `${line(x - 3)}\n${line(x + 3)}`
         : line(x);
     }
     const y = axisOffset + layout.position;
     return `<line x1="0" y1="${y}" x2="${contentWidth}" y2="${y}" `
-      + `stroke="${stroke}" stroke-width="${width}" stroke-dasharray="${dash}"/>`;
+      + `stroke="${stroke}" stroke-width="${width}"${dashAttribute}/>`;
   }).join('\n');
   return [lines, text].filter(Boolean).join('\n');
 }
@@ -450,7 +454,7 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
     rows,
     dims.axisOffset,
     textColor,
-    panelBg,
+    bg,
   );
   if (annotationSvg) waveformParts.push(annotationSvg);
   const edgeSvg = svgEdges(diagram, view, 0);

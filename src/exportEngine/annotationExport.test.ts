@@ -52,6 +52,7 @@ describe('annotation image export', () => {
     ];
     const svg = buildSVGString(diagram, defaultView());
     expect(svg).toContain('stroke="#123456" stroke-width="2" stroke-dasharray="3 2"');
-    expect(svg.match(/stroke-dasharray="5 4"/g)).toHaveLength(3);
+    expect(svg.match(/stroke-dasharray="5 4"/g)).toHaveLength(1);
+    expect(svg).toContain('width="12"');
   });
 });

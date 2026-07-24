@@ -1,4 +1,4 @@
-import { CELL_WIDTH } from '../shared/constants';
+import { CELL_WIDTH, ROW_HEIGHT } from '../shared/constants';
 import type {
   DiagramState,
   HorizontalLineAnnotation,
@@ -24,12 +24,34 @@ export type LineAnnotationLayout =
   | { annotation: GlobalCompressionAnnotation; orientation: 'compression'; position: number }
   | { annotation: HorizontalLineAnnotation; orientation: 'horizontal'; position: number };
 
+export function annotationXCells(
+  annotation: TextAnnotation | VerticalLineAnnotation | GlobalCompressionAnnotation,
+): number {
+  return annotation.x ?? annotation.tick + 0.5;
+}
+
+export function annotationYLogical(
+  annotation: TextAnnotation | HorizontalLineAnnotation,
+  rows: RowLayoutEntry[],
+): number | null {
+  if (annotation.coordinateMode === 'diagram' && annotation.y !== undefined) {
+    return annotation.y * ROW_HEIGHT;
+  }
+  if (!annotation.signalId) {
+    return annotation.y !== undefined
+      ? annotation.y * ROW_HEIGHT
+      : annotation.yOffset ?? 16;
+  }
+  const row = rows.find((candidate) => candidate.id === annotation.signalId);
+  if (!row) return null;
+  return row.y + row.height / 2 + (annotation.yOffset ?? 0);
+}
+
 export function layoutLineAnnotations(
   diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
   rows: RowLayoutEntry[],
 ): LineAnnotationLayout[] {
   if (diagram.compatibility?.extensionsEnabled !== true) return [];
-  const rowById = new Map(rows.map((row) => [row.id, row]));
   const layouts: LineAnnotationLayout[] = [];
   for (const annotation of diagram.annotations ?? []) {
     if (annotation.type === 'vertical-line' || annotation.type === 'global-compression') {
@@ -37,32 +59,24 @@ export function layoutLineAnnotations(
         layouts.push({
           annotation,
           orientation: 'vertical',
-          position: (annotation.tick + 0.5) * CELL_WIDTH,
+          position: annotationXCells(annotation) * CELL_WIDTH,
         });
       } else {
         layouts.push({
           annotation,
           orientation: 'compression',
-          position: (annotation.tick + 0.5) * CELL_WIDTH,
+          position: annotationXCells(annotation) * CELL_WIDTH,
         });
       }
       continue;
     }
     if (annotation.type !== 'horizontal-line') continue;
-    if (!annotation.signalId) {
-      layouts.push({
-        annotation,
-        orientation: 'horizontal',
-        position: annotation.yOffset ?? 16,
-      });
-      continue;
-    }
-    const row = rowById.get(annotation.signalId);
-    if (!row) continue;
+    const position = annotationYLogical(annotation, rows);
+    if (position === null) continue;
     layouts.push({
       annotation,
       orientation: 'horizontal',
-      position: row.y + row.height / 2 + (annotation.yOffset ?? 0),
+      position,
     });
   }
   return layouts;
@@ -73,24 +87,16 @@ export function layoutTextAnnotations(
   rows: RowLayoutEntry[],
 ): TextAnnotationLayout[] {
   if (diagram.compatibility?.extensionsEnabled !== true) return [];
-  const rowById = new Map(rows.map((row) => [row.id, row]));
 
   return (diagram.annotations ?? []).flatMap((annotation) => {
     if (annotation.type !== 'text') return [];
-    const x = (annotation.tick + 0.5) * CELL_WIDTH;
-    if (!annotation.signalId) {
-      return [{
-        annotation,
-        x,
-        y: annotation.yOffset ?? 16,
-      }];
-    }
-    const row = rowById.get(annotation.signalId);
-    if (!row) return [];
+    const x = annotationXCells(annotation) * CELL_WIDTH;
+    const y = annotationYLogical(annotation, rows);
+    if (y === null) return [];
     return [{
       annotation,
       x,
-      y: row.y + row.height / 2 + (annotation.yOffset ?? 0),
+      y,
     }];
   });
 }

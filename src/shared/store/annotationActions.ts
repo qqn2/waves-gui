@@ -107,7 +107,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
       return added ? id : null;
     },
 
-    updateTextAnnotation(id, patch) {
+    updateTextAnnotation(id, patch, options) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
         const annotation = state.diagram.annotations?.find(
@@ -119,12 +119,12 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        pushHistory(state);
+        if (options?.recordHistory !== false) pushHistory(state);
         Object.assign(annotation, normalized);
       });
     },
 
-    updateVerticalLineAnnotation(id, patch) {
+    updateVerticalLineAnnotation(id, patch, options) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
         const annotation = state.diagram.annotations?.find(
@@ -137,12 +137,12 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        pushHistory(state);
+        if (options?.recordHistory !== false) pushHistory(state);
         Object.assign(annotation, normalized);
       });
     },
 
-    updateHorizontalLineAnnotation(id, patch) {
+    updateHorizontalLineAnnotation(id, patch, options) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
         const annotation = state.diagram.annotations?.find(
@@ -154,12 +154,12 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           { ...annotation, ...patch, id, type: 'horizontal-line' },
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        pushHistory(state);
+        if (options?.recordHistory !== false) pushHistory(state);
         Object.assign(annotation, normalized);
       });
     },
 
-    updateGlobalCompressionAnnotation(id, patch) {
+    updateGlobalCompressionAnnotation(id, patch, options) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
         const annotation = state.diagram.annotations?.find(
@@ -172,7 +172,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        pushHistory(state);
+        if (options?.recordHistory !== false) pushHistory(state);
         Object.assign(annotation, normalized);
       });
     },

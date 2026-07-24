@@ -48,7 +48,9 @@ describe('Undulate JSON bridge', () => {
       type: 'text',
       text: 'Setup',
       tick: 3,
-      yOffset: -4,
+      x: 3.5,
+      y: 0.4,
+      coordinateMode: 'diagram',
     });
   });
 
@@ -61,8 +63,31 @@ describe('Undulate JSON bridge', () => {
     expect(diagram.annotations?.[0]).toMatchObject({
       text: 'note',
       tick: 1,
-      yOffset: 130,
+      x: 1.5,
+      y: 3.25,
+      coordinateMode: 'diagram',
     });
+  });
+
+  it('preserves fractional annotation coordinates without snapping', () => {
+    const root: UndulateRoot = {
+      signal: [{ name: 'a', wave: '01' }],
+      annotations: [
+        { text: 'fractional', x: 1.125, y: 0.375 },
+        { shape: '|', x: 0.625 },
+        { shape: '-', y: 1.875 },
+        { shape: '||', x: 1.75 },
+      ],
+      config: { hscale: 1 },
+    };
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.annotations).toEqual([
+      expect.objectContaining({ type: 'text', x: 1.125, y: 0.375 }),
+      expect.objectContaining({ type: 'vertical-line', x: 0.625 }),
+      expect.objectContaining({ type: 'horizontal-line', y: 1.875 }),
+      expect.objectContaining({ type: 'global-compression', x: 1.75 }),
+    ]);
+    expect(toUndulateJSON(diagram)).toEqual(root);
   });
 
   it('imports and exports line, compression, and safe annotation styles', () => {
@@ -98,6 +123,10 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: '|', x: Number.NaN }],
+    })).toContain('finite x');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '||', x: 10_001 }],
     })).toContain('finite x');
     expect(validateUndulateJSON({
       signal: [],
