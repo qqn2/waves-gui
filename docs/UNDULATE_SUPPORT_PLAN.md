@@ -8,6 +8,9 @@ Last updated: 2026-07-24
 
 Target application: `waves-gui`
 
+Current audited support contract:
+[`UNDULATE_SUPPORT_CHECKLIST.md`](./UNDULATE_SUPPORT_CHECKLIST.md)
+
 ## Implementation progress
 
 - [x] Validate supported WaveDrom sub-cycle marker structure.
@@ -409,7 +412,7 @@ fixture and an automated support classification before release.
 | Edge labels | Yes | Native subset | Supported | Preserve |
 | Long node names | No | Allocate temporary node chars | Native Undulate concept | Add semantic anchors |
 | Free text annotations | Yes (plain text) | Unsupported with explicit report | Native `text`/`x`/`y` conversion | Implemented first slice |
-| Vertical/horizontal annotations | No | Unsupported | Native annotations | Add annotation model |
+| Vertical/horizontal annotations | Yes (plain lines) | Unsupported with explicit report | Native `|`/`-` conversion | Implemented initial subset |
 | Global time compression | Lane gaps only | Approximate/unsupported | Native `||` annotation | Add diagram annotation |
 | Per-object styling | Partial internal colors | Mostly unsupported | Native style overrides | Add normalized style |
 | Slewing | Yes (analogue scalar) | Unsupported | Native numeric property | Implemented initial subset |
@@ -426,7 +429,7 @@ fixture and an automated support classification before release.
 | Sub-Steps | Partial subcycle foundations | Convert if possible | Expand with fractional period | App-native timebase |
 | YAML input/output | No | N/A | Native Undulate format | Later adapter |
 | TOML input/output | No | N/A | Native Undulate format | Later adapter |
-| JSON-like comments | Code panel uses JSON5 in places | Nonstandard | Undulate accepts JSON-like input | Decide separately |
+| JSON-like comments | No; strict JSON only | Nonstandard | Undulate accepts JSON-like input | Later parser decision |
 | Register diagrams | Intentionally unsupported | N/A | Separate Undulate register context | Permanently out of scope |
 
 ## 9. Internal model evolution
