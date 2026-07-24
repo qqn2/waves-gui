@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { vcdToWavedromJSON } from './vcd';
 
 describe('vcdToWavedromJSON', () => {
@@ -41,5 +43,19 @@ $enddefinitions $end
 `);
 
     expect(wd.signal).toEqual([{ name: 'ready', wave: '10' }]);
+  });
+
+  it('imports the bundled VCD example', () => {
+    const vcd = readFileSync(
+      join(process.cwd(), 'public/samples/example.vcd'),
+      'utf8',
+    );
+
+    expect(vcdToWavedromJSON(vcd).signal).toEqual([
+      { name: 'clk', wave: '01010' },
+      { name: 'reset_n', wave: '0.1..' },
+      { name: 'data [3:0]', wave: '=.=.=', data: ['0000', '0011', '1010'] },
+      { name: 'valid', wave: '0..10' },
+    ]);
   });
 });
