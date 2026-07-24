@@ -25,6 +25,11 @@ export interface DecodedWave {
   stepGlitches: boolean[];
 }
 
+export function isUndulateExtendedDigitalWave(wave: string): boolean {
+  return /[iImM]/.test(wave)
+    || (/[=2-9]/.test(wave) && /[01zZuUdD]/.test(wave));
+}
+
 function waveCharToBitState(char: string): BitState | null {
   switch (char) {
     case '0':
@@ -141,7 +146,7 @@ function readMixedClockChunk(wave: string, start: number): {
 /** Decode lanes that mix clock (`P...`) with binary (`0`, `1`, …). */
 function decodeMixedWaveDetail(wave: string): DecodedWave {
   const result: DecodedWave = { states: [], stepGaps: [], stepGlitches: [] };
-  const extendedDigital = /[iImM]/.test(wave);
+  const extendedDigital = isUndulateExtendedDigitalWave(wave);
   let prev: BitState = '0';
   let lastWaveChar = '';
   let i = 0;

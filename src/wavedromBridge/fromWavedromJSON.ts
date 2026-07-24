@@ -7,7 +7,11 @@ import type {
   VectorSegment,
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
-import { decodeWaveDetail, padDecodedWaveToLength } from './waveStringCodec';
+import {
+  decodeWaveDetail,
+  isUndulateExtendedDigitalWave,
+  padDecodedWaveToLength,
+} from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import {
@@ -36,7 +40,7 @@ function isVectorWave(wave: string): boolean {
   // Undulate permits data, impulse, metastability, and scalar logic cells in
   // one digital lane. Keep such lanes wave-canonical instead of coercing the
   // entire row to a WaveDrom vector bus.
-  return /[=2-9]/.test(wave) && !/[iImM]/.test(wave);
+  return /[=2-9]/.test(wave) && !isUndulateExtendedDigitalWave(wave);
 }
 
 function normalizeDataLabel(entry: string | string[]): string {

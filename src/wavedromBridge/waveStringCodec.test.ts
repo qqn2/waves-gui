@@ -71,6 +71,20 @@ describe('encodeWaveString / decodeWaveString', () => {
     expect(encodeWaveString(decoded)).toBe(wave);
   });
 
+  it('keeps mixed scalar/data lanes digital without requiring transient states', () => {
+    const root = { signal: [{ name: 'mixed', wave: '0.=X1' }] };
+    const diagram = fromWavedromJSON(root);
+    expect(diagram.signals[0]).toMatchObject({
+      type: 'bit',
+      laneMode: 'wave',
+      states: ['0', '0', '=', 'X', '1'],
+    });
+    expect(toWavedromJSON(diagram).signal[0]).toMatchObject({
+      name: 'mixed',
+      wave: '0.=X1',
+    });
+  });
+
   it('preserves adjacent WaveDrom clock phase changes', () => {
     expect(encodeWaveString(['P', 'n', 'P', 'n'])).toBe('PnPn');
     expect(encodeWaveString(['p', 'n', 'p', 'n'])).toBe('pnpn');
