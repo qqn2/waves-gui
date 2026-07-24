@@ -408,6 +408,46 @@ Evidence:
 - [ ] TOML input and output.
 - [ ] Opaque preservation of safe unknown declarative data.
 
+##### Revision-pinned supported-subset round-trip matrix
+
+Classification: Supported test and evidence infrastructure
+
+Scope: strict-JSON conformance cases derived from the pinned Undulate
+tutorials for every currently supported shared-digital, annotation, and
+analogue interchange family. Each case records its upstream source, feature
+claims, deterministic canonical export, and SVG evidence.
+
+Acceptance:
+
+- [x] Target revision recorded in machine-readable fixture data
+- [x] Upstream repository and license recorded
+- [x] Per-case tutorial provenance
+- [x] Shared digital states, clocks, buses, gaps, glitches, spacers, groups,
+  and scalar bit sub-cycle markers
+- [x] Scalar phase/period, nodes, edges, hscale, skin, head, and foot
+- [x] Text, line, compression, fractional-coordinate, and safe-style annotations
+- [x] Numeric step, capacitive, sampled, slew, scale, overlay, and order analogue
+- [x] Strict validation before import
+- [x] Deterministic canonical Undulate export
+- [x] Export re-import stability
+- [x] SVG render evidence for every case
+- [x] Canonical conversions documented by expected output
+- [x] Documentation synchronized
+
+Evidence:
+
+- Fixtures: `tests/fixtures/undulate/supported-roundtrip-cases.json`.
+- Tests: `src/undulateBridge/upstreamRoundTrip.test.ts`.
+- Canonical conversions: uppercase aliases normalize to lowercase; bus color
+  `2` normalizes to its equivalent `=` spelling; space-delimited bus data
+  normalizes to an array; multiline array labels remain arrays.
+- Rendering correction: the matrix exposed missing head/foot image-export
+  bands. Shared export dimensions now reserve those bands for SVG, PNG, and
+  JPEG, and SVG emits escaped captions plus tick/tock labels.
+- Remaining limitations: this matrix proves the supported interchange and
+  renderer families. Interaction/history evidence remains in the focused
+  store, tool, inspector, and browser tests referenced by each delivery record.
+
 #### WIP — extended digital signals
 
 - [ ] Digital high/low symbols `h`, `H`, `l`, and `L`.
@@ -2200,7 +2240,7 @@ assumptions:
 Before beginning Phase 1:
 
 - [x] Choose and pin the initial Undulate target revision.
-- [ ] Add a license/attribution note for imported upstream fixtures.
+- [x] Add a license/attribution note for imported upstream fixtures.
 - [x] Create synthetic fixtures for each implemented feature.
 - [ ] Decide the native project file contract.
 - [x] Specify `DiagramState` version 2 migration behavior.

@@ -33,6 +33,15 @@ import {
   layoutTextAnnotations,
 } from '../renderer/annotationLayout';
 import {
+  buildStepLabels,
+  FOOT_TEXT_BAND,
+  FOOT_TOCK_BAND,
+  HEAD_FOOT_BAND_PAD,
+  HEAD_TEXT_BAND,
+  HEAD_TICK_BAND,
+  measureHeadFoot,
+} from '../renderer/renderHeadFoot';
+import {
   analoguePathPoints,
   analogueValueRatio,
 } from '../renderer/analogueGeometry';
@@ -264,6 +273,78 @@ function svgTimeAxis(
   return parts.join('\n');
 }
 
+function svgHeadFoot(
+  diagram: DiagramState,
+  contentHeight: number,
+  waveformWidth: number,
+  textColor: string,
+  secondaryTextColor: string,
+): string {
+  const { headHeight, footHeight } = measureHeadFoot(diagram.config);
+  if (headHeight === 0 && footHeight === 0) return '';
+
+  const parts: string[] = [];
+  const cellWidth = CELL_WIDTH * diagram.config.hscale;
+  let y = TIME_AXIS_HEIGHT + HEAD_FOOT_BAND_PAD;
+
+  if (diagram.config.head?.text) {
+    parts.push(
+      `<text x="${waveformWidth / 2}" y="${y + HEAD_TEXT_BAND / 2}" `
+        + `fill="${esc(textColor)}" font-size="12" font-family="sans-serif" `
+        + `text-anchor="middle" dominant-baseline="middle">${esc(diagram.config.head.text)}</text>`,
+    );
+    y += HEAD_TEXT_BAND + HEAD_FOOT_BAND_PAD;
+  }
+  if (
+    diagram.config.head?.tick !== undefined
+    || diagram.config.head?.every !== undefined
+  ) {
+    const labels = buildStepLabels(
+      diagram.config.head.tick,
+      diagram.config.head.every,
+      diagram.config.totalSteps,
+    );
+    labels.forEach((label, index) => {
+      if (!label) return;
+      parts.push(
+        `<text x="${index * cellWidth + cellWidth / 2}" y="${y + HEAD_TICK_BAND / 2}" `
+          + `fill="${esc(secondaryTextColor)}" font-size="10" font-family="sans-serif" `
+          + `text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>`,
+      );
+    });
+  }
+
+  let footY = TIME_AXIS_HEIGHT + headHeight + contentHeight
+    + HEAD_FOOT_BAND_PAD;
+  if (diagram.config.foot?.text) {
+    parts.push(
+      `<text x="${waveformWidth / 2}" y="${footY + FOOT_TEXT_BAND / 2}" `
+        + `fill="${esc(textColor)}" font-size="12" font-family="sans-serif" `
+        + `text-anchor="middle" dominant-baseline="middle">${esc(diagram.config.foot.text)}</text>`,
+    );
+    footY += FOOT_TEXT_BAND + HEAD_FOOT_BAND_PAD;
+  }
+  if (
+    diagram.config.foot?.tock !== undefined
+    || diagram.config.foot?.every !== undefined
+  ) {
+    const labels = buildStepLabels(
+      diagram.config.foot.tock,
+      diagram.config.foot.every,
+      diagram.config.totalSteps,
+    );
+    labels.forEach((label, index) => {
+      if (!label) return;
+      parts.push(
+        `<text x="${(index + 1) * cellWidth}" y="${footY + FOOT_TOCK_BAND / 2}" `
+          + `fill="${esc(secondaryTextColor)}" font-size="10" font-family="sans-serif" `
+          + `text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>`,
+      );
+    });
+  }
+  return parts.join('\n');
+}
+
 function svgLabels(
   diagram: DiagramState,
   labelWidth: number,
@@ -426,6 +507,7 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
   const textColor = themeColor('--text-primary', '#e8e8e8');
   const gridColor = themeColor('--grid-line', '#333333');
   const panelBg = themeColor('--bg-panel', '#242424');
+  const secondaryTextColor = themeColor('--text-secondary', '#999999');
 
   const waveformParts: string[] = [];
   waveformParts.push(
@@ -434,9 +516,17 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
       diagram.config.hscale,
       dims.waveformWidth,
       panelBg,
-      themeColor('--text-secondary', '#999999'),
+      secondaryTextColor,
     ),
   );
+  const headFootSvg = svgHeadFoot(
+    diagram,
+    contentH,
+    dims.waveformWidth,
+    textColor,
+    secondaryTextColor,
+  );
+  if (headFootSvg) waveformParts.push(headFootSvg);
   waveformParts.push(
     svgGrid(
       diagram.config.totalSteps,

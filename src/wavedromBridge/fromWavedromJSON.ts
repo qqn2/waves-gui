@@ -138,7 +138,11 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
   const sig = entry as WdSignal;
   const wave = sig.wave ?? '0';
   if (isVectorWave(wave)) {
-    const rawData = (sig.data ?? []).map((d) =>
+    const sourceData =
+      typeof sig.data === 'string'
+        ? sig.data.trim().split(/\s+/).filter(Boolean)
+        : (sig.data ?? []);
+    const rawData = sourceData.map((d) =>
       Array.isArray(d) ? d.map(String) : String(d),
     );
     const totalSteps = wave.length;

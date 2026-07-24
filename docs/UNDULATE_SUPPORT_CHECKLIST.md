@@ -91,7 +91,8 @@ Upstream references:
 - [x] Continuation with `.`.
 - [x] Clock states `p`, `P`, `n`, and `N`.
 - [x] Bus states `x`, `X`, `=`, and color indices `2` through `9`.
-- [x] Bus data labels supplied as strings or arrays.
+- [x] Bus data labels supplied as space-delimited strings or arrays; string
+  input exports deterministically as the canonical array form.
 - [x] Lane gaps with `|`.
 - [x] Explicit repeated transitions represented by the app as glitches.
 - [x] Blank spacer rows.
@@ -346,7 +347,7 @@ Upstream reference:
 - [x] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
   and digital-signal fields, especially `edges`, `repeat`, `periods`,
   `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
-- [ ] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
+- [x] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
 - [ ] **P1 — Extended digital timing and states.** Add `repeat`, variable
   periods, duty cycles, digital slew, `m`/`M`, and `i`/`I`.
@@ -371,10 +372,14 @@ Primary implementation:
 - `src/shared/compatibility.ts`
 - `src/renderer/analogueGeometry.ts`
 - `src/renderer/annotationLayout.ts`
+- `src/renderer/renderHeadFoot.ts`
+- `src/exportEngine/exportDimensions.ts`
+- `src/exportEngine/exportSVG.ts`
 
 Primary automated coverage:
 
 - `src/undulateBridge/undulateJSON.test.ts`
+- `src/undulateBridge/upstreamRoundTrip.test.ts`
 - `src/codePanel/codeSync.test.ts`
 - `src/shell/FileOperations.test.ts`
 - `src/shared/store.test.ts`
@@ -382,4 +387,6 @@ Primary automated coverage:
 - `src/shared/compatibility.test.ts`
 - `src/exportEngine/analogueExport.test.ts`
 - `src/exportEngine/annotationExport.test.ts`
+- `src/exportEngine/headFootImageExport.test.ts`
 - `tests/e2e/release.spec.ts`
+- `tests/fixtures/undulate/supported-roundtrip-cases.json`
