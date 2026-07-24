@@ -181,7 +181,9 @@ test('applies visible text scaling and a real dark theme', async ({ page }) => {
 test('keeps bus segment editing exclusively in the selected signal inspector', async ({ page }) => {
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
   await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
-  await expect(page.getByTitle('Select one signal to inspect its properties')).toBeDisabled();
+  await expect(
+    page.getByTitle('Select a signal or annotation to inspect its properties'),
+  ).toBeDisabled();
 
   await replaceJson(page, JSON.stringify({
     signal: [
@@ -201,7 +203,7 @@ test('keeps bus segment editing exclusively in the selected signal inspector', a
   expect(widths[0]).not.toBeNull();
   expect(widths[1]!.width).toBeGreaterThan(widths[0]!.width * 0.9);
   await expect(inspector.getByLabel('Signal inspector details')).toHaveCSS('overflow-y', 'auto');
-  await expect(page.getByTitle('Show or hide signal properties inspector')).toBeEnabled();
+  await expect(page.getByTitle('Show or hide properties inspector')).toBeEnabled();
   await expect(segments.getByLabel('Label for steps 0 to 2')).toHaveValue('A5');
   await expect(segments.getByLabel('Label for steps 2 to 4')).toHaveValue('5A');
   await expect(segments.getByLabel('Label for steps 4 to 6')).toHaveValue('FF');
@@ -398,7 +400,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   });
 
   await page.getByRole('button', { name: /File/ }).click();
-  await page.getByRole('button', { name: 'Open…', exact: true }).click();
+  await page.getByRole('button', { name: 'Open JSON/VCD…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
