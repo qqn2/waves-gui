@@ -15,7 +15,7 @@ contract live in
 
 ## Status legend
 
-- [x] Supported: imported, represented, rendered, and exported with automated
+- [X] Supported: imported, represented, rendered, and exported with automated
   coverage unless a narrower scope is stated.
 - [ ] Partial: a useful subset works, but the documented Undulate feature is
   not complete.
@@ -28,12 +28,12 @@ contract live in
 
 ## Executive summary
 
-- [x] Strict Undulate JSON for the supported subset.
-- [x] Plain text, vertical-line, and horizontal-line annotations.
-- [x] Numeric analogue `s`, `c`, and explicit sampled `a` cells.
-- [x] Analogue `slewing`, `vscale`, consecutive overlays, and label `order`.
-- [x] Browser-native live rendering plus SVG, PNG, and JPEG export.
-- [x] Undo/redo, autosave, JSON editing, compatibility reporting, and the
+- [X] Strict Undulate JSON for the supported subset.
+- [X] Plain text, vertical-line, and horizontal-line annotations.
+- [X] Numeric analogue `s`, `c`, and explicit sampled `a` cells.
+- [X] Analogue `slewing`, `vscale`, consecutive overlays, and label `order`.
+- [X] Browser-native live rendering plus SVG, PNG, and JPEG export.
+- [X] Undo/redo, autosave, JSON editing, compatibility reporting, and the
   three-action disable flow for supported extension content.
 - [ ] Partial: ordinary and mixed extended digital lanes are available in
   Undulate JSON, including data, impulse, and metastability cells; high/low
@@ -47,31 +47,31 @@ contract live in
 
 ### Supported
 
-- [x] Strict JSON input through File Open and the code editor.
-- [x] Strict JSON output for newly generated documents.
-- [x] WaveDrom JSON5 input through File Open and the code editor, including
+- [X] Strict JSON input through File Open and the code editor.
+- [X] Strict JSON output for newly generated documents.
+- [X] WaveDrom JSON5 input through File Open and the code editor, including
   line/block comments, unquoted keys, single-quoted strings, and trailing
   commas.
-- [x] Retained JSON5 source is updated through a concrete syntax tree so
+- [X] Retained JSON5 source is updated through a concrete syntax tree so
   comments, key order, quoting, and surrounding formatting survive supported
   GUI edits, undo/redo, recovery drafts, and Save.
-- [x] Comments orphaned by a deliberately removed property or array entry are
+- [X] Comments orphaned by a deliberately removed property or array entry are
   relocated to the nearest surviving container instead of being discarded.
-- [x] Automatic Undulate detection when `annotations` or an `analogue` signal
+- [X] Automatic Undulate detection when `annotations` or an `analogue` signal
   is present.
-- [x] The code editor stays in Undulate JSON while the extensions toggle is
+- [X] The code editor stays in Undulate JSON while the extensions toggle is
   enabled, and a retained Undulate source file remains Undulate on save.
-- [x] The JSON editor, document model, live canvas, and local render update
+- [X] The JSON editor, document model, live canvas, and local render update
   each other without a WaveDrom-only conversion.
-- [x] Supported Undulate content participates in dirty-state tracking,
+- [X] Supported Undulate content participates in dirty-state tracking,
   autosave, undo, and redo.
-- [x] Known WIP, unsupported-by-design, invalid, and unknown Undulate
+- [X] Known WIP, unsupported-by-design, invalid, and unknown Undulate
   properties are rejected before import instead of being silently discarded.
-- [x] JSON editor and File Open rejection leave the current diagram, history,
+- [X] JSON editor and File Open rejection leave the current diagram, history,
   dirty state, and retained file handle unchanged.
-- [x] JSON validation follows the active format: Undulate-only digital states
+- [X] JSON validation follows the active format: Undulate-only digital states
   are accepted in Undulate mode and reported as errors in WaveDrom mode.
-- [x] Online WaveDrom Editor export requires an explicit warning that the
+- [X] Online WaveDrom Editor export requires an explicit warning that the
   exported JSON is sent to `wavedrom.com`; cancelling sends nothing.
 
 ### Partial or unsupported
@@ -83,7 +83,7 @@ contract live in
 - [ ] Partial: changed or newly inserted values follow the retained document's
   detected style, but byte-for-byte source preservation is not promised.
 - [ ] Unsupported: opaque preservation of unknown Undulate fields.
-- [x] Unknown fields on ordinary digital signals and unknown top-level fields
+- [X] Unknown fields on ordinary digital signals and unknown top-level fields
   route through the Undulate classifier and are rejected with revision-pinned
   object paths.
 
@@ -97,28 +97,28 @@ Upstream references:
 
 ### Supported
 
-- [x] Logic states `0`, `1`, unknown `x`/`X`, high-impedance `z`/`Z`, pull-up
+- [X] Logic states `0`, `1`, unknown `x`/`X`, high-impedance `z`/`Z`, pull-up
   `u`/`U`, and pull-down `d`/`D`.
-- [x] Continuation with `.`.
-- [x] Clock states `p`, `P`, `n`, and `N`.
-- [x] Bus states `x`, `X`, `=`, and color indices `2` through `9`.
-- [x] Bus data labels supplied as space-delimited strings or arrays; string
+- [X] Continuation with `.`.
+- [X] Clock states `p`, `P`, `n`, and `N`.
+- [X] Bus states `x`, `X`, `=`, and color indices `2` through `9`.
+- [X] Bus data labels supplied as space-delimited strings or arrays; string
   input exports deterministically as the canonical array form.
-- [x] Lane gaps with `|` on bit and vector lanes, including the canvas,
+- [X] Lane gaps with `|` on bit and vector lanes, including the canvas,
   local Undulate render, and image exports.
-- [x] Explicit repeated transitions represented by the app as glitches.
-- [x] Blank spacer rows.
-- [x] Nested groups in the shared WaveDrom JSON array form.
-- [x] Scalar `phase`.
-- [x] Scalar `period` round-trip for ordinary bit and vector lanes.
-- [x] WaveDrom-compatible single-character node strings.
-- [x] WaveDrom-compatible `edge` dependency strings and labels.
-- [x] Supported WaveDrom sub-cycle marker syntax on scalar bit lanes.
-- [x] Diagram `hscale`, supported skins, headers, footers, ticks, and tocks.
-- [x] Mixed logic and data cells (`x`, `X`, `=`, and `2`–`9`) in one digital
+- [X] Explicit repeated transitions represented by the app as glitches.
+- [X] Blank spacer rows.
+- [X] Nested groups in the shared WaveDrom JSON array form.
+- [X] Scalar `phase`.
+- [X] Scalar `period` round-trip for ordinary bit and vector lanes.
+- [X] WaveDrom-compatible single-character node strings.
+- [X] WaveDrom-compatible `edge` dependency strings and labels.
+- [X] Supported WaveDrom sub-cycle marker syntax on scalar bit lanes.
+- [X] Diagram `hscale`, supported skins, headers, footers, ticks, and tocks.
+- [X] Mixed logic and data cells (`x`, `X`, `=`, and `2`–`9`) in one digital
   lane.
-- [x] Metastability states `m` and `M`, resolving to zero and one.
-- [x] Impulse states `i` and `I`.
+- [X] Metastability states `m` and `M`, resolving to zero and one.
+- [X] Impulse states `i` and `I`.
 
 ### Partial or unsupported
 
@@ -129,7 +129,7 @@ Upstream references:
   extended path set as structured annotations.
 - [ ] Unsupported: the Undulate `edges` plural field. The shared WaveDrom
   `edge` field is supported.
-- [x] The plural `edges` field and known extended edge/node forms are detected
+- [X] The plural `edges` field and known extended edge/node forms are detected
   and rejected as WIP before import.
 
 Upstream references:
@@ -142,8 +142,8 @@ Upstream references:
 
 ### Supported or partial
 
-- [x] Scalar `phase` is preserved.
-- [x] Scalar `period` is preserved on ordinary digital lanes.
+- [X] Scalar `phase` is preserved.
+- [X] Scalar `period` is preserved on ordinary digital lanes.
 - [ ] Partial: `repeat` is expanded for analogue signals during import, but is
   not retained as a first-class property or re-emitted.
 - [ ] Partial: transition slewing exists for analogue `s` cells, not for
@@ -157,7 +157,7 @@ Upstream references:
 - [ ] Unsupported: digital/clock `slewing`.
 - [ ] Unsupported: a general fine-timing timebase or app-native Sub-Steps
   control.
-- [x] Digital `repeat`, `periods`, `duty_cycle`, `duty_cycles`, and `slewing`
+- [X] Digital `repeat`, `periods`, `duty_cycle`, `duty_cycles`, and `slewing`
   are comprehensively detected and rejected with WIP findings and stable
   signal paths.
 
@@ -168,22 +168,22 @@ Upstream reference:
 
 ### Supported
 
-- [x] Plain text annotations with finite numeric `x` and `y`.
-- [x] Vertical line annotations with `shape: "|"` and finite numeric `x`.
-- [x] Horizontal line annotations with `shape: "-"` and finite numeric `y`.
-- [x] Full-span global time compression with `shape: "||"` and finite numeric
+- [X] Plain text annotations with finite numeric `x` and `y`.
+- [X] Vertical line annotations with `shape: "|"` and finite numeric `x`.
+- [X] Horizontal line annotations with `shape: "-"` and finite numeric `y`.
+- [X] Full-span global time compression with `shape: "||"` and finite numeric
   `x`.
-- [x] Safe annotation `fill`, `stroke`, `stroke-width`, and
+- [X] Safe annotation `fill`, `stroke`, `stroke-width`, and
   `stroke-dasharray` on typed text, line, and global-compression annotations.
-- [x] Creation through dedicated Text, V line, H line, and Compress tools.
-- [x] Selection, property editing, deletion, undo, and redo.
-- [x] Rendering in the live canvas, local render, SVG, PNG, and JPEG.
-- [x] Text is escaped in generated SVG.
-- [x] Supported annotations within the app's bounds round-trip through
+- [X] Creation through dedicated Text, V line, H line, and Compress tools.
+- [X] Selection, property editing, deletion, undo, and redo.
+- [X] Rendering in the live canvas, local render, SVG, PNG, and JPEG.
+- [X] Text is escaped in generated SVG.
+- [X] Supported annotations within the app's bounds round-trip through
   Undulate JSON.
-- [x] Fractional `x` and `y` coordinates are preserved through import,
+- [X] Fractional `x` and `y` coordinates are preserved through import,
   inspector editing, local rendering, and Undulate export.
-- [x] Selected annotations can be dragged directly; arrow keys nudge and
+- [X] Selected annotations can be dragged directly; arrow keys nudge and
   Shift provides fine movement.
 
 ### Partial
@@ -208,7 +208,7 @@ Upstream reference:
 - [ ] Unsupported: `text_background`.
 - [ ] Unsupported: known but incomplete annotation shapes are rejected as WIP;
   unrecognized fields are rejected as unknown and are not preserved opaquely.
-- [x] Over-limit annotation counts, text, and coordinates are rejected before
+- [X] Over-limit annotation counts, text, and coordinates are rejected before
   normalization can truncate or clamp them.
 
 Upstream references:
@@ -219,23 +219,23 @@ Upstream references:
 
 ### Supported
 
-- [x] Analogue lanes as a distinct editable signal type.
-- [x] Numeric step cells using Undulate `s`.
-- [x] Numeric capacitive cells using Undulate `c`.
-- [x] Explicit sampled arbitrary cells using Undulate `a` with finite
+- [X] Analogue lanes as a distinct editable signal type.
+- [X] Numeric step cells using Undulate `s`.
+- [X] Numeric capacitive cells using Undulate `c`.
+- [X] Explicit sampled arbitrary cells using Undulate `a` with finite
   `[time, value]` pairs.
-- [x] Hold cells represented by the initial `0`/`1` level and `.`.
-- [x] Bounded finite sample data, with at most 4096 points per cell.
-- [x] Bounded analogue voltage range in the app inspector.
-- [x] Numeric `slewing` for step geometry.
-- [x] Bounded `vscale` from 0.25 through 16.
-- [x] Consecutive analogue overlay chains.
-- [x] Overlay label `order` values 0 through 4.
-- [x] Analogue creation, cell selection, transition/value editing, and
+- [X] Hold cells represented by the initial `0`/`1` level and `.`.
+- [X] Bounded finite sample data, with at most 4096 points per cell.
+- [X] Bounded analogue voltage range in the app inspector.
+- [X] Numeric `slewing` for step geometry.
+- [X] Bounded `vscale` from 0.25 through 16.
+- [X] Consecutive analogue overlay chains.
+- [X] Overlay label `order` values 0 through 4.
+- [X] Analogue creation, cell selection, transition/value editing, and
   undo/redo.
-- [x] Shared analogue geometry in the live canvas, local render, SVG, PNG,
+- [X] Shared analogue geometry in the live canvas, local render, SVG, PNG,
   and JPEG.
-- [x] Explicit validation errors for non-finite values, malformed samples,
+- [X] Explicit validation errors for non-finite values, malformed samples,
   value-count mismatches, and unsupported analogue fields.
 
 ### Partial
@@ -247,7 +247,7 @@ Upstream references:
   are rejected until an explicit conversion model exists.
 - [ ] Partial: imported voltage context defaults to 0..1.8 because upstream
   `VDDA`/`VSSA` context is not represented in the source bridge.
-- [x] Imported analogue values outside ±1,000,000,000, negative slew, and
+- [X] Imported analogue values outside ±1,000,000,000, negative slew, and
   `vscale` outside 0.25..16 are rejected before normalization; GUI-authored
   values may still use bounded controls.
 - [ ] Partial: overlays are inferred from consecutive analogue lanes; there is
@@ -279,11 +279,11 @@ Upstream references:
 
 ### Supported
 
-- [x] App-native themes, accent color, canvas color, and existing WaveDrom bus
+- [X] App-native themes, accent color, canvas color, and existing WaveDrom bus
   palette choices affect browser rendering.
-- [x] Typed annotations accept bounded local `fill`, `stroke`,
+- [X] Typed annotations accept bounded local `fill`, `stroke`,
   `stroke-width`, and `stroke-dasharray` overrides.
-- [x] Generated SVG text is escaped and output is sanitized.
+- [X] Generated SVG text is escaped and output is sanitized.
 
 ### Unsupported
 
@@ -299,22 +299,22 @@ Upstream references:
 
 ### Supported
 
-- [x] Interactive browser canvas rendering.
-- [x] Browser-local preview of the current Undulate JSON subset.
-- [x] Local preview Fit, 100%, zoom, and scroll navigation.
-- [x] SVG export from the app renderer.
-- [x] PNG export at 1x, 2x, and 3x.
-- [x] JPEG export at 1x, 2x, and 3x.
-- [x] Copy as PNG and copy as SVG where browser clipboard support is
+- [X] Interactive browser canvas rendering.
+- [X] Browser-local preview of the current Undulate JSON subset.
+- [X] Local preview Fit, 100%, zoom, and scroll navigation.
+- [X] SVG export from the app renderer.
+- [X] PNG export at 1x, 2x, and 3x.
+- [X] JPEG export at 1x, 2x, and 3x.
+- [X] Copy as PNG and copy as SVG where browser clipboard support is
   available.
-- [x] WaveDrom compatible-subset export with explicit findings for supported
+- [X] WaveDrom compatible-subset export with explicit findings for supported
   extension objects that cannot be represented.
-- [x] Undulate JSON compatibility findings for converted annotations and
+- [X] Undulate JSON compatibility findings for converted annotations and
   analogue lanes.
 
 ### Unsupported
 
-- [ ] Unsupported: PDF export.
+- [ ] Out of scope: PDF export.
 - [ ] Unsupported: PostScript or EPS export.
 - [ ] Unsupported: terminal rendering.
 - [ ] Unsupported: invoking Undulate's Python/Cairo renderer locally.
@@ -328,16 +328,16 @@ Upstream reference:
 
 ### Supported
 
-- [x] Document-level Undulate extensions toggle.
-- [x] A distinct final `UNDULATE` group in the vertical edit rail.
-- [x] Extension creation and editing controls are hidden while disabled.
-- [x] Existing extension objects are hidden and locked without changing their
+- [X] Document-level Undulate extensions toggle.
+- [X] A distinct final `UNDULATE` group in the vertical edit rail.
+- [X] Extension creation and editing controls are hidden while disabled.
+- [X] Existing extension objects are hidden and locked without changing their
   JSON when **Hide features and preserve JSON** is chosen.
-- [x] **Cancel** leaves the mode and document unchanged.
-- [x] **Remove Undulate features** deletes supported annotations and analogue
+- [X] **Cancel** leaves the mode and document unchanged.
+- [X] **Remove Undulate features** deletes supported annotations and analogue
   lanes as one undoable edit.
-- [x] Enabling and disabling the mode participates in document history.
-- [x] WaveDrom export reports supported annotations and analogue lanes as
+- [X] Enabling and disabling the mode participates in document history.
+- [X] WaveDrom export reports supported annotations and analogue lanes as
   incompatible rather than silently claiming lossless output.
 
 ### Partial
@@ -358,10 +358,10 @@ Upstream reference:
 
 ## 10. Highest-priority gaps
 
-- [x] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
+- [X] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
   and digital-signal fields, especially `edges`, `repeat`, `periods`,
   `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
-- [x] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
+- [X] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
 - [ ] **P1 — Extended digital timing and remaining states.** Add `repeat`,
   variable periods, duty cycles, digital slew, and `h`/`H`/`l`/`L`.
@@ -410,3 +410,11 @@ Primary automated coverage:
 - `src/exportEngine/headFootImageExport.test.ts`
 - `tests/e2e/release.spec.ts`
 - `tests/fixtures/undulate/supported-roundtrip-cases.json`
+
+
+## Misc
+
+
+- Add inspector support to analog signals
+- Add supported signal type of Undulate either in draw when undulate mode is enable or in another category
+- More samples, from a functional Pov i.e. not obly amba protocols but also with undulate we have modes that we could not support before, need to highlight every feature ideally
