@@ -27,7 +27,9 @@ describe('annotations', () => {
       tick: 7,
       signalId: 'sig-1',
     });
-    expect(annotation?.text).toHaveLength(MAX_ANNOTATION_TEXT_LENGTH);
+    expect(annotation?.type).toBe('text');
+    if (annotation?.type !== 'text') return;
+    expect(annotation.text).toHaveLength(MAX_ANNOTATION_TEXT_LENGTH);
     expect(annotation).not.toHaveProperty('yOffset');
   });
 
@@ -38,6 +40,40 @@ describe('annotations', () => {
         4,
       ),
     ).toHaveLength(1);
+  });
+
+  it('normalizes global compression and bounded safe styles', () => {
+    expect(normalizeAnnotations([
+      {
+        id: 'compression',
+        type: 'global-compression',
+        tick: 3,
+        style: {
+          fill: '#abc',
+          stroke: 'rgb(1, 2, 3)',
+          strokeWidth: 2,
+          strokeDasharray: [4, 2],
+        },
+      },
+      {
+        id: 'unsafe',
+        type: 'vertical-line',
+        tick: 1,
+        style: { stroke: 'url(https://example.test)', strokeWidth: 100 },
+      },
+    ], 8)).toEqual([
+      expect.objectContaining({
+        id: 'compression',
+        type: 'global-compression',
+        style: {
+          fill: '#abc',
+          stroke: 'rgb(1, 2, 3)',
+          strokeWidth: 2,
+          strokeDasharray: [4, 2],
+        },
+      }),
+      expect.not.objectContaining({ style: expect.anything() }),
+    ]);
   });
 
   it('reports extension content independently from mode state', () => {

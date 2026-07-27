@@ -16,9 +16,17 @@ import {
   exportCanvasToBlob,
 } from './exportCanvas';
 import { drawEdgesOnCanvas } from './exportEdges';
+import { toWavedromJSON } from '../wavedromBridge';
+import { confirmAndOpenInWavedrom } from '../codePanel/openInWavedrom';
 import styles from './ExportDialog.module.css';
 
-export type ExportFormat = 'png' | 'svg' | 'jpg' | 'json' | 'undulate-json';
+export type ExportFormat =
+  | 'png'
+  | 'svg'
+  | 'jpg'
+  | 'json'
+  | 'undulate-json'
+  | 'wavedrom-editor';
 
 export interface ExportDialogProps {
   open: boolean;
@@ -72,7 +80,7 @@ export function ExportDialog({
 
   const isImage = format === 'png' || format === 'jpg';
   const compatibilityFindings =
-    format === 'json'
+    format === 'json' || format === 'wavedrom-editor'
       ? waveDromCompatibilityFindings(diagram)
       : format === 'undulate-json'
         ? undulateCompatibilityFindings(diagram)
@@ -88,6 +96,9 @@ export function ExportDialog({
         exportWavedromJSON(diagram, view);
       } else if (format === 'undulate-json') {
         exportUndulateJSON(diagram, view);
+      } else if (format === 'wavedrom-editor') {
+        const code = JSON.stringify(toWavedromJSON(diagram), null, 2);
+        if (!confirmAndOpenInWavedrom(code)) return;
       } else {
         await exportImage(diagram, view, {
           format,
@@ -199,6 +210,7 @@ export function ExportDialog({
             <option value="jpg">JPG</option>
             <option value="json">WaveDrom JSON</option>
             <option value="undulate-json">Undulate JSON</option>
+            <option value="wavedrom-editor">Open in WaveDrom Editor (online)</option>
           </select>
         </div>
 
@@ -288,9 +300,11 @@ export function ExportDialog({
           >
             {busy
               ? 'Exporting…'
-              : format === 'json' && compatibilityFindings.length > 0
-                ? 'Export compatible subset'
-                : 'Export'}
+              : format === 'wavedrom-editor'
+                ? 'Review warning & open'
+                : format === 'json' && compatibilityFindings.length > 0
+                  ? 'Export compatible subset'
+                  : 'Export'}
           </button>
         </div>
       </div>

@@ -65,6 +65,46 @@ describe('FileOperations', () => {
     expect(useStore.getState().view.isDirty).toBe(false);
   });
 
+  it('opens commented WaveDrom JSON5 and preserves its syntax on Save', async () => {
+    const source = `{
+  signal: [
+    // clock signal
+    { name: 'clk', wave: '01' },
+    // request signal
+    { name: 'request', wave: '0.1' },
+  ],
+}`;
+    const write = vi.fn().mockResolvedValue(undefined);
+    const file = new File([source], 'commented.json', {
+      type: 'application/json',
+    });
+    const handle = {
+      name: 'commented.json',
+      getFile: vi.fn().mockResolvedValue(file),
+      createWritable: vi.fn().mockResolvedValue({
+        write,
+        close: vi.fn().mockResolvedValue(undefined),
+      }),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([
+      handle,
+    ]);
+
+    await openDiagramFile();
+    const clock = useStore.getState().diagram.signals[0];
+    if (!clock || clock.type === 'group') return;
+    useStore.getState().renameSignal(clock.id, 'system clock');
+    await saveCurrentDiagramFile();
+
+    const savedBlob = write.mock.calls[0]![0] as Blob;
+    const saved = await savedBlob.text();
+    expect(saved).toContain('// clock signal');
+    expect(saved).toContain('// request signal');
+    expect(saved).toContain("name: 'system clock'");
+    expect(saved).toContain("name: 'request'");
+    expect(saved).toContain('signal: [');
+  });
+
   it('opens Undulate annotations and preserves them when saving', async () => {
     const write = vi.fn().mockResolvedValue(undefined);
     const close = vi.fn().mockResolvedValue(undefined);
@@ -159,5 +199,50 @@ describe('FileOperations', () => {
       type: 'analogue',
       name: 'vin',
     });
+  });
+
+  it('rejects WIP file content without mutating the open document or handle', async () => {
+    const firstFile = new File([
+      JSON.stringify({ signal: [{ name: 'kept', wave: '01' }] }),
+    ], 'kept.json', { type: 'application/json' });
+    const firstHandle = {
+      name: 'kept.json',
+      getFile: vi.fn().mockResolvedValue(firstFile),
+      createWritable: vi.fn(),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn()
+      .mockResolvedValueOnce([firstHandle]);
+    await openDiagramFile();
+    const before = useStore.getState().diagram;
+
+    const blockedFile = new File([
+      JSON.stringify({
+        signal: [{
+          name: 'lost',
+          wave: 'p',
+          repeat: 8,
+          duty_cycles: [0.5],
+        }],
+      }),
+    ], 'blocked.json', { type: 'application/json' });
+    const blockedHandle = {
+      name: 'blocked.json',
+      getFile: vi.fn().mockResolvedValue(blockedFile),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn()
+      .mockResolvedValueOnce([blockedHandle]);
+    const alert = vi.fn();
+    Object.defineProperty(window, 'alert', {
+      configurable: true,
+      value: alert,
+      writable: true,
+    });
+
+    await openDiagramFile();
+
+    expect(alert).toHaveBeenCalledWith(expect.stringContaining('[WIP] signal[0].repeat'));
+    expect(alert).toHaveBeenCalledWith(expect.stringContaining('signal[0].duty_cycles'));
+    expect(useStore.getState().diagram).toBe(before);
+    expect(useStore.getState().view.fileName).toBe('kept.json');
   });
 });

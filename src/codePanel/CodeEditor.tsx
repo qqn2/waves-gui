@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { EditorState, type Extension } from '@codemirror/state';
+import { Compartment, EditorState, type Extension } from '@codemirror/state';
 import {
   EditorView,
   keymap,
@@ -9,7 +9,10 @@ import {
 import { json } from '@codemirror/lang-json';
 import { defaultKeymap } from '@codemirror/commands';
 import { linter, lintGutter } from '@codemirror/lint';
-import { validateCodeString } from './codeSync';
+import {
+  validateCodeString,
+  type DiagramCodeFormat,
+} from './codeSync';
 import { flushPendingCodeToDiagram } from './flushRegistry';
 import { useStore } from '../shared/store';
 import styles from './CodePanel.module.css';
@@ -20,11 +23,14 @@ export interface CodeEditorProps {
   /** Flush pending debounced JSON → diagram apply (e.g. on blur). */
   onBlur?: () => void;
   error: string | null;
+  format: DiagramCodeFormat;
 }
 
-function jsonLinter() {
+function jsonLinter(format: DiagramCodeFormat) {
   return linter((view) => {
-    const message = validateCodeString(view.state.doc.toString());
+    const message = validateCodeString(view.state.doc.toString(), {
+      preferUndulate: format === 'undulate',
+    });
     if (!message) return [];
     return [
       {
@@ -96,9 +102,16 @@ const unifiedHistoryKeymap = [
   },
 ];
 
-export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
+export function CodeEditor({
+  code,
+  onChange,
+  onBlur,
+  error,
+  format,
+}: CodeEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
+  const lintCompartmentRef = useRef(new Compartment());
   const onChangeRef = useRef(onChange);
   const onBlurRef = useRef(onBlur);
   const syncingRef = useRef(false);
@@ -117,7 +130,7 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
           lineNumbers(),
           highlightActiveLine(),
           json(),
-          jsonLinter(),
+          lintCompartmentRef.current.of(jsonLinter(format)),
           lintGutter(),
           editorTheme(),
           keymap.of([...unifiedHistoryKeymap, ...defaultKeymap]),
@@ -156,12 +169,24 @@ export function CodeEditor({ code, onChange, onBlur, error }: CodeEditorProps) {
     }
   }, [code]);
 
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    view.dispatch({
+      effects: lintCompartmentRef.current.reconfigure(jsonLinter(format)),
+    });
+  }, [format]);
+
   const statusClass = error ? styles.statusError : styles.statusOk;
 
   return (
     <div className={styles.editorWrap}>
       <div ref={containerRef} className={styles.editor} />
-      <div className={`${styles.statusBar} ${statusClass}`}>
+      <div
+        className={`${styles.statusBar} ${statusClass}`}
+        role={error ? 'alert' : 'status'}
+        aria-live="polite"
+      >
         {error ? error : '✓ Valid'}
       </div>
     </div>

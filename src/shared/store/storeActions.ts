@@ -2,6 +2,9 @@ import type {
   BitState,
   AnalogueCell,
   TextAnnotation,
+  VerticalLineAnnotation,
+  HorizontalLineAnnotation,
+  GlobalCompressionAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -140,12 +143,38 @@ export interface StoreActions {
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
   setExtensionsEnabled(enabled: boolean): void;
+  removeUndulateFeatures(): void;
   addTextAnnotation(
     annotation: Omit<TextAnnotation, 'id' | 'type'>,
   ): string | null;
+  addVerticalLineAnnotation(
+    annotation: Omit<VerticalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addHorizontalLineAnnotation(
+    annotation: Omit<HorizontalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addGlobalCompressionAnnotation(
+    annotation: Omit<GlobalCompressionAnnotation, 'id' | 'type'>,
+  ): string | null;
+  updateVerticalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateHorizontalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<HorizontalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateGlobalCompressionAnnotation(
+    id: string,
+    patch: Partial<Omit<GlobalCompressionAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
   updateTextAnnotation(
     id: string,
     patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
   ): void;
   removeAnnotation(id: string): void;
   markClean(fileName: string): void;

@@ -42,7 +42,7 @@ export function SignalContextMenu({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!anchor) return;
+    if (!anchor || !signal) return;
     const onPointerDown = (e: MouseEvent) => {
       if (menuRef.current?.contains(e.target as Node)) return;
       onClose();
@@ -56,7 +56,7 @@ export function SignalContextMenu({
       window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [anchor, onClose]);
+  }, [anchor, signal, onClose]);
 
   if (!anchor || !signal) return null;
 

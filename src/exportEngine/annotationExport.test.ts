@@ -35,4 +35,24 @@ describe('annotation image export', () => {
 
     expect(buildSVGString(diagram, defaultView())).not.toContain('hidden-note');
   });
+
+  it('exports styled lines and global compression to SVG', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    const signal = diagram.signals.find((item) => item.type === 'bit');
+    diagram.annotations = [
+      {
+        id: 'v',
+        type: 'vertical-line',
+        tick: 1,
+        style: { stroke: '#123456', strokeWidth: 2, strokeDasharray: [3, 2] },
+      },
+      { id: 'h', type: 'horizontal-line', signalId: signal?.id },
+      { id: 'c', type: 'global-compression', tick: 2 },
+    ];
+    const svg = buildSVGString(diagram, defaultView());
+    expect(svg).toContain('stroke="#123456" stroke-width="2" stroke-dasharray="3 2"');
+    expect(svg.match(/stroke-dasharray="5 4"/g)).toHaveLength(1);
+    expect(svg).toContain('width="12"');
+  });
 });

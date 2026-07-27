@@ -3,6 +3,10 @@ import type { BitState, DiagramState } from './types';
 import { DEFAULT_STEPS } from './constants';
 import { createDefaultDiagram } from './defaultDiagram';
 import { toWavedromJSON } from '../wavedromBridge';
+import {
+  diagramToCodeString,
+  parseCodeToDiagram,
+} from '../codePanel/codeSync';
 import { useStore } from './store';
 
 function emptyDiagram(): DiagramState {
@@ -124,11 +128,47 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.head?.text).toBe('raw edit');
   });
 
-  it('preserves and remaps annotations across WaveDrom code edits', () => {
+  it('keeps retained JSON5 comments in undo and redo snapshots', () => {
+    const source = `{
+  signal: [
+    // user clock note
+    { name: 'clk', wave: '01' },
+  ],
+}`;
+    const parsed = parseCodeToDiagram(source);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    useStore.getState().loadDiagram(parsed.diagram);
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type === 'group') return;
+
+    useStore.getState().renameSignal(signal.id, 'renamed');
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      '// user clock note',
+    );
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "name: 'renamed'",
+    );
+
+    useStore.getState().undo();
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "{ name: 'clk', wave: '01' }",
+    );
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      '// user clock note',
+    );
+
+    useStore.getState().redo();
+    expect(diagramToCodeString(useStore.getState().diagram)).toContain(
+      "name: 'renamed'",
+    );
+  });
+
+  it('applies extension-aware JSON edits without preserving deleted annotations', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     useStore.getState().setExtensionsEnabled(true);
     const oldSignalId = useStore.getState().diagram.signals[0]!.id;
-    const annotationId = useStore.getState().addTextAnnotation({
+    useStore.getState().addTextAnnotation({
       text: 'preserved',
       tick: 1,
       signalId: oldSignalId,
@@ -139,16 +179,9 @@ describe('useStore', () => {
 
     useStore.getState().applyDiagramEdit(edited);
 
-    expect(useStore.getState().diagram.annotations).toEqual([
-      expect.objectContaining({
-        id: annotationId,
-        text: 'preserved',
-        signalId: newSignalId,
-      }),
-    ]);
-    expect(
-      useStore.getState().diagram.compatibility?.extensionsEnabled,
-    ).toBe(true);
+    expect(newSignalId).not.toBe(oldSignalId);
+    expect(useStore.getState().diagram.annotations).toEqual([]);
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
   });
 
   it('toggles Undulate extensions as an undoable document edit', () => {
@@ -164,6 +197,62 @@ describe('useStore', () => {
 
     useStore.getState().redo();
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
+  it('hides Undulate features without changing their JSON', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('analogue');
+    const bit = useStore.getState().diagram.signals[0]!;
+    useStore.getState().addTextAnnotation({
+      text: 'preserved',
+      tick: 1,
+      signalId: bit.id,
+    });
+    const before = diagramToCodeString(useStore.getState().diagram);
+
+    useStore.getState().setExtensionsEnabled(false);
+
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
+    expect(diagramToCodeString(useStore.getState().diagram)).toBe(before);
+    expect(useStore.getState().diagram.annotations).toHaveLength(1);
+    expect(useStore.getState().diagram.signals).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
+  });
+
+  it('removes all supported Undulate features as one undoable edit', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('analogue');
+    const bit = useStore.getState().diagram.signals[0]!;
+    useStore.getState().addTextAnnotation({
+      text: 'remove me',
+      tick: 1,
+      signalId: bit.id,
+    });
+
+    useStore.getState().removeUndulateFeatures();
+
+    const stripped = useStore.getState().diagram;
+    expect(stripped.compatibility).toMatchObject({
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+    });
+    expect(stripped.compatibility).not.toHaveProperty('sourceRevision');
+    expect(stripped.annotations).toEqual([]);
+    expect(stripped.signals).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
+    const json = JSON.parse(diagramToCodeString(stripped)) as Record<string, unknown>;
+    expect(json).not.toHaveProperty('annotations');
+    expect(JSON.stringify(json)).not.toContain('"analogue"');
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.annotations).toHaveLength(1);
+    expect(useStore.getState().diagram.signals).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
+    );
   });
 
   it('returns clean when undo reaches the saved snapshot', () => {
@@ -320,6 +409,45 @@ describe('useStore', () => {
       expect(group.children).toHaveLength(0);
       expect(group.children.find((c) => c.id === 'nested-sig')).toBeUndefined();
     }
+  });
+
+  it('removeSignal deletes a section with its children and supports undo', () => {
+    useStore.getState().loadDiagram({
+      version: 1,
+      config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+      signals: [
+        {
+          id: 'section-1',
+          name: 'Section',
+          type: 'group',
+          collapsed: false,
+          children: [
+            {
+              id: 'nested-sig',
+              name: 'nested',
+              type: 'bit',
+              states: bitStates(),
+              segments: [],
+              color: '#4A9EFF',
+              rowHeight: 40,
+            },
+          ],
+        },
+      ],
+      edges: [],
+    });
+
+    useStore.getState().removeSignal('section-1');
+    expect(useStore.getState().diagram.signals).toEqual([]);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.signals).toEqual([
+      expect.objectContaining({
+        id: 'section-1',
+        type: 'group',
+        children: [expect.objectContaining({ id: 'nested-sig' })],
+      }),
+    ]);
   });
 
   it('setVectorSpanRange paints bus data across steps', () => {

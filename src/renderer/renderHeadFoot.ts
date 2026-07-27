@@ -2,11 +2,11 @@ import type { DiagramConfig } from '../shared/types';
 import { TIME_AXIS_HEIGHT } from '../shared/constants';
 import { canvasCellWidth, type ViewTransform } from './coordinates';
 
-const HEAD_TEXT_BAND = 20;
-const HEAD_TICK_BAND = 16;
-const FOOT_TEXT_BAND = 20;
-const FOOT_TOCK_BAND = 16;
-const BAND_PAD = 4;
+export const HEAD_TEXT_BAND = 20;
+export const HEAD_TICK_BAND = 16;
+export const FOOT_TEXT_BAND = 20;
+export const FOOT_TOCK_BAND = 16;
+export const HEAD_FOOT_BAND_PAD = 4;
 
 export interface HeadFootLayout {
   headHeight: number;
@@ -27,14 +27,14 @@ export function measureHeadFoot(config: DiagramConfig): HeadFootLayout {
   let footHeight = 0;
 
   if (config.head?.text) {
-    headHeight += HEAD_TEXT_BAND + BAND_PAD;
+    headHeight += HEAD_TEXT_BAND + HEAD_FOOT_BAND_PAD;
   }
   if (headHasTickBand(config.head)) {
     headHeight += HEAD_TICK_BAND;
   }
 
   if (config.foot?.text) {
-    footHeight += FOOT_TEXT_BAND + BAND_PAD;
+    footHeight += FOOT_TEXT_BAND + HEAD_FOOT_BAND_PAD;
   }
   if (footHasTockBand(config.foot)) {
     footHeight += FOOT_TOCK_BAND;
@@ -142,7 +142,7 @@ export function renderHeadFoot(
   const cellWidth = canvasCellWidth(transform.hscale, transform.zoom);
   const diagramWidth = totalSteps * cellWidth;
 
-  let y = headTopY + BAND_PAD;
+  let y = headTopY + HEAD_FOOT_BAND_PAD;
 
   if (config.head?.text) {
     drawCaption(
@@ -153,7 +153,7 @@ export function renderHeadFoot(
       transform.scrollX,
       canvasWidth,
     );
-    y += HEAD_TEXT_BAND + BAND_PAD;
+    y += HEAD_TEXT_BAND + HEAD_FOOT_BAND_PAD;
   }
 
   if (headHasTickBand(config.head)) {
@@ -162,7 +162,7 @@ export function renderHeadFoot(
     y += HEAD_TICK_BAND;
   }
 
-  let fy = footTopY + BAND_PAD;
+  let fy = footTopY + HEAD_FOOT_BAND_PAD;
 
   if (config.foot?.text) {
     drawCaption(
@@ -173,7 +173,7 @@ export function renderHeadFoot(
       transform.scrollX,
       canvasWidth,
     );
-    fy += FOOT_TEXT_BAND + BAND_PAD;
+    fy += FOOT_TEXT_BAND + HEAD_FOOT_BAND_PAD;
   }
 
   if (footHasTockBand(config.foot)) {

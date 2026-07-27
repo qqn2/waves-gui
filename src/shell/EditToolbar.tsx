@@ -5,27 +5,38 @@ import {
   Group,
   MousePointer2,
   MoveHorizontal,
+  MoveVertical,
+  Minus,
   Paintbrush,
   TextCursorInput,
   Plus,
   Rows3,
+  ChevronsLeftRight,
 } from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
 import styles from './shell.module.css';
 
-const MODES: Array<{
+type ToolMode = {
   id: Tool;
   label: string;
   shortcut: string;
   Icon: typeof MousePointer2;
-}> = [
+};
+
+const CORE_MODES: ToolMode[] = [
   { id: 'cursor', label: 'Select', shortcut: 'V', Icon: MousePointer2 },
   { id: 'paint', label: 'Draw', shortcut: 'D', Icon: Paintbrush },
   { id: 'erase', label: 'Erase', shortcut: 'E', Icon: Eraser },
-  { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
   { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
+];
+
+const UNDULATE_MODES: ToolMode[] = [
+  { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
+  { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
+  { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
+  { id: 'global-compression', label: 'Compress', shortcut: 'Shift+C', Icon: ChevronsLeftRight },
 ];
 
 export function EditToolbar() {
@@ -39,9 +50,9 @@ export function EditToolbar() {
 
   return (
     <nav className={styles.editRail} aria-label="Waveform editing tools">
-      <div className={styles.editRailGroup}>
+      <div className={styles.editRailGroup} role="group" aria-label="Tools">
         <span className={styles.editRailLabel}>Tools</span>
-        {MODES.filter(({ id }) => id !== 'annotation' || extensionsEnabled).map(({ id, label, shortcut, Icon }) => {
+        {CORE_MODES.map(({ id, label, shortcut, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;
@@ -61,7 +72,7 @@ export function EditToolbar() {
         })}
       </div>
 
-      <div className={styles.editRailGroup}>
+      <div className={styles.editRailGroup} role="group" aria-label="Insert">
         <span className={styles.editRailLabel}>Insert</span>
         <button type="button" className={styles.railBtn} onClick={() => addSignal('bit')}>
           <Plus size={21} strokeWidth={1.8} aria-hidden />
@@ -71,7 +82,31 @@ export function EditToolbar() {
           <Rows3 size={21} strokeWidth={1.8} aria-hidden />
           <span>Bus</span>
         </button>
-        {extensionsEnabled && (
+        <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
+          <Group size={21} strokeWidth={1.8} aria-hidden />
+          <span>Group</span>
+        </button>
+      </div>
+
+      {extensionsEnabled && (
+        <div className={styles.editRailGroup} role="group" aria-label="Undulate">
+          <span className={styles.editRailLabel}>Undulate</span>
+          {UNDULATE_MODES.map(({ id, label, shortcut, Icon }) => {
+            const active = tool === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`${styles.railBtn} ${active ? styles.railBtnActive : ''}`}
+                aria-pressed={active}
+                title={`${label} (${shortcut})`}
+                onClick={() => setTool(id)}
+              >
+                <Icon size={21} strokeWidth={1.8} aria-hidden />
+                <span>{label}</span>
+              </button>
+            );
+          })}
           <button
             type="button"
             className={styles.railBtn}
@@ -80,12 +115,8 @@ export function EditToolbar() {
             <Activity size={21} strokeWidth={1.8} aria-hidden />
             <span>Analog</span>
           </button>
-        )}
-        <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
-          <Group size={21} strokeWidth={1.8} aria-hidden />
-          <span>Group</span>
-        </button>
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

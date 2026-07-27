@@ -1,14 +1,83 @@
 import { nanoid } from 'nanoid';
 import type {
+  AnnotationStyle,
   DiagramAnnotation,
   DiagramState,
+  GlobalCompressionAnnotation,
+  HorizontalLineAnnotation,
   SignalOrGroup,
   TextAnnotation,
+  VerticalLineAnnotation,
 } from './types';
 
 export const MAX_ANNOTATIONS = 1000;
 export const MAX_ANNOTATION_TEXT_LENGTH = 2000;
 export const MAX_ANNOTATION_Y_OFFSET = 10_000;
+export const MAX_ANNOTATION_COORDINATE = 10_000;
+export const MAX_ANNOTATION_STROKE_WIDTH = 32;
+export const MAX_ANNOTATION_DASH_ITEMS = 16;
+export const MAX_ANNOTATION_DASH_VALUE = 1000;
+
+export function isSafeAnnotationColor(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  const color = value.trim();
+  if (/^#[0-9a-f]{3,4}$/i.test(color) || /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(color)) {
+    return true;
+  }
+  const match = color.match(/^rgba?\(([^)]+)\)$/i);
+  if (!match) return false;
+  const parts = match[1]!.split(',').map((part) => part.trim());
+  const expected = color.toLowerCase().startsWith('rgba(') ? 4 : 3;
+  if (parts.length !== expected) return false;
+  if (!parts.slice(0, 3).every((part) => {
+    const number = Number(part);
+    return Number.isInteger(number) && number >= 0 && number <= 255;
+  })) return false;
+  if (expected === 4) {
+    const alpha = Number(parts[3]);
+    if (!Number.isFinite(alpha) || alpha < 0 || alpha > 1) return false;
+  }
+  return true;
+}
+
+export function isSafeAnnotationStrokeWidth(value: unknown): value is number {
+  return (
+    typeof value === 'number'
+    && Number.isFinite(value)
+    && value >= 0
+    && value <= MAX_ANNOTATION_STROKE_WIDTH
+  );
+}
+
+export function isSafeAnnotationDasharray(value: unknown): value is number[] {
+  return (
+    Array.isArray(value)
+    && value.length > 0
+    && value.length <= MAX_ANNOTATION_DASH_ITEMS
+    && value.every((item) => (
+      typeof item === 'number'
+      && Number.isFinite(item)
+      && item >= 0
+      && item <= MAX_ANNOTATION_DASH_VALUE
+    ))
+  );
+}
+
+export function normalizeAnnotationStyle(
+  value: AnnotationStyle | undefined,
+): AnnotationStyle | undefined {
+  if (!value) return undefined;
+  const style: AnnotationStyle = {};
+  if (isSafeAnnotationColor(value.fill)) style.fill = value.fill.trim();
+  if (isSafeAnnotationColor(value.stroke)) style.stroke = value.stroke.trim();
+  if (isSafeAnnotationStrokeWidth(value.strokeWidth)) {
+    style.strokeWidth = value.strokeWidth;
+  }
+  if (isSafeAnnotationDasharray(value.strokeDasharray)) {
+    style.strokeDasharray = [...value.strokeDasharray];
+  }
+  return Object.keys(style).length > 0 ? style : undefined;
+}
 
 function finiteInteger(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value)
@@ -16,16 +85,46 @@ function finiteInteger(value: unknown, fallback: number): number {
     : fallback;
 }
 
+function finiteCoordinate(
+  value: unknown,
+  min: number,
+  max: number,
+): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
+  return Math.max(min, Math.min(max, value));
+}
+
 export function normalizeTextAnnotation(
   value: Partial<TextAnnotation>,
   totalSteps: number,
 ): TextAnnotation {
   const maxTick = Math.max(0, totalSteps - 1);
-  const tick = Math.max(0, Math.min(maxTick, finiteInteger(value.tick, 0)));
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const tick = Math.max(
+    0,
+    Math.min(
+      maxTick,
+      x === undefined ? finiteInteger(value.tick, 0) : Math.round(x - 0.5),
+    ),
+  );
   const yOffset = Math.max(
     -MAX_ANNOTATION_Y_OFFSET,
     Math.min(MAX_ANNOTATION_Y_OFFSET, finiteInteger(value.yOffset, 0)),
   );
+  const style = normalizeAnnotationStyle(value.style);
+  const y = finiteCoordinate(
+    value.y,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const coordinateMode =
+    value.coordinateMode === 'diagram' || value.coordinateMode === 'signal'
+      ? value.coordinateMode
+      : undefined;
 
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
@@ -35,10 +134,107 @@ export function normalizeTextAnnotation(
         ? value.text.slice(0, MAX_ANNOTATION_TEXT_LENGTH)
         : '',
     tick,
+    ...(x !== undefined ? { x } : {}),
+    ...(y !== undefined ? { y } : {}),
+    ...(coordinateMode ? { coordinateMode } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
     ...(typeof value.signalId === 'string' && value.signalId.length > 0
       ? { signalId: value.signalId }
       : {}),
     ...(yOffset !== 0 ? { yOffset } : {}),
+    ...(style ? { style } : {}),
+  };
+}
+
+export function normalizeVerticalLineAnnotation(
+  value: Partial<VerticalLineAnnotation>,
+  totalSteps: number,
+): VerticalLineAnnotation {
+  const style = normalizeAnnotationStyle(value.style);
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'vertical-line',
+    tick: Math.max(
+      0,
+      Math.min(
+        Math.max(0, totalSteps - 1),
+        x === undefined
+          ? finiteInteger(value.tick, 0)
+          : Math.round(x - 0.5),
+      ),
+    ),
+    ...(x !== undefined ? { x } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
+    ...(style ? { style } : {}),
+  };
+}
+
+export function normalizeHorizontalLineAnnotation(
+  value: Partial<HorizontalLineAnnotation>,
+): HorizontalLineAnnotation {
+  const yOffset = Math.max(
+    -MAX_ANNOTATION_Y_OFFSET,
+    Math.min(MAX_ANNOTATION_Y_OFFSET, finiteInteger(value.yOffset, 0)),
+  );
+  const style = normalizeAnnotationStyle(value.style);
+  const y = finiteCoordinate(
+    value.y,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  const coordinateMode =
+    value.coordinateMode === 'diagram' || value.coordinateMode === 'signal'
+      ? value.coordinateMode
+      : undefined;
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'horizontal-line',
+    ...(y !== undefined ? { y } : {}),
+    ...(coordinateMode ? { coordinateMode } : {}),
+    ...(typeof value.signalId === 'string' && value.signalId.length > 0
+      ? { signalId: value.signalId }
+      : {}),
+    ...(yOffset !== 0 ? { yOffset } : {}),
+    ...(style ? { style } : {}),
+  };
+}
+
+export function normalizeGlobalCompressionAnnotation(
+  value: Partial<GlobalCompressionAnnotation>,
+  totalSteps: number,
+): GlobalCompressionAnnotation {
+  const style = normalizeAnnotationStyle(value.style);
+  const x = finiteCoordinate(
+    value.x,
+    -MAX_ANNOTATION_COORDINATE,
+    MAX_ANNOTATION_COORDINATE,
+  );
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'global-compression',
+    tick: Math.max(
+      0,
+      Math.min(
+        Math.max(0, totalSteps - 1),
+        x === undefined
+          ? finiteInteger(value.tick, 0)
+          : Math.round(x - 0.5),
+      ),
+    ),
+    ...(x !== undefined ? { x } : {}),
+    ...(typeof value.snapToGrid === 'boolean'
+      ? { snapToGrid: value.snapToGrid }
+      : {}),
+    ...(style ? { style } : {}),
   };
 }
 
@@ -50,9 +246,30 @@ export function normalizeAnnotations(
   const annotations: DiagramAnnotation[] = [];
   for (const raw of value.slice(0, MAX_ANNOTATIONS)) {
     if (typeof raw !== 'object' || raw === null) continue;
-    const record = raw as Partial<TextAnnotation>;
-    if (record.type !== 'text') continue;
-    annotations.push(normalizeTextAnnotation(record, totalSteps));
+    const record = raw as Partial<DiagramAnnotation>;
+    if (record.type === 'text') {
+      annotations.push(normalizeTextAnnotation(record as Partial<TextAnnotation>, totalSteps));
+    } else if (record.type === 'vertical-line') {
+      annotations.push(
+        normalizeVerticalLineAnnotation(
+          record as Partial<VerticalLineAnnotation>,
+          totalSteps,
+        ),
+      );
+    } else if (record.type === 'horizontal-line') {
+      annotations.push(
+        normalizeHorizontalLineAnnotation(
+          record as Partial<HorizontalLineAnnotation>,
+        ),
+      );
+    } else if (record.type === 'global-compression') {
+      annotations.push(
+        normalizeGlobalCompressionAnnotation(
+          record as Partial<GlobalCompressionAnnotation>,
+          totalSteps,
+        ),
+      );
+    }
   }
   return annotations;
 }
@@ -84,52 +301,5 @@ export function scanExtensionContent(
     analogueSignalCount,
     totalCount,
     hasExtensions: totalCount > 0,
-  };
-}
-
-function leafSignalIds(signals: SignalOrGroup[]): string[] {
-  const ids: string[] = [];
-  const visit = (items: SignalOrGroup[]) => {
-    for (const item of items) {
-      if (item.type === 'group') visit(item.children);
-      else ids.push(item.id);
-    }
-  };
-  visit(signals);
-  return ids;
-}
-
-/**
- * The raw code panel edits WaveDrom JSON, which cannot carry extension fields.
- * Preserve annotations and remap semantic anchors by leaf-lane position.
- */
-export function preserveExtensionsAcrossDiagramEdit(
-  previous: DiagramState,
-  incoming: DiagramState,
-): DiagramState {
-  if (
-    (previous.annotations?.length ?? 0) === 0
-    || (incoming.annotations?.length ?? 0) > 0
-  ) {
-    return incoming;
-  }
-
-  const previousIds = leafSignalIds(previous.signals);
-  const incomingIds = leafSignalIds(incoming.signals);
-  const annotations = previous.annotations!.map((annotation) => {
-    if (!annotation.signalId) return { ...annotation };
-    const laneIndex = previousIds.indexOf(annotation.signalId);
-    const signalId = laneIndex >= 0 ? incomingIds[laneIndex] : undefined;
-    if (signalId) return { ...annotation, signalId };
-    const detached = { ...annotation };
-    delete detached.signalId;
-    return detached;
-  });
-
-  return {
-    ...incoming,
-    version: 2,
-    compatibility: previous.compatibility,
-    annotations,
   };
 }

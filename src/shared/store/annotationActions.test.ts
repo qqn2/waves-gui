@@ -69,6 +69,46 @@ describe('annotation actions', () => {
     useStore.getState().updateTextAnnotation(id!, { text: 'changed' });
     useStore.getState().removeAnnotation(id!);
 
-    expect(useStore.getState().diagram.annotations?.[0]?.text).toBe('note');
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      type: 'text',
+      text: 'note',
+    });
+  });
+
+  it('adds and updates line annotations through undoable actions', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    const signal = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit',
+    );
+    const verticalId = useStore.getState().addVerticalLineAnnotation({ tick: 2 });
+    const horizontalId = useStore.getState().addHorizontalLineAnnotation({
+      signalId: signal?.id,
+      yOffset: 3,
+    });
+    const compressionId = useStore.getState().addGlobalCompressionAnnotation({
+      tick: 1,
+    });
+    useStore.getState().updateVerticalLineAnnotation(verticalId!, { tick: 4 });
+    useStore.getState().updateHorizontalLineAnnotation(horizontalId!, {
+      yOffset: -2,
+    });
+    useStore.getState().updateGlobalCompressionAnnotation(compressionId!, {
+      tick: 3,
+      style: { stroke: '#ff0000', strokeWidth: 2 },
+    });
+    expect(useStore.getState().diagram.annotations).toEqual([
+      expect.objectContaining({ id: verticalId, type: 'vertical-line', tick: 4 }),
+      expect.objectContaining({
+        id: horizontalId,
+        type: 'horizontal-line',
+        yOffset: -2,
+      }),
+      expect.objectContaining({
+        id: compressionId,
+        type: 'global-compression',
+        tick: 3,
+        style: { stroke: '#ff0000', strokeWidth: 2 },
+      }),
+    ]);
   });
 });

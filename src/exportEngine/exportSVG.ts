@@ -28,11 +28,24 @@ import {
   canDrawGlitch,
   glitchOppositeY,
 } from '../renderer/drawStepGlitch';
-import { layoutTextAnnotations } from '../renderer/annotationLayout';
+import {
+  layoutLineAnnotations,
+  layoutTextAnnotations,
+} from '../renderer/annotationLayout';
+import {
+  buildStepLabels,
+  FOOT_TEXT_BAND,
+  FOOT_TOCK_BAND,
+  HEAD_FOOT_BAND_PAD,
+  HEAD_TEXT_BAND,
+  HEAD_TICK_BAND,
+  measureHeadFoot,
+} from '../renderer/renderHeadFoot';
 import {
   analoguePathPoints,
   analogueValueRatio,
 } from '../renderer/analogueGeometry';
+import { fillHexForWaveChar } from '../shared/vectorSegments';
 
 function esc(s: string): string {
   return s
@@ -72,6 +85,79 @@ function bitY(
   }
 }
 
+function isExtendedDataState(state: BitState): boolean {
+  return state === 'x' || state === 'X' || state === '='
+    || (state >= '2' && state <= '9');
+}
+
+function isExtendedTransientState(state: BitState): boolean {
+  return state === 'i' || state === 'I' || state === 'm' || state === 'M';
+}
+
+function svgExtendedDataCell(
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+): string {
+  const d = Math.min(8, Math.max(2, (nextX - x) * 0.2));
+  const yMid = (yHigh + yLow) / 2;
+  const path =
+    `M${x},${yMid} L${x + d},${yHigh} L${nextX - d},${yHigh} `
+    + `L${nextX},${yMid} L${nextX - d},${yLow} L${x + d},${yLow} Z`;
+  const unknown = state === 'x' || state === 'X';
+  const fill = unknown
+    ? 'url(#hatch-x)'
+    : esc(fillHexForWaveChar(state) ?? '#ffffff');
+  const stroke = unknown ? esc(X_STROKE) : '#6b7280';
+  return `<path data-wave-state="${esc(state)}" d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+}
+
+function svgTransientCell(
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+  previousY: number,
+  color: string,
+): { svg: string; endY: number } {
+  const width = nextX - x;
+  if (state === 'i' || state === 'I') {
+    const baseY = state === 'i' ? yHigh : yLow;
+    const pulseY = state === 'i' ? yLow : yHigh;
+    const settleX = Math.min(x + TRANSITION_WIDTH, x + width * 0.25);
+    const pulseX = x + width / 2;
+    const d =
+      `M${x},${previousY} L${settleX},${baseY} L${pulseX},${baseY} `
+      + `L${pulseX},${pulseY} L${pulseX},${baseY} L${nextX},${baseY}`;
+    return {
+      svg: `<path data-wave-state="${state}" d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
+      endY: baseY,
+    };
+  }
+
+  const resolvesHigh = state === 'M';
+  const samples = 28;
+  let d = `M${x},${previousY}`;
+  for (let sample = 0; sample <= samples; sample++) {
+    const t = (sample / samples) * 0.75;
+    const amplitude = Math.exp(2 * (t - 1));
+    const phase = resolvesHigh ? Math.PI : 0;
+    const normalized = (1 + amplitude * Math.sin(phase + 8 * Math.PI * t)) / 2;
+    d += ` L${x + t * width},${yHigh + normalized * (yLow - yHigh)}`;
+  }
+  const targetY = resolvesHigh ? yHigh : yLow;
+  d +=
+    ` C${x + width * 0.85},${targetY} ${x + width * 0.9},${targetY} `
+    + `${nextX},${targetY}`;
+  return {
+    svg: `<path data-wave-state="${state}" d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
+    endY: targetY,
+  };
+}
+
 function svgBitSignal(
   signal: Signal,
   rowY: number,
@@ -90,7 +176,13 @@ function svgBitSignal(
   let pathD = '';
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = false;
+  let resumeAtCurrentState = false;
   const color = esc(resolveSignalColor(signal.color));
+  const extendedDigital = states.some(
+    (state) => state === 'X' || state === '='
+      || (state >= '2' && state <= '9')
+      || isExtendedTransientState(state),
+  );
 
   const flushPath = () => {
     if (pathOpen && pathD) {
@@ -107,11 +199,37 @@ function svgBitSignal(
     const x = stepLogicalX(signal, i) * hscale;
     const nextX = stepLogicalXEnd(signal, i) * hscale;
 
-    if (signal.stepGaps?.[i]) {
+    if (extendedDigital && isExtendedDataState(st)) {
       flushPath();
-      const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
-      const gapFill = esc(themeColor('--bg-canvas', '#121212'));
-      parts.push(svgStepGap(x, nextX, yHigh, yLow, gapStroke, gapFill));
+      let runEnd = i + 1;
+      while (
+        runEnd < totalSteps
+        && states[runEnd] === st
+        && !signal.stepGaps?.[runEnd]
+      ) {
+        runEnd++;
+      }
+      const dataNextX = stepLogicalXEnd(signal, runEnd - 1) * hscale;
+      parts.push(svgExtendedDataCell(st, x, dataNextX, yHigh, yLow));
+      i = runEnd - 1;
+      resumeAtCurrentState = true;
+      continue;
+    }
+
+    if (isExtendedTransientState(st)) {
+      flushPath();
+      const transient = svgTransientCell(
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        resumeAtCurrentState ? yMid : prevY,
+        color,
+      );
+      parts.push(transient.svg);
+      prevY = transient.endY;
+      resumeAtCurrentState = false;
       continue;
     }
 
@@ -154,11 +272,10 @@ function svgBitSignal(
 
     const y = bitY(st, yHigh, yLow, yMid);
     if (!pathOpen) {
-      const resumeY =
-        i > 0 && (signal.stepGaps?.[i - 1] ?? false) ? y : prevY;
-      pathD = `M${x},${resumeY}`;
+      if (resumeAtCurrentState) prevY = y;
+      pathD = `M${x},${prevY}`;
       pathOpen = true;
-      prevY = resumeY;
+      resumeAtCurrentState = false;
     }
     if (y !== prevY) {
       pathD += ` L${x + tw / 2},${prevY} L${x + tw},${y}`;
@@ -177,6 +294,15 @@ function svgBitSignal(
     prevY = y;
   }
   flushPath();
+
+  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapFill = esc(themeColor('--bg-canvas', '#121212'));
+  for (let i = 0; i < totalSteps; i++) {
+    if (!signal.stepGaps?.[i]) continue;
+    const x1 = stepLogicalX(signal, i) * hscale;
+    const x2 = stepLogicalXEnd(signal, i) * hscale;
+    parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
+  }
 
   return parts.join('\n');
 }
@@ -220,6 +346,17 @@ function svgVectorSignal(
       );
     }
   }
+
+  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapFill = esc(themeColor('--bg-canvas', '#121212'));
+  const gaps = signal.stepGaps ?? [];
+  for (let i = 0; i < gaps.length; i++) {
+    if (!gaps[i]) continue;
+    const x1 = stepLogicalX(signal, i) * hscale;
+    const x2 = stepLogicalXEnd(signal, i) * hscale;
+    parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
+  }
+
   return parts.join('\n');
 }
 
@@ -261,6 +398,78 @@ function svgTimeAxis(
   return parts.join('\n');
 }
 
+function svgHeadFoot(
+  diagram: DiagramState,
+  contentHeight: number,
+  waveformWidth: number,
+  textColor: string,
+  secondaryTextColor: string,
+): string {
+  const { headHeight, footHeight } = measureHeadFoot(diagram.config);
+  if (headHeight === 0 && footHeight === 0) return '';
+
+  const parts: string[] = [];
+  const cellWidth = CELL_WIDTH * diagram.config.hscale;
+  let y = TIME_AXIS_HEIGHT + HEAD_FOOT_BAND_PAD;
+
+  if (diagram.config.head?.text) {
+    parts.push(
+      `<text x="${waveformWidth / 2}" y="${y + HEAD_TEXT_BAND / 2}" `
+        + `fill="${esc(textColor)}" font-size="12" font-family="sans-serif" `
+        + `text-anchor="middle" dominant-baseline="middle">${esc(diagram.config.head.text)}</text>`,
+    );
+    y += HEAD_TEXT_BAND + HEAD_FOOT_BAND_PAD;
+  }
+  if (
+    diagram.config.head?.tick !== undefined
+    || diagram.config.head?.every !== undefined
+  ) {
+    const labels = buildStepLabels(
+      diagram.config.head.tick,
+      diagram.config.head.every,
+      diagram.config.totalSteps,
+    );
+    labels.forEach((label, index) => {
+      if (!label) return;
+      parts.push(
+        `<text x="${index * cellWidth + cellWidth / 2}" y="${y + HEAD_TICK_BAND / 2}" `
+          + `fill="${esc(secondaryTextColor)}" font-size="10" font-family="sans-serif" `
+          + `text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>`,
+      );
+    });
+  }
+
+  let footY = TIME_AXIS_HEIGHT + headHeight + contentHeight
+    + HEAD_FOOT_BAND_PAD;
+  if (diagram.config.foot?.text) {
+    parts.push(
+      `<text x="${waveformWidth / 2}" y="${footY + FOOT_TEXT_BAND / 2}" `
+        + `fill="${esc(textColor)}" font-size="12" font-family="sans-serif" `
+        + `text-anchor="middle" dominant-baseline="middle">${esc(diagram.config.foot.text)}</text>`,
+    );
+    footY += FOOT_TEXT_BAND + HEAD_FOOT_BAND_PAD;
+  }
+  if (
+    diagram.config.foot?.tock !== undefined
+    || diagram.config.foot?.every !== undefined
+  ) {
+    const labels = buildStepLabels(
+      diagram.config.foot.tock,
+      diagram.config.foot.every,
+      diagram.config.totalSteps,
+    );
+    labels.forEach((label, index) => {
+      if (!label) return;
+      parts.push(
+        `<text x="${(index + 1) * cellWidth}" y="${footY + FOOT_TOCK_BAND / 2}" `
+          + `fill="${esc(secondaryTextColor)}" font-size="10" font-family="sans-serif" `
+          + `text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>`,
+      );
+    });
+  }
+  return parts.join('\n');
+}
+
 function svgLabels(
   diagram: DiagramState,
   labelWidth: number,
@@ -291,15 +500,49 @@ function svgAnnotations(
   textColor: string,
   panelBg: string,
 ): string {
-  return layoutTextAnnotations(diagram, rows)
-    .map(({ annotation, x, y }) => (
-      `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
-      + `fill="${esc(textColor)}" stroke="${esc(panelBg)}" stroke-width="4" `
-      + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
-      + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
-      + `${esc(annotation.text)}</text>`
-    ))
+  const text = layoutTextAnnotations(diagram, rows)
+    .map(({ annotation, x, y }) => {
+      const style = annotation.style;
+      const stroke = style?.stroke ?? panelBg;
+      const strokeWidth = style?.stroke
+        ? (style.strokeWidth ?? 1)
+        : 4;
+      const dash = style?.strokeDasharray
+        ? ` stroke-dasharray="${style.strokeDasharray.join(' ')}"`
+        : '';
+      return `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
+        + `fill="${esc(style?.fill ?? textColor)}" stroke="${esc(stroke)}" `
+        + `stroke-width="${strokeWidth}"${dash} `
+        + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
+        + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
+        + `${esc(annotation.text)}</text>`;
+    })
     .join('\n');
+  const contentHeight = totalContentHeight(rows);
+  const contentWidth = diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
+  const lines = layoutLineAnnotations(diagram, rows).map((layout) => {
+    const style = layout.annotation.style;
+    const stroke = esc(style?.stroke ?? textColor);
+    const width = style?.strokeWidth ?? 1.5;
+    const dash = style?.strokeDasharray?.join(' ')
+      ?? (layout.orientation === 'compression' ? '' : '5 4');
+    const dashAttribute = dash ? ` stroke-dasharray="${dash}"` : '';
+    if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
+      const x = layout.position * diagram.config.hscale;
+      const line = (lineX: number) => `<line x1="${lineX}" y1="${axisOffset}" x2="${lineX}" `
+        + `y2="${axisOffset + contentHeight}" stroke="${stroke}" `
+        + `stroke-width="${width}"${dashAttribute}/>`;
+      return layout.orientation === 'compression'
+        ? `<rect x="${x - 6}" y="${axisOffset}" width="12" `
+          + `height="${contentHeight}" fill="${esc(panelBg)}"/>\n`
+          + `${line(x - 3)}\n${line(x + 3)}`
+        : line(x);
+    }
+    const y = axisOffset + layout.position;
+    return `<line x1="0" y1="${y}" x2="${contentWidth}" y2="${y}" `
+      + `stroke="${stroke}" stroke-width="${width}"${dashAttribute}/>`;
+  }).join('\n');
+  return [lines, text].filter(Boolean).join('\n');
 }
 
 function svgAnalogueSignal(
@@ -389,6 +632,7 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
   const textColor = themeColor('--text-primary', '#e8e8e8');
   const gridColor = themeColor('--grid-line', '#333333');
   const panelBg = themeColor('--bg-panel', '#242424');
+  const secondaryTextColor = themeColor('--text-secondary', '#999999');
 
   const waveformParts: string[] = [];
   waveformParts.push(
@@ -397,9 +641,17 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
       diagram.config.hscale,
       dims.waveformWidth,
       panelBg,
-      themeColor('--text-secondary', '#999999'),
+      secondaryTextColor,
     ),
   );
+  const headFootSvg = svgHeadFoot(
+    diagram,
+    contentH,
+    dims.waveformWidth,
+    textColor,
+    secondaryTextColor,
+  );
+  if (headFootSvg) waveformParts.push(headFootSvg);
   waveformParts.push(
     svgGrid(
       diagram.config.totalSteps,
@@ -417,7 +669,7 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
     rows,
     dims.axisOffset,
     textColor,
-    panelBg,
+    bg,
   );
   if (annotationSvg) waveformParts.push(annotationSvg);
   const edgeSvg = svgEdges(diagram, view, 0);

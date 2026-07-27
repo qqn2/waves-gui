@@ -96,6 +96,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...(d.compatibility?.sourceRevision
       ? { sourceRevision: d.compatibility.sourceRevision }
       : {}),
+    ...(typeof d.compatibility?.sourceText === 'string'
+      ? { sourceText: d.compatibility.sourceText }
+      : {}),
   };
 
   if (!Array.isArray(d.edges)) {

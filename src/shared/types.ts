@@ -18,14 +18,20 @@
 
 // ─── Signal states ────────────────────────────────────────────────────────────
 
-/** All possible states for a single bit signal at one time step */
-export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N' | '.';
+/** All supported states for a scalar or mixed Undulate digital lane cell. */
+export type BitState =
+  | '0' | '1' | 'x' | 'X' | 'z' | 'u' | 'd'
+  | 'p' | 'n' | 'P' | 'N'
+  | '=' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+  | 'i' | 'I' | 'm' | 'M'
+  | '.';
 
 /** Map to WaveDrom wave characters (`.` is paint-only — resolved before storing in states[]) */
 export const BIT_STATE_CHARS: Record<BitState, string> = {
   '0': '0',
   '1': '1',
   'x': 'x',
+  'X': 'X',
   'z': 'z',
   'u': 'u',
   'd': 'd',
@@ -33,6 +39,19 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'n': 'n',
   'P': 'P',
   'N': 'N',
+  '=': '=',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '7': '7',
+  '8': '8',
+  '9': '9',
+  'i': 'i',
+  'I': 'I',
+  'm': 'm',
+  'M': 'M',
   '.': '.',
 };
 
@@ -141,6 +160,18 @@ export interface DiagramCompatibility {
   extensionsEnabled: boolean;
   sourceFormat?: DiagramSourceFormat;
   sourceRevision?: string;
+  /**
+   * Original JSON5 concrete syntax. It is document metadata, not an exported
+   * WaveDrom property, and lets GUI edits retain comments and formatting.
+   */
+  sourceText?: string;
+}
+
+export interface AnnotationStyle {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  strokeDasharray?: number[];
 }
 
 export interface TextAnnotation {
@@ -149,13 +180,59 @@ export interface TextAnnotation {
   text: string;
   /** Integer document tick. Version 2 currently uses one tick per major step. */
   tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
+  snapToGrid?: boolean;
   /** Optional semantic row anchor. */
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
   yOffset?: number;
+  style?: AnnotationStyle;
 }
 
-export type DiagramAnnotation = TextAnnotation;
+export interface VerticalLineAnnotation {
+  id: string;
+  type: 'vertical-line';
+  /** Integer document tick. The line is centered on this step. */
+  tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
+  style?: AnnotationStyle;
+}
+
+export interface HorizontalLineAnnotation {
+  id: string;
+  type: 'horizontal-line';
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
+  /** Optional semantic row anchor. */
+  signalId?: string;
+  /** Logical pixel offset from the anchored row center. */
+  yOffset?: number;
+  style?: AnnotationStyle;
+}
+
+export interface GlobalCompressionAnnotation {
+  id: string;
+  type: 'global-compression';
+  /** Integer document tick. The compression marker is centered on this step. */
+  tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
+  style?: AnnotationStyle;
+}
+
+export type DiagramAnnotation =
+  | TextAnnotation
+  | VerticalLineAnnotation
+  | HorizontalLineAnnotation
+  | GlobalCompressionAnnotation;
 
 export interface DiagramState {
   /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
@@ -177,6 +254,9 @@ export type Tool =
   | 'erase'
   | 'select'
   | 'annotation'
+  | 'vertical-line'
+  | 'horizontal-line'
+  | 'global-compression'
   | 'arrow'
   | 'timespan'
   | 'cursor';

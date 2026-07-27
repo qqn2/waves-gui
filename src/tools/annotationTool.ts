@@ -15,3 +15,37 @@ export function annotationPointerDown(
   });
   if (id) setActiveAnnotationId(id);
 }
+
+export function verticalLinePointerDown(
+  event: PointerEvent,
+  hit: HitTestResult,
+): void {
+  if (event.button !== 0 || hit.step === null) return;
+  const { addVerticalLineAnnotation, setActiveAnnotationId } = useStore.getState();
+  const id = addVerticalLineAnnotation({ tick: hit.step });
+  if (id) setActiveAnnotationId(id);
+}
+
+export function horizontalLinePointerDown(
+  event: PointerEvent,
+  hit: HitTestResult,
+): void {
+  if (event.button !== 0 || !hit.signalId || hit.signalType === 'group') return;
+  const { addHorizontalLineAnnotation, setActiveAnnotationId } = useStore.getState();
+  const id = addHorizontalLineAnnotation({
+    signalId: hit.signalId,
+    yOffset: 0,
+  });
+  if (id) setActiveAnnotationId(id);
+}
+
+export function globalCompressionPointerDown(
+  event: PointerEvent,
+  hit: HitTestResult,
+): void {
+  if (event.button !== 0 || hit.step === null) return;
+  const { addGlobalCompressionAnnotation, setActiveAnnotationId } =
+    useStore.getState();
+  const id = addGlobalCompressionAnnotation({ tick: hit.step });
+  if (id) setActiveAnnotationId(id);
+}

@@ -4,9 +4,691 @@ Status: design and implementation plan
 
 Audience: maintainers and future contributors
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
 Target application: `waves-gui`
+
+Current audited support contract:
+[`UNDULATE_SUPPORT_CHECKLIST.md`](./UNDULATE_SUPPORT_CHECKLIST.md)
+
+## 0. Implementation contract
+
+This section is the working agreement for all future Undulate work. Read it
+before selecting or implementing a feature. It takes precedence over older
+tentative language elsewhere in this plan when the two conflict.
+
+### 0.1 Core rule
+
+Every documented Undulate property, value form, annotation shape, input
+format, and output capability must be classified before the application accepts
+it.
+
+The application must follow this decision tree:
+
+1. Detect every property and relevant value form known to the pinned Undulate
+   revision.
+2. Import normally only when the feature is classified as **Supported**.
+3. Reject planned but incomplete features with
+   `[WIP] Feature not supported yet`.
+4. Reject intentionally excluded features with
+   `Unsupported by design`.
+5. Reject malformed, unsafe, or over-limit content as **Invalid**.
+6. Reject unrecognized properties as **Unknown**.
+7. Never accept and silently discard any of these categories.
+
+The absence of a validation error is a product promise: applying the document
+and saving it again must not silently remove semantics.
+
+### 0.2 Classification taxonomy
+
+Every feature has exactly one current classification:
+
+#### Supported
+
+The implemented subset is explicitly described and has completed every
+applicable item in the per-feature acceptance checklist below.
+
+Recognition or parsing alone does not count as support.
+
+#### WIP
+
+The feature is documented by the pinned Undulate revision and remains a product
+target, but one or more required layers are incomplete.
+
+Required message form:
+
+```text
+[WIP] <object path> uses <feature>, which is planned but not supported yet.
+```
+
+Examples:
+
+```text
+[WIP] signal[2].duty_cycles is planned but not supported yet.
+[WIP] annotations[0].shape "||" is planned but not supported yet.
+```
+
+WIP means temporary. It must not be used for invalid syntax, typos, or
+intentionally excluded behavior.
+
+#### Unsupported by design
+
+The feature is intentionally outside the product scope. The rejection must
+include the reason and, when useful, a safe alternative.
+
+Examples include register diagrams and executing imported Python expressions.
+
+Required message form:
+
+```text
+Unsupported by design: <feature>. <reason or alternative>
+```
+
+#### Invalid
+
+The property is understood, but its value is malformed, non-finite, unsafe, or
+outside an enforced application limit.
+
+Examples include a non-array `annotations` value, infinite coordinates,
+excessive nesting, over-limit sample arrays, and invalid wave syntax.
+
+Required message form:
+
+```text
+Invalid <object path>: <specific constraint>.
+```
+
+#### Unknown
+
+The property is not documented by the pinned revision and is not an
+app-specific field in the native document schema. It may be a typo or a feature
+from a newer Undulate revision.
+
+Unknown properties are not automatically WIP.
+
+Required message form:
+
+```text
+Unknown Undulate property <object path> for target revision <revision>.
+```
+
+### 0.3 Validation and import behavior
+
+Validation must return structured findings rather than a single unstructured
+error string.
+
+Tentative finding contract:
+
+```ts
+type UndulateFindingKind =
+  | 'wip'
+  | 'unsupported-by-design'
+  | 'invalid'
+  | 'unknown'
+  | 'converted';
+
+interface UndulateFinding {
+  kind: UndulateFindingKind;
+  feature: string;
+  path: string;
+  message: string;
+  sourceRevision: string;
+  consequence?: string;
+}
+```
+
+Rules:
+
+- scan the complete document and report all findings in one pass;
+- include stable object paths such as `signal[2].duty_cycles` and
+  `annotations[0].stroke`;
+- preserve the order in which findings occur in the source;
+- never partially replace the current diagram after a blocked File Open;
+- never apply a blocked JSON editor change to the diagram or history;
+- leave pending valid document state, dirty state, and the retained file handle
+  unchanged after rejection;
+- never save a blocked source as if it had imported successfully;
+- do not initially offer a lossy **Open supported subset** action;
+- continue allowing an explicitly requested WaveDrom compatible-subset export
+  from an already valid internal document;
+- treat the online WaveDrom Editor as an external WaveDrom export target,
+  require explicit confirmation that diagram JSON will be sent to
+  `wavedrom.com`, and send nothing when confirmation is cancelled;
+- apply wave-character validation according to the active format so
+  Undulate-only digital states remain valid in Undulate mode but are reported
+  as incompatible in WaveDrom mode;
+- display all WIP, unsupported-by-design, invalid, and unknown findings in a
+  readable report;
+- use `aria-live` or an equivalent accessible announcement for editor findings;
+- keep the raw invalid editor text visible so the user can correct it, while
+  the canvas continues to show the last valid document.
+
+### 0.4 Detection scope
+
+The known-property manifest must be derived from and pinned to:
+
+```text
+c8da7d48c48fc0bbc90113b6913611132bd96c01
+```
+
+It must cover at least:
+
+- root properties;
+- ordinary digital signal properties;
+- analogue signal properties;
+- groups and spacers;
+- node and edge forms;
+- annotation fields and shapes;
+- style properties;
+- register roots so they can be rejected by design;
+- JSON/JSONML, YAML, and TOML entry points;
+- renderer/output capabilities when exposed through the application.
+
+Format detection must not rely only on `annotations` or `analogue`. Known
+Undulate-only fields such as `duty_cycles`, `periods`, `overlay`, extended
+states, styles, or plural `edges` must also route the document through the
+Undulate classifier.
+
+### 0.5 Normalization and conversion policy
+
+Normalization is part of the support contract. A parser must not quietly make
+content fit the internal model.
+
+Every transformation is classified as:
+
+- **Exact**: representation changes but Undulate semantics do not;
+- **Converted**: semantics are retained through a documented deterministic
+  conversion;
+- **WIP**: equivalence is not yet proven, so import is blocked;
+- **Invalid**: the input exceeds a safety or product limit and is rejected.
+
+Rules:
+
+- do not truncate imported annotation text or annotation counts;
+- do not silently clamp imported coordinates, analogue values, slew, scale,
+  periods, or sample counts;
+- reject over-limit imported values with the limit in the message;
+- UI controls may clamp values while the user is authoring inside the app;
+- canonical spelling changes are allowed only when semantics are proven equal;
+- conversions need a deterministic round-trip or semantic-equivalence fixture;
+- converted findings may be informational, but must not be confused with WIP;
+- analogue `repeat` expansion, arbitrary sample-time normalization, and
+  fractional annotation snapping remain WIP until fixtures prove the intended
+  semantics;
+- do not preserve executable expressions as supported rendered content;
+- any future opaque preservation must have explicit invalidation and conflict
+  rules before it is enabled.
+
+### 0.6 Definition of supported
+
+A user-visible waveform feature is **Supported** only after every applicable
+item in its own feature checklist is complete:
+
+- [ ] **Known manifest**: property names, value forms, and aliases are recorded
+  from the pinned upstream revision.
+- [ ] **Detection**: the feature reliably routes input through the Undulate
+  classifier.
+- [ ] **Validation**: valid values are accepted and malformed, unsafe, unknown,
+  and over-limit values produce structured findings.
+- [ ] **Import**: supported input reaches the internal model without unintended
+  loss.
+- [ ] **Model**: semantics have a typed, normalized internal representation.
+- [ ] **Main canvas**: the feature renders in the interactive editor.
+- [ ] **Local render**: the render panel shows the same semantics.
+- [ ] **Editing**: creation and property editing exist where product-relevant;
+  otherwise the checklist states why editing is not applicable.
+- [ ] **History**: creation, editing, conversion, and deletion are undoable
+  where applicable.
+- [ ] **Undulate export**: supported semantics export deterministically.
+- [ ] **Image export**: SVG, PNG, and JPEG include the feature where applicable.
+- [ ] **WaveDrom compatibility**: exact, converted, approximated, or
+  unsupported behavior is reported correctly.
+- [ ] **Upstream fixtures**: pinned valid examples cover import, render, and
+  semantic round-trip.
+- [ ] **Negative fixtures**: malformed, hostile, over-limit, WIP, unknown, and
+  unsupported-by-design cases are tested.
+- [ ] **Documentation**: the support checklist, compatibility matrix, and UI
+  wording agree.
+
+No single checklist may cover several distinct features merely because they
+share code. For example, `repeat`, `periods`, and `duty_cycles` each require
+their own copied checklist and evidence.
+
+If an item is genuinely not applicable, replace it in that feature's checklist
+with:
+
+```text
+- [x] N/A — <reason>
+```
+
+Do not leave an item unchecked and still classify the feature as Supported.
+
+### 0.7 Per-feature delivery record template
+
+Before implementation begins, copy this template into the relevant feature
+section. Keep it there after delivery as the durable evidence record.
+
+```markdown
+#### <Feature name>
+
+Classification: WIP
+
+Upstream revision: c8da7d48c48fc0bbc90113b6913611132bd96c01
+
+Upstream properties/shapes/values:
+
+- `<field or value>`
+
+Current rejection:
+
+- Kind: `wip`
+- Path example: `<object path>`
+- Message: `[WIP] ...`
+
+Acceptance:
+
+- [ ] Known manifest
+- [ ] Detection
+- [ ] Validation
+- [ ] Import
+- [ ] Typed model
+- [ ] Main canvas
+- [ ] Local render
+- [ ] Editing or explicit N/A
+- [ ] Undo/redo or explicit N/A
+- [ ] Undulate export
+- [ ] SVG/PNG/JPEG or explicit N/A
+- [ ] WaveDrom compatibility classification
+- [ ] Pinned upstream fixtures
+- [ ] Negative and hostile fixtures
+- [ ] Documentation synchronized
+
+Evidence:
+
+- Implementation:
+- Tests:
+- Fixtures:
+- UX:
+- Remaining limitations:
+```
+
+### 0.8 Feature ledger
+
+This ledger defines the current queue. The detailed audit remains in
+`UNDULATE_SUPPORT_CHECKLIST.md`. Each WIP row must receive its own delivery
+record from section 0.7 before code is implemented.
+
+#### Supported subsets requiring retroactive checklist evidence
+
+- [ ] Strict Undulate JSON for the currently typed subset.
+- [ ] Shared WaveDrom-compatible digital states and buses.
+- [ ] Shared clocks `p`, `P`, `n`, and `N`.
+- [ ] Shared scalar `phase` and `period`.
+- [ ] Shared groups and spacers.
+- [ ] Shared single-character nodes and WaveDrom `edge` strings.
+- [ ] Plain text annotations on the integer app step grid.
+- [ ] Plain vertical-line annotations on the integer app step grid.
+- [ ] Plain horizontal-line annotations on the app logical Y grid.
+- [ ] Numeric analogue `s` cells.
+- [ ] Numeric analogue `c` cells.
+- [ ] Explicit finite sampled analogue `a` cells.
+- [ ] Analogue numeric `slewing`.
+- [ ] Analogue bounded `vscale`.
+- [ ] Consecutive analogue overlays and label `order`.
+- [ ] Browser-native SVG, PNG, and JPEG output for typed extensions.
+- [ ] Three-action Undulate disable flow.
+
+These features work today, but this retroactive ledger remains unchecked until
+each has a copied acceptance record with direct evidence for every applicable
+layer. Existing behavior is not removed while the audit is completed.
+
+#### WIP — safety gate before new feature work
+
+- [x] Complete known root-property manifest.
+- [x] Complete digital-signal property manifest.
+- [x] Complete analogue-signal property manifest.
+- [x] Complete annotation shape/property manifest.
+- [x] Structured multi-finding validator.
+- [x] Unknown-property rejection.
+- [x] WIP-property rejection.
+- [x] Unsupported-by-design rejection.
+- [x] Non-mutating File Open rejection report.
+- [x] Non-mutating JSON editor rejection report.
+- [x] Replace identified imported truncation/clamping with explicit invalid
+  findings.
+- [ ] Pinned fixtures proving every known incomplete feature is blocked.
+
+##### Revision-pinned silent-loss safety gate
+
+Classification: Supported safety boundary
+
+Scope: classify known root, digital-signal, analogue-signal, configuration,
+and annotation properties from revision
+`c8da7d48c48fc0bbc90113b6913611132bd96c01`; collect all findings in source
+order; and reject the complete edit or file before import when any blocking
+finding exists.
+
+Acceptance:
+
+- [x] Known root manifest
+- [x] Known digital signal manifest
+- [x] Known analogue signal manifest
+- [x] Known annotation manifest
+- [x] Undulate-only detection without relying on annotations or analogue
+- [x] Ordered structured findings with stable object paths
+- [x] WIP classification
+- [x] Unsupported-by-design classification
+- [x] Invalid classification
+- [x] Unknown classification pinned to the source revision
+- [x] Non-mutating JSON editor rejection
+- [x] Non-mutating File Open rejection
+- [x] Accessible multi-line editor report
+- [x] Annotation count/text/coordinate limits reject before normalization
+- [x] Analogue value/slew/scale limits reject before normalization
+- [x] Lossy arbitrary sample-time normalization is blocked
+- [x] Pinned mixed negative fixture
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: `src/undulateBridge/validation.ts` owns the property
+  manifest, detection, ordered findings, structural limits, and legacy
+  string-report adapter. Import remains a separate operation reached only
+  after validation succeeds.
+- Tests: bridge coverage exercises every finding category and multi-finding
+  order; code-sync coverage proves blocked JSON is not parsed; File Open
+  coverage proves the current diagram, file name, and retained handle remain
+  unchanged.
+- Fixtures: `tests/fixtures/undulate/blocked-features.json` combines pinned
+  WIP, unsupported-by-design, and unknown families.
+- UX: the JSON status region announces and scrolls a readable multi-line
+  report; File Open displays the same complete report.
+- Remaining limitations: negative fixtures are not yet exhaustive for every
+  individual WIP value form, so the final safety-ledger fixture item remains
+  open.
+
+#### WIP — input formats
+
+- [x] Relaxed WaveDrom JSON5 comments, unquoted keys, single-quoted strings,
+  and trailing commas, with concrete-syntax preservation through supported
+  GUI edits and Save.
+- [ ] YAML input and output using a safe schema.
+- [ ] TOML input and output.
+- [ ] Opaque preservation of safe unknown declarative data.
+
+##### Revision-pinned supported-subset round-trip matrix
+
+Classification: Supported test and evidence infrastructure
+
+Scope: strict-JSON conformance cases derived from the pinned Undulate
+tutorials for every currently supported shared-digital, annotation, and
+analogue interchange family. Each case records its upstream source, feature
+claims, deterministic canonical export, and SVG evidence.
+
+Acceptance:
+
+- [x] Target revision recorded in machine-readable fixture data
+- [x] Upstream repository and license recorded
+- [x] Per-case tutorial provenance
+- [x] Shared digital states, clocks, buses, gaps, glitches, spacers, groups,
+  and scalar bit sub-cycle markers
+- [x] Scalar phase/period, nodes, edges, hscale, skin, head, and foot
+- [x] Text, line, compression, fractional-coordinate, and safe-style annotations
+- [x] Numeric step, capacitive, sampled, slew, scale, overlay, and order analogue
+- [x] Strict validation before import
+- [x] Deterministic canonical Undulate export
+- [x] Export re-import stability
+- [x] SVG render evidence for every case
+- [x] Canonical conversions documented by expected output
+- [x] Documentation synchronized
+
+Evidence:
+
+- Fixtures: `tests/fixtures/undulate/supported-roundtrip-cases.json`.
+- Tests: `src/undulateBridge/upstreamRoundTrip.test.ts`.
+- Canonical conversions: uppercase aliases normalize to lowercase; bus color
+  `2` normalizes to its equivalent `=` spelling; space-delimited bus data
+  normalizes to an array; multiline array labels remain arrays.
+- Rendering correction: the matrix exposed missing head/foot image-export
+  bands. Shared export dimensions now reserve those bands for SVG, PNG, and
+  JPEG, and SVG emits escaped captions plus tick/tock labels.
+- Remaining limitations: this matrix proves the supported interchange and
+  renderer families. Interaction/history evidence remains in the focused
+  store, tool, inspector, and browser tests referenced by each delivery record.
+
+#### WIP — extended digital signals
+
+- [ ] Digital high/low symbols `h`, `H`, `l`, and `L`.
+- [x] Mixed scalar/data cells (`x`, `X`, `=`, and `2`–`9`).
+- [x] Metastability symbols `m` and `M`.
+- [x] Impulse symbols `i` and `I`.
+- [ ] Digital `repeat`.
+- [ ] Per-cell `periods`.
+- [ ] Scalar duty cycle.
+- [ ] Duty-cycle arrays.
+- [ ] Digital and clock `slewing`.
+- [ ] General fine-timing timebase.
+- [ ] App-native Sub-Steps exported safely to Undulate.
+
+#### WIP — nodes and edges
+
+- [ ] Long node identifiers.
+- [ ] Plural Undulate `edges`.
+- [ ] Extended edge markers `#` and `*`.
+- [ ] Complete extended connector/path set.
+- [ ] Structured edge annotation `from` and `to`.
+- [ ] Edge `dx` and `dy`.
+- [ ] Styled edges.
+
+#### WIP — annotations
+
+- [x] Fractional annotation X coordinates.
+- [x] Fractional and absolute annotation Y coordinates without snapping loss.
+- [ ] Vertical-line `from` and `to` ranges.
+- [ ] Horizontal-line `from` and `to` ranges.
+- [x] Global time compression `shape: "||"` for the full waveform span.
+- [ ] General arrow and shape annotations.
+- [ ] Annotation `dx` and `dy`.
+- [x] Safe annotation `fill` and `stroke`.
+- [x] Bounded annotation `stroke-width`.
+- [x] Bounded annotation `stroke-dasharray`.
+- [ ] Annotation font sizing.
+- [ ] Annotation `text_background`.
+
+##### Lossless annotation X/Y coordinates and direct positioning
+
+Classification: Supported
+
+Scope: preserve finite Undulate annotation `x` and `y` coordinates without
+integer-step or integer-pixel rounding. Existing tick/signal anchors remain
+available as an editing convenience. The inspector exposes exact coordinates
+and snap behavior; dragging a positioned annotation updates the same values.
+
+Acceptance:
+
+- [x] Detection and validation
+- [x] Lossless import
+- [x] Typed model and legacy normalization
+- [x] Main canvas and hit testing
+- [x] Inspector X/Y editing
+- [x] Direct dragging with one undo step
+- [x] Optional step snapping and fine movement
+- [x] Local render
+- [x] Undulate export and semantic round trip
+- [x] SVG/PNG/JPEG
+- [x] Negative and boundary fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: exact cell-unit `x` and row-unit `y` coordinates are carried
+  by typed annotations and shared by the Undulate bridge, layout, canvas, hit
+  testing, local render, and export.
+- Tests: fractional semantic round trips, layout, inspector controls, direct
+  dragging, single-step undo, keyboard nudging, SVG export, and browser release
+  coverage.
+- UX: X/Y fields, Diagram coordinate versus Signal anchor mode, per-annotation
+  step snapping, direct dragging, and arrow-key nudging with Shift for fine
+  movement.
+- Remaining limitations: ranged `from`/`to` geometry remains WIP.
+
+##### Local render navigation and compression clarity
+
+Classification: Supported
+
+Scope: make the browser-local render useful for detailed inspection through
+Fit, 100%, zoom, and scroll controls. Full-span `shape: "||"` must read as a
+time break rather than an ordinary pair of guide lines while retaining safe
+annotation styling.
+
+Acceptance:
+
+- [x] Fit mode
+- [x] 100% mode
+- [x] Zoom in/out
+- [x] Horizontal and vertical scrolling
+- [x] Theme/canvas background consistency
+- [x] Clear compression break geometry
+- [x] Safe style rendering
+- [x] Browser regression coverage
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: the local SVG preview applies intrinsic-width scaling inside
+  its scroll viewport; compression masks underlying waveform/grid pixels and
+  draws a solid styled double break.
+- Tests: SVG geometry/export tests and Chromium/Firefox preview-control
+  coverage.
+- UX: compact −, 100%, Fit, and + controls in the render header.
+
+##### Global time compression — full-span subset
+
+Classification: Supported subset
+
+Scope: `shape: "||"` with a finite numeric `x`, spanning the complete waveform
+content. The optional upstream `from` and `to` range fields remain a separate
+WIP feature.
+
+Acceptance:
+
+- [x] Known manifest
+- [x] Detection
+- [x] Validation
+- [x] Import
+- [x] Typed model
+- [x] Main canvas
+- [x] Local render
+- [x] Editing
+- [x] Undo/redo
+- [x] Undulate export
+- [x] SVG/PNG/JPEG
+- [x] WaveDrom compatibility classification
+- [x] Pinned upstream fixtures
+- [x] Negative and hostile fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: `src/shared/types.ts`, `src/shared/annotations.ts`,
+  `src/undulateBridge/undulateJSON.ts`, and the shared canvas/SVG annotation
+  renderers.
+- Tests: bridge, normalization, store, tool, layout, SVG export, and release
+  browser tests.
+- Fixtures: `tests/fixtures/undulate/annotations-styles.json`, pinned by its
+  README to Undulate revision `c8da7d48`.
+- UX: an Undulate-only **Compress** tool creates and selects the marker; its
+  anchor and style remain editable in the annotation inspector.
+- Remaining limitations: `from` and `to` ranges remain WIP.
+
+##### Safe annotation paint and line styles
+
+Classification: Supported safe subset
+
+Scope: safe declarative `fill`, `stroke`, `stroke-width`, and
+`stroke-dasharray` fields on the currently typed text, vertical-line,
+horizontal-line, and full-span global-compression annotations. Remote
+resources, CSS variables, gradients, and arbitrary CSS remain invalid.
+
+Acceptance:
+
+- [x] Known manifest
+- [x] Detection
+- [x] Validation
+- [x] Import
+- [x] Typed model
+- [x] Main canvas
+- [x] Local render
+- [x] Editing
+- [x] Undo/redo
+- [x] Undulate export
+- [x] SVG/PNG/JPEG
+- [x] WaveDrom compatibility classification
+- [x] Pinned upstream fixtures
+- [x] Negative and hostile fixtures
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: normalized `AnnotationStyle` values are shared by typed
+  annotations, the Undulate bridge, canvas renderer, and SVG exporter.
+- Tests: safe round trips, normalization limits, hostile resource rejection,
+  editor/store actions, SVG output, and Chromium/Firefox release coverage.
+- Fixtures: `tests/fixtures/undulate/annotations-styles.json`.
+- UX: Fill, Stroke, Stroke width, and Dash pattern fields appear in the
+  annotation inspector.
+- Remaining limitations: font sizing and `text_background` remain WIP.
+
+#### WIP — analogue
+
+- [ ] Proven semantic conversion for analogue `repeat`.
+- [ ] Proven semantic conversion for arbitrary `a` sample times.
+- [ ] Explicit `VDDA` and `VSSA` context.
+- [ ] Dedicated graphical sampled-curve editor.
+- [ ] Explicit overlay-group model.
+- [ ] Four-wave interoperability constraint.
+- [ ] Ambiguous overlay selection and cycling.
+- [ ] Safe opaque preservation of unexecuted expressions, if retained as a
+  product goal.
+
+#### WIP — styling and additional output
+
+- [ ] Strict normalized signal styles.
+- [x] Strict normalized annotation paint and line styles.
+- [ ] Strict normalized edge styles.
+- [ ] Safe global style configuration.
+- [ ] PDF export.
+- [ ] PostScript/EPS export, if still product-relevant when PDF lands.
+
+#### Unsupported by design
+
+- [ ] Register diagrams — separate diagram product outside this waveform
+  editor.
+- [ ] Executing imported Python-like expressions — violates the local safe-data
+  model.
+- [ ] Embedding Python, Pyodide, Cairo, or a server renderer.
+- [ ] Byte-for-byte source preservation.
+- [ ] Pixel-identical reproduction of every Undulate renderer.
+
+### 0.9 Required work order
+
+The implementation sequence is:
+
+1. complete the known-property manifest;
+2. implement structured multi-finding validation;
+3. block every known WIP, unknown, invalid, and unsupported-by-design path
+   without mutating the current document;
+4. eliminate silent truncation and clamping on import;
+5. add negative fixtures for all blocked feature families;
+6. retroactively complete the per-feature acceptance records for features
+   currently described as supported;
+7. select the next WIP feature;
+8. copy its individual delivery record;
+9. implement every applicable layer;
+10. mark it Supported only when the full record is complete.
+
+Do not begin a new Undulate waveform feature while a known silent-loss path
+remains open.
 
 ## Implementation progress
 
@@ -20,6 +702,10 @@ Target application: `waves-gui`
 - [x] Render analogue lanes in the canvas and image/SVG exports.
 - [x] Add analogue creation, selection, property editing, and undo/redo.
 - [x] Add vertical scaling and initial consecutive-lane overlays.
+- [x] Add native vertical and horizontal line annotations.
+- [x] Add full-span global time-compression annotations.
+- [x] Add safe normalized annotation fill/stroke/width/dash styles.
+- [x] Make the JSON editor and local preview Undulate-aware end to end.
 
 ### Current implemented slice
 
@@ -34,17 +720,25 @@ The first vertical slice is complete on `rek-undulate`:
 - annotations render in the live canvas and PNG, JPEG, and safely escaped SVG
   exports;
 - turning extensions off hides and locks annotations without deleting them;
-- autosave, raw WaveDrom code edits, file open, and file save preserve supported
+- autosave, format-aware raw JSON edits, file open, and file save preserve supported
   annotation content;
 - Undulate JSON maps text annotations to upstream `text`, `x`, and `y` fields;
+- enabling extensions switches the code panel to editable Undulate JSON, so
+  canvas-authored annotations and analogue cells are visible immediately;
+- supported Undulate JSON edits update the document model and canvas without a
+  lossy WaveDrom conversion;
+- the local render panel uses the browser-native SVG renderer for Undulate
+  documents, including text/line annotations and analogue geometry;
 - WaveDrom export reports annotations as unsupported and labels the action as
   exporting a compatible subset.
 
-The current Undulate annotation bridge intentionally supports plain text
-annotations only. Shapes, styling fields such as `fill`, vertical/horizontal
-lines, and other unknown annotation properties are rejected explicitly rather
-than silently discarded. Opaque preservation of unsupported Undulate fields,
-YAML/TOML, fine timing, and extended styling remain future phases.
+The current Undulate annotation bridge supports plain text, vertical and
+horizontal lines, full-span global compression, and bounded local
+fill/stroke/width/dash styles. Compression `from`/`to` ranges, font sizing,
+text backgrounds, other shapes, and unknown annotation properties are
+rejected explicitly rather than silently discarded. Opaque preservation of
+unsupported Undulate fields, YAML/TOML, fine timing, arrows, and broader
+styling remain future phases.
 
 ### Current analogue slice
 
@@ -294,8 +988,15 @@ The extensions will remain in the document but will be hidden and locked while
 WaveDrom mode is active.
 ```
 
-The initial action should be **Hide extensions**, not remove them. A separate,
-explicit command may later offer conversion or deletion with an exact preview.
+The implemented confirmation offers three explicit actions:
+
+- **Hide features and preserve JSON** disables the Undulate authoring tools,
+  hides the extended canvas content, keeps the Undulate JSON unchanged, and
+  switches the local preview to the WaveDrom-compatible subset;
+- **Cancel** leaves the document and mode unchanged;
+- **Remove Undulate features** deletes supported annotations and analogue lanes,
+  changes the code panel back to WaveDrom JSON, and records the entire removal
+  as one undoable document edit.
 
 When hidden extension content exists, show a small persistent status affordance:
 
@@ -386,7 +1087,7 @@ fixture and an automated support classification before release.
 | Spacers | Yes | Native | Supported | Preserve |
 | Phase | Yes | Native | Supported | Preserve |
 | Period | Yes | Native | Supported | Preserve |
-| Gaps | Yes | Native | Supported | Preserve |
+| Gaps | Yes, bit/vector canvas and local render | Native | Supported | Preserve and verify image exports |
 | Glitches/repeated transitions | Yes | Native subset | Supported subset | Verify rendering |
 | Clock states | Yes | Native | Supported | Preserve |
 | Subcycle wave syntax | Yes | Native supported subset | Convert/verify | Keep bridge-specific |
@@ -394,9 +1095,9 @@ fixture and an automated support classification before release.
 | Edge labels | Yes | Native subset | Supported | Preserve |
 | Long node names | No | Allocate temporary node chars | Native Undulate concept | Add semantic anchors |
 | Free text annotations | Yes (plain text) | Unsupported with explicit report | Native `text`/`x`/`y` conversion | Implemented first slice |
-| Vertical/horizontal annotations | No | Unsupported | Native annotations | Add annotation model |
-| Global time compression | Lane gaps only | Approximate/unsupported | Native `||` annotation | Add diagram annotation |
-| Per-object styling | Partial internal colors | Mostly unsupported | Native style overrides | Add normalized style |
+| Vertical/horizontal annotations | Yes (plain lines) | Unsupported with explicit report | Native `|`/`-` conversion | Implemented initial subset |
+| Global time compression | Full-span marker | Unsupported | Native `||` annotation | Supported full-span subset |
+| Per-object styling | Typed annotations | Mostly unsupported | Native annotation overrides | Supported safe annotation subset |
 | Slewing | Yes (analogue scalar) | Unsupported | Native numeric property | Implemented initial subset |
 | Duty cycle | Fixed clock behavior | Limited | Native | Add scalar/series values |
 | Per-cell periods | No | Limited/expanded | Native `periods` | Add tick durations |
@@ -411,15 +1112,18 @@ fixture and an automated support classification before release.
 | Sub-Steps | Partial subcycle foundations | Convert if possible | Expand with fractional period | App-native timebase |
 | YAML input/output | No | N/A | Native Undulate format | Later adapter |
 | TOML input/output | No | N/A | Native Undulate format | Later adapter |
-| JSON-like comments | Code panel uses JSON5 in places | Nonstandard | Undulate accepts JSON-like input | Decide separately |
+| JSON-like comments | Yes; retained JSON5 CST source | Native supported syntax | Undulate accepts JSON-like input | Preserve comments; relocate orphans on deletion |
 | Register diagrams | Intentionally unsupported | N/A | Separate Undulate register context | Permanently out of scope |
 
 ## 9. Internal model evolution
 
 ### 9.1 General direction
 
-Do not store a raw Undulate document as the editor's source of truth. Evolve the
-internal model into a format-neutral superset and add adapters:
+Do not use a raw Undulate document as the editor's semantic source of truth.
+The format-neutral internal model remains authoritative, while the original
+JSON5 source text is retained as lossless concrete-syntax metadata and patched
+from the semantic model after GUI edits. Evolve the model and adapters as
+follows:
 
 ```text
 WaveDrom JSON  <-> wavedromBridge --+
@@ -490,10 +1194,14 @@ Rules:
 4. Known properties must not also remain in `SourceExtras`.
 5. If native editing invalidates an opaque field, warn and remove only that
    field rather than silently emitting stale contradictory data.
-6. Cross-format export may not be able to preserve format-specific trivia such
-   as comments, whitespace, key ordering, or TOML structure.
+6. Same-format JSON5 editing preserves comments, local whitespace, quoting,
+   and key ordering where the corresponding syntax survives.
+7. A comment orphaned by intentional deletion is moved to the nearest
+   surviving container; comment text is never silently discarded.
+8. Cross-format export may not preserve JSON5 trivia or TOML/YAML structure.
 
-Lossless **semantic** round-trip is the target. Byte-for-byte round-trip is not.
+Lossless **semantic** round-trip plus retained JSON5 comments is the target.
+Byte-for-byte round-trip after a semantic edit is not.
 
 ## 10. Time model and Sub-Steps
 
@@ -922,14 +1630,22 @@ existing WaveDrom object model and easiest to test.
 ### 16.3 JSON dialects
 
 Undulate accepts a relaxed JSON/JSONML-like dialect with comments and unquoted
-keys. The application must decide explicitly whether to:
+keys. The application now accepts the defined JSON5 grammar for both File Open
+and the code editor:
 
-- accept strict JSON only for `.json`;
-- accept JSON5 for `.json5` or a clearly described relaxed mode;
-- accept Undulate's exact preprocessing quirks.
+- strict JSON remains a valid subset;
+- `//` and block comments, unquoted keys, single quotes, and trailing commas
+  are accepted;
+- reserved prototype keys are rejected;
+- the exact source text is retained in undoable/autosaved compatibility
+  metadata;
+- a concrete-syntax updater patches supported GUI changes into that source;
+- comments that lose their original node through deletion are relocated to
+  the nearest surviving container.
 
-Recommendation: use a maintained parser with a defined grammar, not a set of
-regular expressions that attempts to reproduce Undulate's Python preprocessor.
+Implementation uses the MIT-licensed `jju` JSON5 tokenizer/updater with a
+browser-safe assertion shim. It does not use regular expressions to strip
+comments or attempt to reproduce executable preprocessing quirks.
 
 ### 16.4 YAML
 
@@ -1547,12 +2263,12 @@ assumptions:
 
 Before beginning Phase 1:
 
-- [ ] Choose and pin the initial Undulate target revision.
-- [ ] Add a license/attribution note for imported upstream fixtures.
-- [ ] Create synthetic fixtures for each planned feature.
+- [x] Choose and pin the initial Undulate target revision.
+- [x] Add a license/attribution note for imported upstream fixtures.
+- [x] Create synthetic fixtures for each implemented feature.
 - [ ] Decide the native project file contract.
-- [ ] Specify `DiagramState` version 2 migration behavior.
-- [ ] Specify compatibility finding types and UI language.
+- [x] Specify `DiagramState` version 2 migration behavior.
+- [x] Specify compatibility finding types and UI language.
 - [ ] Decide maximum input and timebase limits provisionally.
 - [ ] Verify current exported WaveJSON with the pinned Undulate CLI.
 - [ ] Record exact handling of `edge` versus `edges`.
@@ -1561,15 +2277,15 @@ Before beginning Phase 1:
 
 Before releasing any extension feature:
 
-- [ ] Import, export, and semantic round-trip tests pass.
+- [x] Import, export, and semantic round-trip tests pass for the implemented subset.
 - [ ] Golden renderer tests pass.
-- [ ] Existing WaveDrom tests pass unchanged or with reviewed migrations.
+- [x] Existing WaveDrom tests pass unchanged or with reviewed migrations.
 - [ ] Security fixtures pass.
-- [ ] Undo/redo and dirty-state behavior are covered.
-- [ ] Toggle-off behavior preserves extension data.
-- [ ] Compatibility report correctly classifies the feature.
-- [ ] Image export contains the feature.
-- [ ] Documentation names native versus translated support accurately.
+- [x] Undo/redo and dirty-state behavior are covered.
+- [x] Toggle-off behavior preserves extension data.
+- [x] Compatibility report correctly classifies the implemented features.
+- [x] Image export contains the implemented features.
+- [x] Documentation names native versus translated support accurately.
 - [ ] Privacy and CSP guarantees remain unchanged.
 
 ## 29. Suggested first implementation slice

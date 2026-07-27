@@ -21,7 +21,12 @@ import { useEdgeTools } from './useEdgeTools';
 import { useTimeAxisContextMenu } from '../shell/TimeAxisContextMenu';
 import { copyStepSelection, pasteStepSelection } from './stepClipboard';
 import { useEdgeCurveDrag } from './useEdgeCurveDrag';
-import { annotationPointerDown } from './annotationTool';
+import {
+  annotationPointerDown,
+  globalCompressionPointerDown,
+  horizontalLinePointerDown,
+  verticalLinePointerDown,
+} from './annotationTool';
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -118,6 +123,18 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         return;
       }
 
+      if (
+        e.key === 'ArrowLeft'
+        || e.key === 'ArrowRight'
+        || e.key === 'ArrowUp'
+        || e.key === 'ArrowDown'
+      ) {
+        if (select.nudgeSelectedAnnotation(e.key, e.shiftKey)) {
+          e.preventDefault();
+          return;
+        }
+      }
+
       if (e.key === 'v' || e.key === 'V') {
         if (e.ctrlKey || e.metaKey) return;
         setTool('cursor');
@@ -128,6 +145,14 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       } else if (e.key === 'i' || e.key === 'I') {
         if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
           setTool('annotation');
+        }
+      } else if (e.key === 'l' || e.key === 'L') {
+        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
+          setTool(e.shiftKey ? 'horizontal-line' : 'vertical-line');
+        }
+      } else if (e.key === 'C') {
+        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
+          setTool('global-compression');
         }
       } else if (e.key === 'g' || e.key === 'G') {
         setTool('paint');
@@ -202,6 +227,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
       else if (tool === 'annotation') annotationPointerDown(e, hit);
+      else if (tool === 'vertical-line') verticalLinePointerDown(e, hit);
+      else if (tool === 'horizontal-line') horizontalLinePointerDown(e, hit);
+      else if (tool === 'global-compression') globalCompressionPointerDown(e, hit);
       else if (tool === 'arrow' || tool === 'timespan') {
         if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);

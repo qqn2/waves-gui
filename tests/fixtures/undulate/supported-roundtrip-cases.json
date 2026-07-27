@@ -1,0 +1,532 @@
+{
+  "revision": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+  "license": "MIT",
+  "repository": "https://github.com/LudwigCRON/undulate",
+  "cases": [
+    {
+      "id": "digital-states",
+      "features": [
+        "logic states",
+        "continuation",
+        "unknown and high impedance",
+        "pull-up and pull-down"
+      ],
+      "source": "docs-srcs/tutorial_dig_step1.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.xXzZuUdD"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.xxzzuudd"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["digital"]
+    },
+    {
+      "id": "extended-digital-states",
+      "features": [
+        "mixed digital and data cells",
+        "impulse states",
+        "metastability states"
+      ],
+      "source": "docs-srcs/tutorial_dig_step1.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.zx=ud.2.3.45XziIzmzM"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "digital",
+            "wave": "01.zx=ud.2.3.45XziIzmzM"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["digital", "url(#hatch-x)", "#ffffb4"]
+    },
+    {
+      "id": "clocks-and-spacer",
+      "features": [
+        "p/P/n/N clocks",
+        "blank spacer rows"
+      ],
+      "source": "docs-srcs/tutorial_dig_step2.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "pclk",
+            "wave": "p..."
+          },
+          {
+            "name": "Pclk",
+            "wave": "P..."
+          },
+          {},
+          {
+            "name": "nclk",
+            "wave": "n..."
+          },
+          {
+            "name": "Nclk",
+            "wave": "N..."
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "pclk",
+            "wave": "p..."
+          },
+          {
+            "name": "Pclk",
+            "wave": "P..."
+          },
+          {},
+          {
+            "name": "nclk",
+            "wave": "n..."
+          },
+          {
+            "name": "Nclk",
+            "wave": "N..."
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["pclk", "Pclk", "nclk", "Nclk"]
+    },
+    {
+      "id": "bus-data-and-gaps",
+      "features": [
+        "bus states and colors",
+        "bus data strings and arrays",
+        "lane gaps"
+      ],
+      "source": "docs-srcs/tutorial_dig_step3.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "clk",
+            "wave": "p...|...."
+          },
+          {
+            "name": "data",
+            "wave": "x.34|5=.x",
+            "data": "head body tail data"
+          },
+          {
+            "name": "colors",
+            "wave": "x23456789",
+            "data": [
+              ["two", "multiline"],
+              "three",
+              "four",
+              "five",
+              "six",
+              "seven",
+              "eight",
+              "nine"
+            ]
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "clk",
+            "wave": "p...|...."
+          },
+          {
+            "name": "data",
+            "wave": "x.34|5=.x",
+            "data": ["head", "body", "tail", "data"]
+          },
+          {
+            "name": "colors",
+            "wave": "x=3456789",
+            "data": [
+              ["two", "multiline"],
+              "three",
+              "four",
+              "five",
+              "six",
+              "seven",
+              "eight",
+              "nine"
+            ]
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": [
+        "clk",
+        "data",
+        "colors",
+        "head",
+        "body",
+        "tail",
+        "two",
+        "multiline",
+        "nine"
+      ]
+    },
+    {
+      "id": "explicit-repeated-transitions",
+      "features": [
+        "explicit repeated transitions represented as glitches"
+      ],
+      "source": "docs-srcs/tutorial_dig_step1.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "glitches",
+            "wave": "00110011"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "glitches",
+            "wave": "00110011"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["glitches"]
+    },
+    {
+      "id": "shared-subcycle-markers",
+      "features": [
+        "WaveDrom-compatible scalar bit sub-cycle markers"
+      ],
+      "source": "docs/wavedrom-ref/SUBCYCLE.md",
+      "document": {
+        "signal": [
+          {
+            "name": "subcycle",
+            "wave": "0<1>1"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "subcycle",
+            "wave": "0<1>1"
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["subcycle"]
+    },
+    {
+      "id": "groups-timing-nodes-and-edges",
+      "features": [
+        "nested groups",
+        "scalar phase and period",
+        "single-character nodes",
+        "WaveDrom edge strings",
+        "head and foot",
+        "skin and hscale"
+      ],
+      "source": "docs-srcs/tutorial_dig_step4.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "clk",
+            "wave": "p...",
+            "period": 2,
+            "phase": 0.5,
+            "node": ".a.."
+          },
+          [
+            "Master",
+            {
+              "name": "request",
+              "wave": "01..",
+              "node": "..b."
+            },
+            [
+              "control",
+              {
+                "name": "enable",
+                "wave": "0.1."
+              }
+            ]
+          ]
+        ],
+        "config": {
+          "hscale": 2,
+          "skin": "default"
+        },
+        "head": {
+          "text": "Transaction",
+          "tick": 0,
+          "every": 1
+        },
+        "foot": {
+          "text": "cycles",
+          "tock": 0,
+          "every": 1
+        },
+        "edge": ["a->b request"]
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "clk",
+            "wave": "p...",
+            "phase": 0.5,
+            "period": 2,
+            "node": ".a.."
+          },
+          [
+            "Master",
+            {
+              "name": "request",
+              "wave": "01..",
+              "node": "..b."
+            },
+            [
+              "control",
+              {
+                "name": "enable",
+                "wave": "0.1."
+              }
+            ]
+          ]
+        ],
+        "config": {
+          "hscale": 2,
+          "skin": "default"
+        },
+        "head": {
+          "text": "Transaction",
+          "tick": 0,
+          "every": 1
+        },
+        "foot": {
+          "text": "cycles",
+          "tock": 0,
+          "every": 1
+        },
+        "edge": ["a->b request"]
+      },
+      "renderIncludes": [
+        "clk",
+        "Master",
+        "request",
+        "control",
+        "enable",
+        "Transaction",
+        "cycles"
+      ]
+    },
+    {
+      "id": "annotations-and-safe-styles",
+      "features": [
+        "fractional text annotations",
+        "vertical and horizontal lines",
+        "global time compression",
+        "safe annotation styles"
+      ],
+      "source": "docs-srcs/tutorial_ann_step2.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "pulse",
+            "wave": "01.."
+          }
+        ],
+        "config": {
+          "hscale": 1
+        },
+        "annotations": [
+          {
+            "text": "window",
+            "x": 1.125,
+            "y": 0.375,
+            "fill": "#123456"
+          },
+          {
+            "shape": "|",
+            "x": 2.5,
+            "stroke": "rgb(12, 34, 56)",
+            "stroke-width": 2
+          },
+          {
+            "shape": "-",
+            "y": 0.75,
+            "stroke-dasharray": [3, 2]
+          },
+          {
+            "shape": "||",
+            "x": 0.5,
+            "stroke": "#ff0000",
+            "stroke-width": 2,
+            "stroke-dasharray": [4, 2]
+          }
+        ]
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "pulse",
+            "wave": "01.."
+          }
+        ],
+        "config": {
+          "hscale": 1
+        },
+        "annotations": [
+          {
+            "text": "window",
+            "x": 1.125,
+            "y": 0.375,
+            "fill": "#123456"
+          },
+          {
+            "shape": "|",
+            "x": 2.5,
+            "stroke": "rgb(12, 34, 56)",
+            "stroke-width": 2
+          },
+          {
+            "shape": "-",
+            "y": 0.75,
+            "stroke-dasharray": [3, 2]
+          },
+          {
+            "shape": "||",
+            "x": 0.5,
+            "stroke": "#ff0000",
+            "stroke-width": 2,
+            "stroke-dasharray": [4, 2]
+          }
+        ]
+      },
+      "renderIncludes": ["pulse", "window"]
+    },
+    {
+      "id": "analogue-cells-and-overlays",
+      "features": [
+        "numeric s and c cells",
+        "explicit sampled a cells",
+        "analogue slewing and vscale",
+        "consecutive overlays and order"
+      ],
+      "source": "docs-srcs/tutorial_ana_step1.rst; docs-srcs/tutorial_ana_step2.rst",
+      "document": {
+        "signal": [
+          {
+            "name": "dac",
+            "wave": "0sca",
+            "analogue": [
+              0.4,
+              0.8,
+              [[0, 0.8], [0.5, 1.2], [1, 0.6]]
+            ],
+            "slewing": 4,
+            "vscale": 2,
+            "overlay": true,
+            "order": 2
+          },
+          {
+            "name": "reference",
+            "wave": "0sca",
+            "analogue": [
+              0.6,
+              1,
+              [[0, 1], [0.5, 0.9], [1, 0.7]]
+            ],
+            "slewing": 2,
+            "vscale": 2,
+            "order": 3
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "expectedCanonical": {
+        "signal": [
+          {
+            "name": "dac",
+            "wave": "0sca",
+            "analogue": [
+              0.4,
+              0.8,
+              [[0, 0.8], [0.5, 1.2], [1, 0.6]]
+            ],
+            "slewing": 4,
+            "vscale": 2,
+            "overlay": true,
+            "order": 2
+          },
+          {
+            "name": "reference",
+            "wave": "0sca",
+            "analogue": [
+              0.6,
+              1,
+              [[0, 1], [0.5, 0.9], [1, 0.7]]
+            ],
+            "slewing": 2,
+            "vscale": 2,
+            "order": 3
+          }
+        ],
+        "config": {
+          "hscale": 1
+        }
+      },
+      "renderIncludes": ["dac", "reference"]
+    }
+  ]
+}

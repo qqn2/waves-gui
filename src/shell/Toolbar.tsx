@@ -145,11 +145,15 @@ export function Toolbar({
         ? 'Draw'
         : tool === 'erase'
           ? 'Erase'
-           : tool === 'arrow'
-             ? 'Edge'
-             : tool === 'annotation'
-               ? 'Text'
-             : 'Span';
+          : tool === 'arrow'
+            ? 'Edge'
+            : tool === 'annotation'
+              ? 'Text'
+              : tool === 'vertical-line'
+                ? 'Vertical line'
+                : tool === 'horizontal-line'
+                  ? 'Horizontal line'
+                  : 'Span';
 
 
   return (

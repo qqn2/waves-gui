@@ -24,8 +24,8 @@ export function waveDromCompatibilityFindings(
   if (summary.annotationCount > 0) {
     findings.push({
       level: 'unsupported',
-      feature: 'text-annotations',
-      message: `${summary.annotationCount} text annotation${summary.annotationCount === 1 ? '' : 's'} cannot be represented in WaveDrom JSON.`,
+      feature: 'annotations',
+      message: `${summary.annotationCount} annotation${summary.annotationCount === 1 ? '' : 's'} cannot be represented in WaveDrom JSON.`,
       consequence: 'Annotations will be omitted from the compatible subset.',
     });
   }
@@ -37,6 +37,36 @@ export function waveDromCompatibilityFindings(
       consequence: 'Analogue lanes will be omitted from the compatible subset.',
     });
   }
+  let extendedDigitalCount = 0;
+  const countExtendedDigital = (signals: DiagramState['signals']) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') {
+        countExtendedDigital(signal.children);
+      } else if (
+        signal.type === 'bit'
+        && signal.states.some((state) =>
+          state === 'X'
+          || state === '='
+          || (state >= '2' && state <= '9')
+          || state === 'i'
+          || state === 'I'
+          || state === 'm'
+          || state === 'M'
+        )
+      ) {
+        extendedDigitalCount++;
+      }
+    }
+  };
+  countExtendedDigital(diagram.signals);
+  if (extendedDigitalCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'extended-digital-signals',
+      message: `${extendedDigitalCount} extended digital signal${extendedDigitalCount === 1 ? '' : 's'} use Undulate-only mixed, impulse, or metastability states.`,
+      consequence: 'The WaveDrom Editor may reject these wave strings.',
+    });
+  }
   return findings;
 }
 
@@ -45,9 +75,16 @@ export function undulateCompatibilityFindings(
 ): CompatibilityFinding[] {
   const findings: CompatibilityFinding[] = (diagram.annotations ?? []).map((annotation) => ({
     level: 'converted',
-    feature: 'text-annotation',
+    feature: annotation.type,
     objectId: annotation.id,
-    message: 'Text annotation anchor will be converted to Undulate x/y coordinates.',
+    message:
+      annotation.type === 'text'
+        ? 'Text annotation anchor will be converted to Undulate x/y coordinates.'
+        : annotation.type === 'vertical-line'
+          ? 'Vertical line will be converted to Undulate shape "|" with an x coordinate.'
+          : annotation.type === 'horizontal-line'
+            ? 'Horizontal line will be converted to Undulate shape "-" with a y coordinate.'
+            : 'Global compression will be converted to Undulate shape "||" with an x coordinate.',
   }));
   const appendAnalogue = (signals: DiagramState['signals']) => {
     for (const signal of signals) {
