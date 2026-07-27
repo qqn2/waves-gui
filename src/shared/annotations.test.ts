@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatAnnotationRangePosition,
   MAX_ANNOTATION_TEXT_LENGTH,
   normalizeAnnotations,
+  parseAnnotationRangeInput,
   scanExtensionContent,
 } from './annotations';
 
@@ -74,6 +76,35 @@ describe('annotations', () => {
       }),
       expect.not.objectContaining({ style: expect.anything() }),
     ]);
+  });
+
+  it('normalizes and formats numeric and percentage line ranges', () => {
+    const annotations = normalizeAnnotations([
+      {
+        id: 'v',
+        type: 'vertical-line',
+        tick: 1,
+        rangeFrom: { unit: 'index', value: 0.5 },
+        rangeTo: { unit: 'percent', value: 75 },
+      },
+    ], 8);
+    expect(annotations[0]).toMatchObject({
+      rangeFrom: { unit: 'index', value: 0.5 },
+      rangeTo: { unit: 'percent', value: 75 },
+    });
+    expect(parseAnnotationRangeInput(' 2.5 ')).toEqual({
+      unit: 'index',
+      value: 2.5,
+    });
+    expect(parseAnnotationRangeInput('25%')).toEqual({
+      unit: 'percent',
+      value: 25,
+    });
+    expect(parseAnnotationRangeInput('101%')).toBeNull();
+    expect(formatAnnotationRangePosition({
+      unit: 'percent',
+      value: 25,
+    })).toBe('25%');
   });
 
   it('reports extension content independently from mode state', () => {

@@ -54,6 +54,11 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
 test('round-trips Undulate canvas edits through JSON and the local render', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
   await page.getByRole('button', { name: 'Analog', exact: true }).click();
+  await signalRow(page, 'analog').click();
+  const inspectorButton = page.getByRole('button', { name: /Inspector/ });
+  await expect(inspectorButton).toBeEnabled();
+  await inspectorButton.click();
+  await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
 
   const editor = page.locator('.cm-content');
   await expect(page.getByText('Undulate JSON', { exact: true })).toBeVisible();
@@ -78,6 +83,8 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
       {
         shape: '||',
         x: 0.5,
+        from: '25%',
+        to: '75%',
         stroke: '#ff0000',
         'stroke-width': 2,
         'stroke-dasharray': [3, 2],
@@ -89,6 +96,8 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(preview.locator('svg')).toContainText('Settled');
   await expect(editor).toContainText('"slewing": 4');
   await expect(editor).toContainText('"shape": "||"');
+  await expect(editor).toContainText('"from": "25%"');
+  await expect(editor).toContainText('"to": "75%"');
   await expect(editor).toContainText('"x": 1.125');
   await expect(editor).toContainText('"y": 0.375');
   await expect(preview.locator('text[fill="#123456"]')).toContainText('Settled');
@@ -105,7 +114,7 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
 
 test('round-trips and renders Undulate extended digital states', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
-  const wave = '01.zx=ud.2.3.45XziIzmzM';
+  const wave = '01.zx=ud.2.3.45XziIzmzMphnlPHNL';
   await replaceJson(page, `{signal: [
     {name: "digital", wave: "${wave}"}
   ]}`);
@@ -123,6 +132,17 @@ test('round-trips and renders Undulate extended digital states', async ({ page }
   await expect(preview.locator('path[data-wave-state="2"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="3"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="X"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="h"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="H"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="l"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="L"]')).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'Draw', exact: true }).click();
+  await page.getByRole('button', { name: 'More ▾', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'h', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'H', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'l', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'L', exact: true })).toBeVisible();
 });
 
 test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {

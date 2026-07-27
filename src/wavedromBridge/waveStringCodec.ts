@@ -4,6 +4,7 @@
  * Wave character cheat sheet (normal bit lanes):
  *   0 1 x X z u d — logic levels and Undulate unknown/garbage data
  *   p n P N      — complete positive/negative-edge clock cycles
+ *   h H l L      — Undulate rising/falling edge followed by a held level
  *   = 2–9        — Undulate/WaveDrom data cells and palette variants
  *   i I m M      — Undulate impulses and metastability resolution
  *   |            — gap column (hold previous level) → stepGaps[] on that column
@@ -26,7 +27,7 @@ export interface DecodedWave {
 }
 
 export function isUndulateExtendedDigitalWave(wave: string): boolean {
-  return /[iImM]/.test(wave)
+  return /[iImMhHlL]/.test(wave)
     || (/[=2-9]/.test(wave) && /[01zZuUdD]/.test(wave));
 }
 
@@ -62,6 +63,10 @@ function waveCharToBitState(char: string): BitState | null {
     case 'I':
     case 'm':
     case 'M':
+    case 'h':
+    case 'H':
+    case 'l':
+    case 'L':
       return char;
     default:
       return null;
@@ -196,7 +201,11 @@ function decodeMixedWaveDetail(wave: string): DecodedWave {
       case 'i':
       case 'I':
       case 'm':
-      case 'M': {
+      case 'M':
+      case 'h':
+      case 'H':
+      case 'l':
+      case 'L': {
         const next =
           char === 'X' && !extendedDigital ? 'x' : waveCharToBitState(char)!;
         if (result.states.length === 0) {

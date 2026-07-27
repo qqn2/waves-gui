@@ -2,7 +2,7 @@
 
 Status: implementation audit
 
-Last audited: 2026-07-24
+Last audited: 2026-07-27
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -36,8 +36,8 @@ contract live in
 - [X] Undo/redo, autosave, JSON editing, compatibility reporting, and the
   three-action disable flow for supported extension content.
 - [ ] Partial: ordinary and mixed extended digital lanes are available in
-  Undulate JSON, including data, impulse, and metastability cells; high/low
-  clock aliases and extended timing arrays remain incomplete.
+  Undulate JSON, including data, impulse, metastability, and `h`/`H`/`l`/`L`
+  held clock-edge cells; extended timing arrays remain incomplete.
 - [ ] Unsupported: styled signals, Undulate annotation arrows, long node
   identifiers, YAML, TOML, relaxed JSON/JSONML, and opaque preservation.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
@@ -119,11 +119,11 @@ Upstream references:
   lane.
 - [X] Metastability states `m` and `M`, resolving to zero and one.
 - [X] Impulse states `i` and `I`.
+- [X] Held clock-edge states `h`, `H`, `l`, and `L`, including uppercase edge
+  arrows and paint controls while Undulate extensions are enabled.
 
 ### Partial or unsupported
 
-- [ ] Partial: Undulate uses additional digital symbols such as `h`, `H`, `l`,
-  and `L`; these are not ordinary editable digital states in the app.
 - [ ] Unsupported: Undulate long node identifiers.
 - [ ] Unsupported: Undulate-only edge markers `#` and `*` and the complete
   extended path set as structured annotations.
@@ -164,6 +164,9 @@ Upstream references:
 Upstream reference:
 [period, duty cycle, phase, and repeat](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step5.rst).
 
+Implementation design:
+[`UNDULATE_FINE_TIMING_DESIGN.md`](./UNDULATE_FINE_TIMING_DESIGN.md).
+
 ## 4. Annotations
 
 ### Supported
@@ -185,6 +188,9 @@ Upstream reference:
   inspector editing, local rendering, and Undulate export.
 - [X] Selected annotations can be dragged directly; arrow keys nudge and
   Shift provides fine movement.
+- [X] Vertical lines, horizontal lines, and global compression accept
+  independent `from`/`to` bounds as finite indices or percentages from 0% to
+  100%, with inspector editing and semantic round-trip coverage.
 
 ### Partial
 
@@ -192,8 +198,6 @@ Upstream reference:
   the GUI, but can be disabled per annotation.
 - [ ] Partial: annotations are limited to 1000 objects and text is limited to
   2000 characters.
-- [ ] Partial: line annotations always span the app's full relevant canvas;
-  Undulate `from` and `to` range limits are not supported.
 - [ ] Partial: colors are deliberately limited to local hex, `rgb()`, and
   `rgba()` values; remote resources, gradients, CSS variables, and arbitrary
   CSS are rejected.
@@ -202,8 +206,8 @@ Upstream reference:
 
 ### Unsupported
 
-- [ ] Unsupported: arrows and other shape annotations using `from`, `to`, and
-  extended connector patterns.
+- [ ] Unsupported: arrows and other connector shapes using node or coordinate
+  `from`/`to` anchors and extended connector patterns.
 - [ ] Unsupported: `font-size` and other text styles.
 - [ ] Unsupported: `text_background`.
 - [ ] Unsupported: known but incomplete annotation shapes are rejected as WIP;
@@ -363,12 +367,14 @@ Upstream reference:
   `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
 - [X] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
-- [ ] **P1 — Extended digital timing and remaining states.** Add `repeat`,
-  variable periods, duty cycles, digital slew, and `h`/`H`/`l`/`L`.
-- [ ] **P1 — Complete annotation geometry.** Add `from`/`to`, global
-  compression, structured arrows, and fractional coordinates.
-- [ ] **P2 — Safe normalized styling.** Add a strict allowlist for colors,
-  widths, dashes, font sizes, and text backgrounds.
+- [ ] **P1 — Extended digital timing.** Add `repeat`, variable periods, duty
+  cycles, and digital slew.
+- [ ] **P1 — Complete annotation geometry.** Add structured arrows and shapes
+  with node/coordinate anchors and `dx`/`dy`. Ranged lines, compression, and
+  fractional coordinates are already supported.
+- [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths, and
+  dashes already use strict allowlists. Add signal and edge styles, bounded
+  font sizes, and text backgrounds.
 - [ ] **P2 — Opaque preservation.** Retain safe unknown declarative data and
   report when an edit invalidates it.
 - [ ] **P3 — Additional formats and outputs.** Add safe YAML/TOML adapters and
@@ -412,9 +418,13 @@ Primary automated coverage:
 - `tests/fixtures/undulate/supported-roundtrip-cases.json`
 
 
-## Misc
+## Product follow-ups
 
-
-- Add inspector support to analog signals
-- Add supported signal type of Undulate either in draw when undulate mode is enable or in another category
-- More samples, from a functional Pov i.e. not obly amba protocols but also with undulate we have modes that we could not support before, need to highlight every feature ideally
+- [X] Add analogue lanes from the dedicated Undulate group.
+- [X] Make selected analogue lanes available to the properties inspector.
+- [ ] Add a dedicated sampled-curve/point editor; the current inspector edits
+  the cell kind and settled value only.
+- [ ] Decide whether analogue cell painting belongs in the shared Draw tool or
+  a dedicated Undulate tool.
+- [ ] Add task-oriented samples that demonstrate each supported Undulate
+  feature, in addition to the existing protocol-oriented samples.

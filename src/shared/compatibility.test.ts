@@ -63,7 +63,7 @@ describe('source compatibility findings', () => {
     const diagram = createDefaultDiagram();
     const signal = diagram.signals[0];
     if (!signal || signal.type === 'group') throw new Error('Expected signal');
-    signal.states = ['0', '=', 'i', 'm', 'M'];
+    signal.states = ['0', '=', 'i', 'm', 'M', 'h', 'H', 'l', 'L'];
 
     expect(waveDromCompatibilityFindings(diagram)).toEqual([
       expect.objectContaining({

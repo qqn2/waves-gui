@@ -98,20 +98,42 @@ describe('Undulate JSON bridge', () => {
         {
           shape: '|',
           x: 1.5,
+          from: 0.5,
+          to: '75%',
           stroke: '#123456',
           'stroke-width': 2,
           'stroke-dasharray': [3, 2],
         },
-        { shape: '-', y: 0.5 },
-        { shape: '||', x: 0.5, fill: 'rgba(1, 2, 3, 0.5)' },
+        { shape: '-', y: 0.5, from: '10%', to: 4 },
+        {
+          shape: '||',
+          x: 0.5,
+          from: 1,
+          to: '100%',
+          fill: 'rgba(1, 2, 3, 0.5)',
+        },
       ],
     };
     expect(validateUndulateJSON(root)).toBeNull();
     const diagram = fromUndulateJSON(root);
     expect(diagram.annotations).toEqual([
-      expect.objectContaining({ type: 'vertical-line', tick: 1 }),
-      expect.objectContaining({ type: 'horizontal-line' }),
-      expect.objectContaining({ type: 'global-compression', tick: 0 }),
+      expect.objectContaining({
+        type: 'vertical-line',
+        tick: 1,
+        rangeFrom: { unit: 'index', value: 0.5 },
+        rangeTo: { unit: 'percent', value: 75 },
+      }),
+      expect.objectContaining({
+        type: 'horizontal-line',
+        rangeFrom: { unit: 'percent', value: 10 },
+        rangeTo: { unit: 'index', value: 4 },
+      }),
+      expect.objectContaining({
+        type: 'global-compression',
+        tick: 0,
+        rangeFrom: { unit: 'index', value: 1 },
+        rangeTo: { unit: 'percent', value: 100 },
+      }),
     ]);
     expect(toUndulateJSON(diagram).annotations).toEqual(root.annotations);
   });
@@ -144,7 +166,15 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: '||', x: 1, from: 0 }],
-    })).toContain('[WIP]');
+    })).toBeNull();
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '|', x: 1, from: '101%' }],
+    })).toContain('percentage from 0% to 100%');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '-', y: 1, to: 'not-a-range' }],
+    })).toContain('finite index');
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: '|', x: 1, 'stroke-dasharray': [1, -2] }],
@@ -267,13 +297,10 @@ describe('Undulate JSON bridge', () => {
         'signal[0].slewing',
         'signal[0].stroke',
         'signal[0].future_lane',
-        'signal[0].wave',
         'signal[1].analogue[0]',
         'config.vscale',
         'config.future_config',
         'annotations[0].shape',
-        'annotations[0].from',
-        'annotations[0].to',
         'annotations[0].font-size',
         'annotations[0].future_annotation',
       ]),

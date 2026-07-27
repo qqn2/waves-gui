@@ -294,6 +294,9 @@ export function Toolbar({
             paintMode={paintMode}
             paintStyle={paintStyle}
             activeBit={activeBit}
+            extensionsEnabled={
+              diagram.compatibility?.extensionsEnabled === true
+            }
             moreBitsOpen={moreBitsOpen}
             onSetPaintMode={setPaintMode}
             onSetPaintStyle={setPaintStyle}

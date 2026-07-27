@@ -29,13 +29,21 @@ const diagram: DiagramState = {
       y: 0.3,
       coordinateMode: 'diagram',
     },
-    { id: 'vline', type: 'vertical-line', tick: 3 },
+    {
+      id: 'vline',
+      type: 'vertical-line',
+      tick: 3,
+      rangeFrom: { unit: 'percent', value: 25 },
+      rangeTo: { unit: 'percent', value: 75 },
+    },
     { id: 'compression', type: 'global-compression', tick: 4 },
     {
       id: 'hline',
       type: 'horizontal-line',
       signalId: 'sig-1',
       yOffset: 4,
+      rangeFrom: { unit: 'index', value: 1 },
+      rangeTo: { unit: 'percent', value: 75 },
     },
   ],
 };
@@ -75,6 +83,8 @@ describe('layoutTextAnnotations', () => {
       expect.objectContaining({
         orientation: 'vertical',
         position: 140,
+        rangeStart: 20,
+        rangeEnd: 60,
       }),
       expect.objectContaining({
         orientation: 'compression',
@@ -83,6 +93,8 @@ describe('layoutTextAnnotations', () => {
       expect.objectContaining({
         orientation: 'horizontal',
         position: 64,
+        rangeStart: 40,
+        rangeEnd: 240,
       }),
     ]);
   });

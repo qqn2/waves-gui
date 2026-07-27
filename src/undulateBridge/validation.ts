@@ -96,10 +96,10 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'stroke',
       'stroke-width',
       'stroke-dasharray',
-    ],
-    wip: [
       'from',
       'to',
+    ],
+    wip: [
       'dx',
       'dy',
       'font-size',
@@ -142,9 +142,10 @@ const CONFIG_SUPPORTED = new Set<string>(
 const CONFIG_WIP = new Set<string>(UNDULATE_PROPERTY_MANIFEST.config.wip);
 const HEAD_FIELDS = new Set(['text', 'tick', 'every']);
 const FOOT_FIELDS = new Set(['text', 'tock', 'every']);
-const EXTENDED_WAVE_FEATURES = [
-  { pattern: /[hHlL]/, feature: 'digital high/low states' },
-] as const;
+const EXTENDED_WAVE_FEATURES: ReadonlyArray<{
+  pattern: RegExp;
+  feature: string;
+}> = [];
 
 function finding(
   kind: UndulateFindingKind,
@@ -547,6 +548,29 @@ function validateAnnotationStructure(value: unknown): string | null {
       && !isSafeAnnotationDasharray(annotation['stroke-dasharray'])
     ) {
       return `annotations[${index}].stroke-dasharray must contain 1 to 16 finite values from 0 to 1000`;
+    }
+    if (
+      annotation.shape === '|'
+      || annotation.shape === '||'
+      || annotation.shape === '-'
+    ) {
+      for (const field of ['from', 'to']) {
+        const range = annotation[field];
+        if (range === undefined) continue;
+        const validIndex =
+          typeof range === 'number'
+          && Number.isFinite(range)
+          && Math.abs(range) <= MAX_ANNOTATION_COORDINATE;
+        const percent = typeof range === 'string'
+          ? range.trim().match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*%$/)
+          : null;
+        const validPercent = percent !== null
+          && Number(percent[1]) >= 0
+          && Number(percent[1]) <= 100;
+        if (!validIndex && !validPercent) {
+          return `annotations[${index}].${field} must be a finite index within ±${MAX_ANNOTATION_COORDINATE} or a percentage from 0% to 100%`;
+        }
+      }
     }
     if (annotation.shape === '|' || annotation.shape === '||') {
       if (

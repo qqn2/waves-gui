@@ -1,6 +1,7 @@
 import { CELL_WIDTH, ROW_HEIGHT } from '../shared/constants';
 import type {
   DiagramState,
+  AnnotationRangePosition,
   HorizontalLineAnnotation,
   GlobalCompressionAnnotation,
   TextAnnotation,
@@ -20,9 +21,65 @@ export interface TextAnnotationLayout {
 }
 
 export type LineAnnotationLayout =
-  | { annotation: VerticalLineAnnotation; orientation: 'vertical'; position: number }
-  | { annotation: GlobalCompressionAnnotation; orientation: 'compression'; position: number }
-  | { annotation: HorizontalLineAnnotation; orientation: 'horizontal'; position: number };
+  | {
+      annotation: VerticalLineAnnotation;
+      orientation: 'vertical';
+      position: number;
+      rangeStart: number;
+      rangeEnd: number;
+    }
+  | {
+      annotation: GlobalCompressionAnnotation;
+      orientation: 'compression';
+      position: number;
+      rangeStart: number;
+      rangeEnd: number;
+    }
+  | {
+      annotation: HorizontalLineAnnotation;
+      orientation: 'horizontal';
+      position: number;
+      rangeStart: number;
+      rangeEnd: number;
+    };
+
+function resolveRangePosition(
+  value: AnnotationRangePosition | undefined,
+  fullLength: number,
+  indexScale: number,
+  fallback: number,
+): number {
+  if (!value) return fallback;
+  return value.unit === 'percent'
+    ? fullLength * value.value / 100
+    : value.value * indexScale;
+}
+
+function annotationRange(
+  annotation:
+    | VerticalLineAnnotation
+    | HorizontalLineAnnotation
+    | GlobalCompressionAnnotation,
+  fullLength: number,
+  indexScale: number,
+): { rangeStart: number; rangeEnd: number } {
+  const from = resolveRangePosition(
+    annotation.rangeFrom,
+    fullLength,
+    indexScale,
+    0,
+  );
+  const to = resolveRangePosition(
+    annotation.rangeTo,
+    fullLength,
+    indexScale,
+    fullLength,
+  );
+  return {
+    rangeStart: Math.min(from, to),
+    rangeEnd: Math.max(from, to),
+  };
+}
 
 export function annotationXCells(
   annotation: TextAnnotation | VerticalLineAnnotation | GlobalCompressionAnnotation,
@@ -48,11 +105,15 @@ export function annotationYLogical(
 }
 
 export function layoutLineAnnotations(
-  diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
+  diagram: Pick<DiagramState, 'annotations' | 'compatibility' | 'config'>,
   rows: RowLayoutEntry[],
 ): LineAnnotationLayout[] {
   if (diagram.compatibility?.extensionsEnabled !== true) return [];
   const layouts: LineAnnotationLayout[] = [];
+  const contentHeight = rows.length > 0
+    ? rows[rows.length - 1]!.y + rows[rows.length - 1]!.height
+    : 0;
+  const contentWidth = diagram.config.totalSteps * CELL_WIDTH;
   for (const annotation of diagram.annotations ?? []) {
     if (annotation.type === 'vertical-line' || annotation.type === 'global-compression') {
       if (annotation.type === 'vertical-line') {
@@ -60,12 +121,14 @@ export function layoutLineAnnotations(
           annotation,
           orientation: 'vertical',
           position: annotationXCells(annotation) * CELL_WIDTH,
+          ...annotationRange(annotation, contentHeight, ROW_HEIGHT),
         });
       } else {
         layouts.push({
           annotation,
           orientation: 'compression',
           position: annotationXCells(annotation) * CELL_WIDTH,
+          ...annotationRange(annotation, contentHeight, ROW_HEIGHT),
         });
       }
       continue;
@@ -77,6 +140,7 @@ export function layoutLineAnnotations(
       annotation,
       orientation: 'horizontal',
       position,
+      ...annotationRange(annotation, contentWidth, CELL_WIDTH),
     });
   }
   return layouts;
@@ -104,7 +168,7 @@ export function layoutTextAnnotations(
 export function hitTestAnnotation(
   canvasX: number,
   canvasY: number,
-  diagram: Pick<DiagramState, 'annotations' | 'compatibility'>,
+  diagram: Pick<DiagramState, 'annotations' | 'compatibility' | 'config'>,
   rows: RowLayoutEntry[],
   transform: ViewTransform,
   waveformTop: number,
@@ -114,10 +178,22 @@ export function hitTestAnnotation(
     const layout = lineLayouts[index]!;
     if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = logicalToCanvasX(layout.position, transform);
-      if (Math.abs(canvasX - x) <= 5) return layout.annotation.id;
+      const yStart = waveformTop + logicalToCanvasY(layout.rangeStart, transform);
+      const yEnd = waveformTop + logicalToCanvasY(layout.rangeEnd, transform);
+      if (
+        Math.abs(canvasX - x) <= 5
+        && canvasY >= yStart - 5
+        && canvasY <= yEnd + 5
+      ) return layout.annotation.id;
     } else {
       const y = waveformTop + logicalToCanvasY(layout.position, transform);
-      if (Math.abs(canvasY - y) <= 5) return layout.annotation.id;
+      const xStart = logicalToCanvasX(layout.rangeStart, transform);
+      const xEnd = logicalToCanvasX(layout.rangeEnd, transform);
+      if (
+        Math.abs(canvasY - y) <= 5
+        && canvasX >= xStart - 5
+        && canvasX <= xEnd + 5
+      ) return layout.annotation.id;
     }
   }
   const layouts = layoutTextAnnotations(diagram, rows);

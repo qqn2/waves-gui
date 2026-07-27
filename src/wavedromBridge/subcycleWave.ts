@@ -8,7 +8,7 @@ export function hasSubcycleSyntax(wave: string): boolean {
   return wave.includes('<') || wave.includes('>');
 }
 
-const WAVE_BODY_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
+const WAVE_BODY_CHARS = /^[0-9.xXzZuUdDpPnNiImMhHlL.=|2-9<>]*$/;
 
 function hasValidSubcycleMarkers(wave: string): boolean {
   let inSubcycle = false;

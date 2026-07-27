@@ -1,8 +1,10 @@
 import { MessageSquareText, Trash2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  formatAnnotationRangePosition,
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
+  parseAnnotationRangeInput,
 } from '../shared/annotations';
 import { ROW_HEIGHT } from '../shared/constants';
 import { useStore } from '../shared/store';
@@ -50,6 +52,8 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const [fillDraft, setFillDraft] = useState('');
   const [strokeDraft, setStrokeDraft] = useState('');
   const [dashDraft, setDashDraft] = useState('');
+  const [rangeFromDraft, setRangeFromDraft] = useState('');
+  const [rangeToDraft, setRangeToDraft] = useState('');
 
   useEffect(() => {
     setTextDraft(textAnnotation?.text ?? '');
@@ -60,6 +64,16 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
     setStrokeDraft(annotation?.style?.stroke ?? '');
     setDashDraft(annotation?.style?.strokeDasharray?.join(', ') ?? '');
   }, [annotation?.id, annotation?.style]);
+
+  useEffect(() => {
+    if (!annotation || annotation.type === 'text') {
+      setRangeFromDraft('');
+      setRangeToDraft('');
+      return;
+    }
+    setRangeFromDraft(formatAnnotationRangePosition(annotation.rangeFrom));
+    setRangeToDraft(formatAnnotationRangePosition(annotation.rangeTo));
+  }, [annotation]);
 
   const updateStyle = (style: AnnotationStyle) => {
     if (!annotation) return;
@@ -90,6 +104,20 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const close = () => {
     setActiveAnnotationId(null);
     onClose();
+  };
+
+  const commitRange = (
+    field: 'rangeFrom' | 'rangeTo',
+    draft: string,
+    reset: (value: string) => void,
+  ) => {
+    if (!annotation || annotation.type === 'text') return;
+    const parsed = parseAnnotationRangeInput(draft);
+    if (parsed === null) {
+      reset(formatAnnotationRangePosition(annotation[field]));
+      return;
+    }
+    updatePosition({ [field]: parsed } as Partial<DiagramAnnotation>);
   };
 
   return (
@@ -250,6 +278,45 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                 aria-label="Annotation vertical offset"
                 />
               </label>
+              </>
+            ) : null}
+            {annotation.type !== 'text' ? (
+              <>
+                <label className={styles.inspectorField}>
+                  <span>From</span>
+                  <input
+                    type="text"
+                    value={rangeFromDraft}
+                    placeholder="start or 25%"
+                    onChange={(event) => setRangeFromDraft(event.target.value)}
+                    onBlur={() => commitRange(
+                      'rangeFrom',
+                      rangeFromDraft,
+                      setRangeFromDraft,
+                    )}
+                    aria-label="Annotation range start"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>To</span>
+                  <input
+                    type="text"
+                    value={rangeToDraft}
+                    placeholder="end or 75%"
+                    onChange={(event) => setRangeToDraft(event.target.value)}
+                    onBlur={() => commitRange(
+                      'rangeTo',
+                      rangeToDraft,
+                      setRangeToDraft,
+                    )}
+                    aria-label="Annotation range end"
+                  />
+                </label>
+                <p className={styles.inspectorFieldHint}>
+                  {annotation.type === 'horizontal-line'
+                    ? 'Cell indices or percentages of waveform width.'
+                    : 'Signal-row indices or percentages of waveform height.'}
+                </p>
               </>
             ) : null}
           </section>

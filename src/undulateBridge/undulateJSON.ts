@@ -14,17 +14,21 @@ import {
 } from '../shared/annotations';
 import type {
   AnnotationStyle,
+  AnnotationRangePosition,
   AnalogueCell,
   DiagramAnnotation,
   DiagramState,
+  GlobalCompressionAnnotation,
   HorizontalLineAnnotation,
   Signal,
   SignalOrGroup,
+  VerticalLineAnnotation,
 } from '../shared/types';
 import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
 import type {
   UndulateAnalogueValue,
   UndulateAnnotation,
+  UndulateAnnotationRange,
   UndulateRoot,
 } from './types';
 import type {
@@ -40,6 +44,42 @@ export {
   validateUndulateJSON,
 } from './validation';
 import { UNDULATE_TARGET_REVISION } from './validation';
+
+function annotationRangeFromUndulate(
+  value: UndulateAnnotationRange | undefined,
+): AnnotationRangePosition | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return { unit: 'index', value };
+  }
+  if (typeof value !== 'string') return undefined;
+  const match = value.trim().match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*%$/);
+  if (!match) return undefined;
+  const percent = Number(match[1]);
+  return Number.isFinite(percent)
+    ? { unit: 'percent', value: percent }
+    : undefined;
+}
+
+function annotationRangeToUndulate(
+  value: AnnotationRangePosition | undefined,
+): UndulateAnnotationRange | undefined {
+  if (!value) return undefined;
+  return value.unit === 'percent' ? `${value.value}%` : value.value;
+}
+
+function annotationRangesToUndulate(
+  annotation:
+    | VerticalLineAnnotation
+    | HorizontalLineAnnotation
+    | GlobalCompressionAnnotation,
+): { from?: UndulateAnnotationRange; to?: UndulateAnnotationRange } {
+  const from = annotationRangeToUndulate(annotation.rangeFrom);
+  const to = annotationRangeToUndulate(annotation.rangeTo);
+  return {
+    ...(from !== undefined ? { from } : {}),
+    ...(to !== undefined ? { to } : {}),
+  };
+}
 
 function annotationStyleToUndulate(
   style: AnnotationStyle | undefined,
@@ -143,6 +183,7 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
       annotations.push({
         shape: annotation.type === 'vertical-line' ? '|' : '||',
         x: annotationXCells(annotation),
+        ...annotationRangesToUndulate(annotation),
         ...annotationStyleToUndulate(annotation.style),
       });
     } else {
@@ -152,6 +193,7 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
         annotations.push({
           shape: '-',
           y: logicalY / ROW_HEIGHT,
+          ...annotationRangesToUndulate(annotation),
           ...annotationStyleToUndulate(annotation.style),
         });
       } else {
@@ -285,6 +327,12 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         tick: Math.round(annotation.x - 0.5),
         x: annotation.x,
         snapToGrid: false,
+        ...(annotationRangeFromUndulate(annotation.from)
+          ? { rangeFrom: annotationRangeFromUndulate(annotation.from) }
+          : {}),
+        ...(annotationRangeFromUndulate(annotation.to)
+          ? { rangeTo: annotationRangeFromUndulate(annotation.to) }
+          : {}),
         ...(style ? { style } : {}),
       };
     }
@@ -294,6 +342,12 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         type: 'horizontal-line',
         y: annotation.y,
         coordinateMode: 'diagram',
+        ...(annotationRangeFromUndulate(annotation.from)
+          ? { rangeFrom: annotationRangeFromUndulate(annotation.from) }
+          : {}),
+        ...(annotationRangeFromUndulate(annotation.to)
+          ? { rangeTo: annotationRangeFromUndulate(annotation.to) }
+          : {}),
         ...(style ? { style } : {}),
       };
       return base;

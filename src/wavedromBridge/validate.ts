@@ -2,7 +2,7 @@ import type { WdRoot } from './wdTypes';
 import { isValidWaveString } from './subcycleWave';
 
 const WAVEDROM_WAVE_CHARS = /^[0-9.xXzZuUdDpPnN.=|2-9<>]*$/;
-const UNDULATE_WAVE_CHARS = /^[0-9.xXzZuUdDpPnNiImM.=|2-9<>]*$/;
+const UNDULATE_WAVE_CHARS = /^[0-9.xXzZuUdDpPnNiImMhHlL.=|2-9<>]*$/;
 
 export interface WavedromValidationOptions {
   allowUndulateDigitalStates?: boolean;

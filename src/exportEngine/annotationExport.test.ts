@@ -45,14 +45,24 @@ describe('annotation image export', () => {
         id: 'v',
         type: 'vertical-line',
         tick: 1,
+        rangeFrom: { unit: 'percent', value: 25 },
+        rangeTo: { unit: 'percent', value: 75 },
         style: { stroke: '#123456', strokeWidth: 2, strokeDasharray: [3, 2] },
       },
-      { id: 'h', type: 'horizontal-line', signalId: signal?.id },
+      {
+        id: 'h',
+        type: 'horizontal-line',
+        signalId: signal?.id,
+        rangeFrom: { unit: 'index', value: 1 },
+        rangeTo: { unit: 'index', value: 3 },
+      },
       { id: 'c', type: 'global-compression', tick: 2 },
     ];
     const svg = buildSVGString(diagram, defaultView());
     expect(svg).toContain('stroke="#123456" stroke-width="2" stroke-dasharray="3 2"');
     expect(svg.match(/stroke-dasharray="5 4"/g)).toHaveLength(1);
     expect(svg).toContain('width="12"');
+    expect(svg).toContain('x1="40"');
+    expect(svg).toContain('x2="120"');
   });
 });

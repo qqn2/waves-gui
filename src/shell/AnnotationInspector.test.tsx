@@ -60,4 +60,47 @@ describe('AnnotationInspector coordinates', () => {
     await act(async () => root.unmount());
     host.remove();
   });
+
+  it('edits ranged line bounds as indices or percentages', async () => {
+    const id = useStore.getState().addVerticalLineAnnotation({
+      tick: 1,
+      rangeFrom: { unit: 'index', value: 0.5 },
+      rangeTo: { unit: 'percent', value: 75 },
+    })!;
+    useStore.getState().setActiveAnnotationId(id);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    await act(async () => {
+      root.render(<AnnotationInspector onClose={() => undefined} />);
+    });
+
+    const from = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation range start"]',
+    );
+    const to = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation range end"]',
+    );
+    expect(from?.value).toBe('0.5');
+    expect(to?.value).toBe('75%');
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      setter?.call(from, '25%');
+      from!.dispatchEvent(new Event('input', { bubbles: true }));
+      from!.dispatchEvent(new Event('change', { bubbles: true }));
+      from!.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    });
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      rangeFrom: { unit: 'percent', value: 25 },
+      rangeTo: { unit: 'percent', value: 75 },
+    });
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
 });

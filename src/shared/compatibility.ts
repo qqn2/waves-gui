@@ -52,6 +52,10 @@ export function waveDromCompatibilityFindings(
           || state === 'I'
           || state === 'm'
           || state === 'M'
+          || state === 'h'
+          || state === 'H'
+          || state === 'l'
+          || state === 'L'
         )
       ) {
         extendedDigitalCount++;
@@ -63,7 +67,7 @@ export function waveDromCompatibilityFindings(
     findings.push({
       level: 'unsupported',
       feature: 'extended-digital-signals',
-      message: `${extendedDigitalCount} extended digital signal${extendedDigitalCount === 1 ? '' : 's'} use Undulate-only mixed, impulse, or metastability states.`,
+      message: `${extendedDigitalCount} extended digital signal${extendedDigitalCount === 1 ? '' : 's'} use Undulate-only mixed, impulse, metastability, or held clock-edge states.`,
       consequence: 'The WaveDrom Editor may reject these wave strings.',
     });
   }

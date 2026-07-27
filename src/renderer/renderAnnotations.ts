@@ -1,5 +1,4 @@
 import type { DiagramState } from '../shared/types';
-import { CELL_WIDTH } from '../shared/constants';
 import {
   logicalToCanvasX,
   logicalToCanvasY,
@@ -29,10 +28,6 @@ export function renderTextAnnotations(
   ctx.strokeStyle = themeColor('--accent', '#4a9eff');
   ctx.lineWidth = 1.5;
   ctx.setLineDash([5, 4]);
-  const contentHeight = rows.length > 0
-    ? rows[rows.length - 1]!.y + rows[rows.length - 1]!.height
-    : 0;
-  const contentWidth = diagram.config.totalSteps * CELL_WIDTH;
   for (const layout of lineLayouts) {
     const style = layout.annotation.style;
     ctx.strokeStyle = style?.stroke ?? themeColor('--accent', '#4a9eff');
@@ -50,23 +45,23 @@ export function renderTextAnnotations(
         ctx.fillStyle = themeColor('--bg-canvas', '#111111');
         ctx.fillRect(
           x - 6 * transform.zoom,
-          logicalToCanvasY(0, transform),
+          logicalToCanvasY(layout.rangeStart, transform),
           12 * transform.zoom,
-          contentHeight * transform.zoom,
+          (layout.rangeEnd - layout.rangeStart) * transform.zoom,
         );
         ctx.restore();
         ctx.beginPath();
       }
-      ctx.moveTo(x - offset, logicalToCanvasY(0, transform));
-      ctx.lineTo(x - offset, logicalToCanvasY(contentHeight, transform));
+      ctx.moveTo(x - offset, logicalToCanvasY(layout.rangeStart, transform));
+      ctx.lineTo(x - offset, logicalToCanvasY(layout.rangeEnd, transform));
       if (layout.orientation === 'compression') {
-        ctx.moveTo(x + offset, logicalToCanvasY(0, transform));
-        ctx.lineTo(x + offset, logicalToCanvasY(contentHeight, transform));
+        ctx.moveTo(x + offset, logicalToCanvasY(layout.rangeStart, transform));
+        ctx.lineTo(x + offset, logicalToCanvasY(layout.rangeEnd, transform));
       }
     } else {
       const y = logicalToCanvasY(layout.position, transform);
-      ctx.moveTo(logicalToCanvasX(0, transform), y);
-      ctx.lineTo(logicalToCanvasX(contentWidth, transform), y);
+      ctx.moveTo(logicalToCanvasX(layout.rangeStart, transform), y);
+      ctx.lineTo(logicalToCanvasX(layout.rangeEnd, transform), y);
     }
     ctx.stroke();
   }

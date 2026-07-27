@@ -85,6 +85,22 @@ describe('App smoke', () => {
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
 
     await act(async () => {
+      useStore.getState().addSignal('analogue');
+      const analogueSignal = useStore.getState().diagram.signals.find(
+        (signal) => signal.type === 'analogue',
+      );
+      expect(analogueSignal).toBeDefined();
+      useStore.getState().setActiveSignalIds([analogueSignal!.id]);
+    });
+    expect(inspectorToggle!.disabled).toBe(false);
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Analog inspector');
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Analog range');
+
+    await act(async () => {
       const annotationId = useStore.getState().addTextAnnotation({
         text: 'Setup note',
         tick: 1,

@@ -22,6 +22,7 @@
 export type BitState =
   | '0' | '1' | 'x' | 'X' | 'z' | 'u' | 'd'
   | 'p' | 'n' | 'P' | 'N'
+  | 'h' | 'H' | 'l' | 'L'
   | '=' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
   | 'i' | 'I' | 'm' | 'M'
   | '.';
@@ -39,6 +40,10 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'n': 'n',
   'P': 'P',
   'N': 'N',
+  'h': 'h',
+  'H': 'H',
+  'l': 'l',
+  'L': 'L',
   '=': '=',
   '2': '2',
   '3': '3',
@@ -174,6 +179,11 @@ export interface AnnotationStyle {
   strokeDasharray?: number[];
 }
 
+export interface AnnotationRangePosition {
+  unit: 'index' | 'percent';
+  value: number;
+}
+
 export interface TextAnnotation {
   id: string;
   type: 'text';
@@ -201,6 +211,9 @@ export interface VerticalLineAnnotation {
   /** Exact Undulate X coordinate in waveform-cell units. */
   x?: number;
   snapToGrid?: boolean;
+  /** Optional vertical span, expressed as a signal-row index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
   style?: AnnotationStyle;
 }
 
@@ -214,6 +227,9 @@ export interface HorizontalLineAnnotation {
   signalId?: string;
   /** Logical pixel offset from the anchored row center. */
   yOffset?: number;
+  /** Optional horizontal span, expressed as a cell index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
   style?: AnnotationStyle;
 }
 
@@ -225,6 +241,9 @@ export interface GlobalCompressionAnnotation {
   /** Exact Undulate X coordinate in waveform-cell units. */
   x?: number;
   snapToGrid?: boolean;
+  /** Optional vertical span, expressed as a signal-row index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
   style?: AnnotationStyle;
 }
 

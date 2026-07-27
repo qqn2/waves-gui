@@ -31,6 +31,14 @@ function disableExtensionView(s: AppState & StoreActions): void {
   s.view.activeAnnotationId = null;
   s.view.activeSignalIds = [];
   if (
+    s.view.activeBitState === 'h'
+    || s.view.activeBitState === 'H'
+    || s.view.activeBitState === 'l'
+    || s.view.activeBitState === 'L'
+  ) {
+    s.view.activeBitState = '1';
+  }
+  if (
     s.view.selectedTool === 'annotation'
     || s.view.selectedTool === 'vertical-line'
     || s.view.selectedTool === 'horizontal-line'

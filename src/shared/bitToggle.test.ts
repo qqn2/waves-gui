@@ -20,6 +20,13 @@ describe('toggleBinaryBitState', () => {
     expect(toggleBinaryBitState('N')).toBe('P');
   });
 
+  it('toggles Undulate held clock-edge levels and preserves arrow case', () => {
+    expect(toggleBinaryBitState('h')).toBe('l');
+    expect(toggleBinaryBitState('H')).toBe('L');
+    expect(toggleBinaryBitState('l')).toBe('h');
+    expect(toggleBinaryBitState('L')).toBe('H');
+  });
+
   it('toggles clock cycles independently', () => {
     const before = ['P', 'P', 'p', 'p'] as const;
     const after = before.map((s) => toggleBinaryBitState(s));

@@ -20,7 +20,13 @@ import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
 import { buildLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
-import { clockCycleEndY, clockCycleSvg } from '../renderer/drawClock';
+import {
+  clockCycleEndY,
+  clockCycleSvg,
+  clockLevelEndY,
+  clockLevelSvg,
+  isClockLevelState,
+} from '../renderer/drawClock';
 import { stepLogicalX, stepLogicalXEnd } from '../renderer/laneTiming';
 import { svgStepGap } from '../renderer/drawStepGap';
 import {
@@ -71,8 +77,12 @@ function bitY(
 ): number {
   switch (st) {
     case '1':
+    case 'h':
+    case 'H':
       return yHigh;
     case '0':
+    case 'l':
+    case 'L':
       return yLow;
     case 'z':
       return yMid;
@@ -229,6 +239,24 @@ function svgBitSignal(
       );
       parts.push(transient.svg);
       prevY = transient.endY;
+      resumeAtCurrentState = false;
+      continue;
+    }
+
+    if (isClockLevelState(st)) {
+      flushPath();
+      const targetY = clockLevelEndY(st, yHigh, yLow);
+      parts.push(...clockLevelSvg(
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? targetY : prevY,
+        yHigh,
+        yLow,
+        color,
+        i > 0,
+      ));
+      prevY = targetY;
       resumeAtCurrentState = false;
       continue;
     }
@@ -518,8 +546,6 @@ function svgAnnotations(
         + `${esc(annotation.text)}</text>`;
     })
     .join('\n');
-  const contentHeight = totalContentHeight(rows);
-  const contentWidth = diagram.config.totalSteps * CELL_WIDTH * diagram.config.hscale;
   const lines = layoutLineAnnotations(diagram, rows).map((layout) => {
     const style = layout.annotation.style;
     const stroke = esc(style?.stroke ?? textColor);
@@ -529,17 +555,18 @@ function svgAnnotations(
     const dashAttribute = dash ? ` stroke-dasharray="${dash}"` : '';
     if (layout.orientation === 'vertical' || layout.orientation === 'compression') {
       const x = layout.position * diagram.config.hscale;
-      const line = (lineX: number) => `<line x1="${lineX}" y1="${axisOffset}" x2="${lineX}" `
-        + `y2="${axisOffset + contentHeight}" stroke="${stroke}" `
+      const line = (lineX: number) => `<line x1="${lineX}" y1="${axisOffset + layout.rangeStart}" x2="${lineX}" `
+        + `y2="${axisOffset + layout.rangeEnd}" stroke="${stroke}" `
         + `stroke-width="${width}"${dashAttribute}/>`;
       return layout.orientation === 'compression'
-        ? `<rect x="${x - 6}" y="${axisOffset}" width="12" `
-          + `height="${contentHeight}" fill="${esc(panelBg)}"/>\n`
+        ? `<rect x="${x - 6}" y="${axisOffset + layout.rangeStart}" width="12" `
+          + `height="${layout.rangeEnd - layout.rangeStart}" fill="${esc(panelBg)}"/>\n`
           + `${line(x - 3)}\n${line(x + 3)}`
         : line(x);
     }
     const y = axisOffset + layout.position;
-    return `<line x1="0" y1="${y}" x2="${contentWidth}" y2="${y}" `
+    return `<line x1="${layout.rangeStart * diagram.config.hscale}" y1="${y}" `
+      + `x2="${layout.rangeEnd * diagram.config.hscale}" y2="${y}" `
       + `stroke="${stroke}" stroke-width="${width}"${dashAttribute}/>`;
   }).join('\n');
   return [lines, text].filter(Boolean).join('\n');

@@ -170,7 +170,13 @@ function App() {
     if (activeSignalIds.length !== 1) return null;
     let selected: import('./shared/types').Signal | null = null;
     findSignal(diagram.signals, activeSignalIds[0]!, (signal) => {
-      if (signal.type === 'bit' || signal.type === 'vector') selected = signal;
+      if (
+        signal.type === 'bit'
+        || signal.type === 'vector'
+        || signal.type === 'analogue'
+      ) {
+        selected = signal;
+      }
     });
     return selected;
   }, [activeSignalIds, diagram.signals]);

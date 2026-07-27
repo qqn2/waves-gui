@@ -7,6 +7,8 @@ export interface UndulateAnnotationStyle {
   'stroke-dasharray'?: number[];
 }
 
+export type UndulateAnnotationRange = number | string;
+
 export interface UndulateTextAnnotation extends UndulateAnnotationStyle {
   text: string;
   x: number;
@@ -16,16 +18,22 @@ export interface UndulateTextAnnotation extends UndulateAnnotationStyle {
 export interface UndulateVerticalLineAnnotation extends UndulateAnnotationStyle {
   shape: '|';
   x: number;
+  from?: UndulateAnnotationRange;
+  to?: UndulateAnnotationRange;
 }
 
 export interface UndulateHorizontalLineAnnotation extends UndulateAnnotationStyle {
   shape: '-';
   y: number;
+  from?: UndulateAnnotationRange;
+  to?: UndulateAnnotationRange;
 }
 
 export interface UndulateGlobalCompressionAnnotation extends UndulateAnnotationStyle {
   shape: '||';
   x: number;
+  from?: UndulateAnnotationRange;
+  to?: UndulateAnnotationRange;
 }
 
 export type UndulateAnnotation =

@@ -71,6 +71,14 @@ describe('encodeWaveString / decodeWaveString', () => {
     expect(encodeWaveString(decoded)).toBe(wave);
   });
 
+  it('round-trips Undulate held clock-edge states', () => {
+    const wave = 'phnlPHNL';
+    expect(decodeWaveString(wave)).toEqual([
+      'p', 'h', 'n', 'l', 'P', 'H', 'N', 'L',
+    ]);
+    expect(encodeWaveString(decodeWaveString(wave))).toBe(wave);
+  });
+
   it('keeps mixed scalar/data lanes digital without requiring transient states', () => {
     const root = { signal: [{ name: 'mixed', wave: '0.=X1' }] };
     const diagram = fromWavedromJSON(root);
@@ -234,6 +242,14 @@ describe('validateWavedromJSON', () => {
     expect(
       validateWavedromJSON({ signal: [], config: { hscale: 1.5 } }),
     ).toBeNull();
+  });
+
+  it('accepts held clock-edge states only for Undulate validation', () => {
+    const root = { signal: [{ wave: 'phnlPHNL' }] };
+    expect(validateWavedromJSON(root)).toMatch(/Invalid wave characters/);
+    expect(validateWavedromJSON(root, {
+      allowUndulateDigitalStates: true,
+    })).toBeNull();
   });
 
   it('validates nested group entries', () => {

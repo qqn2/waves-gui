@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import type {
   AnnotationStyle,
+  AnnotationRangePosition,
   DiagramAnnotation,
   DiagramState,
   GlobalCompressionAnnotation,
@@ -17,6 +18,52 @@ export const MAX_ANNOTATION_COORDINATE = 10_000;
 export const MAX_ANNOTATION_STROKE_WIDTH = 32;
 export const MAX_ANNOTATION_DASH_ITEMS = 16;
 export const MAX_ANNOTATION_DASH_VALUE = 1000;
+
+export function normalizeAnnotationRangePosition(
+  value: unknown,
+): AnnotationRangePosition | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const candidate = value as Partial<AnnotationRangePosition>;
+  if (
+    (candidate.unit !== 'index' && candidate.unit !== 'percent')
+    || typeof candidate.value !== 'number'
+    || !Number.isFinite(candidate.value)
+  ) {
+    return undefined;
+  }
+  if (candidate.unit === 'percent') {
+    if (candidate.value < 0 || candidate.value > 100) return undefined;
+  } else if (Math.abs(candidate.value) > MAX_ANNOTATION_COORDINATE) {
+    return undefined;
+  }
+  return { unit: candidate.unit, value: candidate.value };
+}
+
+/** Parse an inspector value such as `2.5` or `25%`; blank clears the bound. */
+export function parseAnnotationRangeInput(
+  value: string,
+): AnnotationRangePosition | undefined | null {
+  const text = value.trim();
+  if (text === '') return undefined;
+  const percent = text.match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*%$/);
+  if (percent) {
+    const parsed = Number(percent[1]);
+    return parsed >= 0 && parsed <= 100
+      ? { unit: 'percent', value: parsed }
+      : null;
+  }
+  const parsed = Number(text);
+  return Number.isFinite(parsed) && Math.abs(parsed) <= MAX_ANNOTATION_COORDINATE
+    ? { unit: 'index', value: parsed }
+    : null;
+}
+
+export function formatAnnotationRangePosition(
+  value: AnnotationRangePosition | undefined,
+): string {
+  if (!value) return '';
+  return value.unit === 'percent' ? `${value.value}%` : String(value.value);
+}
 
 export function isSafeAnnotationColor(value: unknown): value is string {
   if (typeof value !== 'string') return false;
@@ -158,6 +205,8 @@ export function normalizeVerticalLineAnnotation(
     -MAX_ANNOTATION_COORDINATE,
     MAX_ANNOTATION_COORDINATE,
   );
+  const rangeFrom = normalizeAnnotationRangePosition(value.rangeFrom);
+  const rangeTo = normalizeAnnotationRangePosition(value.rangeTo);
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'vertical-line',
@@ -174,6 +223,8 @@ export function normalizeVerticalLineAnnotation(
     ...(typeof value.snapToGrid === 'boolean'
       ? { snapToGrid: value.snapToGrid }
       : {}),
+    ...(rangeFrom ? { rangeFrom } : {}),
+    ...(rangeTo ? { rangeTo } : {}),
     ...(style ? { style } : {}),
   };
 }
@@ -195,6 +246,8 @@ export function normalizeHorizontalLineAnnotation(
     value.coordinateMode === 'diagram' || value.coordinateMode === 'signal'
       ? value.coordinateMode
       : undefined;
+  const rangeFrom = normalizeAnnotationRangePosition(value.rangeFrom);
+  const rangeTo = normalizeAnnotationRangePosition(value.rangeTo);
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'horizontal-line',
@@ -204,6 +257,8 @@ export function normalizeHorizontalLineAnnotation(
       ? { signalId: value.signalId }
       : {}),
     ...(yOffset !== 0 ? { yOffset } : {}),
+    ...(rangeFrom ? { rangeFrom } : {}),
+    ...(rangeTo ? { rangeTo } : {}),
     ...(style ? { style } : {}),
   };
 }
@@ -218,6 +273,8 @@ export function normalizeGlobalCompressionAnnotation(
     -MAX_ANNOTATION_COORDINATE,
     MAX_ANNOTATION_COORDINATE,
   );
+  const rangeFrom = normalizeAnnotationRangePosition(value.rangeFrom);
+  const rangeTo = normalizeAnnotationRangePosition(value.rangeTo);
   return {
     id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
     type: 'global-compression',
@@ -234,6 +291,8 @@ export function normalizeGlobalCompressionAnnotation(
     ...(typeof value.snapToGrid === 'boolean'
       ? { snapToGrid: value.snapToGrid }
       : {}),
+    ...(rangeFrom ? { rangeFrom } : {}),
+    ...(rangeTo ? { rangeTo } : {}),
     ...(style ? { style } : {}),
   };
 }

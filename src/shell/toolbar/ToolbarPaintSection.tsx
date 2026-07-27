@@ -10,6 +10,7 @@ import {
   EDGE_CONNECTOR_GROUPS,
   MORE_BIT_STATES,
   PRIMARY_BIT_STATES,
+  UNDULATE_BIT_STATES,
 } from './bitStateConstants';
 import styles from '../shell.module.css';
 
@@ -17,6 +18,7 @@ export interface ToolbarPaintSectionProps {
   paintMode: PaintMode;
   paintStyle: PaintStyle;
   activeBit: BitState;
+  extensionsEnabled: boolean;
   moreBitsOpen: boolean;
   onSetPaintMode: (mode: PaintMode) => void;
   onSetPaintStyle: (style: PaintStyle) => void;
@@ -28,13 +30,17 @@ export function ToolbarPaintSection({
   paintMode,
   paintStyle,
   activeBit,
+  extensionsEnabled,
   moreBitsOpen,
   onSetPaintMode,
   onSetPaintStyle,
   onSelectBit,
   onToggleMoreBits,
 }: ToolbarPaintSectionProps) {
-  const moreBitsActive = MORE_BIT_STATES.includes(activeBit);
+  const moreBitStates = extensionsEnabled
+    ? [...MORE_BIT_STATES, ...UNDULATE_BIT_STATES]
+    : MORE_BIT_STATES;
+  const moreBitsActive = moreBitStates.includes(activeBit);
 
   return (
     <>
@@ -107,7 +113,7 @@ export function ToolbarPaintSection({
       </button>
       {moreBitsOpen ? (
         <span className={styles.paintMoreGroup}>
-          {MORE_BIT_STATES.map((st) => (
+          {moreBitStates.map((st) => (
             <BitStateButton
               key={st}
               st={st}

@@ -458,7 +458,7 @@ Evidence:
 
 #### WIP — extended digital signals
 
-- [ ] Digital high/low symbols `h`, `H`, `l`, and `L`.
+- [x] Digital high/low symbols `h`, `H`, `l`, and `L`.
 - [x] Mixed scalar/data cells (`x`, `X`, `=`, and `2`–`9`).
 - [x] Metastability symbols `m` and `M`.
 - [x] Impulse symbols `i` and `I`.
@@ -484,9 +484,10 @@ Evidence:
 
 - [x] Fractional annotation X coordinates.
 - [x] Fractional and absolute annotation Y coordinates without snapping loss.
-- [ ] Vertical-line `from` and `to` ranges.
-- [ ] Horizontal-line `from` and `to` ranges.
+- [x] Vertical-line `from` and `to` ranges.
+- [x] Horizontal-line `from` and `to` ranges.
 - [x] Global time compression `shape: "||"` for the full waveform span.
+- [x] Global-compression `from` and `to` ranges.
 - [ ] General arrow and shape annotations.
 - [ ] Annotation `dx` and `dy`.
 - [x] Safe annotation `fill` and `stroke`.
@@ -530,7 +531,39 @@ Evidence:
 - UX: X/Y fields, Diagram coordinate versus Signal anchor mode, per-annotation
   step snapping, direct dragging, and arrow-key nudging with Shift for fine
   movement.
-- Remaining limitations: ranged `from`/`to` geometry remains WIP.
+- Remaining limitations: structured arrow/connector anchors remain WIP.
+
+##### Ranged line and compression geometry
+
+Classification: Supported
+
+Scope: preserve and edit optional `from` and `to` bounds on vertical lines,
+horizontal lines, and global compression. Each bound accepts a finite numeric
+signal/cell index or an upstream percentage string from 0% through 100%.
+
+Acceptance:
+
+- [x] Known manifest and shape-aware validation
+- [x] Lossless import and deterministic export
+- [x] Typed normalized model
+- [x] Main canvas and bounded hit testing
+- [x] Inspector editing
+- [x] Undo/redo
+- [x] Local render
+- [x] SVG/PNG/JPEG
+- [x] Pinned upstream fixture
+- [x] Invalid and boundary coverage
+- [x] Documentation synchronized
+
+Evidence:
+
+- Implementation: typed range positions are shared by the Undulate bridge,
+  annotation layout, canvas renderer, SVG exporter, hit testing, and inspector.
+- Tests: numeric/percentage parsing, normalization, semantic round trips,
+  bounded layout and export geometry, inspector edits, and hostile range
+  rejection.
+- Remaining limitations: arrow shapes use different node/coordinate anchor
+  semantics and remain WIP.
 
 ##### Local render navigation and compression clarity
 
@@ -567,8 +600,7 @@ Evidence:
 Classification: Supported subset
 
 Scope: `shape: "||"` with a finite numeric `x`, spanning the complete waveform
-content. The optional upstream `from` and `to` range fields remain a separate
-WIP feature.
+content by default and optionally limited by supported `from` and `to` bounds.
 
 Acceptance:
 
@@ -599,7 +631,7 @@ Evidence:
   README to Undulate revision `c8da7d48`.
 - UX: an Undulate-only **Compress** tool creates and selects the marker; its
   anchor and style remain editable in the annotation inspector.
-- Remaining limitations: `from` and `to` ranges remain WIP.
+- Remaining limitations: structured arrow/connector anchors remain WIP.
 
 ##### Safe annotation paint and line styles
 
@@ -734,7 +766,7 @@ The first vertical slice is complete on `rek-undulate`:
 
 The current Undulate annotation bridge supports plain text, vertical and
 horizontal lines, full-span global compression, and bounded local
-fill/stroke/width/dash styles. Compression `from`/`to` ranges, font sizing,
+fill/stroke/width/dash styles. Font sizing,
 text backgrounds, other shapes, and unknown annotation properties are
 rejected explicitly rather than silently discarded. Opaque preservation of
 unsupported Undulate fields, YAML/TOML, fine timing, arrows, and broader
@@ -1204,6 +1236,10 @@ Lossless **semantic** round-trip plus retained JSON5 comments is the target.
 Byte-for-byte round-trip after a semantic edit is not.
 
 ## 10. Time model and Sub-Steps
+
+The accepted implementation foundation and staged delivery contract are
+maintained in
+[`UNDULATE_FINE_TIMING_DESIGN.md`](./UNDULATE_FINE_TIMING_DESIGN.md).
 
 ### 10.1 Problem
 

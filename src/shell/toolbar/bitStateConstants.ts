@@ -6,6 +6,9 @@ export const PRIMARY_BIT_STATES: BitState[] = ['1', '0', 'P', 'N', 'z', 'x'];
 /** Extra WaveDrom values behind “More”. */
 export const MORE_BIT_STATES: BitState[] = ['.', 'p', 'n', 'u', 'd'];
 
+/** Undulate-only clock-edge cells, visible only while extensions are enabled. */
+export const UNDULATE_BIT_STATES: BitState[] = ['h', 'H', 'l', 'L'];
+
 export const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
   '.': 'Hold previous step (WaveDrom continuation .)',
   p: 'Positive-edge clock cycle (p)',
@@ -16,6 +19,10 @@ export const BIT_STATE_TITLES: Partial<Record<BitState, string>> = {
   d: 'Weak pull-down (d)',
   z: 'High impedance (z)',
   x: 'Unknown (x)',
+  h: 'Rise to high, then hold (Undulate h)',
+  H: 'Rise to high with an edge arrow, then hold (Undulate H)',
+  l: 'Fall to low, then hold (Undulate l)',
+  L: 'Fall to low with an edge arrow, then hold (Undulate L)',
 };
 
 export const EDGE_CONNECTOR_GROUPS = [

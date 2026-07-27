@@ -18,7 +18,13 @@ import {
   zStrokeColor,
   resolveSignalColor,
 } from './stateColors';
-import { clockCycleEndY, strokeClockCycle } from './drawClock';
+import {
+  clockCycleEndY,
+  clockLevelEndY,
+  isClockLevelState,
+  strokeClockCycle,
+  strokeClockLevel,
+} from './drawClock';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 
 function isExtendedDataState(state: BitState): boolean {
@@ -123,8 +129,12 @@ function stateToY(
 ): number {
   switch (bitState) {
     case '1':
+    case 'h':
+    case 'H':
       return yHigh;
     case '0':
+    case 'l':
+    case 'L':
       return yLow;
     case 'z':
       return yMid;
@@ -243,6 +253,29 @@ export function renderBitSignal(
         resumeAtCurrentState ? yMid : prevY,
         resolveSignalColor(signal.color),
       );
+      resumeAtCurrentState = false;
+      continue;
+    }
+
+    if (isClockLevelState(st)) {
+      if (pathOpen) {
+        ctx.stroke();
+        pathOpen = false;
+      }
+      ctx.strokeStyle = resolveSignalColor(signal.color);
+      const targetY = clockLevelEndY(st, yHigh, yLow);
+      strokeClockLevel(
+        ctx,
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? targetY : prevY,
+        yHigh,
+        yLow,
+        ctx.lineWidth,
+        i > 0,
+      );
+      prevY = targetY;
       resumeAtCurrentState = false;
       continue;
     }

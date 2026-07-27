@@ -134,6 +134,102 @@ export function clockStepSvg(
   return parts;
 }
 
+/** Undulate h/H/l/L: transition at the cell start, then hold the target level. */
+export function isClockLevelState(st: BitState): boolean {
+  return st === 'h' || st === 'H' || st === 'l' || st === 'L';
+}
+
+function clockLevelIsHigh(st: BitState): boolean {
+  return st === 'h' || st === 'H';
+}
+
+function clockLevelHasArrow(st: BitState): boolean {
+  return st === 'H' || st === 'L';
+}
+
+export function clockLevelEndY(
+  st: BitState,
+  yHigh: number,
+  yLow: number,
+): number {
+  return clockLevelIsHigh(st) ? yHigh : yLow;
+}
+
+export function strokeClockLevel(
+  ctx: CanvasRenderingContext2D,
+  st: BitState,
+  x0: number,
+  x1: number,
+  previousY: number,
+  yHigh: number,
+  yLow: number,
+  lineWidth: number,
+  allowArrow: boolean,
+): void {
+  const targetY = clockLevelEndY(st, yHigh, yLow);
+  ctx.beginPath();
+  ctx.moveTo(x0, previousY);
+  if (previousY !== targetY) ctx.lineTo(x0, targetY);
+  ctx.lineTo(x1, targetY);
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+
+  if (allowArrow && clockLevelHasArrow(st) && previousY !== targetY) {
+    const prevFill = ctx.fillStyle;
+    ctx.fillStyle = ctx.strokeStyle;
+    const span = yLow - yHigh;
+    const points = clockArrowPoints(
+      clockLevelIsHigh(st),
+      x0,
+      yHigh,
+      yLow,
+      Math.max(2, lineWidth * 1.5),
+      Math.min(6, span * 0.22),
+    );
+    ctx.beginPath();
+    ctx.moveTo(points.tipX, points.tipY);
+    ctx.lineTo(points.x1, points.y1);
+    ctx.lineTo(points.x2, points.y2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = prevFill;
+  }
+}
+
+export function clockLevelSvg(
+  st: BitState,
+  x0: number,
+  x1: number,
+  previousY: number,
+  yHigh: number,
+  yLow: number,
+  color: string,
+  allowArrow: boolean,
+): string[] {
+  const targetY = clockLevelEndY(st, yHigh, yLow);
+  const d = previousY === targetY
+    ? `M${x0},${targetY} L${x1},${targetY}`
+    : `M${x0},${previousY} L${x0},${targetY} L${x1},${targetY}`;
+  const parts = [
+    `<path data-wave-state="${st}" d="${d}" fill="none" stroke="${color}" stroke-width="2"/>`,
+  ];
+  if (allowArrow && clockLevelHasArrow(st) && previousY !== targetY) {
+    const span = yLow - yHigh;
+    const points = clockArrowPoints(
+      clockLevelIsHigh(st),
+      x0,
+      yHigh,
+      yLow,
+      3,
+      Math.min(4, span * 0.22),
+    );
+    parts.push(
+      `<polygon data-wave-state="${st}-arrow" points="${points.tipX},${points.tipY} ${points.x1},${points.y1} ${points.x2},${points.y2}" fill="${color}"/>`,
+    );
+  }
+  return parts;
+}
+
 /** Draw one complete WaveDrom clock cycle inside a timeline column. */
 export function strokeClockCycle(
   ctx: CanvasRenderingContext2D,
