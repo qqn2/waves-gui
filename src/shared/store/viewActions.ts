@@ -28,6 +28,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setActiveEdgeLabel'
   | 'setActiveBusColorIndex'
   | 'setEdgeToolHover'
+  | 'setStructuredArrowPending'
   | 'setPaintMode'
   | 'setPaintStyle'
   | 'toggleCodePanel'
@@ -86,6 +87,12 @@ export function createViewActions(set: ImmerSet): Pick<
     setEdgeToolHover(hover) {
       set((s) => {
         s.view.edgeToolHover = hover;
+      });
+    },
+
+    setStructuredArrowPending(pending) {
+      set((s) => {
+        s.view.structuredArrowPending = pending;
       });
     },
 

@@ -206,6 +206,24 @@ describe('Undulate JSON bridge', () => {
       signal: [],
       annotations: [{ shape: '|', x: 1, 'stroke-dasharray': [1, -2] }],
     })).toContain('1 to 16');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{
+        text: 'styled',
+        x: 1,
+        y: 1,
+        'font-size': '18px',
+        text_background: false,
+      }],
+    })).toBeNull();
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'huge', x: 1, y: 1, 'font-size': '200px' }],
+    })).toContain('6px to 96px');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'bad', x: 1, y: 1, text_background: 'no' }],
+    })).toContain('must be a boolean');
   });
 
   it('imports and exports finite analogue step, capacitive, and sample cells', () => {
@@ -300,6 +318,44 @@ describe('Undulate JSON bridge', () => {
     });
   });
 
+  it('expands analogue repeat with the upstream value-cycling semantics', () => {
+    const root = {
+      signal: [{
+        name: 'repeating analogue',
+        wave: 'sc.',
+        analogue: [0.5, 1.25],
+        repeat: 2,
+      }],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(signal?.type === 'analogue' && signal.analogueCells).toMatchObject([
+      { kind: 'step', value: 0.5 },
+      { kind: 'capacitive', value: 1.25 },
+      { kind: 'hold', value: 1.25 },
+      { kind: 'step', value: 0.5 },
+      { kind: 'capacitive', value: 1.25 },
+      { kind: 'hold', value: 1.25 },
+    ]);
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      wave: 'sc.sc.',
+      analogue: [0.5, 1.25, 0.5, 1.25],
+    });
+    expect(
+      (toUndulateJSON(diagram).signal[0] as { repeat?: number }).repeat,
+    ).toBeUndefined();
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'invalid',
+        wave: 's',
+        analogue: [0.5],
+        repeat: 0,
+      }],
+    })).toContain('analogue repeat');
+  });
+
   it('round-trips structured arrow anchors and label offsets', () => {
     const root = {
       signal: [{ name: 'clk', wave: '01', node: 'ab' }],
@@ -316,6 +372,108 @@ describe('Undulate JSON bridge', () => {
     expect(toUndulateJSON(fromUndulateJSON(root)).annotations).toEqual(
       root.annotations,
     );
+  });
+
+  it('imports plural Undulate edges and exports their canonical field', () => {
+    const root = {
+      signal: [
+        { name: 'source', wave: '01', node: 'a.' },
+        { name: 'target', wave: '10', node: '.b' },
+      ],
+      edges: [
+        'a -> b request',
+        'a <-> b round trip',
+        'a -| b elbow',
+        'a |- b return',
+        'a -|- b bracket',
+      ],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.edges).toEqual([
+      'a->b request',
+      'a<->b round trip',
+      'a-|b elbow',
+      'a|-b return',
+      'a-|-b bracket',
+    ]);
+    const exported = toUndulateJSON(diagram);
+    expect(exported.edge).toBeUndefined();
+    expect(exported.edges).toEqual(diagram.edges);
+  });
+
+  it('round-trips expanded long node identifiers and their edges', () => {
+    const root = {
+      signal: [
+        {
+          name: 'source',
+          wave: '01..',
+          node: '.#.. request.ready',
+        },
+        {
+          name: 'target',
+          wave: '10..',
+          node: '..#. response.done',
+        },
+      ],
+      edges: ['request.ready -> response.done accepted'],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    expect(isUndulateJSON(root)).toBe(true);
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.compatibility?.extensionsEnabled).toBe(true);
+    expect(diagram.signals[0]).toMatchObject({
+      nodeNames: { 1: 'request.ready' },
+    });
+    expect(diagram.signals[1]).toMatchObject({
+      nodeNames: { 2: 'response.done' },
+    });
+    expect(diagram.edges).toEqual([
+      'request.ready->response.done accepted',
+    ]);
+    expect(toUndulateJSON(diagram)).toMatchObject({
+      signal: [
+        { node: '.#.. request.ready' },
+        { node: '..#. response.done' },
+      ],
+      edges: ['request.ready->response.done accepted'],
+    });
+  });
+
+  it('rejects malformed expanded node declarations before import', () => {
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'bad',
+        wave: '01',
+        node: '.#',
+      }],
+    })).toContain('one safe name per # slot');
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'bad',
+        wave: '01',
+        node: '.# too many',
+      }],
+    })).toContain('one safe name per # slot');
+  });
+
+  it('rejects ambiguous and malformed plural edge input', () => {
+    const signal = [{ name: 'clk', wave: '01', node: 'ab' }];
+    expect(validateUndulateJSON({
+      signal,
+      edge: ['a->b'],
+      edges: ['a -> b'],
+    })).toContain('cannot both be present');
+    expect(validateUndulateJSON({
+      signal,
+      edges: ['not an edge'],
+    })).toContain('NODE PATTERN NODE');
+    expect(validateUndulateJSON({
+      signal,
+      edges: ['a -* b'],
+    })).toContain('[WIP]');
   });
 
   it('accepts safe analogue expressions and rejects language escapes', () => {
@@ -376,7 +534,7 @@ describe('Undulate JSON bridge', () => {
       .toEqual(expressions);
   });
 
-  it('accepts fine timing while still reporting WIP and unknown properties', () => {
+  it('accepts fine timing and plural edges while reporting unknown properties', () => {
     const findings = validateUndulateFindings({
       signal: [{
         name: 'clk',
@@ -391,7 +549,6 @@ describe('Undulate JSON bridge', () => {
 
     expect(findings.map((finding) => [finding.kind, finding.path])).toEqual([
       ['unknown', 'signal[0].typo_style'],
-      ['wip', 'edges'],
       ['unknown', 'future_root'],
     ]);
   });
@@ -410,14 +567,12 @@ describe('Undulate JSON bridge', () => {
     ]));
     expect(findings.map((finding) => finding.path)).toEqual(
       expect.arrayContaining([
-        'edges',
         'reg',
         'future_root',
         'signal[0].stroke',
         'signal[0].future_lane',
         'config.vscale',
         'config.future_config',
-        'annotations[0].font-size',
         'annotations[0].future_annotation',
       ]),
     );

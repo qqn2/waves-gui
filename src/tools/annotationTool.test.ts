@@ -3,15 +3,20 @@ import { createDefaultDiagram } from '../shared/defaultDiagram';
 import { useStore } from '../shared/store';
 import {
   annotationPointerDown,
+  cancelStructuredArrow,
   globalCompressionPointerDown,
   horizontalLinePointerDown,
+  structuredArrowPointerDown,
   verticalLinePointerDown,
 } from './annotationTool';
+import { CELL_WIDTH, ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
+import { measureHeadFoot } from '../renderer/renderHeadFoot';
 
 describe('annotation tool', () => {
   beforeEach(() => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     useStore.getState().setExtensionsEnabled(true);
+    cancelStructuredArrow();
   });
 
   it('creates and selects a text annotation on a signal cell', () => {
@@ -90,5 +95,33 @@ describe('annotation tool', () => {
     expect(useStore.getState().view.activeAnnotationId).toBe(
       useStore.getState().diagram.annotations?.[2]?.id,
     );
+  });
+
+  it('creates a structured arrow between two canvas points', () => {
+    const { headHeight } = measureHeadFoot(useStore.getState().diagram.config);
+    const pointer = (x: number, y: number) => ({
+      button: 0,
+      offsetX: x,
+      offsetY: TIME_AXIS_HEIGHT + headHeight + y,
+    } as PointerEvent);
+
+    structuredArrowPointerDown(pointer(CELL_WIDTH, ROW_HEIGHT));
+    expect(useStore.getState().diagram.annotations).toEqual([]);
+    expect(useStore.getState().view.structuredArrowPending).toEqual({
+      x: 1,
+      y: 1,
+    });
+
+    structuredArrowPointerDown(pointer(CELL_WIDTH * 3, ROW_HEIGHT * 2));
+    const annotation = useStore.getState().diagram.annotations?.[0];
+    expect(annotation).toMatchObject({
+      type: 'arrow',
+      shape: '->',
+      from: { kind: 'point', x: 1, y: 1 },
+      to: { kind: 'point', x: 3, y: 2 },
+    });
+    expect(useStore.getState().view.activeAnnotationId).toBe(annotation?.id);
+    expect(useStore.getState().view.structuredArrowPending).toBeNull();
+    expect(useStore.getState().view.selectedTool).toBe('cursor');
   });
 });

@@ -14,7 +14,10 @@ export function clearNodesAndEdges(signals: SignalOrGroup[], edges: string[]): v
 
       if (item.type === 'group') walk(item.children);
 
-      else delete item.node;
+      else {
+        delete item.node;
+        delete item.nodeNames;
+      }
 
     }
 

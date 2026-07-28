@@ -73,4 +73,20 @@ describe('source compatibility findings', () => {
       }),
     ]);
   });
+
+  it('blocks silent loss of expanded Undulate node identifiers', () => {
+    const diagram = createDefaultDiagram();
+    const signal = diagram.signals[0];
+    if (!signal || signal.type === 'group') throw new Error('Expected signal');
+    signal.node = '....';
+    signal.nodeNames = { 1: 'request.ready' };
+
+    expect(waveDromCompatibilityFindings(diagram)).toEqual([
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'expanded-node-identifiers',
+        consequence: 'Long node names will be omitted from the compatible subset.',
+      }),
+    ]);
+  });
 });

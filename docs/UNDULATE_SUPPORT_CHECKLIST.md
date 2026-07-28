@@ -40,8 +40,8 @@ contract live in
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Unsupported: styled signals, long node
-  identifiers, YAML, TOML, relaxed JSON/JSONML, and opaque preservation.
+- [ ] Unsupported: styled signals, YAML, TOML, relaxed JSON/JSONML, and opaque
+  preservation.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
   expressions.
 
@@ -129,13 +129,18 @@ Upstream references:
 
 ### Partial or unsupported
 
-- [ ] Unsupported: Undulate long node identifiers.
+- [X] Undulate expanded long node identifiers use `#` waveform placeholders
+  and trailing names, resolve in dependency edges and structured annotation
+  anchors, and round-trip semantically.
 - [ ] Unsupported: Undulate-only edge markers `#` and `*` and the complete
   extended path set as structured annotations.
-- [ ] Unsupported: the Undulate `edges` plural field. The shared WaveDrom
-  `edge` field is supported.
-- [X] The plural `edges` field and known extended edge/node forms are detected
-  and rejected as WIP before import.
+- [X] Undulate's plural `edges` field imports whitespace-tolerant dependency
+  paths, normalizes them for live editing/rendering, and exports canonically as
+  `edges`. The shared WaveDrom `edge` spelling remains accepted on import.
+- [X] All documented straight, curved, mixed, and orthogonal middle paths are
+  accepted through the plural-field adapter.
+- [X] Known extended `#` and `*` endpoint markers are detected and rejected as
+  WIP before import.
 
 Upstream references:
 [digital symbols](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step1.rst),
@@ -212,13 +217,14 @@ Implementation design:
   CSS are rejected.
 - [ ] Partial: stroke width is bounded to 0..32 and dash arrays to 1..16
   finite values in the 0..1000 range.
+- [ ] Partial: annotation font sizes accept only finite `px` values from
+  6px to 96px.
 
 ### Unsupported
 
-- [ ] Partial: JSON-created structured arrows can be edited in the inspector;
-  direct canvas creation and draggable anchor handles remain to be added.
-- [ ] Unsupported: `font-size` and other text styles.
-- [ ] Unsupported: `text_background`.
+- [X] Structured arrows support inspector editing, direct two-click canvas
+  creation, and draggable endpoint handles.
+- [ ] Unsupported: other text styles such as arbitrary fonts and weights.
 - [X] Malformed structured arrow anchors are rejected before import.
 - [X] Over-limit annotation counts, text, and coordinates are rejected before
   normalization can truncate or clamp them.
@@ -254,6 +260,8 @@ Upstream references:
 - [X] Overlay label `order` values 0 through 4.
 - [X] Analogue creation, cell selection, transition/value editing, and
   undo/redo.
+- [X] Analogue `repeat` imports with upstream value-cycling semantics and
+  exports as a canonical expanded sequence.
 - [X] Sampled cells have a dedicated inspector point editor for adding,
   removing, and editing normalized offsets and values.
 - [X] Shared analogue geometry in the live canvas, local render, SVG, PNG,
@@ -263,8 +271,9 @@ Upstream references:
 
 ### Partial
 
-- [ ] Partial: analogue `repeat` is recognized but rejected as WIP until its
-  expansion has a proven semantic-equivalence and export contract.
+- [ ] Partial: analogue repeat syntax is deliberately exported as the
+  semantically equivalent expanded sequence instead of preserving the compact
+  spelling.
 - [ ] Partial: sampled `a` cells are accepted only when their time coordinates
   already use the lossless inclusive 0..1 cell range. Other finite timebases
   are rejected until an explicit conversion model exists.
@@ -309,13 +318,14 @@ Upstream references:
 - [X] App-native themes, accent color, canvas color, and existing WaveDrom bus
   palette choices affect browser rendering.
 - [X] Typed annotations accept bounded local `fill`, `stroke`,
-  `stroke-width`, and `stroke-dasharray` overrides.
+  `stroke-width`, `stroke-dasharray`, and pixel `font-size` overrides.
+- [X] Text and arrow-label backgrounds follow Undulate's default-on
+  `text_background` behavior and can be disabled per annotation.
 - [X] Generated SVG text is escaped and output is sanitized.
 
 ### Unsupported
 
 - [ ] Unsupported: Undulate per-object CSS-style fields on signals and edges.
-- [ ] Unsupported: imported `font-size` and `text_background`.
 - [ ] Unsupported: remote resources, gradients, CSS variables, named colors,
   and arbitrary CSS in annotation style values.
 - [ ] Unsupported: global Undulate CSS files and renderer style overloading.
@@ -400,12 +410,13 @@ Upstream reference:
 - [X] **P1 — Extended digital timing.** The integer-tick model, repeat
   expansion, variable periods, duty cycles, digital slew, and loss-safety
   gates are implemented.
-- [ ] **P1 — Complete annotation authoring.** Inspector editing now covers
+- [X] **P1 — Complete annotation authoring.** Inspector editing covers
   structured-arrow shapes, node/coordinate anchors, labels, offsets, and basic
-  stroke styling. Add direct canvas creation and draggable anchor handles.
-- [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths, and
-  dashes already use strict allowlists. Add signal and edge styles, bounded
-  font sizes, and text backgrounds.
+  stroke styling. The dedicated Undulate Arrow tool supports direct two-point
+  canvas creation, and selected arrows expose draggable endpoint handles.
+- [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths,
+  dashes, bounded font sizes, and text backgrounds use strict allowlists.
+  Signal and edge styles remain.
 - [ ] **P2 — Opaque preservation.** Retain safe unknown declarative data and
   report when an edit invalidates it.
 - [ ] **P3 — Additional formats and outputs.** Add safe YAML/TOML adapters and

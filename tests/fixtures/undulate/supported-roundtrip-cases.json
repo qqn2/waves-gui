@@ -332,7 +332,7 @@
           "tock": 0,
           "every": 1
         },
-        "edge": ["a->b request"]
+        "edges": ["a->b request"]
       },
       "expectedCanonical": {
         "signal": [
@@ -373,7 +373,7 @@
           "tock": 0,
           "every": 1
         },
-        "edge": ["a->b request"]
+        "edges": ["a->b request"]
       },
       "renderIncludes": [
         "clk",

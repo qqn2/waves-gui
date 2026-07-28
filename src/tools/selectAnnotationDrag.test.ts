@@ -91,4 +91,44 @@ describe('annotation direct dragging', () => {
       coordinateMode: 'diagram',
     });
   });
+
+  it('drags a selected structured-arrow endpoint as one undo step', () => {
+    const id = useStore.getState().addArrowAnnotation({
+      shape: '->',
+      from: { kind: 'point', x: 1, y: 1 },
+      to: { kind: 'point', x: 3, y: 2 },
+    })!;
+    const hit: HitTestResult = {
+      signalId: null,
+      signalType: null,
+      step: null,
+      half: null,
+      isLabelArea: false,
+      isTimeAxis: false,
+      edgeIndex: null,
+      annotationId: id,
+    };
+    const { headHeight } = measureHeadFoot(useStore.getState().diagram.config);
+    const pointer = (offsetX: number, offsetY: number) => ({
+      pointerId: 8,
+      offsetX,
+      offsetY,
+      shiftKey: false,
+    } as PointerEvent);
+    const waveformTop = TIME_AXIS_HEIGHT + headHeight;
+
+    selectPointerDown(pointer(40, waveformTop + ROW_HEIGHT), canvas, hit);
+    selectPointerMove(pointer(90, waveformTop + ROW_HEIGHT * 1.5));
+    selectPointerUp(pointer(90, waveformTop + ROW_HEIGHT * 1.5), canvas);
+
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      from: { kind: 'point', x: 2.25, y: 1.5 },
+      to: { kind: 'point', x: 3, y: 2 },
+    });
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      from: { kind: 'point', x: 1, y: 1 },
+      to: { kind: 'point', x: 3, y: 2 },
+    });
+  });
 });

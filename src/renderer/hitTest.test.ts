@@ -47,6 +47,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
+    structuredArrowPending: null,
     edgeToolHover: null,
     activeTimespanLabel: '5 ms',
     activeEdgeConnector: '~>',

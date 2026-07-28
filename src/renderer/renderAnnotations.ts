@@ -103,28 +103,50 @@ export function renderTextAnnotations(
     if (annotation.shape.includes('>')) head(x2, y2, Math.atan2(y2 - y1, x2 - x1));
     if (annotation.shape.includes('<')) head(x1, y1, Math.atan2(y1 - y2, x1 - x2));
     if (annotation.text) {
+      const fontSize = annotation.style?.fontSize ?? 12;
+      const labelX = (x1 + x2) / 2 + (annotation.dx ?? 0);
+      const labelY = (y1 + y2) / 2 + (annotation.dy ?? 0);
+      ctx.font = `${Math.max(6, fontSize * transform.zoom)}px sans-serif`;
+      if (annotation.style?.textBackground !== false) {
+        const width = ctx.measureText(annotation.text).width;
+        const height = Math.max(14, fontSize * 1.35 * transform.zoom);
+        ctx.fillStyle = themeColor('--bg-canvas', '#111111');
+        ctx.fillRect(labelX - width / 2 - 4, labelY - height / 2, width + 8, height);
+      }
       ctx.fillStyle = annotation.style?.fill ?? themeColor('--text-primary', '#e8e8e8');
-      ctx.fillText(
-        annotation.text,
-        (x1 + x2) / 2 + (annotation.dx ?? 0),
-        (y1 + y2) / 2 + (annotation.dy ?? 0),
-      );
+      ctx.fillText(annotation.text, labelX, labelY);
+    }
+    if (annotation.id === selectedAnnotationId) {
+      ctx.setLineDash([]);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = themeColor('--accent', '#4a9eff');
+      ctx.fillStyle = themeColor('--bg-canvas', '#111111');
+      for (const [x, y] of [[x1, y1], [x2, y2]]) {
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(4, 5 * transform.zoom), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
     }
   }
 
   for (const { annotation, x, y } of layouts) {
     const canvasX = logicalToCanvasX(x, transform);
     const canvasY = logicalToCanvasY(y, transform);
+    const fontSize = annotation.style?.fontSize ?? 12;
+    ctx.font = `${Math.max(6, fontSize * transform.zoom)}px sans-serif`;
     const width = ctx.measureText(annotation.text).width;
     const paddingX = 4;
-    const height = Math.max(14, 16 * transform.zoom);
-    ctx.fillStyle = themeColor('--bg-canvas', '#111111');
-    ctx.fillRect(
-      canvasX - width / 2 - paddingX,
-      canvasY - height / 2,
-      width + paddingX * 2,
-      height,
-    );
+    const height = Math.max(14, fontSize * 1.35 * transform.zoom);
+    if (annotation.style?.textBackground !== false) {
+      ctx.fillStyle = themeColor('--bg-canvas', '#111111');
+      ctx.fillRect(
+        canvasX - width / 2 - paddingX,
+        canvasY - height / 2,
+        width + paddingX * 2,
+        height,
+      );
+    }
     if (annotation.id === selectedAnnotationId) {
       ctx.strokeStyle = themeColor('--accent', '#4a9eff');
       ctx.lineWidth = 1.5;

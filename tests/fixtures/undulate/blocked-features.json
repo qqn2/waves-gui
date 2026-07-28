@@ -16,7 +16,7 @@
       "analogue": ["0.5*VDDA"]
     }
   ],
-  "edges": ["clock.a -> clock.b"],
+  "edges": ["a -> b"],
   "reg": [],
   "future_root": true,
   "config": {

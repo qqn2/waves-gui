@@ -150,11 +150,15 @@ export function Toolbar({
             ? 'Edge'
             : tool === 'annotation'
               ? 'Text'
+              : tool === 'structured-arrow'
+                ? 'Annotation arrow'
               : tool === 'vertical-line'
                 ? 'Vertical line'
                 : tool === 'horizontal-line'
                   ? 'Horizontal line'
-                  : 'Span';
+                  : tool === 'global-compression'
+                    ? 'Compression'
+                    : 'Span';
 
 
   return (

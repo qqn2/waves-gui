@@ -55,6 +55,8 @@ describe('annotations', () => {
           stroke: 'rgb(1, 2, 3)',
           strokeWidth: 2,
           strokeDasharray: [4, 2],
+          fontSize: 18,
+          textBackground: false,
         },
       },
       {
@@ -72,6 +74,8 @@ describe('annotations', () => {
           stroke: 'rgb(1, 2, 3)',
           strokeWidth: 2,
           strokeDasharray: [4, 2],
+          fontSize: 18,
+          textBackground: false,
         },
       }),
       expect.not.objectContaining({ style: expect.anything() }),
@@ -112,6 +116,7 @@ describe('annotations', () => {
       annotationCount: 0,
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 0,
+      expandedNodeCount: 0,
       totalCount: 0,
       hasExtensions: false,
     });
@@ -125,6 +130,7 @@ describe('annotations', () => {
       annotationCount: 1,
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 0,
+      expandedNodeCount: 0,
       totalCount: 1,
       hasExtensions: true,
     });
@@ -147,6 +153,26 @@ describe('annotations', () => {
       annotationCount: 0,
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 1,
+      expandedNodeCount: 0,
+      totalCount: 1,
+      hasExtensions: true,
+    });
+    expect(
+      scanExtensionContent({
+        annotations: [],
+        signals: [{
+          id: 'nodes',
+          name: 'nodes',
+          type: 'bit',
+          states: ['0', '1'],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          nodeNames: { 1: 'request.ready' },
+        }],
+      }),
+    ).toMatchObject({
+      expandedNodeCount: 1,
       totalCount: 1,
       hasExtensions: true,
     });

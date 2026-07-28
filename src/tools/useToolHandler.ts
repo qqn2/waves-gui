@@ -23,8 +23,10 @@ import { copyStepSelection, pasteStepSelection } from './stepClipboard';
 import { useEdgeCurveDrag } from './useEdgeCurveDrag';
 import {
   annotationPointerDown,
+  cancelStructuredArrow,
   globalCompressionPointerDown,
   horizontalLinePointerDown,
+  structuredArrowPointerDown,
   verticalLinePointerDown,
 } from './annotationTool';
 
@@ -64,11 +66,16 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     null,
   );
 
+  useEffect(() => {
+    if (tool !== 'structured-arrow') cancelStructuredArrow();
+  }, [tool]);
+
   const cancelOperation = useCallback(() => {
     const el = canvasRef.current;
     paint.paintCancel(el);
     erase.eraseCancel(el);
     select.selectCancel(el);
+    cancelStructuredArrow();
     edge.cancelEdgeEdit();
     clearPaintDraft();
     toolState.cancelAll();
@@ -145,6 +152,10 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       } else if (e.key === 'i' || e.key === 'I') {
         if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
           setTool('annotation');
+        }
+      } else if (e.key === 'A') {
+        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
+          setTool('structured-arrow');
         }
       } else if (e.key === 'l' || e.key === 'L') {
         if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
@@ -230,6 +241,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       else if (tool === 'vertical-line') verticalLinePointerDown(e, hit);
       else if (tool === 'horizontal-line') horizontalLinePointerDown(e, hit);
       else if (tool === 'global-compression') globalCompressionPointerDown(e, hit);
+      else if (tool === 'structured-arrow') structuredArrowPointerDown(e);
       else if (tool === 'arrow' || tool === 'timespan') {
         if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
         edge.onPointerDown(e, hit);
@@ -246,6 +258,14 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       if (tool === 'paint') paint.paintPointerMove(e);
       else if (tool === 'erase') erase.erasePointerMove(e);
       else if (tool === 'arrow' || tool === 'timespan') edge.onPointerMove(e, hit);
+      else if (tool === 'structured-arrow') {
+        useStore.getState().setEdgeToolHover({
+          signalId: hit.signalId,
+          step: hit.step,
+          canvasX: e.offsetX,
+          canvasY: e.offsetY,
+        });
+      }
       else if (tool === 'cursor' || tool === 'select') {
         select.selectPointerMove(e);
         setSelectionOverlay(toolState.getSelectOverlay());

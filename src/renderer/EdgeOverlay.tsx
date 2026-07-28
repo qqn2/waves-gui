@@ -22,7 +22,10 @@ export function EdgeOverlay() {
   const showHandles = tool === 'cursor' || tool === 'select';
 
   const shapes = useMemo(() => {
-    const nodeIndex = buildNodeIndex(diagram.signals);
+    const nodeIndex = buildNodeIndex(
+      diagram.signals,
+      diagram.compatibility?.extensionsEnabled === true,
+    );
     const controls = diagram.edgeCurveControls ?? {};
     const items: Array<{
       key: string;

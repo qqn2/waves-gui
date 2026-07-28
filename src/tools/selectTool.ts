@@ -9,6 +9,8 @@ import { buildRowLayout } from '../renderer/rowLayout';
 import {
   canvasToLogicalX,
   canvasToLogicalY,
+  logicalToCanvasX,
+  logicalToCanvasY,
   type ViewTransform,
 } from '../renderer/coordinates';
 import { pickBusLabelFromHit } from './busLabelPick';
@@ -19,10 +21,12 @@ import { measureHeadFoot } from '../renderer/renderHeadFoot';
 import {
   annotationXCells,
   annotationYLogical,
+  layoutArrowAnnotations,
 } from '../renderer/annotationLayout';
 
 interface AnnotationDrag {
   id: string;
+  arrowEndpoint?: 'from' | 'to';
   historyRecorded: boolean;
 }
 
@@ -121,8 +125,38 @@ export function selectPointerDown(
 ): void {
   flushPendingCodeToDiagram();
   if (hit.annotationId) {
-    useStore.getState().setActiveAnnotationId(hit.annotationId);
-    annotationDrag = { id: hit.annotationId, historyRecorded: false };
+    const state = useStore.getState();
+    state.setActiveAnnotationId(hit.annotationId);
+    const annotation = state.diagram.annotations?.find(
+      (candidate) => candidate.id === hit.annotationId,
+    );
+    let arrowEndpoint: 'from' | 'to' | undefined;
+    if (annotation?.type === 'arrow') {
+      const transform = viewTransform(state.diagram, state.view);
+      const rows = buildRowLayout(state.diagram.signals);
+      const layout = layoutArrowAnnotations(state.diagram, rows).find(
+        (candidate) => candidate.annotation.id === annotation.id,
+      );
+      if (layout) {
+        const { headHeight } = measureHeadFoot(state.diagram.config);
+        const waveformTop = TIME_AXIS_HEIGHT + headHeight;
+        const endpoints = [
+          ['from', layout.from],
+          ['to', layout.to],
+        ] as const;
+        arrowEndpoint = endpoints.find(([, point]) =>
+          Math.hypot(
+            e.offsetX - logicalToCanvasX(point.x, transform),
+            e.offsetY - waveformTop - logicalToCanvasY(point.y, transform),
+          ) <= 10,
+        )?.[0];
+      }
+    }
+    annotationDrag = {
+      id: hit.annotationId,
+      arrowEndpoint,
+      historyRecorded: false,
+    };
     if (canvas) canvas.setPointerCapture(e.pointerId);
     return;
   }
@@ -139,20 +173,33 @@ export function selectPointerMove(e: PointerEvent): void {
     const annotation = state.diagram.annotations?.find(
       (candidate) => candidate.id === annotationDrag?.id,
     );
-    if (!annotation || annotation.type === 'arrow') return;
+    if (!annotation) return;
     const transform = viewTransform(state.diagram, state.view);
     const rawX = canvasToLogicalX(e.offsetX, transform) / CELL_WIDTH;
+    const { headHeight } = measureHeadFoot(state.diagram.config);
+    const rawY = canvasToLogicalY(
+      e.offsetY - TIME_AXIS_HEIGHT - headHeight,
+      transform,
+    ) / ROW_HEIGHT;
+    if (annotation.type === 'arrow') {
+      if (!annotationDrag.arrowEndpoint) return;
+      const options = { recordHistory: !annotationDrag.historyRecorded };
+      state.updateArrowAnnotation(annotation.id, {
+        [annotationDrag.arrowEndpoint]: {
+          kind: 'point',
+          x: Math.round(Math.max(0, rawX) * 100) / 100,
+          y: Math.round(Math.max(0, rawY) * 100) / 100,
+        },
+      }, options);
+      annotationDrag.historyRecorded = true;
+      return;
+    }
     const snapToGrid =
       annotation.type !== 'horizontal-line'
       && annotation.snapToGrid !== false;
     const x = snapToGrid && !e.shiftKey
       ? Math.round(rawX - 0.5) + 0.5
       : Math.round(rawX * 100) / 100;
-    const { headHeight } = measureHeadFoot(state.diagram.config);
-    const rawY = canvasToLogicalY(
-      e.offsetY - TIME_AXIS_HEIGHT - headHeight,
-      transform,
-    ) / ROW_HEIGHT;
     const y = Math.round(rawY * 100) / 100;
     const options = { recordHistory: !annotationDrag.historyRecorded };
     if (annotation.type === 'text') {

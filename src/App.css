@@ -136,3 +136,60 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   white-space: nowrap;
 }
+
+.structuredArrowPreview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.structuredArrowPreview line {
+  stroke: var(--selection-stroke);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.structuredArrowCursor,
+.structuredArrowStart {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--selection-stroke);
+  border-radius: 50%;
+  background: var(--bg-canvas);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.structuredArrowCursor::before,
+.structuredArrowCursor::after {
+  position: absolute;
+  content: '';
+  background: var(--selection-stroke);
+}
+
+.structuredArrowCursor::before {
+  top: 3px;
+  left: -5px;
+  width: 16px;
+  height: 1px;
+}
+
+.structuredArrowCursor::after {
+  top: -5px;
+  left: 3px;
+  width: 1px;
+  height: 16px;
+}
+
+.structuredArrowStart {
+  width: 8px;
+  height: 8px;
+  background: var(--selection-stroke);
+}

@@ -607,8 +607,20 @@ function svgAnnotations(
       : `M ${x1} ${y1} L ${x2} ${y2}`;
     const end = annotation.shape.includes('>') ? ` marker-end="url(#${markerId})"` : '';
     const start = annotation.shape.includes('<') ? ` marker-start="url(#${markerId})"` : '';
+    const labelFontSize = annotation.style?.fontSize ?? 12;
+    const labelX = (x1 + x2) / 2 + (annotation.dx ?? 0);
+    const labelY = (y1 + y2) / 2 + (annotation.dy ?? 0);
+    const labelBackground = annotation.text && annotation.style?.textBackground !== false
+      ? `<rect x="${labelX - annotation.text.length * labelFontSize * 0.3 - 4}" `
+        + `y="${labelY - labelFontSize * 0.675}" `
+        + `width="${annotation.text.length * labelFontSize * 0.6 + 8}" `
+        + `height="${labelFontSize * 1.35}" fill="${esc(panelBg)}"/>`
+      : '';
     const label = annotation.text
-      ? `<text x="${(x1 + x2) / 2 + (annotation.dx ?? 0)}" y="${(y1 + y2) / 2 + (annotation.dy ?? 0)}" fill="${esc(annotation.style?.fill ?? textColor)}" text-anchor="middle" font-family="sans-serif" font-size="12">${esc(annotation.text)}</text>`
+      ? `${labelBackground}<text x="${labelX}" y="${labelY}" `
+        + `fill="${esc(annotation.style?.fill ?? textColor)}" text-anchor="middle" `
+        + `dominant-baseline="middle" font-family="sans-serif" `
+        + `font-size="${labelFontSize}">${esc(annotation.text)}</text>`
       : '';
     return `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="${stroke}"/></marker></defs>`
       + `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''}${start}${end}/>${label}`;
@@ -616,18 +628,25 @@ function svgAnnotations(
   const text = layoutTextAnnotations(diagram, rows)
     .map(({ annotation, x, y }) => {
       const style = annotation.style;
-      const stroke = style?.stroke ?? panelBg;
-      const strokeWidth = style?.stroke
-        ? (style.strokeWidth ?? 1)
-        : 4;
+      const fontSize = style?.fontSize ?? 12;
+      const canvasX = x * diagram.config.hscale;
+      const canvasY = axisOffset + y;
+      const background = style?.textBackground !== false
+        ? `<rect x="${canvasX - annotation.text.length * fontSize * 0.3 - 4}" `
+          + `y="${canvasY - fontSize * 0.675}" `
+          + `width="${annotation.text.length * fontSize * 0.6 + 8}" `
+          + `height="${fontSize * 1.35}" fill="${esc(panelBg)}"/>`
+        : '';
+      const stroke = style?.stroke ?? 'none';
+      const strokeWidth = style?.stroke ? (style.strokeWidth ?? 1) : 0;
       const dash = style?.strokeDasharray
         ? ` stroke-dasharray="${style.strokeDasharray.join(' ')}"`
         : '';
-      return `<text x="${x * diagram.config.hscale}" y="${axisOffset + y}" `
+      return `${background}<text x="${canvasX}" y="${canvasY}" `
         + `fill="${esc(style?.fill ?? textColor)}" stroke="${esc(stroke)}" `
         + `stroke-width="${strokeWidth}"${dash} `
         + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
-        + `dominant-baseline="middle" font-family="sans-serif" font-size="12">`
+        + `dominant-baseline="middle" font-family="sans-serif" font-size="${fontSize}">`
         + `${esc(annotation.text)}</text>`;
     })
     .join('\n');

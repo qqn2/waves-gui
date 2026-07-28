@@ -1,5 +1,68 @@
 import type { HitTestResult } from '../renderer/hitTest';
 import { useStore } from '../shared/store';
+import {
+  CELL_WIDTH,
+  ROW_HEIGHT,
+  TIME_AXIS_HEIGHT,
+} from '../shared/constants';
+import { canvasToLogicalX, canvasToLogicalY } from '../renderer/coordinates';
+import { measureHeadFoot } from '../renderer/renderHeadFoot';
+
+function pointerAnchor(event: PointerEvent): { x: number; y: number } {
+  const { diagram, view } = useStore.getState();
+  const transform = {
+    zoom: view.zoom,
+    hscale: diagram.config.hscale,
+    scrollX: view.scrollX,
+    scrollY: view.scrollY,
+  };
+  const { headHeight } = measureHeadFoot(diagram.config);
+  return {
+    x: Math.max(
+      0,
+      Math.min(
+        diagram.config.totalSteps,
+        canvasToLogicalX(event.offsetX, transform) / CELL_WIDTH,
+      ),
+    ),
+    y: Math.max(
+      0,
+      canvasToLogicalY(
+        event.offsetY - TIME_AXIS_HEIGHT - headHeight,
+        transform,
+      ) / ROW_HEIGHT,
+    ),
+  };
+}
+
+export function cancelStructuredArrow(): void {
+  const state = useStore.getState();
+  state.setStructuredArrowPending(null);
+  state.setEdgeToolHover(null);
+}
+
+export function structuredArrowPointerDown(event: PointerEvent): void {
+  if (event.button !== 0) return;
+  const anchor = pointerAnchor(event);
+  const state = useStore.getState();
+  const pendingArrowStart = state.view.structuredArrowPending;
+  if (!pendingArrowStart) {
+    state.setStructuredArrowPending(anchor);
+    return;
+  }
+  const { addArrowAnnotation, setActiveAnnotationId, setTool } = state;
+  const id = addArrowAnnotation({
+    shape: '->',
+    from: { kind: 'point', ...pendingArrowStart },
+    to: { kind: 'point', ...anchor },
+  });
+  state.setStructuredArrowPending(null);
+  state.setEdgeToolHover(null);
+  if (id) {
+    setActiveAnnotationId(id);
+    setTool('cursor');
+  }
+}
 
 export function annotationPointerDown(
   event: PointerEvent,

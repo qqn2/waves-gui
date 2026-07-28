@@ -4,7 +4,7 @@ import type {
   Tool,
   ViewState,
 } from '../shared/types';
-import { TIME_AXIS_HEIGHT } from '../shared/constants';
+import { CELL_WIDTH, ROW_HEIGHT, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
 import type { HitTestResult } from './hitTest';
@@ -49,13 +49,53 @@ export function PointerMarker({
   const top = row.y * view.zoom - view.scrollY + waveformTop;
   const height = row.height * view.zoom;
 
+  if (tool === 'structured-arrow') {
+    const hover = view.edgeToolHover;
+    const currentX = hover?.canvasX ?? left + cellW / 2;
+    const currentY = hover?.canvasY ?? top + height / 2;
+    const pending = view.structuredArrowPending;
+    const startX = pending
+      ? pending.x * CELL_WIDTH * scale - view.scrollX
+      : null;
+    const startY = pending
+      ? waveformTop + pending.y * ROW_HEIGHT * view.zoom - view.scrollY
+      : null;
+    return (
+      <>
+        {startX !== null && startY !== null && (
+          <>
+            <svg className="structuredArrowPreview" aria-hidden>
+              <line x1={startX} y1={startY} x2={currentX} y2={currentY} />
+            </svg>
+            <div
+              className="structuredArrowStart"
+              style={{ left: startX, top: startY }}
+              aria-hidden
+            />
+          </>
+        )}
+        <div
+          className="structuredArrowCursor"
+          style={{ left: currentX, top: currentY }}
+          aria-hidden
+        />
+        <div
+          className="pointerMarkerLabel"
+          style={{ left: currentX + 10, top: currentY + 8 }}
+        >
+          {pending ? 'Click arrow end · Esc cancels' : 'Click arrow start'}
+        </div>
+      </>
+    );
+  }
+
   let signalName = hit.signalId;
   let current: BitState | null = null;
   signalName = targetSignal.name;
   if (targetSignal.type === 'bit') current = targetSignal.states[hit.step];
 
   const paintHint =
-    hit.signalType === 'bit' && current !== null
+    tool === 'paint' && hit.signalType === 'bit' && current !== null
       ? view.paintMode === 'glitch'
         ? ' · glitch'
         : view.paintMode === 'gap'

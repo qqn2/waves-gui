@@ -274,7 +274,14 @@ describe('useStore', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('bit');
     useStore.getState().addSignal('analogue');
-    const bit = useStore.getState().diagram.signals[0]!;
+    const withNodes = structuredClone(useStore.getState().diagram);
+    const bit = withNodes.signals[0]!;
+    if (bit.type !== 'group') {
+      bit.node = '....';
+      bit.nodeNames = { 1: 'request.ready' };
+      withNodes.edges = ['request.ready->b remove'];
+    }
+    useStore.getState().loadDiagram(withNodes);
     useStore.getState().addTextAnnotation({
       text: 'preserved',
       tick: 1,
@@ -296,7 +303,14 @@ describe('useStore', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('bit');
     useStore.getState().addSignal('analogue');
-    const bit = useStore.getState().diagram.signals[0]!;
+    const withNodes = structuredClone(useStore.getState().diagram);
+    const bit = withNodes.signals[0]!;
+    if (bit.type !== 'group') {
+      bit.node = '....';
+      bit.nodeNames = { 1: 'request.ready' };
+      withNodes.edges = ['request.ready->b remove'];
+    }
+    useStore.getState().loadDiagram(withNodes);
     useStore.getState().addTextAnnotation({
       text: 'remove me',
       tick: 1,
@@ -312,6 +326,8 @@ describe('useStore', () => {
     });
     expect(stripped.compatibility).not.toHaveProperty('sourceRevision');
     expect(stripped.annotations).toEqual([]);
+    expect(stripped.edges).toEqual([]);
+    expect(stripped.signals[0]).not.toHaveProperty('nodeNames');
     expect(stripped.signals).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
     );
@@ -321,6 +337,13 @@ describe('useStore', () => {
 
     useStore.getState().undo();
     expect(useStore.getState().diagram.annotations).toHaveLength(1);
+    expect(useStore.getState().diagram.edges).toEqual([
+      'request.ready->b remove',
+    ]);
+    expect(useStore.getState().diagram.signals[0]).toHaveProperty(
+      'nodeNames.1',
+      'request.ready',
+    );
     expect(useStore.getState().diagram.signals).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
     );

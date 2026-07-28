@@ -186,7 +186,7 @@ describe('codeSync', () => {
     expect(result.diagram.compatibility?.extensionsEnabled).toBe(true);
   });
 
-  it('routes known WIP and unknown fields through loss-safe validation', () => {
+  it('accepts plural edges while routing unknown fields through loss-safe validation', () => {
     const code = JSON.stringify({
       signal: [{
         name: 'clk',
@@ -198,7 +198,7 @@ describe('codeSync', () => {
     });
     expect(detectCodeFormat(code)).toBe('undulate');
     const error = validateCodeString(code);
-    expect(error).toContain('[WIP] edges');
+    expect(error).not.toContain('[WIP] edges');
     expect(error).not.toContain('[WIP] signal[0].repeat');
     expect(error).toContain('Unknown Undulate property signal[0].unknown_lane_field');
     expect(parseCodeToDiagram(code)).toEqual({

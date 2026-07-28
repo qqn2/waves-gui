@@ -24,6 +24,8 @@ function toolHelp(tool: Tool): string {
     case 'arrow':
     case 'timespan':
       return edgeToolHint(tool, null) ?? '';
+    case 'structured-arrow':
+      return 'Annotation arrow: click start, then click end · Esc cancels';
     default:
       return '';
   }

@@ -19,12 +19,14 @@ describe('annotation image export', () => {
         text: '<setup & hold>',
         tick: 1,
         signalId: signal?.id,
+        style: { fontSize: 18, textBackground: false },
       },
     ];
 
     const svg = buildSVGString(diagram, defaultView());
     expect(svg).toContain('&lt;setup &amp; hold&gt;');
     expect(svg).not.toContain('<setup & hold>');
+    expect(svg).toContain('font-size="18"');
   });
 
   it('omits annotation text while extensions are hidden', () => {

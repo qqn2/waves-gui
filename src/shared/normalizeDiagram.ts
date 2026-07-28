@@ -40,6 +40,23 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
   if (!signal.color) {
     signal.color = DEFAULT_SIGNAL_COLOR;
   }
+  if (signal.nodeNames && typeof signal.nodeNames === 'object') {
+    const normalized: Record<number, string> = {};
+    for (const [rawStep, name] of Object.entries(signal.nodeNames)) {
+      const step = Number(rawStep);
+      if (
+        Number.isInteger(step)
+        && step >= 0
+        && step < totalSteps
+        && typeof name === 'string'
+        && name.length > 0
+      ) {
+        normalized[step] = name;
+      }
+    }
+    if (Object.keys(normalized).length > 0) signal.nodeNames = normalized;
+    else delete signal.nodeNames;
+  }
 
   if (signal.type === 'analogue') {
     normalizeAnalogueSignal(signal, totalSteps);

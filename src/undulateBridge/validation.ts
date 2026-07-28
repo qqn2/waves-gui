@@ -6,6 +6,7 @@ import { validateAnalogueExpression } from '../shared/analogueExpressions';
 import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
+  parseAnnotationFontSize,
   isSafeAnnotationStrokeWidth,
   MAX_ANNOTATIONS,
   MAX_ANNOTATION_COORDINATE,
@@ -14,6 +15,11 @@ import {
 import { MAX_TICKS_PER_STEP, timingResolution } from '../shared/fineTiming';
 import { validateWavedromJSON } from '../wavedromBridge';
 import type { UndulateRoot } from './types';
+import {
+  hasUndulateOnlyEdgeMarker,
+  normalizeUndulateEdge,
+} from './edges';
+import { parseUndulateNodes } from './nodes';
 
 export const UNDULATE_TARGET_REVISION =
   'c8da7d48c48fc0bbc90113b6913611132bd96c01';
@@ -36,8 +42,10 @@ export interface UndulateFinding {
 
 export const UNDULATE_PROPERTY_MANIFEST = {
   root: {
-    supported: ['signal', 'config', 'head', 'foot', 'edge', 'annotations'],
-    wip: ['edges'],
+    supported: [
+      'signal', 'config', 'head', 'foot', 'edge', 'edges', 'annotations',
+    ],
+    wip: [],
     unsupportedByDesign: ['reg', 'register'],
   },
   digitalSignal: {
@@ -69,9 +77,9 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'period',
       'phase',
       'node',
+      'repeat',
     ],
     wip: [
-      'repeat',
       'periods',
       'duty_cycle',
       'duty_cycles',
@@ -100,12 +108,12 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'to',
       'dx',
       'dy',
+      'font-size',
+      'text_background',
     ],
     wip: [
-      'font-size',
       'font-weight',
       'color',
-      'text_background',
     ],
   },
   config: {
@@ -297,12 +305,6 @@ function scanSignal(
       for (const { pattern, feature } of EXTENDED_WAVE_FEATURES) {
         if (pattern.test(signal.wave)) findings.push(wip(fieldPath, feature));
       }
-    } else if (
-      field === 'node'
-      && typeof signal.node === 'string'
-      && (signal.node.includes('#') || /\s/.test(signal.node))
-    ) {
-      findings.push(wip(fieldPath, 'long node identifiers'));
     } else if (field === 'analogue') {
       scanAnalogueValues(signal, path, findings);
     }
@@ -372,11 +374,14 @@ function scanProperties(root: Record<string, unknown>): UndulateFinding[] {
         scanNamedObject(root.head, 'head', HEAD_FIELDS, findings);
       } else if (field === 'foot') {
         scanNamedObject(root.foot, 'foot', FOOT_FIELDS, findings);
-      } else if (field === 'edge' && Array.isArray(root.edge)) {
-        root.edge.forEach((edge, index) => {
-          if (typeof edge === 'string' && /[#*]/.test(edge)) {
+      } else if (
+        (field === 'edge' || field === 'edges')
+        && Array.isArray(root[field])
+      ) {
+        root[field].forEach((edge, index) => {
+          if (typeof edge === 'string' && hasUndulateOnlyEdgeMarker(edge)) {
             findings.push(wip(
-              `edge[${index}]`,
+              `${field}[${index}]`,
               'Undulate extended edge markers # and *',
             ));
           }
@@ -426,6 +431,17 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
   if (signal.analogue === undefined) return null;
   if (!Array.isArray(signal.analogue)) return 'analogue must be an array';
   if (typeof signal.wave !== 'string') return 'analogue signal requires a wave string';
+  if (
+    signal.repeat !== undefined
+    && (
+      typeof signal.repeat !== 'number'
+      || !Number.isInteger(signal.repeat)
+      || signal.repeat < 1
+      || signal.repeat > 10_000
+    )
+  ) {
+    return 'analogue repeat must be an integer from 1 to 10000';
+  }
   const consumingKinds = [...signal.wave].filter((char) => /[sca]/.test(char));
   if (consumingKinds.length !== signal.analogue.length) {
     return 'analogue value count must match s/c/a wave cells';
@@ -627,6 +643,18 @@ function validateAnnotationStructure(value: unknown): string | null {
       return `annotations[${index}].stroke-dasharray must contain 1 to 16 finite values from 0 to 1000`;
     }
     if (
+      annotation['font-size'] !== undefined
+      && parseAnnotationFontSize(annotation['font-size']) === undefined
+    ) {
+      return `annotations[${index}].font-size must be a pixel size from 6px to 96px`;
+    }
+    if (
+      annotation.text_background !== undefined
+      && typeof annotation.text_background !== 'boolean'
+    ) {
+      return `annotations[${index}].text_background must be a boolean`;
+    }
+    if (
       annotation.shape === '|'
       || annotation.shape === '||'
       || annotation.shape === '-'
@@ -712,6 +740,33 @@ function validateAnnotationStructure(value: unknown): string | null {
 }
 
 function structuralError(root: Record<string, unknown>): string | null {
+  if (root.edge !== undefined && root.edges !== undefined) {
+    return 'edge and edges cannot both be present';
+  }
+  for (const field of ['edge', 'edges'] as const) {
+    const edges = root[field];
+    if (edges === undefined) continue;
+    if (!Array.isArray(edges)) return `${field} must be an array`;
+    for (let index = 0; index < edges.length; index++) {
+      if (
+        typeof edges[index] !== 'string'
+        || normalizeUndulateEdge(edges[index]) === null
+      ) {
+        return `${field}[${index}] must use NODE PATTERN NODE [TEXT] syntax`;
+      }
+    }
+  }
+  const nodeError = visitSignals(
+    Array.isArray(root.signal) ? root.signal : [],
+    (signal) => {
+      if (signal.node === undefined) return null;
+      if (typeof signal.node !== 'string') return 'node must be a string';
+      return parseUndulateNodes(signal.node) === null
+        ? 'expanded node names must provide exactly one safe name per # slot'
+        : null;
+    },
+  );
+  if (nodeError) return nodeError;
   const waveError = validateWavedromJSON(waveDromValidationView(root), {
     allowUndulateDigitalStates: true,
   });
@@ -765,6 +820,8 @@ export function isUndulateJSON(value: unknown): value is UndulateRoot {
     if (
       analogue
       || Object.keys(signal).some((field) => DIGITAL_EXTENSION_FIELDS.has(field))
+      || (typeof signal.node === 'string'
+        && (signal.node.includes('#') || /\s/.test(signal.node)))
       || Object.keys(signal).some((field) => !supported.has(field))
       || (typeof wave === 'string'
         && EXTENDED_WAVE_FEATURES.some(({ pattern }) => pattern.test(wave)))

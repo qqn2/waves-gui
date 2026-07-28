@@ -16,7 +16,9 @@
       "fill": "#123456",
       "stroke": "rgba(1, 2, 3, 0.5)",
       "stroke-width": 1,
-      "stroke-dasharray": [3, 2]
+      "stroke-dasharray": [3, 2],
+      "font-size": "18px",
+      "text_background": false
     },
     {
       "shape": "||",

@@ -18,6 +18,8 @@ export const MAX_ANNOTATION_TEXT_LENGTH = 2000;
 export const MAX_ANNOTATION_Y_OFFSET = 10_000;
 export const MAX_ANNOTATION_COORDINATE = 10_000;
 export const MAX_ANNOTATION_STROKE_WIDTH = 32;
+export const MIN_ANNOTATION_FONT_SIZE = 6;
+export const MAX_ANNOTATION_FONT_SIZE = 96;
 export const MAX_ANNOTATION_DASH_ITEMS = 16;
 export const MAX_ANNOTATION_DASH_VALUE = 1000;
 
@@ -136,6 +138,24 @@ export function isSafeAnnotationStrokeWidth(value: unknown): value is number {
   );
 }
 
+export function isSafeAnnotationFontSize(value: unknown): value is number {
+  return (
+    typeof value === 'number'
+    && Number.isFinite(value)
+    && value >= MIN_ANNOTATION_FONT_SIZE
+    && value <= MAX_ANNOTATION_FONT_SIZE
+  );
+}
+
+export function parseAnnotationFontSize(value: unknown): number | undefined {
+  if (isSafeAnnotationFontSize(value)) return value;
+  if (typeof value !== 'string') return undefined;
+  const match = value.trim().match(/^(\d+(?:\.\d+)?)\s*px$/i);
+  if (!match) return undefined;
+  const parsed = Number(match[1]);
+  return isSafeAnnotationFontSize(parsed) ? parsed : undefined;
+}
+
 export function isSafeAnnotationDasharray(value: unknown): value is number[] {
   return (
     Array.isArray(value)
@@ -162,6 +182,12 @@ export function normalizeAnnotationStyle(
   }
   if (isSafeAnnotationDasharray(value.strokeDasharray)) {
     style.strokeDasharray = [...value.strokeDasharray];
+  }
+  if (isSafeAnnotationFontSize(value.fontSize)) {
+    style.fontSize = value.fontSize;
+  }
+  if (typeof value.textBackground === 'boolean') {
+    style.textBackground = value.textBackground;
   }
   return Object.keys(style).length > 0 ? style : undefined;
 }
@@ -436,6 +462,7 @@ export interface ExtensionContentSummary {
   annotationCount: number;
   analogueSignalCount: number;
   extendedDigitalSignalCount: number;
+  expandedNodeCount: number;
   totalCount: number;
   hasExtensions: boolean;
 }
@@ -460,20 +487,28 @@ export function scanExtensionContent(
   const annotationCount = diagram.annotations?.length ?? 0;
   let analogueSignalCount = 0;
   let extendedDigitalSignalCount = 0;
+  let expandedNodeCount = 0;
   const countSignals = (signals: SignalOrGroup[]) => {
     for (const signal of signals) {
       if (signal.type === 'group') countSignals(signal.children);
-      else if (signal.type === 'analogue') analogueSignalCount++;
-      else if (hasUndulateOnlyDigitalStates(signal)) extendedDigitalSignalCount++;
+      else {
+        expandedNodeCount += Object.keys(signal.nodeNames ?? {}).length;
+        if (signal.type === 'analogue') analogueSignalCount++;
+        else if (hasUndulateOnlyDigitalStates(signal)) extendedDigitalSignalCount++;
+      }
     }
   };
   countSignals(diagram.signals ?? []);
   const totalCount =
-    annotationCount + analogueSignalCount + extendedDigitalSignalCount;
+    annotationCount
+    + analogueSignalCount
+    + extendedDigitalSignalCount
+    + expandedNodeCount;
   return {
     annotationCount,
     analogueSignalCount,
     extendedDigitalSignalCount,
+    expandedNodeCount,
     totalCount,
     hasExtensions: totalCount > 0,
   };

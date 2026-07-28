@@ -5,6 +5,8 @@ export interface UndulateAnnotationStyle {
   stroke?: string;
   'stroke-width'?: number;
   'stroke-dasharray'?: number[];
+  'font-size'?: number | string;
+  text_background?: boolean;
 }
 
 export type UndulateAnnotationRange = number | string;
@@ -61,4 +63,6 @@ export type UndulateAnalogueValue =
 
 export interface UndulateRoot extends WdRoot {
   annotations?: UndulateAnnotation[];
+  /** Undulate's canonical dependency-edge field (plural). */
+  edges?: string[];
 }

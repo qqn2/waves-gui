@@ -19,18 +19,21 @@ import type {
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
 import { diagramsEqual, findSignal, pushHistory } from './helpers';
+import { parseUndulateEdge } from '../edgeSyntax';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
   s.view.scrollY = 0;
   s.view.paintDraft = null;
   s.view.edgeAnchorPending = null;
+  s.view.structuredArrowPending = null;
   s.view.edgeToolHover = null;
 }
 
 function disableExtensionView(s: AppState & StoreActions): void {
   s.view.activeAnnotationId = null;
   s.view.activeSignalIds = [];
+  s.view.structuredArrowPending = null;
   if (
     s.view.activeBitState === 'i'
     || s.view.activeBitState === 'I'
@@ -48,6 +51,7 @@ function disableExtensionView(s: AppState & StoreActions): void {
     || s.view.selectedTool === 'vertical-line'
     || s.view.selectedTool === 'horizontal-line'
     || s.view.selectedTool === 'global-compression'
+    || s.view.selectedTool === 'structured-arrow'
   ) {
     s.view.selectedTool = 'cursor';
   }
@@ -92,6 +96,24 @@ function removeDigitalTiming(signals: SignalOrGroup[]): void {
     else signal.phase = phase;
     delete signal.digitalTiming;
   }
+}
+
+function removeExpandedNodes(signals: SignalOrGroup[]): Set<string> {
+  const removed = new Set<string>();
+  const walk = (items: SignalOrGroup[]) => {
+    for (const signal of items) {
+      if (signal.type === 'group') {
+        walk(signal.children);
+        continue;
+      }
+      for (const name of Object.values(signal.nodeNames ?? {})) {
+        removed.add(name);
+      }
+      delete signal.nodeNames;
+    }
+  };
+  walk(signals);
+  return removed;
 }
 
 interface SignalSelectionIdentity {
@@ -388,6 +410,13 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.diagram.annotations = [];
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
         removeDigitalTiming(s.diagram.signals);
+        const removedNodeNames = removeExpandedNodes(s.diagram.signals);
+        s.diagram.edges = s.diagram.edges.filter((edge) => {
+          const parsed = parseUndulateEdge(edge);
+          return !parsed
+            || (!removedNodeNames.has(parsed.from)
+              && !removedNodeNames.has(parsed.to));
+        });
         delete s.diagram.config.ticksPerStep;
         s.diagram.version = 2;
         s.diagram.compatibility = {

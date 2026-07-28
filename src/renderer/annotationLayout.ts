@@ -87,7 +87,11 @@ function resolveArrowAnchor(
       : { x: anchor.x * CELL_WIDTH, y: anchor.y * ROW_HEIGHT };
   }
   for (const signal of flattenSignals(diagram.signals)) {
-    const index = signal.node?.indexOf(anchor.node) ?? -1;
+    const expandedIndex = Object.entries(signal.nodeNames ?? {})
+      .find(([, name]) => name === anchor.node)?.[0];
+    const index = expandedIndex !== undefined
+      ? Number(expandedIndex)
+      : signal.node?.indexOf(anchor.node) ?? -1;
     if (index < 0) continue;
     const row = rows.find((candidate) => candidate.id === signal.id);
     if (!row) return null;

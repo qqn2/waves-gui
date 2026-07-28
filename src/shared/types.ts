@@ -137,6 +137,8 @@ export interface Signal {
   period?: number;
   /** WaveDrom node string — one character per step; anchors for edge[] */
   node?: string;
+  /** Undulate expanded node identifiers keyed by their waveform step. */
+  nodeNames?: Record<number, string>;
   /** Column i is a WaveDrom `|` gap column (holds previous level; consecutive `||` = multiple columns) */
   stepGaps?: boolean[];
   /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
@@ -202,6 +204,10 @@ export interface AnnotationStyle {
   stroke?: string;
   strokeWidth?: number;
   strokeDasharray?: number[];
+  /** Safe normalized pixel size for annotation labels. */
+  fontSize?: number;
+  /** Undulate defaults textual annotations to an opaque background. */
+  textBackground?: boolean;
 }
 
 export interface AnnotationRangePosition {
@@ -318,6 +324,7 @@ export type Tool =
   | 'vertical-line'
   | 'horizontal-line'
   | 'global-compression'
+  | 'structured-arrow'
   | 'arrow'
   | 'timespan'
   | 'cursor';
@@ -373,6 +380,8 @@ export interface ViewState {
   paintDraft: PaintDraft | null;
   /** In-progress WaveDrom edge[] anchor placement (arrow / timespan tools) */
   edgeAnchorPending: EdgeAnchorPending | null;
+  /** First coordinate selected while placing a structured Undulate arrow. */
+  structuredArrowPending: { x: number; y: number } | null;
   /** Pointer position + optional lane snap while arrow / timespan tool is active */
   edgeToolHover: {
     signalId: string | null;

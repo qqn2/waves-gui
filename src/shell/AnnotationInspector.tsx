@@ -185,6 +185,39 @@ function ArrowAnnotationInspector({
               aria-label="Annotation stroke width"
             />
           </label>
+          <label className={styles.inspectorField}>
+            <span>Label font size</span>
+            <input
+              type="number"
+              min={6}
+              max={96}
+              step={1}
+              value={annotation.style?.fontSize ?? ''}
+              onChange={(event) => updateArrowAnnotation(annotation.id, {
+                style: {
+                  ...annotation.style,
+                  fontSize: event.target.value === ''
+                    ? undefined
+                    : Number(event.target.value),
+                },
+              })}
+              aria-label="Annotation font size"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>Text background</span>
+            <input
+              type="checkbox"
+              checked={annotation.style?.textBackground !== false}
+              onChange={(event) => updateArrowAnnotation(annotation.id, {
+                style: {
+                  ...annotation.style,
+                  textBackground: event.target.checked ? undefined : false,
+                },
+              })}
+              aria-label="Annotation text background"
+            />
+          </label>
         </section>
         <section className={styles.inspectorSection}>
           <button
@@ -598,6 +631,39 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                 aria-label="Annotation dash pattern"
               />
             </label>
+            {textAnnotation ? (
+              <>
+                <label className={styles.inspectorField}>
+                  <span>Font size</span>
+                  <input
+                    type="number"
+                    min={6}
+                    max={96}
+                    step={1}
+                    value={annotation.style?.fontSize ?? ''}
+                    onChange={(event) => updateStyle({
+                      ...annotation.style,
+                      fontSize: event.target.value === ''
+                        ? undefined
+                        : Number(event.target.value),
+                    })}
+                    aria-label="Annotation font size"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Text background</span>
+                  <input
+                    type="checkbox"
+                    checked={annotation.style?.textBackground !== false}
+                    onChange={(event) => updateStyle({
+                      ...annotation.style,
+                      textBackground: event.target.checked ? undefined : false,
+                    })}
+                    aria-label="Annotation text background"
+                  />
+                </label>
+              </>
+            ) : null}
           </section>
 
           <section className={styles.inspectorSection}>

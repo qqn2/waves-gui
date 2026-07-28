@@ -212,6 +212,7 @@ export interface StoreActions {
   setActiveEdgeLabel(label: string): void;
   setActiveBusColorIndex(index: WavedromColorIndex): void;
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
+  setStructuredArrowPending(pending: ViewState['structuredArrowPending']): void;
   setPaintMode(mode: PaintMode): void;
   setPaintStyle(style: PaintStyle): void;
   toggleCodePanel(): void;

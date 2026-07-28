@@ -56,6 +56,7 @@ export function defaultView(): ViewState {
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
+    structuredArrowPending: null,
     edgeToolHover: null,
     activeEdgeConnector: '~>',
     showAnchorLetters: false,

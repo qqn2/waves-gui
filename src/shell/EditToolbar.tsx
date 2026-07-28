@@ -34,6 +34,7 @@ const CORE_MODES: ToolMode[] = [
 
 const UNDULATE_MODES: ToolMode[] = [
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
+  { id: 'structured-arrow', label: 'Arrow', shortcut: 'Shift+A', Icon: ArrowRight },
   { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
   { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
   { id: 'global-compression', label: 'Compress', shortcut: 'Shift+C', Icon: ChevronsLeftRight },

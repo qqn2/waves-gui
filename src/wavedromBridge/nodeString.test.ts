@@ -63,6 +63,8 @@ describe('nodeString', () => {
     const sig = d.signals[0] as import('../shared/types').Signal;
     expect(visibleNodeCharAt(sig, 2, 8)).toBe('a');
     expect(visibleNodeCharAt(sig, 0, 8)).toBeNull();
+    sig.nodeNames = { 2: 'request.ready' };
+    expect(visibleNodeCharAt(sig, 2, 8)).toBe('request.ready');
   });
 
   it('prunes node anchors when their edge is removed', () => {

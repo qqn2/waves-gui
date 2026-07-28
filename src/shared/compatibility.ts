@@ -46,6 +46,15 @@ export function waveDromCompatibilityFindings(
       consequence: 'The WaveDrom Editor may reject these wave strings.',
     });
   }
+  const expandedNodeCount = summary.expandedNodeCount;
+  if (expandedNodeCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'expanded-node-identifiers',
+      message: `${expandedNodeCount} expanded Undulate node identifier${expandedNodeCount === 1 ? '' : 's'} cannot be represented in WaveDrom JSON.`,
+      consequence: 'Long node names will be omitted from the compatible subset.',
+    });
+  }
   return findings;
 }
 

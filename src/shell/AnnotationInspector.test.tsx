@@ -126,8 +126,16 @@ describe('AnnotationInspector coordinates', () => {
     const dy = host.querySelector<HTMLInputElement>(
       'input[aria-label="Arrow label Y offset"]',
     );
+    const fontSize = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation font size"]',
+    );
+    const textBackground = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation text background"]',
+    );
     expect(from?.value).toBe('a');
     expect(dy?.value).toBe('0');
+    expect(fontSize?.value).toBe('');
+    expect(textBackground?.checked).toBe(true);
 
     await act(async () => {
       const setter = Object.getOwnPropertyDescriptor(
@@ -140,12 +148,17 @@ describe('AnnotationInspector coordinates', () => {
       setter?.call(dy, '-6');
       dy!.dispatchEvent(new Event('input', { bubbles: true }));
       dy!.dispatchEvent(new Event('change', { bubbles: true }));
+      setter?.call(fontSize, '20');
+      fontSize!.dispatchEvent(new Event('input', { bubbles: true }));
+      fontSize!.dispatchEvent(new Event('change', { bubbles: true }));
+      textBackground!.click();
     });
 
     expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
       type: 'arrow',
       from: { kind: 'node', node: 'b', dx: 2, dy: -1 },
       dy: -6,
+      style: { fontSize: 20, textBackground: false },
     });
 
     await act(async () => root.unmount());
