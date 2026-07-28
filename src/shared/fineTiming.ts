@@ -12,21 +12,23 @@ function lcm(a: number, b: number): number {
   return Math.abs(a * b) / gcd(a, b);
 }
 
-export function fractionDenominator(value: number): number {
-  if (!Number.isFinite(value)) return 1;
+export function fractionDenominator(value: number): number | null {
+  if (!Number.isFinite(value)) return null;
   for (let denominator = 1; denominator <= MAX_TICKS_PER_STEP; denominator++) {
     if (Math.abs(value * denominator - Math.round(value * denominator)) < EPSILON) {
       return denominator;
     }
   }
-  return MAX_TICKS_PER_STEP;
+  return null;
 }
 
-export function timingResolution(values: number[]): number {
+export function timingResolution(values: number[]): number | null {
   let resolution = 1;
   for (const value of values) {
-    const next = lcm(resolution, fractionDenominator(value));
-    if (next > MAX_TICKS_PER_STEP) return MAX_TICKS_PER_STEP;
+    const denominator = fractionDenominator(value);
+    if (denominator === null) return null;
+    const next = lcm(resolution, denominator);
+    if (next > MAX_TICKS_PER_STEP) return null;
     resolution = next;
   }
   return resolution;

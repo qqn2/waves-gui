@@ -67,6 +67,33 @@ function removeAnalogueSignals(signals: SignalOrGroup[]): SignalOrGroup[] {
   return remaining;
 }
 
+function removeDigitalTiming(signals: SignalOrGroup[]): void {
+  for (const signal of signals) {
+    if (signal.type === 'group') {
+      removeDigitalTiming(signal.children);
+      continue;
+    }
+    if (signal.type !== 'bit' || !signal.digitalTiming) continue;
+    const timing = signal.digitalTiming;
+    const firstDuration = timing.cells[0]?.durationTicks;
+    const uniformDuration = firstDuration !== undefined
+      && timing.cells.every((cell) => cell.durationTicks === firstDuration);
+    const exactIntegerPeriod = uniformDuration
+      && firstDuration % timing.ticksPerStep === 0
+      ? firstDuration / timing.ticksPerStep
+      : null;
+    if (exactIntegerPeriod !== null && exactIntegerPeriod >= 1) {
+      signal.period = exactIntegerPeriod;
+    } else {
+      delete signal.period;
+    }
+    const phase = timing.phaseTicks / timing.ticksPerStep;
+    if (phase === 0) delete signal.phase;
+    else signal.phase = phase;
+    delete signal.digitalTiming;
+  }
+}
+
 interface SignalSelectionIdentity {
   id: string;
   name: string;
@@ -360,6 +387,8 @@ export function createDocumentActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.annotations = [];
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
+        removeDigitalTiming(s.diagram.signals);
+        delete s.diagram.config.ticksPerStep;
         s.diagram.version = 2;
         s.diagram.compatibility = {
           ...s.diagram.compatibility,

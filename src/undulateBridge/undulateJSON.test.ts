@@ -5,12 +5,35 @@ import { createDefaultDiagram } from '../shared/defaultDiagram';
 import type { UndulateRoot } from './types';
 import {
   fromUndulateJSON,
+  isUndulateJSON,
   toUndulateJSON,
   validateUndulateFindings,
   validateUndulateJSON,
 } from './undulateJSON';
 
 describe('Undulate JSON bridge', () => {
+  it('detects timing-only Undulate documents', () => {
+    expect(isUndulateJSON({
+      signal: [{
+        name: 'clk',
+        wave: 'p',
+        repeat: 2,
+        periods: [1, 0.5],
+      }],
+    })).toBe(true);
+  });
+
+  it('rejects timing values that exceed the lossless tick ceiling', () => {
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'clk',
+        wave: 'p',
+        period: 1 / 997,
+        phase: 1 / 991,
+      }],
+    })).toContain('more than 1024 ticks per step');
+  });
+
   it('round-trips the pinned styled compression fixture', () => {
     const root = JSON.parse(readFileSync(
       join(process.cwd(), 'tests/fixtures/undulate/annotations-styles.json'),
@@ -295,14 +318,27 @@ describe('Undulate JSON bridge', () => {
     );
   });
 
-  it('rejects executable analogue expressions instead of evaluating them', () => {
+  it('accepts safe analogue expressions and rejects language escapes', () => {
+    const safe = {
+      signal: [{
+        name: 'scalar',
+        wave: 's',
+        analogue: ['VDDA * 0.5'],
+      }],
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(safe)).toBeNull();
+    const signal = fromUndulateJSON(safe).signals[0];
+    expect(signal?.type === 'analogue' && signal.analogueCells?.[0])
+      .toMatchObject({ value: 0.9, expression: 'VDDA * 0.5' });
+    expect(toUndulateJSON(fromUndulateJSON(safe)).signal[0])
+      .toMatchObject({ analogue: ['VDDA * 0.5'] });
     expect(validateUndulateJSON({
       signal: [{
         name: 'unsafe',
         wave: 's',
-        analogue: ['VDDA * 0.5'],
+        analogue: ['globalThis.process'],
       }],
-    })).toContain('expressions are not executed');
+    })).toContain('unsupported character');
     expect(validateUndulateJSON({
       signal: [{
         name: 'styled',
@@ -311,6 +347,33 @@ describe('Undulate JSON bridge', () => {
         stroke: '#f00',
       }],
     })).toContain('[WIP] signal[0].stroke');
+  });
+
+  it('imports Ludwig analogue tutorial JSON including the curve comprehension', () => {
+    const expressions = [
+      '0.5*VDDA', '0.6*VDDA', '0.7*VDDA', '0.9*VDDA',
+      '0.2*VDDA', '0.8*VDDA', '0.3*VDDA',
+      '[(t, (VDDA+VSSA)*(1 + sin(2*pi*t*3.5/Tmax))/2) for t in time]',
+      '0.25*VDDA', 'VDDA',
+    ];
+    const root = {
+      signal: [{
+        name: 'gbf',
+        wave: '0ssssccca...msMs',
+        analogue: expressions,
+      }],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(diagram.config.analogueContext).toEqual({ vssa: 0, vdda: 1.8 });
+    expect(signal?.type === 'analogue' && signal.analogueCells?.[1]?.value)
+      .toBeCloseTo(0.9);
+    expect(signal?.type === 'analogue' && signal.analogueCells?.[8]?.samples)
+      .toHaveLength(65);
+    expect((toUndulateJSON(diagram).signal[0] as { analogue?: unknown[] }).analogue)
+      .toEqual(expressions);
   });
 
   it('accepts fine timing while still reporting WIP and unknown properties', () => {
@@ -352,7 +415,6 @@ describe('Undulate JSON bridge', () => {
         'future_root',
         'signal[0].stroke',
         'signal[0].future_lane',
-        'signal[1].analogue[0]',
         'config.vscale',
         'config.future_config',
         'annotations[0].font-size',

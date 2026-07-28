@@ -30,7 +30,8 @@ contract live in
 
 - [X] Strict Undulate JSON for the supported subset.
 - [X] Plain text, vertical-line, and horizontal-line annotations.
-- [X] Numeric analogue `s`, `c`, and explicit sampled `a` cells.
+- [X] Numeric and safe Ludwig-expression analogue `s`/`c` cells, plus explicit
+  or documented expression-backed sampled `a` cells.
 - [X] Analogue `slewing`, `vscale`, consecutive overlays, and label `order`.
 - [X] Browser-native live rendering plus SVG, PNG, and JPEG export.
 - [X] Undo/redo, autosave, JSON editing, compatibility reporting, and the
@@ -160,10 +161,10 @@ Upstream references:
   expanded sequence instead of preserving the original compact spelling.
 - [ ] Partial: there is no global Sub-Steps toolbar control; the inspector
   exposes the document resolution and exact per-cell values.
-- [ ] Partial: timing-only JSON currently needs Undulate mode selected; file
-  auto-detection does not yet recognize otherwise-valid timing fields alone.
-- [ ] Partial: values that cannot fit within the 1024-tick ceiling are
-  quantized rather than rejected before import.
+- [X] Timing-only JSON is automatically detected from `repeat`, `periods`,
+  duty-cycle, or digital `slewing` fields.
+- [X] Values that cannot fit within the 1024-tick ceiling are rejected before
+  import instead of being quantized.
 
 Upstream reference:
 [period, duty cycle, phase, and repeat](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step5.rst).
@@ -214,8 +215,8 @@ Implementation design:
 
 ### Unsupported
 
-- [ ] Partial: structured arrows are currently authored through Undulate JSON;
-  direct anchor-handle creation and inspector editing remain to be added.
+- [ ] Partial: JSON-created structured arrows can be edited in the inspector;
+  direct canvas creation and draggable anchor handles remain to be added.
 - [ ] Unsupported: `font-size` and other text styles.
 - [ ] Unsupported: `text_background`.
 - [X] Malformed structured arrow anchors are rejected before import.
@@ -238,6 +239,15 @@ Upstream references:
 - [X] Hold cells represented by the initial `0`/`1` level and `.`.
 - [X] Bounded finite sample data, with at most 4096 points per cell.
 - [X] Bounded analogue voltage range in the app inspector.
+- [X] Safe scalar expressions using `VDDA`, `VSSA`, `pi`, arithmetic, and
+  Ludwig's documented math-function allowlist. No JavaScript or Python is
+  executed.
+- [X] The documented `[(t, expression) for t in time]` curve form, sampled to
+  65 editable points with per-cell `time` and `Tmax`.
+- [X] Document-wide `VSSA` and `VDDA` inspector controls reevaluate all
+  expression-backed cells as one undoable edit.
+- [X] Original supported expressions are retained for reevaluation and
+  round-trip while the document uses Ludwig's default 0..1.8 rails.
 - [X] Numeric `slewing` for step geometry.
 - [X] Bounded `vscale` from 0.25 through 16.
 - [X] Consecutive analogue overlay chains.
@@ -258,8 +268,14 @@ Upstream references:
 - [ ] Partial: sampled `a` cells are accepted only when their time coordinates
   already use the lossless inclusive 0..1 cell range. Other finite timebases
   are rejected until an explicit conversion model exists.
-- [ ] Partial: imported voltage context defaults to 0..1.8 because upstream
-  `VDDA`/`VSSA` context is not represented in the source bridge.
+- [ ] Partial: imported voltage context starts at Ludwig's 0..1.8 defaults
+  because `VDDA`/`VSSA` are renderer context rather than JSON fields. Custom
+  GUI rails are saved in the app document; Undulate export resolves expressions
+  to numeric values/points because upstream JSON cannot carry those custom
+  rails.
+- [ ] Partial: `rnd()` is deterministic in the browser so the diagram remains
+  stable across edits and exports; Ludwig's Python renderer generates fresh
+  random values.
 - [X] Imported analogue values outside ±1,000,000,000, negative slew, and
   `vscale` outside 0.25..16 are rejected before normalization; GUI-authored
   values may still use bounded controls.
@@ -272,16 +288,15 @@ Upstream references:
 
 ### Unsupported
 
-- [ ] Unsupported: Python-like scalar expressions such as `"0.5*VDDA"`.
-- [ ] Unsupported: Python-like arbitrary curve expressions and list
-  comprehensions.
-- [ ] Unsupported: expression preservation as opaque source.
+- [ ] Unsupported: general Python expressions, arbitrary list comprehensions,
+  attribute access, assignment, user-defined variables/functions, and code
+  execution outside the safe documented subset.
 - [ ] Unsupported: per-signal `stroke`, `fill`, `stroke-width`,
   `stroke-dasharray`, and `font-size`.
 - [ ] Unsupported: mixed metastability/impulse symbols inside analogue wave
   strings as true Undulate states. Do not rely on `m`, `M`, `i`, or `I`.
 - [ ] Out of scope: evaluating imported Python or reproducing Undulate's
-  expression runtime.
+  unrestricted expression runtime.
 
 Upstream references:
 [analogue cells](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_ana_step1.rst),
@@ -323,6 +338,9 @@ Upstream references:
   extension objects that cannot be represented.
 - [X] Undulate JSON compatibility findings for converted annotations and
   analogue lanes.
+- [X] Offline visual-conformance gate against pinned upstream SVGs for the
+  extended digital alphabet, analogue step/capacitive cells, and an explicit
+  sampled curve, with geometry-only normalization and failure diff artifacts.
 
 ### Unsupported
 
@@ -347,7 +365,8 @@ Upstream reference:
   JSON when **Hide features and preserve JSON** is chosen.
 - [X] **Cancel** leaves the mode and document unchanged.
 - [X] **Remove Undulate features** deletes supported annotations and analogue
-  lanes as one undoable edit.
+  lanes, strips digital fine timing, and preserves compatible scalar phase or
+  uniform integer period as one undoable edit.
 - [X] Enabling and disabling the mode participates in document history.
 - [X] Turning the mode off opens the three-action confirmation when supported
   annotations, analogue lanes, or Undulate-only digital wave characters are
@@ -363,8 +382,6 @@ Upstream reference:
   opaque data is not preserved.
 - [ ] Partial: the compatibility report covers typed extension objects, not
   every documented Undulate property.
-- [ ] Partial: removing Undulate features does not yet explicitly convert or
-  remove digital integer-timing cells.
 
 ## 9. Intentionally out of scope
 
@@ -376,18 +393,16 @@ Upstream reference:
 
 ## 10. Highest-priority gaps
 
-- [ ] **P0 — Close silent-loss paths.** Finish timing-only auto-detection,
-  reject unrepresentable tick fractions, and convert/remove timing cells in
-  the extension-removal flow.
+- [X] **P0 — Close silent-loss paths.** Timing-only auto-detection, bounded
+  fraction rejection, and extension-removal conversion are covered.
 - [X] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
-- [ ] **P1 — Extended digital timing.** The integer-tick model, repeat
-  expansion, variable periods, duty cycles, and digital slew are implemented;
-  finish the remaining P0 loss-safety work before calling it complete.
-- [ ] **P1 — Complete annotation authoring.** Add canvas anchor handles and
-  inspector editing for the implemented structured arrows and shapes
-  with node/coordinate anchors and `dx`/`dy`. Ranged lines, compression, and
-  fractional coordinates are already supported.
+- [X] **P1 — Extended digital timing.** The integer-tick model, repeat
+  expansion, variable periods, duty cycles, digital slew, and loss-safety
+  gates are implemented.
+- [ ] **P1 — Complete annotation authoring.** Inspector editing now covers
+  structured-arrow shapes, node/coordinate anchors, labels, offsets, and basic
+  stroke styling. Add direct canvas creation and draggable anchor handles.
 - [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths, and
   dashes already use strict allowlists. Add signal and edge styles, bounded
   font sizes, and text backgrounds.
@@ -423,6 +438,7 @@ Primary automated coverage:
 - `src/shell/soloDesk/soloDesk.test.ts`
 - `src/undulateBridge/undulateJSON.test.ts`
 - `src/undulateBridge/upstreamRoundTrip.test.ts`
+- `src/undulateBridge/visualConformance.test.ts`
 - `src/shared/store.test.ts`
 - `src/shared/store/annotationActions.test.ts`
 - `src/shared/compatibility.test.ts`
@@ -432,6 +448,7 @@ Primary automated coverage:
 - `src/exportEngine/headFootImageExport.test.ts`
 - `tests/e2e/release.spec.ts`
 - `tests/fixtures/undulate/supported-roundtrip-cases.json`
+- `tests/fixtures/undulate/visual/reference/`
 
 
 ## Product follow-ups

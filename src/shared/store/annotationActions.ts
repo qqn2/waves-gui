@@ -5,12 +5,14 @@ import {
   normalizeGlobalCompressionAnnotation,
   normalizeTextAnnotation,
   normalizeVerticalLineAnnotation,
+  normalizeArrowAnnotation,
 } from '../annotations';
 import type {
   HorizontalLineAnnotation,
   GlobalCompressionAnnotation,
   TextAnnotation,
   VerticalLineAnnotation,
+  ArrowAnnotation,
 } from '../types';
 import type { ImmerSet, StoreActions } from './storeActions';
 import { pushHistory } from './helpers';
@@ -21,10 +23,12 @@ export function createAnnotationActions(set: ImmerSet): Pick<
   | 'addVerticalLineAnnotation'
   | 'addHorizontalLineAnnotation'
   | 'addGlobalCompressionAnnotation'
+  | 'addArrowAnnotation'
   | 'updateTextAnnotation'
   | 'updateVerticalLineAnnotation'
   | 'updateHorizontalLineAnnotation'
   | 'updateGlobalCompressionAnnotation'
+  | 'updateArrowAnnotation'
   | 'removeAnnotation'
 > {
   return {
@@ -107,6 +111,27 @@ export function createAnnotationActions(set: ImmerSet): Pick<
       return added ? id : null;
     },
 
+    addArrowAnnotation(annotation) {
+      const id = nanoid();
+      let added = false;
+      set((state) => {
+        if (state.diagram.compatibility?.extensionsEnabled !== true) return;
+        const annotations = state.diagram.annotations ?? [];
+        if (annotations.length >= MAX_ANNOTATIONS) return;
+        const normalized = normalizeArrowAnnotation({
+          ...annotation,
+          id,
+          type: 'arrow',
+        });
+        if (!normalized) return;
+        pushHistory(state);
+        state.diagram.annotations = annotations;
+        state.diagram.annotations.push(normalized);
+        added = true;
+      });
+      return added ? id : null;
+    },
+
     updateTextAnnotation(id, patch, options) {
       set((state) => {
         if (state.diagram.compatibility?.extensionsEnabled !== true) return;
@@ -174,6 +199,27 @@ export function createAnnotationActions(set: ImmerSet): Pick<
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
         if (options?.recordHistory !== false) pushHistory(state);
         Object.assign(annotation, normalized);
+      });
+    },
+
+    updateArrowAnnotation(id, patch, options) {
+      set((state) => {
+        if (state.diagram.compatibility?.extensionsEnabled !== true) return;
+        const index = state.diagram.annotations?.findIndex(
+          (item) => item.id === id && item.type === 'arrow',
+        ) ?? -1;
+        if (index < 0) return;
+        const annotation = state.diagram.annotations![index] as ArrowAnnotation;
+        const normalized = normalizeArrowAnnotation({
+          ...annotation,
+          ...patch,
+          id,
+          type: 'arrow',
+        });
+        if (!normalized) return;
+        if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
+        if (options?.recordHistory !== false) pushHistory(state);
+        state.diagram.annotations![index] = normalized;
       });
     },
 

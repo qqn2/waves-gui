@@ -184,6 +184,47 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
   });
 
+  it('reevaluates expression-backed cells when the Ludwig rails change', () => {
+    const diagram = emptyDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.analogueContext = { vssa: 0, vdda: 1.8 };
+    diagram.signals = [{
+      id: 'analogue-expression',
+      name: 'supply',
+      type: 'analogue',
+      states: [],
+      segments: [],
+      color: '#4A9EFF',
+      rowHeight: 40,
+      analogueMin: 0,
+      analogueMax: 1.8,
+      analogueCells: [{
+        id: 'expression-cell',
+        kind: 'step',
+        value: 0.9,
+        expression: '0.5*VDDA + VSSA',
+      }],
+    }];
+    useStore.getState().loadDiagram(diagram);
+
+    useStore.getState().updateAnalogueContext({ vssa: 0.2, vdda: 3.3 });
+    const updated = useStore.getState().diagram.signals[0];
+    expect(useStore.getState().diagram.config.analogueContext)
+      .toEqual({ vssa: 0.2, vdda: 3.3 });
+    expect(updated).toMatchObject({ analogueMin: 0.2, analogueMax: 3.3 });
+    expect(updated?.type === 'analogue' && updated.analogueCells?.[0]?.value)
+      .toBeCloseTo(1.85);
+
+    useStore.getState().updateAnalogueCell(
+      'analogue-expression',
+      0,
+      { value: 1 },
+    );
+    const detached = useStore.getState().diagram.signals[0];
+    expect(detached?.type === 'analogue' && detached.analogueCells?.[0]?.expression)
+      .toBeUndefined();
+  });
+
   it('keeps the corresponding signal selected across raw JSON edits', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('bit');
@@ -283,6 +324,49 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.signals).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: 'analogue' })]),
     );
+  });
+
+  it('removes fine digital timing while preserving its compatible phase', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = {
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+      sourceRevision: 'test',
+    };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((item) => item.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.digitalTiming = {
+      ticksPerStep: 4,
+      phaseTicks: 1,
+      slewing: 0.1,
+      cells: bit.states.map((state, index) => ({
+        state,
+        durationTicks: index === 0 ? 2 : 4,
+        dutyTicks: index === 0 ? 1 : 2,
+      })),
+    };
+    useStore.getState().loadDiagram(diagram);
+
+    useStore.getState().removeUndulateFeatures();
+
+    const stripped = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    expect(stripped?.type).toBe('bit');
+    if (!stripped || stripped.type !== 'bit') return;
+    expect(stripped.digitalTiming).toBeUndefined();
+    expect(stripped.period).toBeUndefined();
+    expect(stripped.phase).toBe(0.25);
+    expect(useStore.getState().diagram.config.ticksPerStep).toBeUndefined();
+
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    expect(restored?.type === 'bit' ? restored.digitalTiming : undefined)
+      .toMatchObject({ ticksPerStep: 4, phaseTicks: 1, slewing: 0.1 });
   });
 
   it('returns clean when undo reaches the saved snapshot', () => {

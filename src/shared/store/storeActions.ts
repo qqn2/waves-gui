@@ -5,6 +5,7 @@ import type {
   VerticalLineAnnotation,
   HorizontalLineAnnotation,
   GlobalCompressionAnnotation,
+  ArrowAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -41,6 +42,7 @@ export interface StoreActions {
       order?: number;
     },
   ): void;
+  updateAnalogueContext(patch: { vssa?: number; vdda?: number }): void;
   updateDigitalTimingCell(
     signalId: string,
     index: number,
@@ -165,6 +167,9 @@ export interface StoreActions {
   addGlobalCompressionAnnotation(
     annotation: Omit<GlobalCompressionAnnotation, 'id' | 'type'>,
   ): string | null;
+  addArrowAnnotation(
+    annotation: Omit<ArrowAnnotation, 'id' | 'type'>,
+  ): string | null;
   updateVerticalLineAnnotation(
     id: string,
     patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
@@ -183,6 +188,11 @@ export interface StoreActions {
   updateTextAnnotation(
     id: string,
     patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateArrowAnnotation(
+    id: string,
+    patch: Partial<Omit<ArrowAnnotation, 'id' | 'type'>>,
     options?: { recordHistory?: boolean },
   ): void;
   removeAnnotation(id: string): void;

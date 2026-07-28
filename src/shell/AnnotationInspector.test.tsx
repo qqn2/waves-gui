@@ -103,4 +103,52 @@ describe('AnnotationInspector coordinates', () => {
     await act(async () => root.unmount());
     host.remove();
   });
+
+  it('edits structured arrow anchors and offsets', async () => {
+    const id = useStore.getState().addArrowAnnotation({
+      shape: '->',
+      from: { kind: 'node', node: 'a' },
+      to: { kind: 'point', x: 80, y: 50, percent: true },
+      text: 'latency',
+    })!;
+    useStore.getState().setActiveAnnotationId(id);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    await act(async () => {
+      root.render(<AnnotationInspector onClose={() => undefined} />);
+    });
+
+    const from = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Arrow from anchor"]',
+    );
+    const dy = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Arrow label Y offset"]',
+    );
+    expect(from?.value).toBe('a');
+    expect(dy?.value).toBe('0');
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      setter?.call(from, 'b(2, -1)');
+      from!.dispatchEvent(new Event('input', { bubbles: true }));
+      from!.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+      setter?.call(dy, '-6');
+      dy!.dispatchEvent(new Event('input', { bubbles: true }));
+      dy!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      type: 'arrow',
+      from: { kind: 'node', node: 'b', dx: 2, dy: -1 },
+      dy: -6,
+    });
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
 });

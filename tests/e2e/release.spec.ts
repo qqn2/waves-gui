@@ -140,6 +140,11 @@ test('round-trips and renders Undulate extended digital states', async ({ page }
   await expect(preview.locator('path[data-wave-state="2"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="3"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="X"]')).toHaveCount(1);
+  for (const state of ['z', 'u', 'd']) {
+    const path = preview.locator(`path[data-wave-state="${state}"]`).first();
+    await expect(path).toHaveAttribute('d', /C/);
+    await expect(path).not.toHaveAttribute('stroke-dasharray', /.+/);
+  }
   await expect(preview.locator('path[data-wave-state="h"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="H"]')).toHaveCount(1);
   await expect(preview.locator('path[data-wave-state="l"]')).toHaveCount(1);

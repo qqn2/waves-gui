@@ -14,7 +14,7 @@ import {
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import { X_STROKE, zStrokeColor, resolveSignalColor } from '../renderer/stateColors';
+import { X_STROKE, resolveSignalColor } from '../renderer/stateColors';
 import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from '../renderer/vectorBusStyle';
 import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
@@ -88,9 +88,9 @@ function bitY(
     case 'z':
       return yMid;
     case 'u':
-      return yHigh + 4;
+      return yHigh;
     case 'd':
-      return yLow - 4;
+      return yLow;
     default:
       return yMid;
   }
@@ -111,8 +111,9 @@ function svgExtendedDataCell(
   nextX: number,
   yHigh: number,
   yLow: number,
+  bevel: number,
 ): string {
-  const d = Math.min(8, Math.max(2, (nextX - x) * 0.2));
+  const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
   const yMid = (yHigh + yLow) / 2;
   const path =
     `M${x},${yMid} L${x + d},${yHigh} L${nextX - d},${yHigh} `
@@ -133,13 +134,19 @@ function svgTransientCell(
   yLow: number,
   previousY: number,
   color: string,
+  slew: number,
+  dutyCycle: number,
 ): { svg: string; endY: number } {
   const width = nextX - x;
   if (state === 'i' || state === 'I') {
     const baseY = state === 'i' ? yHigh : yLow;
     const pulseY = state === 'i' ? yLow : yHigh;
-    const settleX = Math.min(x + TRANSITION_WIDTH, x + width * 0.25);
-    const pulseX = x + width / 2;
+    const pulseX = x + width * Math.max(0, Math.min(1, dutyCycle));
+    const span = Math.max(1, yLow - yHigh);
+    const settleX = Math.min(
+      pulseX,
+      x + Math.abs(baseY - previousY) * slew / span,
+    );
     const d =
       `M${x},${previousY} L${settleX},${baseY} L${pulseX},${baseY} `
       + `L${pulseX},${pulseY} L${pulseX},${baseY} L${nextX},${baseY}`;
@@ -169,6 +176,31 @@ function svgTransientCell(
   };
 }
 
+function svgRelaxedDigitalCell(
+  state: 'z' | 'u' | 'd',
+  x: number,
+  nextX: number,
+  previousY: number,
+  yHigh: number,
+  yLow: number,
+  yMid: number,
+  slew: number,
+  hscale: number,
+  color: string,
+): { svg: string; endY: number } {
+  const targetY = state === 'z' ? yMid : state === 'u' ? yHigh : yLow;
+  const span = Math.max(1, yLow - yHigh);
+  const dt = Math.abs(targetY - previousY) * slew * hscale / span;
+  const settleX = Math.min(nextX, x + 20 * hscale);
+  const curve = state === 'z'
+    ? `C${x + dt},${targetY} ${x + dt},${targetY} ${settleX},${targetY}`
+    : `C${x},${previousY} ${x + dt},${targetY} ${settleX},${targetY}`;
+  return {
+    svg: `<path data-wave-state="${state}" d="M${x},${previousY} ${curve} L${nextX},${targetY}" fill="none" stroke="${color}" stroke-width="2"/>`,
+    endY: targetY,
+  };
+}
+
 function svgBitSignal(
   signal: Signal,
   rowY: number,
@@ -177,9 +209,6 @@ function svgBitSignal(
   hscale: number,
   axisOffset: number,
 ): string {
-  const tw = (signal.digitalTiming?.slewing !== undefined
-    ? Math.max(0, signal.digitalTiming.slewing) * CELL_WIDTH
-    : TRANSITION_WIDTH) * hscale;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
   const yMid = axisOffset + rowY + rowH / 2;
@@ -194,8 +223,15 @@ function svgBitSignal(
   const extendedDigital = states.some(
     (state) => state === 'X' || state === '='
       || (state >= '2' && state <= '9')
+      || state === 'u' || state === 'd'
+      || isClockLevelState(state)
       || isExtendedTransientState(state),
   );
+  const slewLogical = signal.digitalTiming?.slewing !== undefined
+    ? Math.max(0, signal.digitalTiming.slewing)
+    : extendedDigital ? 0 : TRANSITION_WIDTH;
+  const clockSlewLogical = Math.max(0, signal.digitalTiming?.slewing ?? 0);
+  const tw = slewLogical * hscale;
 
   const flushPath = () => {
     if (pathOpen && pathD) {
@@ -223,7 +259,14 @@ function svgBitSignal(
         runEnd++;
       }
       const dataNextX = stepLogicalXEnd(signal, runEnd - 1) * hscale;
-      parts.push(svgExtendedDataCell(st, x, dataNextX, yHigh, yLow));
+      parts.push(svgExtendedDataCell(
+        st,
+        x,
+        dataNextX,
+        yHigh,
+        yLow,
+        3 * hscale,
+      ));
       i = runEnd - 1;
       resumeAtCurrentState = true;
       continue;
@@ -239,6 +282,11 @@ function svgBitSignal(
         yLow,
         resumeAtCurrentState ? yMid : prevY,
         color,
+        clockSlewLogical * hscale,
+        signal.digitalTiming?.cells[i]?.dutyTicks === undefined
+          ? 0.5
+          : signal.digitalTiming.cells[i]!.dutyTicks!
+            / signal.digitalTiming.cells[i]!.durationTicks,
       );
       parts.push(transient.svg);
       prevY = transient.endY;
@@ -258,6 +306,7 @@ function svgBitSignal(
         yLow,
         color,
         i > 0,
+        clockSlewLogical * hscale,
       ));
       prevY = targetY;
       resumeAtCurrentState = false;
@@ -277,6 +326,7 @@ function svgBitSignal(
         timingCell?.dutyTicks === undefined
           ? 0.5
           : timingCell.dutyTicks / timingCell.durationTicks,
+        clockSlewLogical * hscale,
       ));
       prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
@@ -293,22 +343,23 @@ function svgBitSignal(
       continue;
     }
 
-    if (st === 'z') {
+    if (st === 'z' || st === 'u' || st === 'd') {
       flushPath();
-      parts.push(
-        `<path d="M${x},${yMid} L${nextX},${yMid}" fill="none" stroke="${esc(zStrokeColor(signal.color))}" stroke-width="2" stroke-dasharray="4,4"/>`,
+      const relaxed = svgRelaxedDigitalCell(
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? yMid : prevY,
+        yHigh,
+        yLow,
+        yMid,
+        slewLogical,
+        hscale,
+        color,
       );
-      prevY = yMid;
-      continue;
-    }
-
-    if (st === 'u' || st === 'd') {
-      flushPath();
-      const y = bitY(st, yHigh, yLow, yMid);
-      parts.push(
-        `<path d="M${x},${y} L${nextX},${y}" fill="none" stroke="${esc(color)}99" stroke-width="2" stroke-dasharray="3,3"/>`,
-      );
-      prevY = y;
+      parts.push(relaxed.svg);
+      prevY = relaxed.endY;
+      resumeAtCurrentState = false;
       continue;
     }
 

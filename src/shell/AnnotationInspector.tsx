@@ -2,20 +2,206 @@ import { MessageSquareText, Trash2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
   formatAnnotationRangePosition,
+  formatAnnotationAnchor,
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
   parseAnnotationRangeInput,
+  parseAnnotationAnchorInput,
 } from '../shared/annotations';
 import { ROW_HEIGHT } from '../shared/constants';
 import { useStore } from '../shared/store';
 import type {
   AnnotationStyle,
+  ArrowAnnotation,
   DiagramAnnotation,
   SignalOrGroup,
 } from '../shared/types';
 import { annotationXCells, annotationYLogical } from '../renderer/annotationLayout';
 import { buildRowLayout } from '../renderer/rowLayout';
 import styles from './shell.module.css';
+
+function ArrowAnnotationInspector({
+  annotation,
+  onClose,
+}: {
+  annotation: ArrowAnnotation;
+  onClose: () => void;
+}) {
+  const updateArrowAnnotation = useStore((state) => state.updateArrowAnnotation);
+  const removeAnnotation = useStore((state) => state.removeAnnotation);
+  const setActiveAnnotationId = useStore((state) => state.setActiveAnnotationId);
+  const [shape, setShape] = useState(annotation.shape);
+  const [text, setText] = useState(annotation.text ?? '');
+  const [from, setFrom] = useState(formatAnnotationAnchor(annotation.from));
+  const [to, setTo] = useState(formatAnnotationAnchor(annotation.to));
+  const [stroke, setStroke] = useState(annotation.style?.stroke ?? '');
+
+  useEffect(() => {
+    setShape(annotation.shape);
+    setText(annotation.text ?? '');
+    setFrom(formatAnnotationAnchor(annotation.from));
+    setTo(formatAnnotationAnchor(annotation.to));
+    setStroke(annotation.style?.stroke ?? '');
+  }, [annotation]);
+
+  const close = () => {
+    setActiveAnnotationId(null);
+    onClose();
+  };
+  const commitAnchor = (field: 'from' | 'to', draft: string) => {
+    const parsed = parseAnnotationAnchorInput(draft);
+    if (!parsed) {
+      const original = formatAnnotationAnchor(annotation[field]);
+      if (field === 'from') setFrom(original);
+      else setTo(original);
+      return;
+    }
+    updateArrowAnnotation(annotation.id, { [field]: parsed });
+  };
+
+  return (
+    <aside className={styles.inspector} aria-label="Annotation inspector">
+      <div className={styles.inspectorHeader}>
+        <div>
+          <span className={styles.inspectorEyebrow}>Undulate extension</span>
+          <strong>Structured arrow</strong>
+        </div>
+        <button type="button" className={styles.inspectorClose} onClick={close} aria-label="Close annotation inspector">
+          <X size={14} aria-hidden />
+        </button>
+      </div>
+      <div className={styles.inspectorBody}>
+        <section className={styles.inspectorSection}>
+          <h2>Arrow</h2>
+          <label className={styles.inspectorField}>
+            <span>Shape</span>
+            <input
+              value={shape}
+              onChange={(event) => setShape(event.target.value)}
+              onBlur={() => {
+                const next = shape.trim();
+                if (next) updateArrowAnnotation(annotation.id, { shape: next });
+                else setShape(annotation.shape);
+              }}
+              aria-label="Arrow shape"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>Text</span>
+            <input
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              onBlur={() => updateArrowAnnotation(annotation.id, {
+                text: text.trim() || undefined,
+              })}
+              aria-label="Arrow text"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>From</span>
+            <input
+              value={from}
+              onChange={(event) => setFrom(event.target.value)}
+              onBlur={() => commitAnchor('from', from)}
+              placeholder="a(2, -1) or 10%, 50%"
+              aria-label="Arrow from anchor"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>To</span>
+            <input
+              value={to}
+              onChange={(event) => setTo(event.target.value)}
+              onBlur={() => commitAnchor('to', to)}
+              placeholder="b or 80%, 50%"
+              aria-label="Arrow to anchor"
+            />
+          </label>
+          <p className={styles.inspectorFieldHint}>
+            Use a node, node(dx, dy), x/y cells, or x%/y% coordinates.
+          </p>
+          <label className={styles.inspectorField}>
+            <span>Label X offset</span>
+            <input
+              type="number"
+              step="any"
+              value={annotation.dx ?? 0}
+              onChange={(event) => updateArrowAnnotation(annotation.id, {
+                dx: Number(event.target.value),
+              })}
+              aria-label="Arrow label X offset"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>Label Y offset</span>
+            <input
+              type="number"
+              step="any"
+              value={annotation.dy ?? 0}
+              onChange={(event) => updateArrowAnnotation(annotation.id, {
+                dy: Number(event.target.value),
+              })}
+              aria-label="Arrow label Y offset"
+            />
+          </label>
+        </section>
+        <section className={styles.inspectorSection}>
+          <h2>Style</h2>
+          <label className={styles.inspectorField}>
+            <span>Stroke</span>
+            <input
+              value={stroke}
+              placeholder="#4a9eff"
+              onChange={(event) => setStroke(event.target.value)}
+              onBlur={() => {
+                const next = stroke.trim();
+                if (next && !isSafeAnnotationColor(next)) {
+                  setStroke(annotation.style?.stroke ?? '');
+                  return;
+                }
+                updateArrowAnnotation(annotation.id, {
+                  style: { ...annotation.style, stroke: next || undefined },
+                });
+              }}
+              aria-label="Annotation stroke"
+            />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>Stroke width</span>
+            <input
+              type="number"
+              min={0}
+              max={32}
+              step={0.5}
+              value={annotation.style?.strokeWidth ?? ''}
+              onChange={(event) => updateArrowAnnotation(annotation.id, {
+                style: {
+                  ...annotation.style,
+                  strokeWidth: event.target.value === ''
+                    ? undefined
+                    : Number(event.target.value),
+                },
+              })}
+              aria-label="Annotation stroke width"
+            />
+          </label>
+        </section>
+        <section className={styles.inspectorSection}>
+          <button
+            type="button"
+            className={styles.inspectorDanger}
+            onClick={() => {
+              removeAnnotation(annotation.id);
+              close();
+            }}
+          >
+            <Trash2 size={14} aria-hidden /> Delete annotation
+          </button>
+        </section>
+      </div>
+    </aside>
+  );
+}
 
 function signalOptions(signals: SignalOrGroup[]): Array<{ id: string; name: string }> {
   const options: Array<{ id: string; name: string }> = [];
@@ -120,6 +306,10 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
     }
     updatePosition({ [field]: parsed } as Partial<DiagramAnnotation>);
   };
+
+  if (selected?.type === 'arrow') {
+    return <ArrowAnnotationInspector annotation={selected} onClose={onClose} />;
+  }
 
   return (
     <aside className={styles.inspector} aria-label="Annotation inspector">

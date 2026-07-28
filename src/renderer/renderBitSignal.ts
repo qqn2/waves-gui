@@ -15,7 +15,6 @@ import {
   stateStrokeColor,
   X_FILL,
   X_STROKE,
-  zStrokeColor,
   resolveSignalColor,
 } from './stateColors';
 import {
@@ -44,8 +43,9 @@ function drawDataCell(
   yHigh: number,
   yLow: number,
   hatch: CanvasPattern | null,
+  bevel: number,
 ): void {
-  const d = Math.min(8, Math.max(2, (nextX - x) * 0.2));
+  const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
   ctx.beginPath();
   ctx.moveTo(x, (yHigh + yLow) / 2);
   ctx.lineTo(x + d, yHigh);
@@ -65,6 +65,39 @@ function drawDataCell(
   ctx.stroke();
 }
 
+function drawRelaxedDigitalCell(
+  ctx: CanvasRenderingContext2D,
+  state: 'z' | 'u' | 'd',
+  x: number,
+  nextX: number,
+  previousY: number,
+  yHigh: number,
+  yLow: number,
+  yMid: number,
+  slewPx: number,
+  scale: number,
+  color: string,
+): number {
+  const targetY = state === 'z' ? yMid : state === 'u' ? yHigh : yLow;
+  const span = Math.max(1, yLow - yHigh);
+  const dt = Math.abs(targetY - previousY) * slewPx / span;
+  const settleX = Math.min(nextX, x + 20 * scale);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(x, previousY);
+  if (state === 'z') {
+    ctx.bezierCurveTo(x + dt, targetY, x + dt, targetY, settleX, targetY);
+  } else {
+    ctx.bezierCurveTo(x, previousY, x + dt, targetY, settleX, targetY);
+  }
+  ctx.lineTo(nextX, targetY);
+  ctx.stroke();
+  ctx.restore();
+  return targetY;
+}
+
 function drawTransientCell(
   ctx: CanvasRenderingContext2D,
   state: BitState,
@@ -74,6 +107,8 @@ function drawTransientCell(
   yLow: number,
   previousY: number,
   color: string,
+  slewPx: number,
+  dutyCycle: number,
 ): number {
   const width = nextX - x;
   ctx.save();
@@ -86,8 +121,12 @@ function drawTransientCell(
   if (state === 'i' || state === 'I') {
     const baseY = state === 'i' ? yHigh : yLow;
     const pulseY = state === 'i' ? yLow : yHigh;
-    const settleX = Math.min(x + TRANSITION_WIDTH, x + width * 0.25);
-    const pulseX = x + width / 2;
+    const pulseX = x + width * Math.max(0, Math.min(1, dutyCycle));
+    const span = Math.max(1, yLow - yHigh);
+    const settleX = Math.min(
+      pulseX,
+      x + Math.abs(baseY - previousY) * slewPx / span,
+    );
     ctx.lineTo(settleX, baseY);
     ctx.lineTo(pulseX, baseY);
     ctx.lineTo(pulseX, pulseY);
@@ -139,9 +178,9 @@ function stateToY(
     case 'z':
       return yMid;
     case 'u':
-      return yHigh + 4;
+      return yHigh;
     case 'd':
-      return yLow - 4;
+      return yLow;
     case 'p':
     case 'P':
       return yHigh;
@@ -181,9 +220,18 @@ export function renderBitSignal(
   const states = draftStates ?? signal.states;
   const glitches = signal.stepGlitches ?? [];
   const scale = transform.zoom * transform.hscale;
-  const tw = (signal.digitalTiming?.slewing !== undefined
-    ? Math.max(0, signal.digitalTiming.slewing) * 40
-    : TRANSITION_WIDTH) * scale;
+  const extendedDigital = states.some(
+    (state) => state === 'X' || state === '='
+      || (state >= '2' && state <= '9')
+      || state === 'u' || state === 'd'
+      || isClockLevelState(state)
+      || isExtendedTransientState(state),
+  );
+  const slewLogical = signal.digitalTiming?.slewing !== undefined
+    ? Math.max(0, signal.digitalTiming.slewing)
+    : extendedDigital ? 0 : TRANSITION_WIDTH;
+  const clockSlewLogical = Math.max(0, signal.digitalTiming?.slewing ?? 0);
+  const tw = slewLogical * scale;
   const gapStroke =
     getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
     '#e8e8e8';
@@ -198,12 +246,6 @@ export function renderBitSignal(
   const yMid = rowY + rowH / 2;
 
   const hatch = createXHatchPattern(ctx);
-  const extendedDigital = states.some(
-    (state) => state === 'X' || state === '='
-      || (state >= '2' && state <= '9')
-      || isExtendedTransientState(state),
-  );
-
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
   ctx.strokeStyle = stateStrokeColor('1', signal.color);
@@ -234,7 +276,7 @@ export function renderBitSignal(
       }
       const dataNextX =
         stepLogicalXEnd(signal, runEnd - 1) * scale - transform.scrollX;
-      drawDataCell(ctx, st, x, dataNextX, yHigh, yLow, hatch);
+      drawDataCell(ctx, st, x, dataNextX, yHigh, yLow, hatch, 3 * scale);
       i = runEnd - 1;
       resumeAtCurrentState = true;
       continue;
@@ -254,6 +296,11 @@ export function renderBitSignal(
         yLow,
         resumeAtCurrentState ? yMid : prevY,
         resolveSignalColor(signal.color),
+        clockSlewLogical * scale,
+        signal.digitalTiming?.cells[i]?.dutyTicks === undefined
+          ? 0.5
+          : signal.digitalTiming.cells[i]!.dutyTicks!
+            / signal.digitalTiming.cells[i]!.durationTicks,
       );
       resumeAtCurrentState = false;
       continue;
@@ -276,6 +323,7 @@ export function renderBitSignal(
         yLow,
         ctx.lineWidth,
         i > 0,
+        clockSlewLogical * scale,
       );
       prevY = targetY;
       resumeAtCurrentState = false;
@@ -300,6 +348,7 @@ export function renderBitSignal(
         timingCell?.dutyTicks === undefined
           ? 0.5
           : timingCell.dutyTicks / timingCell.durationTicks,
+        clockSlewLogical * scale,
       );
       prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
@@ -314,20 +363,25 @@ export function renderBitSignal(
       continue;
     }
 
-    if (st === 'z') {
+    if (st === 'z' || st === 'u' || st === 'd') {
       if (pathOpen) {
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.save();
-      ctx.strokeStyle = zStrokeColor(signal.color);
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(x, yMid);
-      ctx.lineTo(nextX, yMid);
-      ctx.stroke();
-      ctx.restore();
-      prevY = yMid;
+      prevY = drawRelaxedDigitalCell(
+        ctx,
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? yMid : prevY,
+        yHigh,
+        yLow,
+        yMid,
+        slewLogical * scale,
+        scale,
+        resolveSignalColor(signal.color),
+      );
+      resumeAtCurrentState = false;
       continue;
     }
 

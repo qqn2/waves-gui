@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import type { AnalogueCell, AnaloguePoint, Signal } from './types';
 import { ROW_HEIGHT } from './constants';
+import { ANALOGUE_EXPRESSION_MAX_LENGTH } from './analogueExpressions';
 
 export const DEFAULT_ANALOGUE_MIN = 0;
 export const DEFAULT_ANALOGUE_MAX = 1.8;
@@ -65,6 +66,11 @@ export function normalizeAnalogueCell(
     kind,
     value: normalizedValue,
     ...(samples && samples.length > 0 ? { samples } : {}),
+    ...(typeof value?.expression === 'string'
+      && value.expression.length > 0
+      && value.expression.length <= ANALOGUE_EXPRESSION_MAX_LENGTH
+      ? { expression: value.expression }
+      : {}),
   };
 }
 

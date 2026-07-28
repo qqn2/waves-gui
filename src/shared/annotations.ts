@@ -67,6 +67,44 @@ export function formatAnnotationRangePosition(
   return value.unit === 'percent' ? `${value.value}%` : String(value.value);
 }
 
+export function formatAnnotationAnchor(anchor: AnnotationAnchor): string {
+  if (anchor.kind === 'point') {
+    const suffix = anchor.percent ? '%' : '';
+    return `${anchor.x}${suffix}, ${anchor.y}${suffix}`;
+  }
+  return anchor.dx !== undefined || anchor.dy !== undefined
+    ? `${anchor.node}(${anchor.dx ?? 0}, ${anchor.dy ?? 0})`
+    : anchor.node;
+}
+
+export function parseAnnotationAnchorInput(value: string): AnnotationAnchor | null {
+  const text = value.trim();
+  const point = text.match(
+    /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*(%)?\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*(%)?$/,
+  );
+  if (point) {
+    if (Boolean(point[2]) !== Boolean(point[4])) return null;
+    const x = Number(point[1]);
+    const y = Number(point[3]);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    if (point[2] && (x < 0 || x > 100 || y < 0 || y > 100)) return null;
+    if (Math.abs(x) > MAX_ANNOTATION_COORDINATE || Math.abs(y) > MAX_ANNOTATION_COORDINATE) {
+      return null;
+    }
+    return { kind: 'point', x, y, ...(point[2] ? { percent: true } : {}) };
+  }
+  const node = text.match(
+    /^([^(),\s]+)(?:\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*\))?$/,
+  );
+  if (!node) return null;
+  return {
+    kind: 'node',
+    node: node[1]!,
+    ...(node[2] !== undefined ? { dx: Number(node[2]) } : {}),
+    ...(node[3] !== undefined ? { dy: Number(node[3]) } : {}),
+  };
+}
+
 export function isSafeAnnotationColor(value: unknown): value is string {
   if (typeof value !== 'string') return false;
   const color = value.trim();

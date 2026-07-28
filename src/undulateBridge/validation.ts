@@ -2,6 +2,7 @@ import {
   MAX_ANALOGUE_ABS_VALUE,
   MAX_ANALOGUE_SAMPLES_PER_CELL,
 } from '../shared/analogue';
+import { validateAnalogueExpression } from '../shared/analogueExpressions';
 import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
@@ -10,6 +11,7 @@ import {
   MAX_ANNOTATION_COORDINATE,
   MAX_ANNOTATION_TEXT_LENGTH,
 } from '../shared/annotations';
+import { MAX_TICKS_PER_STEP, timingResolution } from '../shared/fineTiming';
 import { validateWavedromJSON } from '../wavedromBridge';
 import type { UndulateRoot } from './types';
 
@@ -121,6 +123,13 @@ const DIGITAL_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.digitalSignal.supported,
 );
 const DIGITAL_WIP = new Set<string>(UNDULATE_PROPERTY_MANIFEST.digitalSignal.wip);
+const DIGITAL_EXTENSION_FIELDS = new Set([
+  'repeat',
+  'periods',
+  'duty_cycle',
+  'duty_cycles',
+  'slewing',
+]);
 const ANALOGUE_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
 );
@@ -246,17 +255,22 @@ function scanAnalogueValues(
   path: string,
   findings: UndulateFinding[],
 ): void {
-  if (!Array.isArray(signal.analogue)) return;
+  if (!Array.isArray(signal.analogue) || typeof signal.wave !== 'string') return;
+  const consumingKinds = [...signal.wave].filter((char) => /[sca]/.test(char));
   signal.analogue.forEach((value, index) => {
     const valuePath = `${path}.analogue[${index}]`;
     if (typeof value === 'string') {
-      findings.push(finding(
-        'unsupported-by-design',
-        'executable analogue expressions',
-        valuePath,
-        `Unsupported by design: ${valuePath} contains an executable analogue expression; expressions are not executed. Use finite numeric values or explicit [time, value] samples.`,
-        'The current diagram was not changed.',
-      ));
+      const error = validateAnalogueExpression(
+        value,
+        consumingKinds[index] === 'a' ? 'curve' : 'scalar',
+      );
+      if (error) {
+        findings.push(invalid(
+          valuePath,
+          'analogue expression',
+          error,
+        ));
+      }
     }
   });
 }
@@ -420,8 +434,13 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
     const kind = consumingKinds[index]!;
     const value = signal.analogue[index];
     if (kind === 'a') {
+      if (typeof value === 'string') {
+        const error = validateAnalogueExpression(value, 'curve');
+        if (error) return `analogue[${index}] expression is invalid: ${error}`;
+        continue;
+      }
       if (!isFinitePointList(value)) {
-        return `analogue[${index}] requires 1 to ${MAX_ANALOGUE_SAMPLES_PER_CELL} finite [time, value] points within the supported voltage range`;
+        return `analogue[${index}] requires a supported curve expression or 1 to ${MAX_ANALOGUE_SAMPLES_PER_CELL} finite [time, value] points within the supported voltage range`;
       }
       if (
         value.length > 1
@@ -433,7 +452,8 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
         return `analogue[${index}] single sample time must be 0`;
       }
     } else if (typeof value === 'string') {
-      // The property scan emits the precise unsupported-by-design finding.
+      const error = validateAnalogueExpression(value, 'scalar');
+      if (error) return `analogue[${index}] expression is invalid: ${error}`;
       continue;
     } else if (
       typeof value !== 'number'
@@ -529,6 +549,24 @@ function validateDigitalTiming(signal: Record<string, unknown>): string | null {
     )
   ) {
     return 'slewing must be a finite number greater than or equal to 0';
+  }
+  const timingValues: number[] = [];
+  if (typeof signal.phase === 'number') timingValues.push(signal.phase);
+  if (typeof signal.period === 'number') timingValues.push(signal.period);
+  if (Array.isArray(signal.periods)) timingValues.push(...signal.periods as number[]);
+  for (let index = 0; index < expandedLength; index++) {
+    const period = Array.isArray(signal.periods)
+      ? signal.periods[index]
+      : signal.period ?? 1;
+    const duty = Array.isArray(signal.duty_cycles)
+      ? signal.duty_cycles[index]
+      : signal.duty_cycle;
+    if (typeof period === 'number' && typeof duty === 'number') {
+      timingValues.push(period * duty);
+    }
+  }
+  if (timingResolution(timingValues) === null) {
+    return `timing values require more than ${MAX_TICKS_PER_STEP} ticks per step and cannot be represented losslessly`;
   }
   return null;
 }
@@ -726,6 +764,7 @@ export function isUndulateJSON(value: unknown): value is UndulateRoot {
     const wave = signal.wave;
     if (
       analogue
+      || Object.keys(signal).some((field) => DIGITAL_EXTENSION_FIELDS.has(field))
       || Object.keys(signal).some((field) => !supported.has(field))
       || (typeof wave === 'string'
         && EXTENDED_WAVE_FEATURES.some(({ pattern }) => pattern.test(wave)))

@@ -10,6 +10,12 @@ import {
   DEFAULT_ANALOGUE_MAX,
   DEFAULT_ANALOGUE_MIN,
 } from '../shared/analogue';
+import {
+  DEFAULT_ANALOGUE_CONTEXT,
+  evaluateAnalogueCurve,
+  evaluateAnalogueScalar,
+  type AnalogueContext,
+} from '../shared/analogueExpressions';
 import { timingForStates, timingResolution } from '../shared/fineTiming';
 import {
 } from '../shared/annotations';
@@ -115,22 +121,40 @@ function annotationStyleFromUndulate(
   return Object.keys(style).length > 0 ? style : undefined;
 }
 
-function analogueToUndulateEntry(signal: Signal): WdSignal {
+function isDefaultAnalogueContext(context: AnalogueContext): boolean {
+  return context.vssa === DEFAULT_ANALOGUE_CONTEXT.vssa
+    && context.vdda === DEFAULT_ANALOGUE_CONTEXT.vdda;
+}
+
+function analogueToUndulateEntry(
+  signal: Signal,
+  context: AnalogueContext,
+): WdSignal {
   const cells = signal.analogueCells ?? [];
   const values: UndulateAnalogueValue[] = [];
   const wave = cells.map((cell, index) => {
     if (cell.kind === 'samples') {
       values.push(
-        (cell.samples ?? []).map((point) => [point.offset, point.value]),
+        cell.expression && isDefaultAnalogueContext(context)
+          ? cell.expression
+          : (cell.samples ?? []).map((point) => [point.offset, point.value]),
       );
       return 'a';
     }
     if (cell.kind === 'capacitive') {
-      values.push(cell.value);
+      values.push(
+        cell.expression && isDefaultAnalogueContext(context)
+          ? cell.expression
+          : cell.value,
+      );
       return 'c';
     }
     if (cell.kind === 'step') {
-      values.push(cell.value);
+      values.push(
+        cell.expression && isDefaultAnalogueContext(context)
+          ? cell.expression
+          : cell.value,
+      );
       return 's';
     }
     if (index === 0) {
@@ -155,6 +179,7 @@ function analogueToUndulateEntry(signal: Signal): WdSignal {
 function mergeUndulateSignalEntries(
   signals: SignalOrGroup[],
   sharedEntries: WdSignalEntry[],
+  context: AnalogueContext,
 ): WdSignalEntry[] {
   return signals.map((signal, index) => {
     const shared = sharedEntries[index] ?? {};
@@ -163,10 +188,12 @@ function mergeUndulateSignalEntries(
         Array.isArray(shared) ? shared.slice(1) as WdSignalEntry[] : [];
       return [
         signal.name,
-        ...mergeUndulateSignalEntries(signal.children, sharedChildren),
+        ...mergeUndulateSignalEntries(signal.children, sharedChildren, context),
       ] as WdGroup;
     }
-    if (signal.type === 'analogue') return analogueToUndulateEntry(signal);
+    if (signal.type === 'analogue') {
+      return analogueToUndulateEntry(signal, context);
+    }
     if (signal.type === 'bit' && signal.digitalTiming) {
       const timing = signal.digitalTiming;
       const entry = { ...(shared as WdSignal) };
@@ -234,7 +261,11 @@ function anchorFromUndulate(value: UndulateAnnotationAnchor): AnnotationAnchor {
 
 export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const root: UndulateRoot = toWavedromJSON(diagram);
-  root.signal = mergeUndulateSignalEntries(diagram.signals, root.signal);
+  root.signal = mergeUndulateSignalEntries(
+    diagram.signals,
+    root.signal,
+    diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT,
+  );
   const rows = buildRowLayout(diagram.signals);
   const annotations: UndulateAnnotation[] = [];
 
@@ -319,6 +350,7 @@ function flattenDiagramSignals(entries: SignalOrGroup[]): Signal[] {
 function sampledCell(
   raw: Array<[number, number]>,
   previous: number,
+  expression?: string,
 ): AnalogueCell {
   const minTime = raw[0]![0];
   const maxTime = raw[raw.length - 1]![0];
@@ -332,33 +364,52 @@ function sampledCell(
     kind: 'samples',
     value: samples[samples.length - 1]?.value ?? previous,
     samples,
+    ...(expression ? { expression } : {}),
   };
 }
 
-function importAnalogueSignal(raw: WdSignal, parsed: Signal): void {
-  if (!Array.isArray(raw.analogue) || typeof raw.wave !== 'string') return;
+function importAnalogueSignal(
+  raw: WdSignal,
+  parsed: Signal,
+  context: AnalogueContext,
+): boolean {
+  if (!Array.isArray(raw.analogue) || typeof raw.wave !== 'string') return false;
   const repeat = typeof raw.repeat === 'number' ? raw.repeat : 1;
   const wave = raw.wave.repeat(repeat);
   const values = raw.analogue as UndulateAnalogueValue[];
-  const min = DEFAULT_ANALOGUE_MIN;
-  const max = DEFAULT_ANALOGUE_MAX;
+  const min = context.vssa;
+  const max = context.vdda;
+  let importedExpression = false;
   let valueIndex = 0;
   let previous = min;
   const cells: AnalogueCell[] = [];
   for (const char of wave) {
     let cell: AnalogueCell;
     if (char === 's' || char === 'c') {
-      const value = values[valueIndex++] as number;
+      const source = values[valueIndex++];
+      const expression = typeof source === 'string' ? source : undefined;
+      const value = expression
+        ? evaluateAnalogueScalar(expression, context)
+        : source as number;
+      importedExpression ||= expression !== undefined;
       cell = {
         id: nanoid(),
         kind: char === 's' ? 'step' : 'capacitive',
         value,
+        ...(expression ? { expression } : {}),
       };
     } else if (char === 'a') {
-      cell = sampledCell(
-        values[valueIndex++] as Array<[number, number]>,
-        previous,
-      );
+      const source = values[valueIndex++];
+      if (typeof source === 'string') {
+        cell = sampledCell(
+          evaluateAnalogueCurve(source, context),
+          previous,
+          source,
+        );
+        importedExpression = true;
+      } else {
+        cell = sampledCell(source as Array<[number, number]>, previous);
+      }
     } else {
       if (/[1hH]/.test(char)) previous = max;
       if (/[0lL]/.test(char)) previous = min;
@@ -378,6 +429,7 @@ function importAnalogueSignal(raw: WdSignal, parsed: Signal): void {
   if (typeof raw.overlay === 'boolean') parsed.overlay = raw.overlay;
   if (typeof raw.order === 'number') parsed.order = raw.order;
   parsed.rowHeight = ROW_HEIGHT * (parsed.vscale ?? 1);
+  return importedExpression;
 }
 
 function expandedDigitalRoot(root: UndulateRoot): UndulateRoot {
@@ -451,14 +503,24 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   const rawSignals = flattenRawSignals(root.signal);
   const parsedSignals = flattenDiagramSignals(diagram.signals);
   const ticksPerStep = timingResolution(timingValues(rawSignals));
+  if (ticksPerStep === null) {
+    throw new Error('Undulate timing exceeds the 1024-tick lossless resolution limit.');
+  }
+  const analogueContext = { ...DEFAULT_ANALOGUE_CONTEXT };
+  let hasAnalogueExpression = false;
   rawSignals.forEach((raw, index) => {
     const parsed = parsedSignals[index];
     if (parsed) {
-      importAnalogueSignal(raw, parsed);
+      hasAnalogueExpression =
+        importAnalogueSignal(raw, parsed, analogueContext)
+        || hasAnalogueExpression;
       importDigitalTiming(raw, parsed, ticksPerStep);
     }
   });
   diagram.config.ticksPerStep = ticksPerStep;
+  if (hasAnalogueExpression) {
+    diagram.config.analogueContext = analogueContext;
+  }
   diagram.config.totalSteps = Math.max(
     diagram.config.totalSteps,
     ...parsedSignals.map((signal) => signal.analogueCells?.length ?? 0),

@@ -11,6 +11,23 @@ import { isWaveModeLane, padWaveLaneToLength } from '../wavedromBridge/laneWaveO
 import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
 import { normalizeAnnotations } from './annotations';
 import { normalizeAnalogueSignal } from './analogue';
+import {
+  DEFAULT_ANALOGUE_CONTEXT,
+  type AnalogueContext,
+} from './analogueExpressions';
+
+function normalizeAnalogueContext(value: unknown): AnalogueContext | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const context = value as Partial<AnalogueContext>;
+  if (
+    typeof context.vssa !== 'number'
+    || !Number.isFinite(context.vssa)
+    || typeof context.vdda !== 'number'
+    || !Number.isFinite(context.vdda)
+    || context.vdda <= context.vssa
+  ) return { ...DEFAULT_ANALOGUE_CONTEXT };
+  return { vssa: context.vssa, vdda: context.vdda };
+}
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -152,6 +169,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
             Math.min(1024, Math.floor(d.config.ticksPerStep)),
           ),
         }
+      : {}),
+    ...(d.config?.analogueContext !== undefined
+      ? { analogueContext: normalizeAnalogueContext(d.config.analogueContext) }
       : {}),
   };
   d.annotations = normalizeAnnotations(d.annotations, totalSteps);

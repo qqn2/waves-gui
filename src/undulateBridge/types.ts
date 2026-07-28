@@ -56,6 +56,7 @@ export type UndulateAnnotation =
 
 export type UndulateAnalogueValue =
   | number
+  | string
   | Array<[number, number]>;
 
 export interface UndulateRoot extends WdRoot {

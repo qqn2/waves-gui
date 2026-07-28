@@ -34,6 +34,12 @@ import {
 } from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import { normalizeAnalogueSignal } from '../analogue';
+import {
+  DEFAULT_ANALOGUE_CONTEXT,
+  evaluateAnalogueCurve,
+  evaluateAnalogueScalar,
+  type AnalogueContext,
+} from '../analogueExpressions';
 import type { ImmerSet, StoreActions } from './storeActions';
 import {
   clearNodesAndEdges,
@@ -177,6 +183,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'renameSignal'
   | 'updateAnalogueCell'
   | 'updateAnalogueSignal'
+  | 'updateAnalogueContext'
   | 'updateDigitalTimingCell'
   | 'updateDigitalTimingSignal'
   | 'setSignalState'
@@ -212,6 +219,8 @@ export function createSignalActions(set: ImmerSet): Pick<
     addSignal(type, afterId) {
       set((s) => {
         pushHistory(s);
+        const analogueContext =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
         const states = new Array<BitState>(s.diagram.config.totalSteps).fill('0');
         const signal: Signal = {
           id: nanoid(),
@@ -236,12 +245,12 @@ export function createSignalActions(set: ImmerSet): Pick<
               : [],
           ...(type === 'analogue'
             ? {
-                analogueMin: 0,
-                analogueMax: 1.8,
+                analogueMin: analogueContext.vssa,
+                analogueMax: analogueContext.vdda,
                 analogueCells: states.map(() => ({
                   id: nanoid(),
                   kind: 'step' as const,
-                  value: 0,
+                  value: analogueContext.vssa,
                 })),
               }
             : {}),
@@ -392,6 +401,14 @@ export function createSignalActions(set: ImmerSet): Pick<
         const cell = target.analogueCells?.[index];
         if (!cell) return;
         pushHistory(s);
+        if (
+          patch.expression === undefined
+          && (
+            patch.value !== undefined
+            || patch.samples !== undefined
+            || patch.kind !== undefined
+          )
+        ) delete cell.expression;
         Object.assign(cell, patch);
         normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
       });
@@ -409,6 +426,63 @@ export function createSignalActions(set: ImmerSet): Pick<
         Object.assign(target, patch);
         normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
         target.rowHeight = ROW_HEIGHT * (target.vscale ?? 1);
+      });
+    },
+
+    updateAnalogueContext(patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const currentContext =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
+        const next: AnalogueContext = {
+          vssa: patch.vssa ?? currentContext.vssa,
+          vdda: patch.vdda ?? currentContext.vdda,
+        };
+        if (
+          !Number.isFinite(next.vssa)
+          || !Number.isFinite(next.vdda)
+          || next.vdda <= next.vssa
+        ) return;
+        const resolved = new Map<
+          string,
+          { value: number; samples?: Array<{ offset: number; value: number }> }
+        >();
+        try {
+          walkSignals(s.diagram.signals, (signal) => {
+            if (signal.type !== 'analogue') return;
+            for (const cell of signal.analogueCells ?? []) {
+              if (!cell.expression) continue;
+              if (cell.kind === 'samples') {
+                const samples = evaluateAnalogueCurve(cell.expression, next)
+                  .map(([offset, value]) => ({ offset, value }));
+                resolved.set(cell.id, {
+                  samples,
+                  value: samples.at(-1)?.value ?? cell.value,
+                });
+              } else {
+                resolved.set(cell.id, {
+                  value: evaluateAnalogueScalar(cell.expression, next),
+                });
+              }
+            }
+          });
+        } catch {
+          return;
+        }
+        pushHistory(s);
+        s.diagram.config.analogueContext = next;
+        walkSignals(s.diagram.signals, (signal) => {
+          if (signal.type !== 'analogue') return;
+          signal.analogueMin = next.vssa;
+          signal.analogueMax = next.vdda;
+          for (const cell of signal.analogueCells ?? []) {
+            const result = resolved.get(cell.id);
+            if (!result) continue;
+            cell.value = result.value;
+            if (result.samples) cell.samples = result.samples;
+          }
+          normalizeAnalogueSignal(signal, s.diagram.config.totalSteps);
+        });
       });
     },
 

@@ -111,4 +111,36 @@ describe('annotation actions', () => {
       }),
     ]);
   });
+
+  it('adds and updates structured arrows through undoable actions', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    const id = useStore.getState().addArrowAnnotation({
+      shape: '->',
+      from: { kind: 'node', node: 'a' },
+      to: { kind: 'point', x: 75, y: 50, percent: true },
+      text: 'latency',
+    });
+    expect(id).not.toBeNull();
+    useStore.getState().updateArrowAnnotation(id!, {
+      shape: '<~>',
+      dx: 4,
+      text: undefined,
+      style: { stroke: '#ff0000', strokeWidth: 2 },
+    });
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      id,
+      type: 'arrow',
+      shape: '<~>',
+      from: { kind: 'node', node: 'a' },
+      to: { kind: 'point', x: 75, y: 50, percent: true },
+      dx: 4,
+      style: { stroke: '#ff0000', strokeWidth: 2 },
+    });
+    expect(useStore.getState().diagram.annotations?.[0]).not.toHaveProperty('text');
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.annotations?.[0];
+    expect(restored).toMatchObject({ shape: '->' });
+    expect(restored).not.toHaveProperty('dx');
+    expect(restored).toMatchObject({ text: 'latency' });
+  });
 });

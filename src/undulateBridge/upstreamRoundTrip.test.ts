@@ -68,6 +68,15 @@ describe('pinned Undulate supported-subset fixtures', () => {
       for (const text of fixture.renderIncludes) {
         expect(svg).toContain(text);
       }
+      if (fixture.id === 'extended-digital-states') {
+        for (const state of ['z', 'u', 'd']) {
+          const path = svg.match(
+            new RegExp(`<path data-wave-state="${state}"[^>]+>`),
+          )?.[0];
+          expect(path, `${state} should use a connected Undulate path`).toContain(' C');
+          expect(path).not.toContain('stroke-dasharray');
+        }
+      }
     },
   );
 

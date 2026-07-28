@@ -2,6 +2,7 @@ import { Activity, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { findSignal, useStore } from '../shared/store';
 import type { Signal } from '../shared/types';
+import { DEFAULT_ANALOGUE_CONTEXT } from '../shared/analogueExpressions';
 import { VectorSegmentEditor } from '../signalPanel/VectorSegmentEditor';
 import styles from './shell.module.css';
 
@@ -26,6 +27,10 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const setSignalPeriod = useStore((s) => s.setSignalPeriod);
   const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
   const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
+  const updateAnalogueContext = useStore((s) => s.updateAnalogueContext);
+  const analogueContext = useStore(
+    (s) => s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT,
+  );
   const updateDigitalTimingCell = useStore((s) => s.updateDigitalTimingCell);
   const updateDigitalTimingSignal = useStore((s) => s.updateDigitalTimingSignal);
   const signal = useMemo(() => selectedSignal(signals, activeIds), [signals, activeIds]);
@@ -192,6 +197,12 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   Edit each waveform value directly; change Step to move through
                   the analog cells.
                 </p>
+                {analogueCell?.expression ? (
+                  <p className={styles.inspectorFieldHint}>
+                    Resolved from Ludwig expression: <code>{analogueCell.expression}</code>.
+                    Editing this cell detaches it from the expression.
+                  </p>
+                ) : null}
                 {analogueCell?.kind === 'samples' ? (
                   <>
                     <h2>Sample points</h2>
@@ -267,37 +278,43 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               </section>
 
               <section className={styles.inspectorSection}>
-                <h2>Analog range</h2>
+                <h2>Ludwig context</h2>
                 <label className={styles.inspectorField}>
-                  <span>Minimum</span>
+                  <span>VSSA</span>
                   <input
                     type="number"
                     step="any"
-                    value={signal.analogueMin ?? 0}
+                    value={analogueContext.vssa}
+                    aria-label="Analog context VSSA"
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueSignal(signal.id, {
-                          analogueMin: Number(event.target.value),
+                        updateAnalogueContext({
+                          vssa: Number(event.target.value),
                         });
                       }
                     }}
                   />
                 </label>
                 <label className={styles.inspectorField}>
-                  <span>Maximum</span>
+                  <span>VDDA</span>
                   <input
                     type="number"
                     step="any"
-                    value={signal.analogueMax ?? 1.8}
+                    value={analogueContext.vdda}
+                    aria-label="Analog context VDDA"
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueSignal(signal.id, {
-                          analogueMax: Number(event.target.value),
+                        updateAnalogueContext({
+                          vdda: Number(event.target.value),
                         });
                       }
                     }}
                   />
                 </label>
+                <p className={styles.inspectorFieldHint}>
+                  Document-wide rails for Ludwig expressions. Changing either
+                  value reevaluates every expression-backed analog cell.
+                </p>
                 <label className={styles.inspectorField}>
                   <span>Vertical scale</span>
                   <input

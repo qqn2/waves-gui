@@ -85,6 +85,8 @@ export interface AnalogueCell {
   value: number;
   /** Explicit points used by arbitrary sampled cells. */
   samples?: AnaloguePoint[];
+  /** Original safe Ludwig expression, retained for reevaluation and round-trip. */
+  expression?: string;
 }
 
 export interface DigitalTimingCell {
@@ -168,6 +170,8 @@ export interface DiagramConfig {
   hscale: number; // 1–4 (fractional OK), multiplier applied to CELL_WIDTH
   /** Integer timing resolution. Existing documents default to one tick per step. */
   ticksPerStep?: number;
+  /** Document-wide Ludwig analogue evaluation rails. */
+  analogueContext?: { vssa: number; vdda: number };
   /** WaveDrom config.skin (default, narrow, dark, …) */
   skin?: string;
   head?: { text?: string; tick?: number; every?: number };
