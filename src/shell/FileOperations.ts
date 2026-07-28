@@ -106,11 +106,15 @@ function parseDiagramJSON(value: unknown, sourceText?: string): {
   };
 }
 
-function parseDiagramFile(file: File, text: string): {
+function parseDiagramFile(
+  file: File,
+  text: string,
+  kind: 'document' | 'vcd',
+): {
   diagram: DiagramState;
   format: DiagramFileFormat;
 } | { error: string } {
-  if (file.name.toLowerCase().endsWith('.vcd')) {
+  if (kind === 'vcd') {
     const root = vcdToWavedromJSON(text);
     const error = validateWavedromJSON(root);
     if (error) return { error };
@@ -118,6 +122,9 @@ function parseDiagramFile(file: File, text: string): {
       diagram: fromWavedromJSON(root),
       format: 'wavedrom-json',
     };
+  }
+  if (file.name.toLowerCase().endsWith('.vcd')) {
+    return { error: 'Use File → Open VCD… to import Value Change Dump files.' };
   }
   if (/\.ya?ml$/i.test(file.name)) {
     try {
@@ -218,26 +225,28 @@ function readFileAsText(file: File): Promise<string> {
   });
 }
 
-export async function openDiagramFile(): Promise<void> {
+async function openFile(kind: 'document' | 'vcd'): Promise<void> {
   const w = window as FilePickerWindow;
   if (w.showOpenFilePicker) {
     try {
       const [handle] = await w.showOpenFilePicker({
         types: [
-          {
+          kind === 'vcd' ? {
+            description: 'Value Change Dump',
+            accept: { 'text/plain': ['.vcd'] },
+          } : {
             description: 'Waveform files',
             accept: {
               'application/json': ['.json', '.wp'],
               'application/yaml': ['.yaml', '.yml'],
               'application/toml': ['.toml'],
-              'text/plain': ['.vcd'],
             },
           },
         ],
       });
       const file = await handle.getFile();
       const text = await readFileAsText(file);
-      const parsed = parseDiagramFile(file, text);
+      const parsed = parseDiagramFile(file, text, kind);
       if ('error' in parsed) {
         window.alert(parsed.error);
         return;
@@ -256,8 +265,9 @@ export async function openDiagramFile(): Promise<void> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept =
-      '.json,.wp,.yaml,.yml,.toml,.vcd,application/json,application/yaml,application/toml,text/plain';
+    input.accept = kind === 'vcd'
+      ? '.vcd,text/plain'
+      : '.json,.wp,.yaml,.yml,.toml,application/json,application/yaml,application/toml';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -266,7 +276,7 @@ export async function openDiagramFile(): Promise<void> {
       }
       try {
         const text = await readFileAsText(file);
-        const parsed = parseDiagramFile(file, text);
+        const parsed = parseDiagramFile(file, text, kind);
         if ('error' in parsed) window.alert(parsed.error);
         else {
           useStore.getState().loadDiagram(parsed.diagram);
@@ -281,6 +291,14 @@ export async function openDiagramFile(): Promise<void> {
     };
     input.click();
   });
+}
+
+export function openDiagramFile(): Promise<void> {
+  return openFile('document');
+}
+
+export function openVCDFile(): Promise<void> {
+  return openFile('vcd');
 }
 
 export async function saveDiagramFile(

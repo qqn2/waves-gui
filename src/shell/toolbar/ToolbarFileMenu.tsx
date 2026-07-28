@@ -1,7 +1,12 @@
 import { loadRecentFiles } from '../soloDesk/recentFiles';
 import { loadSampleDiagram } from '../samples';
 import { SampleLibraryMenu } from './SampleLibraryMenu';
-import { newDiagramFile, openDiagramFile, saveCurrentDiagramFile } from '../FileOperations';
+import {
+  newDiagramFile,
+  openDiagramFile,
+  openVCDFile,
+  saveCurrentDiagramFile,
+} from '../FileOperations';
 import styles from '../shell.module.css';
 
 export interface ToolbarFileMenuProps {
@@ -31,7 +36,10 @@ export function ToolbarFileMenu({
               New
             </button>
             <button type="button" onClick={() => { void openDiagramFile(); onClose(); }}>
-              Open JSON/YAML/TOML/VCD…
+              Open document…
+            </button>
+            <button type="button" onClick={() => { void openVCDFile(); onClose(); }}>
+              Open VCD…
             </button>
             <button
               type="button"

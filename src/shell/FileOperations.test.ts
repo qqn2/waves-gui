@@ -5,6 +5,7 @@ import { useStore } from '../shared/store';
 import {
   forgetCurrentFileHandle,
   openDiagramFile,
+  openVCDFile,
   saveCurrentDiagramFile,
   saveDiagramFile,
   switchCurrentDiagramFileFormat,
@@ -199,6 +200,48 @@ describe('FileOperations', () => {
     expect(useStore.getState().diagram.signals[0]).toMatchObject({
       type: 'analogue',
       name: 'vin',
+    });
+  });
+
+  it('uses separate document and VCD picker filters', async () => {
+    const documentFile = new File([
+      JSON.stringify({ signal: [{ name: 'clk', wave: '01' }] }),
+    ], 'diagram.json', { type: 'application/json' });
+    const documentPicker = vi.fn().mockResolvedValue([{
+      name: 'diagram.json',
+      getFile: vi.fn().mockResolvedValue(documentFile),
+    } as unknown as FileSystemFileHandle]);
+    (window as PickerWindow).showOpenFilePicker = documentPicker;
+
+    await openDiagramFile();
+
+    const documentTypes = documentPicker.mock.calls[0]![0].types[0].accept;
+    expect(documentTypes['application/json']).toContain('.json');
+    expect(Object.values(documentTypes).flat()).not.toContain('.vcd');
+
+    const vcdFile = new File([`
+$timescale 1ns $end
+$scope module top $end
+$var wire 1 ! clk $end
+$upscope $end
+$enddefinitions $end
+#0
+0!
+#5
+1!
+`], 'trace.vcd', { type: 'text/plain' });
+    const vcdPicker = vi.fn().mockResolvedValue([{
+      name: 'trace.vcd',
+      getFile: vi.fn().mockResolvedValue(vcdFile),
+    } as unknown as FileSystemFileHandle]);
+    (window as PickerWindow).showOpenFilePicker = vcdPicker;
+
+    await openVCDFile();
+
+    const vcdTypes = vcdPicker.mock.calls[0]![0].types[0].accept;
+    expect(vcdTypes['text/plain']).toEqual(['.vcd']);
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      name: 'clk',
     });
   });
 

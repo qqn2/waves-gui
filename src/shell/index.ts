@@ -10,7 +10,13 @@ export { HeadFootFields } from './HeadFootFields';
 export { DiagramStepsControl } from './DiagramStepsControl';
 export { SignalTimingBar } from './SignalTimingBar';
 export { StatusBar } from './StatusBar';
-export { openDiagramFile, saveDiagramFile, saveCurrentDiagramFile, newDiagramFile } from './FileOperations';
+export {
+  openDiagramFile,
+  openVCDFile,
+  saveDiagramFile,
+  saveCurrentDiagramFile,
+  newDiagramFile,
+} from './FileOperations';
 export {
   loadSampleDiagram,
   SAMPLE_DIAGRAMS,
