@@ -41,6 +41,15 @@ export interface StoreActions {
       order?: number;
     },
   ): void;
+  updateDigitalTimingCell(
+    signalId: string,
+    index: number,
+    patch: { durationTicks?: number; dutyTicks?: number | null },
+  ): void;
+  updateDigitalTimingSignal(
+    signalId: string,
+    patch: { phaseTicks?: number; slewing?: number | null },
+  ): void;
   setSignalState(signalId: string, step: number, bitState: BitState): void;
   setSignalStateRange(
     signalId: string,

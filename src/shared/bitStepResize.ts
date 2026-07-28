@@ -23,6 +23,21 @@ function hasGapColumns(sig: Signal): boolean {
   return Boolean(sig.stepGaps?.some(Boolean));
 }
 
+function resizeDigitalTiming(sig: Signal, newLen: number): void {
+  const timing = sig.digitalTiming;
+  if (!timing) return;
+  while (timing.cells.length < newLen) {
+    timing.cells.push({
+      state: sig.states[timing.cells.length] ?? sig.states.at(-1) ?? '0',
+      durationTicks: timing.ticksPerStep,
+    });
+  }
+  timing.cells.length = newLen;
+  timing.cells.forEach((cell, index) => {
+    cell.state = sig.states[index] ?? '0';
+  });
+}
+
 /** Clock-bearing lanes always grow/shrink via wave `.` — never hold-fill state push. */
 function shouldUseWaveStepResize(sig: Signal): boolean {
   return isWaveModeLane(sig) || !hasGapColumns(sig) || sig.states.some(isClockBitState);
@@ -42,6 +57,7 @@ export function resizeBitSignalToLength(
 
   if (shouldUseWaveStepResize(sig)) {
     mutateBitWave(sig, (wave) => resizeWaveByDelta(wave, delta, newLen), newLen);
+    resizeDigitalTiming(sig, newLen);
     return;
   }
 
@@ -53,10 +69,12 @@ export function resizeBitSignalToLength(
       decoded.stepGaps.push(false);
     }
     writeDecodedToSignal(sig, decoded, newLen);
+    resizeDigitalTiming(sig, newLen);
     return;
   }
 
   writeDecodedToSignal(sig, readDecoded(sig), newLen);
+  resizeDigitalTiming(sig, newLen);
 }
 
 /** Insert one timeline column on a bit lane (wave `.` insertion when no gaps). */
@@ -71,6 +89,13 @@ export function insertBitStepAt(sig: Signal, index: number): void {
       (wave) => (at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at)),
       n + 1,
     );
+    if (sig.digitalTiming) {
+      sig.digitalTiming.cells.splice(at, 0, {
+        state: sig.states[at] ?? '0',
+        durationTicks: sig.digitalTiming.ticksPerStep,
+      });
+      resizeDigitalTiming(sig, n + 1);
+    }
     return;
   }
 
@@ -83,6 +108,13 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   decoded.stepGaps = gaps;
   decoded.stepGlitches.splice(at, 0, false);
   writeDecodedToSignal(sig, decoded, n + 1);
+  if (sig.digitalTiming) {
+    sig.digitalTiming.cells.splice(at, 0, {
+      state: sig.states[at] ?? '0',
+      durationTicks: sig.digitalTiming.ticksPerStep,
+    });
+    resizeDigitalTiming(sig, n + 1);
+  }
 }
 
 /** Remove one timeline column on a bit lane (wave char removal when no gaps). */
@@ -97,6 +129,8 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
     const waveAt = Math.min(at, wave.length - 1);
     const trimmed = wave.slice(0, waveAt) + wave.slice(waveAt + 1);
     setBitLaneWave(sig, trimmed.length > 0 ? trimmed : '0', n - 1);
+    sig.digitalTiming?.cells.splice(at, 1);
+    resizeDigitalTiming(sig, n - 1);
     return true;
   }
 
@@ -107,6 +141,8 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
     decoded.stepGlitches.splice(at - 1, 1);
   }
   writeDecodedToSignal(sig, decoded, n - 1);
+  sig.digitalTiming?.cells.splice(at, 1);
+  resizeDigitalTiming(sig, n - 1);
   return true;
 }
 

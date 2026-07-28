@@ -4,8 +4,8 @@
       "name": "clock",
       "wave": "hMi",
       "repeat": 4,
-      "periods": [1, 2, 1],
-      "duty_cycles": [0.5, 0.25, 0.75],
+      "periods": [1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1],
+      "duty_cycles": [0.5, 0.25, 0.75, 0.5, 0.25, 0.75, 0.5, 0.25, 0.75, 0.5, 0.25, 0.75],
       "slewing": 2,
       "stroke": "#336699",
       "future_lane": true

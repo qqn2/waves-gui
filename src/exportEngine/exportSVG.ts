@@ -37,6 +37,7 @@ import {
 import {
   layoutLineAnnotations,
   layoutTextAnnotations,
+  layoutArrowAnnotations,
 } from '../renderer/annotationLayout';
 import {
   buildStepLabels,
@@ -176,7 +177,9 @@ function svgBitSignal(
   hscale: number,
   axisOffset: number,
 ): string {
-  const tw = TRANSITION_WIDTH * hscale;
+  const tw = (signal.digitalTiming?.slewing !== undefined
+    ? Math.max(0, signal.digitalTiming.slewing) * CELL_WIDTH
+    : TRANSITION_WIDTH) * hscale;
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
   const yMid = axisOffset + rowY + rowH / 2;
@@ -263,7 +266,18 @@ function svgBitSignal(
 
     if (st === 'p' || st === 'n' || st === 'P' || st === 'N') {
       flushPath();
-      parts.push(...clockCycleSvg(st, x, nextX, yHigh, yLow, color));
+      const timingCell = signal.digitalTiming?.cells[i];
+      parts.push(...clockCycleSvg(
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        color,
+        timingCell?.dutyTicks === undefined
+          ? 0.5
+          : timingCell.dutyTicks / timingCell.durationTicks,
+      ));
       prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
     }
@@ -528,6 +542,26 @@ function svgAnnotations(
   textColor: string,
   panelBg: string,
 ): string {
+  const arrows = layoutArrowAnnotations(diagram, rows).map(({ annotation, from, to }, index) => {
+    const x1 = from.x * diagram.config.hscale;
+    const x2 = to.x * diagram.config.hscale;
+    const y1 = axisOffset + from.y;
+    const y2 = axisOffset + to.y;
+    const stroke = esc(annotation.style?.stroke ?? textColor);
+    const width = annotation.style?.strokeWidth ?? 1.5;
+    const dash = annotation.style?.strokeDasharray?.join(' ');
+    const markerId = `undulate-arrow-${index}`;
+    const path = annotation.shape.includes('~')
+      ? `M ${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`
+      : `M ${x1} ${y1} L ${x2} ${y2}`;
+    const end = annotation.shape.includes('>') ? ` marker-end="url(#${markerId})"` : '';
+    const start = annotation.shape.includes('<') ? ` marker-start="url(#${markerId})"` : '';
+    const label = annotation.text
+      ? `<text x="${(x1 + x2) / 2 + (annotation.dx ?? 0)}" y="${(y1 + y2) / 2 + (annotation.dy ?? 0)}" fill="${esc(annotation.style?.fill ?? textColor)}" text-anchor="middle" font-family="sans-serif" font-size="12">${esc(annotation.text)}</text>`
+      : '';
+    return `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="${stroke}"/></marker></defs>`
+      + `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''}${start}${end}/>${label}`;
+  }).join('\n');
   const text = layoutTextAnnotations(diagram, rows)
     .map(({ annotation, x, y }) => {
       const style = annotation.style;
@@ -569,7 +603,7 @@ function svgAnnotations(
       + `x2="${layout.rangeEnd * diagram.config.hscale}" y2="${y}" `
       + `stroke="${stroke}" stroke-width="${width}"${dashAttribute}/>`;
   }).join('\n');
-  return [lines, text].filter(Boolean).join('\n');
+  return [lines, arrows, text].filter(Boolean).join('\n');
 }
 
 function svgAnalogueSignal(

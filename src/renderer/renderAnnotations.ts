@@ -4,7 +4,11 @@ import {
   logicalToCanvasY,
   type ViewTransform,
 } from './coordinates';
-import { layoutLineAnnotations, layoutTextAnnotations } from './annotationLayout';
+import {
+  layoutArrowAnnotations,
+  layoutLineAnnotations,
+  layoutTextAnnotations,
+} from './annotationLayout';
 import type { RowLayoutEntry } from './rowLayout';
 
 function themeColor(name: string, fallback: string): string {
@@ -22,7 +26,8 @@ export function renderTextAnnotations(
 ): void {
   const layouts = layoutTextAnnotations(diagram, rows);
   const lineLayouts = layoutLineAnnotations(diagram, rows);
-  if (layouts.length === 0 && lineLayouts.length === 0) return;
+  const arrowLayouts = layoutArrowAnnotations(diagram, rows);
+  if (layouts.length === 0 && lineLayouts.length === 0 && arrowLayouts.length === 0) return;
 
   ctx.save();
   ctx.strokeStyle = themeColor('--accent', '#4a9eff');
@@ -69,6 +74,43 @@ export function renderTextAnnotations(
   ctx.font = `${Math.max(9, 12 * transform.zoom)}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
+
+  for (const { annotation, from, to } of arrowLayouts) {
+    const x1 = logicalToCanvasX(from.x, transform);
+    const y1 = logicalToCanvasY(from.y, transform);
+    const x2 = logicalToCanvasX(to.x, transform);
+    const y2 = logicalToCanvasY(to.y, transform);
+    ctx.strokeStyle = annotation.style?.stroke ?? themeColor('--accent', '#4a9eff');
+    ctx.lineWidth = annotation.style?.strokeWidth ?? 1.5;
+    ctx.setLineDash(annotation.style?.strokeDasharray ?? []);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    if (annotation.shape.includes('~')) {
+      ctx.bezierCurveTo(x1 + (x2 - x1) / 2, y1, x1 + (x2 - x1) / 2, y2, x2, y2);
+    } else {
+      ctx.lineTo(x2, y2);
+    }
+    ctx.stroke();
+    const head = (x: number, y: number, angle: number) => {
+      const size = 7 * transform.zoom;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - size * Math.cos(angle - 0.45), y - size * Math.sin(angle - 0.45));
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - size * Math.cos(angle + 0.45), y - size * Math.sin(angle + 0.45));
+      ctx.stroke();
+    };
+    if (annotation.shape.includes('>')) head(x2, y2, Math.atan2(y2 - y1, x2 - x1));
+    if (annotation.shape.includes('<')) head(x1, y1, Math.atan2(y1 - y2, x1 - x2));
+    if (annotation.text) {
+      ctx.fillStyle = annotation.style?.fill ?? themeColor('--text-primary', '#e8e8e8');
+      ctx.fillText(
+        annotation.text,
+        (x1 + x2) / 2 + (annotation.dx ?? 0),
+        (y1 + y2) / 2 + (annotation.dy ?? 0),
+      );
+    }
+  }
 
   for (const { annotation, x, y } of layouts) {
     const canvasX = logicalToCanvasX(x, transform);

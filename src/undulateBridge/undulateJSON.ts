@@ -10,10 +10,12 @@ import {
   DEFAULT_ANALOGUE_MAX,
   DEFAULT_ANALOGUE_MIN,
 } from '../shared/analogue';
+import { timingForStates, timingResolution } from '../shared/fineTiming';
 import {
 } from '../shared/annotations';
 import type {
   AnnotationStyle,
+  AnnotationAnchor,
   AnnotationRangePosition,
   AnalogueCell,
   DiagramAnnotation,
@@ -29,6 +31,7 @@ import type {
   UndulateAnalogueValue,
   UndulateAnnotation,
   UndulateAnnotationRange,
+  UndulateAnnotationAnchor,
   UndulateRoot,
 } from './types';
 import type {
@@ -163,10 +166,70 @@ function mergeUndulateSignalEntries(
         ...mergeUndulateSignalEntries(signal.children, sharedChildren),
       ] as WdGroup;
     }
-    return signal.type === 'analogue'
-      ? analogueToUndulateEntry(signal)
-      : shared;
+    if (signal.type === 'analogue') return analogueToUndulateEntry(signal);
+    if (signal.type === 'bit' && signal.digitalTiming) {
+      const timing = signal.digitalTiming;
+      const entry = { ...(shared as WdSignal) };
+      entry.wave = (shared as WdSignal).wave
+        ?? signal.states.slice(0, timing.cells.length).join('');
+      const periods = timing.cells.map(
+        (cell) => cell.durationTicks / timing.ticksPerStep,
+      );
+      if (periods.length > 0 && periods.every((value) => value === periods[0])) {
+        entry.period = periods[0];
+        delete entry.periods;
+      } else {
+        entry.periods = periods;
+        delete entry.period;
+      }
+      const dutyCycles = timing.cells.map((cell) =>
+        cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks,
+      );
+      if (dutyCycles.some((value) => value !== 0.5)) {
+        if (dutyCycles.every((value) => value === dutyCycles[0])) {
+          entry.duty_cycle = dutyCycles[0];
+        } else {
+          entry.duty_cycles = dutyCycles;
+        }
+      }
+      entry.phase = timing.phaseTicks / timing.ticksPerStep;
+      if (timing.slewing !== undefined) entry.slewing = timing.slewing;
+      delete entry.repeat;
+      return entry;
+    }
+    return shared;
   });
+}
+
+function anchorToUndulate(anchor: AnnotationAnchor): UndulateAnnotationAnchor {
+  if (anchor.kind === 'point') {
+    return anchor.percent
+      ? [`${anchor.x}%`, `${anchor.y}%`]
+      : [anchor.x, anchor.y];
+  }
+  const offset = anchor.dx !== undefined || anchor.dy !== undefined
+    ? `(${anchor.dx ?? 0},${anchor.dy ?? 0})`
+    : '';
+  return `${anchor.node}${offset}`;
+}
+
+function anchorFromUndulate(value: UndulateAnnotationAnchor): AnnotationAnchor {
+  if (Array.isArray(value)) {
+    const percent = value.some((part) => typeof part === 'string' && part.endsWith('%'));
+    return {
+      kind: 'point',
+      x: Number(String(value[0]).replace('%', '')),
+      y: Number(String(value[1]).replace('%', '')),
+      ...(percent ? { percent: true } : {}),
+    };
+  }
+  const match = value.match(/^([^()]+?)(?:\(\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*\))?$/);
+  return {
+    kind: 'node',
+    node: match?.[1]?.trim() || value,
+    ...(match?.[2] ? { dx: Number(match[2]) } : {}),
+    ...(match?.[3] ? { dy: Number(match[3]) } : {}),
+  };
 }
 
 export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
@@ -176,16 +239,35 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const annotations: UndulateAnnotation[] = [];
 
   for (const annotation of diagram.annotations ?? []) {
-    if (
+    if (annotation.type === 'arrow') {
+      annotations.push({
+        shape: annotation.shape,
+        from: anchorToUndulate(annotation.from),
+        to: anchorToUndulate(annotation.to),
+        ...(annotation.text !== undefined ? { text: annotation.text } : {}),
+        ...(annotation.dx !== undefined ? { dx: annotation.dx } : {}),
+        ...(annotation.dy !== undefined ? { dy: annotation.dy } : {}),
+        ...annotationStyleToUndulate(annotation.style),
+      });
+    } else if (
       annotation.type === 'vertical-line'
       || annotation.type === 'global-compression'
     ) {
-      annotations.push({
-        shape: annotation.type === 'vertical-line' ? '|' : '||',
-        x: annotationXCells(annotation),
-        ...annotationRangesToUndulate(annotation),
-        ...annotationStyleToUndulate(annotation.style),
-      });
+      if (annotation.type === 'vertical-line') {
+        annotations.push({
+          shape: '|',
+          x: annotationXCells(annotation),
+          ...annotationRangesToUndulate(annotation),
+          ...annotationStyleToUndulate(annotation.style),
+        });
+      } else {
+        annotations.push({
+          shape: '||',
+          x: annotationXCells(annotation),
+          ...annotationRangesToUndulate(annotation),
+          ...annotationStyleToUndulate(annotation.style),
+        });
+      }
     } else {
       const logicalY = annotationYLogical(annotation, rows);
       if (logicalY === null) continue;
@@ -298,14 +380,85 @@ function importAnalogueSignal(raw: WdSignal, parsed: Signal): void {
   parsed.rowHeight = ROW_HEIGHT * (parsed.vscale ?? 1);
 }
 
+function expandedDigitalRoot(root: UndulateRoot): UndulateRoot {
+  const clone = JSON.parse(JSON.stringify(root)) as UndulateRoot;
+  const walk = (entries: WdSignalEntry[]) => {
+    for (const entry of entries) {
+      if (Array.isArray(entry)) {
+        walk(entry.slice(1) as WdSignalEntry[]);
+        continue;
+      }
+      const signal = entry as WdSignal;
+      if (Array.isArray(signal.analogue) || typeof signal.wave !== 'string') continue;
+      const repeat = Number.isInteger(signal.repeat) && (signal.repeat ?? 1) > 0
+        ? signal.repeat!
+        : 1;
+      signal.wave = signal.wave.repeat(repeat);
+      delete signal.repeat;
+    }
+  };
+  walk(clone.signal);
+  return clone;
+}
+
+function timingValues(rawSignals: WdSignal[]): number[] {
+  const values: number[] = [];
+  for (const raw of rawSignals) {
+    if (Array.isArray(raw.analogue)) continue;
+    if (typeof raw.phase === 'number') values.push(raw.phase);
+    if (typeof raw.period === 'number') values.push(raw.period);
+    if (Array.isArray(raw.periods)) values.push(...raw.periods);
+    const count = (raw.wave?.length ?? 0)
+      * (typeof raw.repeat === 'number' ? raw.repeat : 1);
+    for (let index = 0; index < count; index++) {
+      const period = raw.periods?.[index] ?? raw.period ?? 1;
+      const duty = raw.duty_cycles?.[index] ?? raw.duty_cycle;
+      if (duty !== undefined) values.push(period * duty);
+    }
+  }
+  return values;
+}
+
+function importDigitalTiming(
+  raw: WdSignal,
+  parsed: Signal,
+  ticksPerStep: number,
+): void {
+  if (parsed.type !== 'bit' || Array.isArray(raw.analogue)) return;
+  const hasFineTiming =
+    raw.repeat !== undefined
+    || raw.periods !== undefined
+    || raw.duty_cycle !== undefined
+    || raw.duty_cycles !== undefined
+    || raw.slewing !== undefined
+    || (raw.period !== undefined && !Number.isInteger(raw.period))
+    || (raw.phase !== undefined && !Number.isInteger(raw.phase));
+  if (!hasFineTiming) return;
+  parsed.digitalTiming = timingForStates(parsed.states, ticksPerStep, {
+    phase: raw.phase,
+    period: raw.period,
+    periods: raw.periods,
+    dutyCycle: raw.duty_cycle,
+    dutyCycles: raw.duty_cycles,
+    slewing: raw.slewing,
+  });
+  delete parsed.period;
+  delete parsed.phase;
+}
+
 export function fromUndulateJSON(root: UndulateRoot): DiagramState {
-  const diagram = fromWavedromJSON(root);
+  const diagram = fromWavedromJSON(expandedDigitalRoot(root));
   const rawSignals = flattenRawSignals(root.signal);
   const parsedSignals = flattenDiagramSignals(diagram.signals);
+  const ticksPerStep = timingResolution(timingValues(rawSignals));
   rawSignals.forEach((raw, index) => {
     const parsed = parsedSignals[index];
-    if (parsed) importAnalogueSignal(raw, parsed);
+    if (parsed) {
+      importAnalogueSignal(raw, parsed);
+      importDigitalTiming(raw, parsed, ticksPerStep);
+    }
   });
+  diagram.config.ticksPerStep = ticksPerStep;
   diagram.config.totalSteps = Math.max(
     diagram.config.totalSteps,
     ...parsedSignals.map((signal) => signal.analogueCells?.length ?? 0),
@@ -317,6 +470,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     if (
       'shape' in annotation
       && (annotation.shape === '|' || annotation.shape === '||')
+      && 'x' in annotation
     ) {
       return {
         id: nanoid(),
@@ -336,7 +490,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         ...(style ? { style } : {}),
       };
     }
-    if ('shape' in annotation && annotation.shape === '-') {
+    if ('shape' in annotation && annotation.shape === '-' && 'y' in annotation) {
       const base: HorizontalLineAnnotation = {
         id: nanoid(),
         type: 'horizontal-line',
@@ -351,6 +505,32 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         ...(style ? { style } : {}),
       };
       return base;
+    }
+    if (
+      'shape' in annotation
+      && annotation.shape !== '|'
+      && annotation.shape !== '||'
+      && annotation.shape !== '-'
+      && 'from' in annotation
+      && 'to' in annotation
+      && typeof annotation.from !== 'number'
+      && typeof annotation.to !== 'number'
+    ) {
+      const arrow = annotation as import('./types').UndulateArrowAnnotation;
+      return {
+        id: nanoid(),
+        type: 'arrow',
+        shape: annotation.shape,
+        from: anchorFromUndulate(arrow.from),
+        to: anchorFromUndulate(arrow.to),
+        ...(arrow.text !== undefined ? { text: arrow.text } : {}),
+        ...(arrow.dx !== undefined ? { dx: arrow.dx } : {}),
+        ...(arrow.dy !== undefined ? { dy: arrow.dy } : {}),
+        ...(style ? { style } : {}),
+      };
+    }
+    if (!('x' in annotation) || !('y' in annotation) || !('text' in annotation)) {
+      throw new Error('Invalid Undulate annotation');
     }
     const base = {
       id: nanoid(),
@@ -372,7 +552,9 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     compatibility: {
       extensionsEnabled:
         annotations.length > 0
-        || parsedSignals.some((signal) => signal.type === 'analogue'),
+        || parsedSignals.some(
+          (signal) => signal.type === 'analogue' || signal.digitalTiming !== undefined,
+        ),
       sourceFormat: 'undulate-json',
       sourceRevision: UNDULATE_TARGET_REVISION,
     },

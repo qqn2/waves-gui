@@ -39,13 +39,11 @@ export const UNDULATE_PROPERTY_MANIFEST = {
     unsupportedByDesign: ['reg', 'register'],
   },
   digitalSignal: {
-    supported: ['name', 'wave', 'data', 'node', 'period', 'phase'],
+    supported: [
+      'name', 'wave', 'data', 'node', 'period', 'phase',
+      'repeat', 'periods', 'duty_cycle', 'duty_cycles', 'slewing',
+    ],
     wip: [
-      'repeat',
-      'periods',
-      'duty_cycle',
-      'duty_cycles',
-      'slewing',
       'skin',
       'fill',
       'stroke',
@@ -98,10 +96,10 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'stroke-dasharray',
       'from',
       'to',
-    ],
-    wip: [
       'dx',
       'dy',
+    ],
+    wip: [
       'font-size',
       'font-weight',
       'color',
@@ -334,17 +332,6 @@ function scanAnnotations(value: unknown, findings: UndulateFinding[]): void {
       } else if (!ANNOTATION_SUPPORTED.has(field)) {
         findings.push(unknown(fieldPath));
       } else if (
-        field === 'shape'
-        && annotation.shape !== undefined
-        && annotation.shape !== '|'
-        && annotation.shape !== '||'
-        && annotation.shape !== '-'
-      ) {
-        findings.push(wip(
-          fieldPath,
-          `annotation shape ${JSON.stringify(annotation.shape)}`,
-        ));
-      } else if (
         field === 'text'
         && typeof annotation.text === 'string'
         && annotation.text.length > MAX_ANNOTATION_TEXT_LENGTH
@@ -494,6 +481,58 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
   return null;
 }
 
+function validateDigitalTiming(signal: Record<string, unknown>): string | null {
+  if (signal.analogue !== undefined) return null;
+  const repeat = signal.repeat ?? 1;
+  if (
+    typeof repeat !== 'number'
+    || !Number.isInteger(repeat)
+    || repeat < 1
+    || repeat > 10_000
+  ) {
+    return 'repeat must be an integer from 1 to 10000';
+  }
+  const expandedLength = typeof signal.wave === 'string'
+    ? signal.wave.length * repeat
+    : 0;
+  for (const field of ['periods', 'duty_cycles']) {
+    const array = signal[field];
+    if (array === undefined) continue;
+    if (!Array.isArray(array) || array.length !== expandedLength) {
+      return `${field} must contain exactly one value per expanded wave cell`;
+    }
+  }
+  const periods = [
+    ...(signal.period !== undefined ? [signal.period] : []),
+    ...(Array.isArray(signal.periods) ? signal.periods : []),
+  ];
+  if (periods.some((value) =>
+    typeof value !== 'number' || !Number.isFinite(value) || value <= 0
+  )) {
+    return 'period and periods must contain finite positive numbers';
+  }
+  const duties = [
+    ...(signal.duty_cycle !== undefined ? [signal.duty_cycle] : []),
+    ...(Array.isArray(signal.duty_cycles) ? signal.duty_cycles : []),
+  ];
+  if (duties.some((value) =>
+    typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1
+  )) {
+    return 'duty_cycle and duty_cycles must contain finite values from 0 to 1';
+  }
+  if (
+    signal.slewing !== undefined
+    && (
+      typeof signal.slewing !== 'number'
+      || !Number.isFinite(signal.slewing)
+      || signal.slewing < 0
+    )
+  ) {
+    return 'slewing must be a finite number greater than or equal to 0';
+  }
+  return null;
+}
+
 function visitSignals(
   entries: unknown[],
   visit: (signal: Record<string, unknown>) => string | null,
@@ -592,7 +631,31 @@ function validateAnnotationStructure(value: unknown): string | null {
       }
       continue;
     }
-    if (annotation.shape !== undefined) continue;
+    if (annotation.shape !== undefined) {
+      const validAnchor = (anchor: unknown) => {
+        if (typeof anchor === 'string') return anchor.trim().length > 0;
+        return Array.isArray(anchor)
+          && anchor.length === 2
+          && anchor.every((part) => {
+            if (typeof part === 'number') return Number.isFinite(part);
+            return typeof part === 'string'
+              && /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))%$/.test(part.trim());
+          });
+      };
+      if (!validAnchor(annotation.from) || !validAnchor(annotation.to)) {
+        return `annotations[${index}] arrow requires valid from and to anchors`;
+      }
+      for (const field of ['dx', 'dy']) {
+        if (
+          annotation[field] !== undefined
+          && (typeof annotation[field] !== 'number'
+            || !Number.isFinite(annotation[field]))
+        ) {
+          return `annotations[${index}].${field} must be finite`;
+        }
+      }
+      continue;
+    }
     if (typeof annotation.text !== 'string') {
       return `annotations[${index}] text annotation requires text`;
     }
@@ -620,6 +683,11 @@ function structuralError(root: Record<string, unknown>): string | null {
     validateAnalogueSignal,
   );
   if (analogueError) return analogueError;
+  const timingError = visitSignals(
+    Array.isArray(root.signal) ? root.signal : [],
+    validateDigitalTiming,
+  );
+  if (timingError) return timingError;
   return validateAnnotationStructure(root.annotations);
 }
 

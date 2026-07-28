@@ -138,11 +138,15 @@ describe('Undulate JSON bridge', () => {
     expect(toUndulateJSON(diagram).annotations).toEqual(root.annotations);
   });
 
-  it('rejects unsupported shapes and non-finite coordinates explicitly', () => {
+  it('validates structured arrows and non-finite coordinates explicitly', () => {
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: 'box', x: 1 }],
-    })).toContain('[WIP] annotations[0].shape');
+    })).toContain('requires valid from and to anchors');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ shape: '->', from: [0, 0], to: 'node' }],
+    })).toBeNull();
     expect(validateUndulateJSON({
       signal: [],
       annotations: [{ shape: '|', x: Number.NaN }],
@@ -234,6 +238,63 @@ describe('Undulate JSON bridge', () => {
     });
   });
 
+  it('expands repeat into integer-tick periods and preserves duty and slew', () => {
+    const root = {
+      signal: [{
+        name: 'clk',
+        wave: 'p',
+        repeat: 3,
+        periods: [0.5, 1, 1.5],
+        duty_cycles: [0.25, 0.5, 0.75],
+        phase: -0.25,
+        slewing: 0.1,
+      }],
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(diagram.config.ticksPerStep).toBe(8);
+    expect(signal).toMatchObject({
+      type: 'bit',
+      digitalTiming: {
+        ticksPerStep: 8,
+        phaseTicks: -2,
+        cells: [
+          { state: 'p', durationTicks: 4, dutyTicks: 1 },
+          { state: 'p', durationTicks: 8, dutyTicks: 4 },
+          { state: 'p', durationTicks: 12, dutyTicks: 9 },
+        ],
+        slewing: 0.1,
+      },
+    });
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      name: 'clk',
+      wave: 'p..',
+      periods: [0.5, 1, 1.5],
+      duty_cycles: [0.25, 0.5, 0.75],
+      phase: -0.25,
+      slewing: 0.1,
+    });
+  });
+
+  it('round-trips structured arrow anchors and label offsets', () => {
+    const root = {
+      signal: [{ name: 'clk', wave: '01', node: 'ab' }],
+      annotations: [{
+        shape: '<~>',
+        from: 'a(2,-1)',
+        to: ['75%', '50%'],
+        text: 'latency',
+        dx: 3,
+        dy: -2,
+      }],
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    expect(toUndulateJSON(fromUndulateJSON(root)).annotations).toEqual(
+      root.annotations,
+    );
+  });
+
   it('rejects executable analogue expressions instead of evaluating them', () => {
     expect(validateUndulateJSON({
       signal: [{
@@ -252,13 +313,13 @@ describe('Undulate JSON bridge', () => {
     })).toContain('[WIP] signal[0].stroke');
   });
 
-  it('reports every known WIP and unknown property without accepting loss', () => {
+  it('accepts fine timing while still reporting WIP and unknown properties', () => {
     const findings = validateUndulateFindings({
       signal: [{
         name: 'clk',
         wave: 'p',
         repeat: 8,
-        duty_cycles: [0.5],
+        duty_cycles: Array(8).fill(0.5),
         typo_style: '#f00',
       }],
       edges: ['a->b'],
@@ -266,8 +327,6 @@ describe('Undulate JSON bridge', () => {
     });
 
     expect(findings.map((finding) => [finding.kind, finding.path])).toEqual([
-      ['wip', 'signal[0].repeat'],
-      ['wip', 'signal[0].duty_cycles'],
       ['unknown', 'signal[0].typo_style'],
       ['wip', 'edges'],
       ['unknown', 'future_root'],
@@ -291,16 +350,11 @@ describe('Undulate JSON bridge', () => {
         'edges',
         'reg',
         'future_root',
-        'signal[0].repeat',
-        'signal[0].periods',
-        'signal[0].duty_cycles',
-        'signal[0].slewing',
         'signal[0].stroke',
         'signal[0].future_lane',
         'signal[1].analogue[0]',
         'config.vscale',
         'config.future_config',
-        'annotations[0].shape',
         'annotations[0].font-size',
         'annotations[0].future_annotation',
       ]),

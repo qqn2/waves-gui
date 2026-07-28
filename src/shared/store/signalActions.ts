@@ -147,6 +147,12 @@ function duplicateSignalInDraft(
           id: nanoid(),
           samples: cell.samples?.map((point) => ({ ...point })),
         })),
+        digitalTiming: item.digitalTiming
+          ? {
+              ...item.digitalTiming,
+              cells: item.digitalTiming.cells.map((cell) => ({ ...cell })),
+            }
+          : undefined,
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
@@ -171,6 +177,8 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'renameSignal'
   | 'updateAnalogueCell'
   | 'updateAnalogueSignal'
+  | 'updateDigitalTimingCell'
+  | 'updateDigitalTimingSignal'
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
@@ -401,6 +409,74 @@ export function createSignalActions(set: ImmerSet): Pick<
         Object.assign(target, patch);
         normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
         target.rowHeight = ROW_HEIGHT * (target.vscale ?? 1);
+      });
+    },
+
+    updateDigitalTimingCell(signalId, index, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (!signal.digitalTiming) {
+            const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
+            signal.digitalTiming = {
+              ticksPerStep,
+              phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+              cells: signal.states.map((state) => ({
+                state,
+                durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+              })),
+            };
+            delete signal.phase;
+            delete signal.period;
+          }
+          const cell = signal.digitalTiming.cells[index];
+          if (!cell) return;
+          if (patch.durationTicks !== undefined) {
+            cell.durationTicks = Math.max(1, Math.round(patch.durationTicks));
+            if (cell.dutyTicks !== undefined) {
+              cell.dutyTicks = Math.min(cell.dutyTicks, cell.durationTicks);
+            }
+          }
+          if (patch.dutyTicks === null) delete cell.dutyTicks;
+          else if (patch.dutyTicks !== undefined) {
+            cell.dutyTicks = Math.max(
+              0,
+              Math.min(cell.durationTicks, Math.round(patch.dutyTicks)),
+            );
+          }
+        });
+      });
+    },
+
+    updateDigitalTimingSignal(signalId, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (!signal.digitalTiming) {
+            const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
+            signal.digitalTiming = {
+              ticksPerStep,
+              phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+              cells: signal.states.map((state) => ({
+                state,
+                durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+              })),
+            };
+            delete signal.phase;
+            delete signal.period;
+          }
+          if (patch.phaseTicks !== undefined) {
+            signal.digitalTiming.phaseTicks = Math.round(patch.phaseTicks);
+          }
+          if (patch.slewing === null) delete signal.digitalTiming.slewing;
+          else if (patch.slewing !== undefined) {
+            signal.digitalTiming.slewing = Math.max(0, patch.slewing);
+          }
+        });
       });
     },
 

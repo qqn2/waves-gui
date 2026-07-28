@@ -37,10 +37,9 @@ contract live in
   three-action disable flow for supported extension content.
 - [X] A semantic waveform-value palette exposes extended digital states by
   meaning, preview, and JSON symbol without expanding every state inline.
-- [ ] Partial: ordinary and mixed extended digital lanes are available in
-  Undulate JSON, including data, impulse, metastability, and `h`/`H`/`l`/`L`
-  held clock-edge cells; extended timing arrays remain incomplete.
-- [ ] Unsupported: styled signals, Undulate annotation arrows, long node
+- [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
+  per-cell periods, clock duty arrays, and digital slew.
+- [ ] Unsupported: styled signals, long node
   identifiers, YAML, TOML, relaxed JSON/JSONML, and opaque preservation.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
   expressions.
@@ -149,22 +148,22 @@ Upstream references:
 
 - [X] Scalar `phase` is preserved.
 - [X] Scalar `period` is preserved on ordinary digital lanes.
-- [ ] Partial: `repeat` is expanded for analogue signals during import, but is
-  not retained as a first-class property or re-emitted.
-- [ ] Partial: transition slewing exists for analogue `s` cells, not for
-  ordinary digital or clock lanes.
+- [X] Digital `repeat` expands to a canonical equivalent cell sequence.
+- [X] A bounded integer timebase (up to 1024 ticks per step) represents
+  fractional periods, phase, and duty boundaries without accumulated drift.
+- [X] Per-cell `periods`, scalar/array duty cycle, and digital slew render in
+  the canvas and SVG/image export and are editable in the signal inspector.
 
 ### Unsupported and round-trip risks
 
-- [ ] Unsupported: digital `repeat`.
-- [ ] Unsupported: per-cell `periods`.
-- [ ] Unsupported: `duty_cycle` and `duty_cycles`.
-- [ ] Unsupported: digital/clock `slewing`.
-- [ ] Unsupported: a general fine-timing timebase or app-native Sub-Steps
-  control.
-- [X] Digital `repeat`, `periods`, `duty_cycle`, `duty_cycles`, and `slewing`
-  are comprehensively detected and rejected with WIP findings and stable
-  signal paths.
+- [ ] Partial: repeat is deliberately exported as the semantically equivalent
+  expanded sequence instead of preserving the original compact spelling.
+- [ ] Partial: there is no global Sub-Steps toolbar control; the inspector
+  exposes the document resolution and exact per-cell values.
+- [ ] Partial: timing-only JSON currently needs Undulate mode selected; file
+  auto-detection does not yet recognize otherwise-valid timing fields alone.
+- [ ] Partial: values that cannot fit within the 1024-tick ceiling are
+  quantized rather than rejected before import.
 
 Upstream reference:
 [period, duty cycle, phase, and repeat](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step5.rst).
@@ -196,6 +195,10 @@ Implementation design:
 - [X] Vertical lines, horizontal lines, and global compression accept
   independent `from`/`to` bounds as finite indices or percentages from 0% to
   100%, with inspector editing and semantic round-trip coverage.
+- [X] Structured arrows accept node anchors (with offsets) or numeric/percent
+  coordinate anchors, connector shapes, labels, label offsets, and safe style.
+- [X] Structured arrows render in the live canvas and SVG/image exports and
+  round-trip through Undulate JSON.
 
 ### Partial
 
@@ -211,12 +214,11 @@ Implementation design:
 
 ### Unsupported
 
-- [ ] Unsupported: arrows and other connector shapes using node or coordinate
-  `from`/`to` anchors and extended connector patterns.
+- [ ] Partial: structured arrows are currently authored through Undulate JSON;
+  direct anchor-handle creation and inspector editing remain to be added.
 - [ ] Unsupported: `font-size` and other text styles.
 - [ ] Unsupported: `text_background`.
-- [ ] Unsupported: known but incomplete annotation shapes are rejected as WIP;
-  unrecognized fields are rejected as unknown and are not preserved opaquely.
+- [X] Malformed structured arrow anchors are rejected before import.
 - [X] Over-limit annotation counts, text, and coordinates are rejected before
   normalization can truncate or clamp them.
 
@@ -242,6 +244,8 @@ Upstream references:
 - [X] Overlay label `order` values 0 through 4.
 - [X] Analogue creation, cell selection, transition/value editing, and
   undo/redo.
+- [X] Sampled cells have a dedicated inspector point editor for adding,
+  removing, and editing normalized offsets and values.
 - [X] Shared analogue geometry in the live canvas, local render, SVG, PNG,
   and JPEG.
 - [X] Explicit validation errors for non-finite values, malformed samples,
@@ -263,9 +267,8 @@ Upstream references:
   no explicit overlay-group object or polished ambiguous-curve picker.
 - [ ] Partial: the upstream four-wave overlay limit is not enforced as an
   interoperability constraint.
-- [ ] Partial: sample points can be edited through Undulate JSON, but the
-  inspector exposes only the cell kind and settled value; there is no
-  dedicated point or curve editor.
+- [X] Sample points can be edited through Undulate JSON and the dedicated
+  inspector point editor.
 
 ### Unsupported
 
@@ -360,6 +363,8 @@ Upstream reference:
   opaque data is not preserved.
 - [ ] Partial: the compatibility report covers typed extension objects, not
   every documented Undulate property.
+- [ ] Partial: removing Undulate features does not yet explicitly convert or
+  remove digital integer-timing cells.
 
 ## 9. Intentionally out of scope
 
@@ -371,16 +376,16 @@ Upstream reference:
 
 ## 10. Highest-priority gaps
 
-- [X] **P0 — Close silent-loss paths.** Reject or preserve unknown top-level
-  and digital-signal fields, especially `edges`, `repeat`, `periods`,
-  `duty_cycle`, `duty_cycles`, `slewing`, and style properties.
+- [ ] **P0 — Close silent-loss paths.** Finish timing-only auto-detection,
+  reject unrepresentable tick fractions, and convert/remove timing cells in
+  the extension-removal flow.
 - [X] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
-- [ ] **P1 — Extended digital timing.** Add `repeat`, variable periods, duty
-  cycles, and digital slew. Start with the integer-tick foundation and
-  `repeat`/`periods` vertical slice defined in
-  [`UNDULATE_FINE_TIMING_DESIGN.md`](./UNDULATE_FINE_TIMING_DESIGN.md).
-- [ ] **P1 — Complete annotation geometry.** Add structured arrows and shapes
+- [ ] **P1 — Extended digital timing.** The integer-tick model, repeat
+  expansion, variable periods, duty cycles, and digital slew are implemented;
+  finish the remaining P0 loss-safety work before calling it complete.
+- [ ] **P1 — Complete annotation authoring.** Add canvas anchor handles and
+  inspector editing for the implemented structured arrows and shapes
   with node/coordinate anchors and `dx`/`dy`. Ranged lines, compression, and
   fractional coordinates are already supported.
 - [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths, and
@@ -437,8 +442,8 @@ Primary automated coverage:
   edits that regenerate signal IDs, including safe path/name/type fallback.
 - [X] Put direct analogue step value and transition editing at the top of the
   analogue inspector.
-- [ ] Add a dedicated sampled-curve/point editor; the current inspector edits
-  the cell kind and settled value only.
+- [X] Add a dedicated sampled-curve/point editor for normalized offsets and
+  values, including add and remove controls.
 - [ ] Decide whether analogue cell painting belongs in the shared Draw tool or
   a dedicated Undulate tool.
 - [ ] Add task-oriented samples that demonstrate each supported Undulate

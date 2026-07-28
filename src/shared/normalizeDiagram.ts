@@ -61,6 +61,35 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
     }
+    if (signal.type === 'bit' && signal.digitalTiming) {
+      const ticksPerStep = Math.max(
+        1,
+        Math.min(1024, Math.floor(signal.digitalTiming.ticksPerStep || 1)),
+      );
+      signal.digitalTiming.ticksPerStep = ticksPerStep;
+      signal.digitalTiming.phaseTicks = Math.round(
+        signal.digitalTiming.phaseTicks || 0,
+      );
+      signal.digitalTiming.cells = signal.states.map((state, index) => {
+        const source = signal.digitalTiming!.cells?.[index];
+        const durationTicks = Math.max(
+          1,
+          Math.round(source?.durationTicks || ticksPerStep),
+        );
+        return {
+          state,
+          durationTicks,
+          ...(source?.dutyTicks !== undefined
+            ? {
+                dutyTicks: Math.max(
+                  0,
+                  Math.min(durationTicks, Math.round(source.dutyTicks)),
+                ),
+              }
+            : {}),
+        };
+      });
+    }
   }
 }
 
@@ -116,6 +145,14 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...d.config,
     totalSteps,
     hscale: clampHscale(d.config?.hscale ?? DEFAULT_HSCALE),
+    ...(d.config?.ticksPerStep !== undefined
+      ? {
+          ticksPerStep: Math.max(
+            1,
+            Math.min(1024, Math.floor(d.config.ticksPerStep)),
+          ),
+        }
+      : {}),
   };
   d.annotations = normalizeAnnotations(d.annotations, totalSteps);
 

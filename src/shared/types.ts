@@ -87,6 +87,23 @@ export interface AnalogueCell {
   samples?: AnaloguePoint[];
 }
 
+export interface DigitalTimingCell {
+  state: BitState;
+  /** Positive duration in document ticks. */
+  durationTicks: number;
+  /** Clock high/low boundary measured from the cell start. */
+  dutyTicks?: number;
+}
+
+export interface DigitalTiming {
+  ticksPerStep: number;
+  /** Horizontal shift in document ticks. */
+  phaseTicks: number;
+  cells: DigitalTimingCell[];
+  /** Digital transition width in document steps. */
+  slewing?: number;
+}
+
 export interface Signal {
   id: string;
   name: string;
@@ -97,6 +114,8 @@ export interface Signal {
   segments: VectorSegment[];
   /** Analogue lanes: one finite, normalized cell per document step. */
   analogueCells?: AnalogueCell[];
+  /** Integer-tick timing for Undulate digital lanes. */
+  digitalTiming?: DigitalTiming;
   /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
   analogueMin?: number;
   analogueMax?: number;
@@ -147,6 +166,8 @@ export type SignalOrGroup = Signal | SignalGroup;
 export interface DiagramConfig {
   totalSteps: number; // number of time step columns
   hscale: number; // 1–4 (fractional OK), multiplier applied to CELL_WIDTH
+  /** Integer timing resolution. Existing documents default to one tick per step. */
+  ticksPerStep?: number;
   /** WaveDrom config.skin (default, narrow, dark, …) */
   skin?: string;
   head?: { text?: string; tick?: number; every?: number };
@@ -247,11 +268,28 @@ export interface GlobalCompressionAnnotation {
   style?: AnnotationStyle;
 }
 
+export type AnnotationAnchor =
+  | { kind: 'point'; x: number; y: number; percent?: boolean }
+  | { kind: 'node'; node: string; dx?: number; dy?: number };
+
+export interface ArrowAnnotation {
+  id: string;
+  type: 'arrow';
+  shape: string;
+  from: AnnotationAnchor;
+  to: AnnotationAnchor;
+  text?: string;
+  dx?: number;
+  dy?: number;
+  style?: AnnotationStyle;
+}
+
 export type DiagramAnnotation =
   | TextAnnotation
   | VerticalLineAnnotation
   | HorizontalLineAnnotation
-  | GlobalCompressionAnnotation;
+  | GlobalCompressionAnnotation
+  | ArrowAnnotation;
 
 export interface DiagramState {
   /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */

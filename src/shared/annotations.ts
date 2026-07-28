@@ -1,7 +1,9 @@
 import { nanoid } from 'nanoid';
 import type {
+  AnnotationAnchor,
   AnnotationStyle,
   AnnotationRangePosition,
+  ArrowAnnotation,
   DiagramAnnotation,
   DiagramState,
   GlobalCompressionAnnotation,
@@ -297,6 +299,62 @@ export function normalizeGlobalCompressionAnnotation(
   };
 }
 
+function normalizeAnchor(value: unknown): AnnotationAnchor | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const anchor = value as Record<string, unknown>;
+  if (
+    anchor.kind === 'point'
+    && typeof anchor.x === 'number'
+    && Number.isFinite(anchor.x)
+    && typeof anchor.y === 'number'
+    && Number.isFinite(anchor.y)
+  ) {
+    return {
+      kind: 'point',
+      x: Math.max(-MAX_ANNOTATION_COORDINATE, Math.min(MAX_ANNOTATION_COORDINATE, anchor.x)),
+      y: Math.max(-MAX_ANNOTATION_COORDINATE, Math.min(MAX_ANNOTATION_COORDINATE, anchor.y)),
+      ...(anchor.percent === true ? { percent: true } : {}),
+    };
+  }
+  if (anchor.kind === 'node' && typeof anchor.node === 'string' && anchor.node.length > 0) {
+    return {
+      kind: 'node',
+      node: anchor.node.slice(0, 100),
+      ...(typeof anchor.dx === 'number' && Number.isFinite(anchor.dx)
+        ? { dx: anchor.dx }
+        : {}),
+      ...(typeof anchor.dy === 'number' && Number.isFinite(anchor.dy)
+        ? { dy: anchor.dy }
+        : {}),
+    };
+  }
+  return null;
+}
+
+export function normalizeArrowAnnotation(
+  value: Partial<ArrowAnnotation>,
+): ArrowAnnotation | null {
+  const from = normalizeAnchor(value.from);
+  const to = normalizeAnchor(value.to);
+  if (!from || !to || typeof value.shape !== 'string' || value.shape.length === 0) {
+    return null;
+  }
+  const style = normalizeAnnotationStyle(value.style);
+  return {
+    id: typeof value.id === 'string' && value.id.length > 0 ? value.id : nanoid(),
+    type: 'arrow',
+    shape: value.shape.slice(0, 16),
+    from,
+    to,
+    ...(typeof value.text === 'string'
+      ? { text: value.text.slice(0, MAX_ANNOTATION_TEXT_LENGTH) }
+      : {}),
+    ...(typeof value.dx === 'number' && Number.isFinite(value.dx) ? { dx: value.dx } : {}),
+    ...(typeof value.dy === 'number' && Number.isFinite(value.dy) ? { dy: value.dy } : {}),
+    ...(style ? { style } : {}),
+  };
+}
+
 export function normalizeAnnotations(
   value: unknown,
   totalSteps: number,
@@ -328,6 +386,9 @@ export function normalizeAnnotations(
           totalSteps,
         ),
       );
+    } else if (record.type === 'arrow') {
+      const arrow = normalizeArrowAnnotation(record as Partial<ArrowAnnotation>);
+      if (arrow) annotations.push(arrow);
     }
   }
   return annotations;
@@ -347,7 +408,8 @@ export function hasUndulateOnlyDigitalStates(
   signal: Exclude<SignalOrGroup, { type: 'group' }>,
 ): boolean {
   if (signal.type !== 'bit') return false;
-  return signal.states.some((state) => UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(state))
+  return signal.digitalTiming !== undefined
+    || signal.states.some((state) => UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(state))
     || UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(signal.wave ?? '')
     || UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(signal.waveOverride ?? '');
 }

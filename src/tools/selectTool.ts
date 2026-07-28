@@ -139,7 +139,7 @@ export function selectPointerMove(e: PointerEvent): void {
     const annotation = state.diagram.annotations?.find(
       (candidate) => candidate.id === annotationDrag?.id,
     );
-    if (!annotation) return;
+    if (!annotation || annotation.type === 'arrow') return;
     const transform = viewTransform(state.diagram, state.view);
     const rawX = canvasToLogicalX(e.offsetX, transform) / CELL_WIDTH;
     const snapToGrid =
@@ -248,7 +248,7 @@ export function nudgeSelectedAnnotation(
   const annotation = state.diagram.annotations?.find(
     (candidate) => candidate.id === state.view.activeAnnotationId,
   );
-  if (!annotation) return false;
+  if (!annotation || annotation.type === 'arrow') return false;
   const horizontal = key === 'ArrowLeft' || key === 'ArrowRight';
   const direction = key === 'ArrowLeft' || key === 'ArrowUp' ? -1 : 1;
 

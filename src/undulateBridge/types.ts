@@ -36,11 +36,23 @@ export interface UndulateGlobalCompressionAnnotation extends UndulateAnnotationS
   to?: UndulateAnnotationRange;
 }
 
+export type UndulateAnnotationAnchor = string | [number | string, number | string];
+
+export interface UndulateArrowAnnotation extends UndulateAnnotationStyle {
+  shape: string;
+  from: UndulateAnnotationAnchor;
+  to: UndulateAnnotationAnchor;
+  text?: string;
+  dx?: number;
+  dy?: number;
+}
+
 export type UndulateAnnotation =
   | UndulateTextAnnotation
   | UndulateVerticalLineAnnotation
   | UndulateHorizontalLineAnnotation
-  | UndulateGlobalCompressionAnnotation;
+  | UndulateGlobalCompressionAnnotation
+  | UndulateArrowAnnotation;
 
 export type UndulateAnalogueValue =
   | number

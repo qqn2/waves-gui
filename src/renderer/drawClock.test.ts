@@ -36,4 +36,9 @@ describe('clockCycleSvg', () => {
     expect(svg).toContain('M0,10 L0,30 L20,30 L20,10 L40,10');
     expect(clockCycleEndY('N', 10, 30)).toBe(10);
   });
+
+  it('places the second clock edge from a per-cell duty cycle', () => {
+    const svg = clockCycleSvg('p', 0, 40, 10, 30, '#48f', 0.25).join('');
+    expect(svg).toContain('L10,10 L10,30');
+  });
 });

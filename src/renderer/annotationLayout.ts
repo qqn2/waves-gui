@@ -6,6 +6,10 @@ import type {
   GlobalCompressionAnnotation,
   TextAnnotation,
   VerticalLineAnnotation,
+  ArrowAnnotation,
+  AnnotationAnchor,
+  Signal,
+  SignalOrGroup,
 } from '../shared/types';
 import type { RowLayoutEntry } from './rowLayout';
 import {
@@ -13,6 +17,7 @@ import {
   logicalToCanvasY,
   type ViewTransform,
 } from './coordinates';
+import { stepLogicalCenter } from './laneTiming';
 
 export interface TextAnnotationLayout {
   annotation: TextAnnotation;
@@ -53,6 +58,58 @@ function resolveRangePosition(
   return value.unit === 'percent'
     ? fullLength * value.value / 100
     : value.value * indexScale;
+}
+
+export interface ArrowAnnotationLayout {
+  annotation: ArrowAnnotation;
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+}
+
+function flattenSignals(items: SignalOrGroup[]): Signal[] {
+  return items.flatMap((item): Signal[] =>
+    item.type === 'group' ? flattenSignals(item.children) : [item],
+  );
+}
+
+function resolveArrowAnchor(
+  anchor: AnnotationAnchor,
+  diagram: DiagramState,
+  rows: RowLayoutEntry[],
+): { x: number; y: number } | null {
+  const width = diagram.config.totalSteps * CELL_WIDTH;
+  const height = rows.at(-1)
+    ? rows.at(-1)!.y + rows.at(-1)!.height
+    : 0;
+  if (anchor.kind === 'point') {
+    return anchor.percent
+      ? { x: width * anchor.x / 100, y: height * anchor.y / 100 }
+      : { x: anchor.x * CELL_WIDTH, y: anchor.y * ROW_HEIGHT };
+  }
+  for (const signal of flattenSignals(diagram.signals)) {
+    const index = signal.node?.indexOf(anchor.node) ?? -1;
+    if (index < 0) continue;
+    const row = rows.find((candidate) => candidate.id === signal.id);
+    if (!row) return null;
+    return {
+      x: stepLogicalCenter(signal, index) + (anchor.dx ?? 0),
+      y: row.y + row.height / 2 + (anchor.dy ?? 0),
+    };
+  }
+  return null;
+}
+
+export function layoutArrowAnnotations(
+  diagram: DiagramState,
+  rows: RowLayoutEntry[],
+): ArrowAnnotationLayout[] {
+  if (diagram.compatibility?.extensionsEnabled !== true) return [];
+  return (diagram.annotations ?? []).flatMap((annotation) => {
+    if (annotation.type !== 'arrow') return [];
+    const from = resolveArrowAnchor(annotation.from, diagram, rows);
+    const to = resolveArrowAnchor(annotation.to, diagram, rows);
+    return from && to ? [{ annotation, from, to }] : [];
+  });
 }
 
 function annotationRange(
@@ -173,6 +230,20 @@ export function hitTestAnnotation(
   transform: ViewTransform,
   waveformTop: number,
 ): string | null {
+  for (const layout of layoutArrowAnnotations(diagram as DiagramState, rows)) {
+    const x1 = logicalToCanvasX(layout.from.x, transform);
+    const y1 = waveformTop + logicalToCanvasY(layout.from.y, transform);
+    const x2 = logicalToCanvasX(layout.to.x, transform);
+    const y2 = waveformTop + logicalToCanvasY(layout.to.y, transform);
+    const length2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+    const t = length2 === 0 ? 0 : Math.max(0, Math.min(
+      1,
+      ((canvasX - x1) * (x2 - x1) + (canvasY - y1) * (y2 - y1)) / length2,
+    ));
+    if (Math.hypot(canvasX - (x1 + t * (x2 - x1)), canvasY - (y1 + t * (y2 - y1))) <= 6) {
+      return layout.annotation.id;
+    }
+  }
   const lineLayouts = layoutLineAnnotations(diagram, rows);
   for (let index = lineLayouts.length - 1; index >= 0; index -= 1) {
     const layout = lineLayouts[index]!;

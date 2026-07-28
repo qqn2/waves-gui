@@ -239,9 +239,10 @@ export function strokeClockCycle(
   yHigh: number,
   yLow: number,
   lineWidth: number,
+  dutyCycle = 0.5,
 ): void {
   const riseFirst = isClockRiseStep(st);
-  const mid = (x0 + x1) / 2;
+  const mid = x0 + (x1 - x0) * Math.max(0, Math.min(1, dutyCycle));
   ctx.beginPath();
   if (riseFirst) {
     ctx.moveTo(x0, yLow);
@@ -287,9 +288,10 @@ export function clockCycleSvg(
   yHigh: number,
   yLow: number,
   color: string,
+  dutyCycle = 0.5,
 ): string[] {
   const riseFirst = isClockRiseStep(st);
-  const mid = (x0 + x1) / 2;
+  const mid = x0 + (x1 - x0) * Math.max(0, Math.min(1, dutyCycle));
   const d = riseFirst
     ? `M${x0},${yLow} L${x0},${yHigh} L${mid},${yHigh} L${mid},${yLow} L${x1},${yLow}`
     : `M${x0},${yHigh} L${x0},${yLow} L${mid},${yLow} L${mid},${yHigh} L${x1},${yHigh}`;

@@ -181,7 +181,9 @@ export function renderBitSignal(
   const states = draftStates ?? signal.states;
   const glitches = signal.stepGlitches ?? [];
   const scale = transform.zoom * transform.hscale;
-  const tw = TRANSITION_WIDTH * scale;
+  const tw = (signal.digitalTiming?.slewing !== undefined
+    ? Math.max(0, signal.digitalTiming.slewing) * 40
+    : TRANSITION_WIDTH) * scale;
   const gapStroke =
     getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
     '#e8e8e8';
@@ -286,7 +288,19 @@ export function renderBitSignal(
         pathOpen = false;
       }
       ctx.strokeStyle = resolveSignalColor(signal.color);
-      strokeClockCycle(ctx, st, x, nextX, yHigh, yLow, ctx.lineWidth);
+      const timingCell = signal.digitalTiming?.cells[i];
+      strokeClockCycle(
+        ctx,
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        ctx.lineWidth,
+        timingCell?.dutyTicks === undefined
+          ? 0.5
+          : timingCell.dutyTicks / timingCell.durationTicks,
+      );
       prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
     }

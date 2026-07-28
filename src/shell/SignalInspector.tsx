@@ -26,9 +26,12 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const setSignalPeriod = useStore((s) => s.setSignalPeriod);
   const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
   const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
+  const updateDigitalTimingCell = useStore((s) => s.updateDigitalTimingCell);
+  const updateDigitalTimingSignal = useStore((s) => s.updateDigitalTimingSignal);
   const signal = useMemo(() => selectedSignal(signals, activeIds), [signals, activeIds]);
   const [nameDraft, setNameDraft] = useState('');
   const [analogueCellIndex, setAnalogueCellIndex] = useState(0);
+  const [timingCellIndex, setTimingCellIndex] = useState(0);
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
@@ -45,6 +48,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const isAnalogue = signal?.type === 'analogue';
   const analogueCell =
     isAnalogue ? signal.analogueCells?.[analogueCellIndex] : undefined;
+  const timingCell = signal?.digitalTiming?.cells[timingCellIndex];
 
   return (
     <aside className={styles.inspector} aria-label="Properties inspector">
@@ -188,6 +192,78 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   Edit each waveform value directly; change Step to move through
                   the analog cells.
                 </p>
+                {analogueCell?.kind === 'samples' ? (
+                  <>
+                    <h2>Sample points</h2>
+                    {(analogueCell.samples ?? []).map((point, pointIndex) => (
+                      <div className={styles.inspectorMetric} key={pointIndex}>
+                        <input
+                          type="number"
+                          min={0}
+                          max={1}
+                          step="any"
+                          aria-label={`Sample ${pointIndex + 1} offset`}
+                          value={point.offset}
+                          onChange={(event) => {
+                            const samples = (analogueCell.samples ?? []).map(
+                              (candidate, index) => index === pointIndex
+                                ? { ...candidate, offset: Number(event.target.value) }
+                                : candidate,
+                            );
+                            updateAnalogueCell(signal.id, analogueCellIndex, { samples });
+                          }}
+                        />
+                        <input
+                          type="number"
+                          step="any"
+                          aria-label={`Sample ${pointIndex + 1} value`}
+                          value={point.value}
+                          onChange={(event) => {
+                            const samples = (analogueCell.samples ?? []).map(
+                              (candidate, index) => index === pointIndex
+                                ? { ...candidate, value: Number(event.target.value) }
+                                : candidate,
+                            );
+                            updateAnalogueCell(signal.id, analogueCellIndex, {
+                              samples,
+                              ...(pointIndex === samples.length - 1
+                                ? { value: Number(event.target.value) }
+                                : {}),
+                            });
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => updateAnalogueCell(
+                            signal.id,
+                            analogueCellIndex,
+                            {
+                              samples: (analogueCell.samples ?? []).filter(
+                                (_, index) => index !== pointIndex,
+                              ),
+                            },
+                          )}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const samples = [...(analogueCell.samples ?? [])];
+                        const last = samples.at(-1);
+                        samples.push({
+                          offset: last ? Math.min(1, last.offset + 0.1) : 0,
+                          value: last?.value ?? analogueCell.value,
+                        });
+                        updateAnalogueCell(signal.id, analogueCellIndex, { samples });
+                      }}
+                    >
+                      Add point
+                    </button>
+                  </>
+                ) : null}
               </section>
 
               <section className={styles.inspectorSection}>
@@ -289,6 +365,104 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
 
           {!isAnalogue ? <section className={styles.inspectorSection}>
             <h2>Timing</h2>
+            {signal.digitalTiming ? (
+              <>
+                <label className={styles.inspectorField}>
+                  <span>Cell</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={signal.digitalTiming.cells.length}
+                    value={timingCellIndex + 1}
+                    onChange={(event) => setTimingCellIndex(Math.max(
+                      0,
+                      Math.min(
+                        signal.digitalTiming!.cells.length - 1,
+                        Number(event.target.value) - 1,
+                      ),
+                    ))}
+                    aria-label="Timing cell"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Period</span>
+                  <input
+                    type="number"
+                    min={1 / signal.digitalTiming.ticksPerStep}
+                    step={1 / signal.digitalTiming.ticksPerStep}
+                    value={(timingCell?.durationTicks ?? signal.digitalTiming.ticksPerStep)
+                      / signal.digitalTiming.ticksPerStep}
+                    onChange={(event) => updateDigitalTimingCell(
+                      signal.id,
+                      timingCellIndex,
+                      {
+                        durationTicks: Number(event.target.value)
+                          * signal.digitalTiming!.ticksPerStep,
+                      },
+                    )}
+                    aria-label="Cell period"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Duty cycle</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={1 / signal.digitalTiming.ticksPerStep}
+                    value={timingCell?.dutyTicks === undefined
+                      ? ''
+                      : timingCell.dutyTicks / timingCell.durationTicks}
+                    placeholder="0.5"
+                    onChange={(event) => updateDigitalTimingCell(
+                      signal.id,
+                      timingCellIndex,
+                      {
+                        dutyTicks: event.target.value === ''
+                          ? null
+                          : Number(event.target.value)
+                            * (timingCell?.durationTicks ?? 1),
+                      },
+                    )}
+                    aria-label="Cell duty cycle"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Phase</span>
+                  <input
+                    type="number"
+                    step={1 / signal.digitalTiming.ticksPerStep}
+                    value={signal.digitalTiming.phaseTicks
+                      / signal.digitalTiming.ticksPerStep}
+                    onChange={(event) => updateDigitalTimingSignal(signal.id, {
+                      phaseTicks: Number(event.target.value)
+                        * signal.digitalTiming!.ticksPerStep,
+                    })}
+                    aria-label="Signal phase"
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Digital slew</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={signal.digitalTiming.slewing ?? ''}
+                    placeholder="0"
+                    onChange={(event) => updateDigitalTimingSignal(signal.id, {
+                      slewing: event.target.value === ''
+                        ? null
+                        : Number(event.target.value),
+                    })}
+                    aria-label="Digital slew"
+                  />
+                </label>
+                <p className={styles.inspectorFieldHint}>
+                  Resolution: {signal.digitalTiming.ticksPerStep} ticks per step.
+                </p>
+              </>
+            ) : (
+              <>
             <label className={styles.inspectorField}>
               <span>Period</span>
               <input
@@ -300,6 +474,8 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onChange={(event) => setSignalPeriod(signal.id, event.target.value ? Number(event.target.value) : undefined)}
               />
             </label>
+              </>
+            )}
             <label className={styles.inspectorField}>
               <span>Phase</span>
               <input

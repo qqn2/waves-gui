@@ -221,7 +221,8 @@ describe('FileOperations', () => {
           name: 'lost',
           wave: 'p',
           repeat: 8,
-          duty_cycles: [0.5],
+          duty_cycles: Array(8).fill(0.5),
+          stroke: '#f00',
         }],
       }),
     ], 'blocked.json', { type: 'application/json' });
@@ -240,8 +241,7 @@ describe('FileOperations', () => {
 
     await openDiagramFile();
 
-    expect(alert).toHaveBeenCalledWith(expect.stringContaining('[WIP] signal[0].repeat'));
-    expect(alert).toHaveBeenCalledWith(expect.stringContaining('signal[0].duty_cycles'));
+    expect(alert).toHaveBeenCalledWith(expect.stringContaining('[WIP] signal[0].stroke'));
     expect(useStore.getState().diagram).toBe(before);
     expect(useStore.getState().view.fileName).toBe('kept.json');
   });

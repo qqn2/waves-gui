@@ -199,7 +199,7 @@ describe('codeSync', () => {
     expect(detectCodeFormat(code)).toBe('undulate');
     const error = validateCodeString(code);
     expect(error).toContain('[WIP] edges');
-    expect(error).toContain('[WIP] signal[0].repeat');
+    expect(error).not.toContain('[WIP] signal[0].repeat');
     expect(error).toContain('Unknown Undulate property signal[0].unknown_lane_field');
     expect(parseCodeToDiagram(code)).toEqual({
       ok: false,

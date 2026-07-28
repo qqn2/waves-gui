@@ -44,7 +44,8 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   );
   const removeAnnotation = useStore((state) => state.removeAnnotation);
   const setActiveAnnotationId = useStore((state) => state.setActiveAnnotationId);
-  const annotation = diagram.annotations?.find((item) => item.id === activeId) ?? null;
+  const selected = diagram.annotations?.find((item) => item.id === activeId) ?? null;
+  const annotation = selected?.type === 'arrow' ? null : selected;
   const textAnnotation = annotation?.type === 'text' ? annotation : null;
   const options = useMemo(() => signalOptions(diagram.signals), [diagram.signals]);
   const rows = useMemo(() => buildRowLayout(diagram.signals), [diagram.signals]);
