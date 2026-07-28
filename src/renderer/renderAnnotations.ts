@@ -10,6 +10,7 @@ import {
   layoutTextAnnotations,
 } from './annotationLayout';
 import type { RowLayoutEntry } from './rowLayout';
+import { splitEdgeConnector } from '../shared/edgeSyntax';
 
 function themeColor(name: string, fallback: string): string {
   if (typeof document === 'undefined') return fallback;
@@ -102,6 +103,25 @@ export function renderTextAnnotations(
     };
     if (annotation.shape.includes('>')) head(x2, y2, Math.atan2(y2 - y1, x2 - x1));
     if (annotation.shape.includes('<')) head(x1, y1, Math.atan2(y1 - y2, x1 - x2));
+    const endpoints = splitEdgeConnector(annotation.shape);
+    const endpointMarker = (
+      decoration: 'none' | 'arrow' | 'square' | 'circle',
+      x: number,
+      y: number,
+    ) => {
+      if (decoration !== 'square' && decoration !== 'circle') return;
+      const size = 8 * transform.zoom;
+      ctx.fillStyle = annotation.style?.stroke ?? themeColor('--accent', '#4a9eff');
+      ctx.beginPath();
+      if (decoration === 'square') {
+        ctx.rect(x - size / 2, y - size / 2, size, size);
+      } else {
+        ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+      }
+      ctx.fill();
+    };
+    endpointMarker(endpoints.start, x1, y1);
+    endpointMarker(endpoints.end, x2, y2);
     if (annotation.text) {
       const fontSize = annotation.style?.fontSize ?? 12;
       const labelX = (x1 + x2) / 2 + (annotation.dx ?? 0);

@@ -67,4 +67,19 @@ describe('annotation image export', () => {
     expect(svg).toContain('x1="40"');
     expect(svg).toContain('x2="120"');
   });
+
+  it('exports structured arrow square and circle endpoints', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.annotations = [{
+      id: 'marked-arrow',
+      type: 'arrow',
+      shape: '#-*',
+      from: { kind: 'point', x: 1, y: 1 },
+      to: { kind: 'point', x: 3, y: 2 },
+    }];
+    const svg = buildSVGString(diagram, defaultView());
+    expect(svg).toContain('<rect x="36"');
+    expect(svg).toContain('<circle cx="120"');
+  });
 });

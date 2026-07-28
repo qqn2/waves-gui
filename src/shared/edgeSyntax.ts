@@ -8,6 +8,58 @@ export interface ParsedUndulateEdge {
   label: string;
 }
 
+export type EdgeEndpointDecoration =
+  | 'none'
+  | 'arrow'
+  | 'square'
+  | 'circle';
+
+export function splitEdgeConnector(connector: string): {
+  start: EdgeEndpointDecoration;
+  middle: string;
+  end: EdgeEndpointDecoration;
+} {
+  const start = connector.startsWith('<')
+    ? 'arrow'
+    : connector.startsWith('#')
+      ? 'square'
+      : connector.startsWith('*')
+        ? 'circle'
+        : 'none';
+  const end = connector.endsWith('>')
+    ? 'arrow'
+    : connector.endsWith('#')
+      ? 'square'
+      : connector.endsWith('*')
+        ? 'circle'
+        : 'none';
+  const startLength = start === 'none' ? 0 : 1;
+  const endLength = end === 'none' ? 0 : 1;
+  return {
+    start,
+    middle: connector.slice(startLength, connector.length - endLength) || '-',
+    end,
+  };
+}
+
+export function withEdgeEndpointDecoration(
+  connector: string,
+  side: 'start' | 'end',
+  decoration: EdgeEndpointDecoration,
+): string {
+  const parts = splitEdgeConnector(connector);
+  parts[side] = decoration;
+  const token = (value: EdgeEndpointDecoration, position: 'start' | 'end') =>
+    value === 'arrow'
+      ? position === 'start' ? '<' : '>'
+      : value === 'square'
+        ? '#'
+        : value === 'circle'
+          ? '*'
+          : '';
+  return `${token(parts.start, 'start')}${parts.middle}${token(parts.end, 'end')}`;
+}
+
 /** Parse Undulate's whitespace-tolerant NODE PATTERN NODE [TEXT] notation. */
 export function parseUndulateEdge(value: string): ParsedUndulateEdge | null {
   const match = value.match(UNDULATE_EDGE_PATTERN);

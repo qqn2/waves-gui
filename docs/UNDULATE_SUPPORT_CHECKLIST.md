@@ -134,9 +134,8 @@ Upstream references:
   anchors, and round-trip semantically.
 - [X] Undulate dependency-edge endpoint markers `#` (square) and `*` (circle)
   render in the live canvas and SVG/image exports and round-trip semantically.
-- [ ] Partial: dependency edges cover the complete extended path set, but the
-  arrow inspector does not yet expose square/circle endpoint markers for
-  structured annotation objects.
+- [X] Structured annotation arrows expose none/arrow/square/circle endpoint
+  choices in the inspector and render them in the canvas and SVG/image exports.
 - [X] Undulate's plural `edges` field imports whitespace-tolerant dependency
   paths, normalizes them for live editing/rendering, and exports canonically as
   `edges`. The shared WaveDrom `edge` spelling remains accepted on import.

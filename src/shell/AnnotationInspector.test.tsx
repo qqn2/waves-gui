@@ -132,10 +132,18 @@ describe('AnnotationInspector coordinates', () => {
     const textBackground = host.querySelector<HTMLInputElement>(
       'input[aria-label="Annotation text background"]',
     );
+    const startEndpoint = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow start endpoint"]',
+    );
+    const endEndpoint = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow end endpoint"]',
+    );
     expect(from?.value).toBe('a');
     expect(dy?.value).toBe('0');
     expect(fontSize?.value).toBe('');
     expect(textBackground?.checked).toBe(true);
+    expect(startEndpoint?.value).toBe('none');
+    expect(endEndpoint?.value).toBe('arrow');
 
     await act(async () => {
       const setter = Object.getOwnPropertyDescriptor(
@@ -152,6 +160,24 @@ describe('AnnotationInspector coordinates', () => {
       fontSize!.dispatchEvent(new Event('input', { bubbles: true }));
       fontSize!.dispatchEvent(new Event('change', { bubbles: true }));
       textBackground!.click();
+      const selectSetter = Object.getOwnPropertyDescriptor(
+        HTMLSelectElement.prototype,
+        'value',
+      )?.set;
+      selectSetter?.call(startEndpoint, 'square');
+      startEndpoint!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    const refreshedEnd = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow end endpoint"]',
+    );
+    await act(async () => {
+      const selectSetter = Object.getOwnPropertyDescriptor(
+        HTMLSelectElement.prototype,
+        'value',
+      )?.set;
+      selectSetter?.call(refreshedEnd, 'circle');
+      refreshedEnd!.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
     expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
@@ -159,6 +185,7 @@ describe('AnnotationInspector coordinates', () => {
       from: { kind: 'node', node: 'b', dx: 2, dy: -1 },
       dy: -6,
       style: { fontSize: 20, textBackground: false },
+      shape: '#-*',
     });
 
     await act(async () => root.unmount());

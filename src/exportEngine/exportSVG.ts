@@ -39,6 +39,7 @@ import {
   layoutTextAnnotations,
   layoutArrowAnnotations,
 } from '../renderer/annotationLayout';
+import { splitEdgeConnector } from '../shared/edgeSyntax';
 import {
   buildStepLabels,
   FOOT_TEXT_BAND,
@@ -607,6 +608,16 @@ function svgAnnotations(
       : `M ${x1} ${y1} L ${x2} ${y2}`;
     const end = annotation.shape.includes('>') ? ` marker-end="url(#${markerId})"` : '';
     const start = annotation.shape.includes('<') ? ` marker-start="url(#${markerId})"` : '';
+    const endpoints = splitEdgeConnector(annotation.shape);
+    const endpointShape = (
+      decoration: 'none' | 'arrow' | 'square' | 'circle',
+      x: number,
+      y: number,
+    ) => decoration === 'square'
+      ? `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" fill="${stroke}"/>`
+      : decoration === 'circle'
+        ? `<circle cx="${x}" cy="${y}" r="4" fill="${stroke}"/>`
+        : '';
     const labelFontSize = annotation.style?.fontSize ?? 12;
     const labelX = (x1 + x2) / 2 + (annotation.dx ?? 0);
     const labelY = (y1 + y2) / 2 + (annotation.dy ?? 0);
@@ -623,7 +634,10 @@ function svgAnnotations(
         + `font-size="${labelFontSize}">${esc(annotation.text)}</text>`
       : '';
     return `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="${stroke}"/></marker></defs>`
-      + `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''}${start}${end}/>${label}`;
+      + `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''}${start}${end}/>`
+      + endpointShape(endpoints.start, x1, y1)
+      + endpointShape(endpoints.end, x2, y2)
+      + label;
   }).join('\n');
   const text = layoutTextAnnotations(diagram, rows)
     .map(({ annotation, x, y }) => {

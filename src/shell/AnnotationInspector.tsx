@@ -9,6 +9,11 @@ import {
   parseAnnotationAnchorInput,
 } from '../shared/annotations';
 import { ROW_HEIGHT } from '../shared/constants';
+import {
+  splitEdgeConnector,
+  withEdgeEndpointDecoration,
+  type EdgeEndpointDecoration,
+} from '../shared/edgeSyntax';
 import { useStore } from '../shared/store';
 import type {
   AnnotationStyle,
@@ -58,6 +63,15 @@ function ArrowAnnotationInspector({
     }
     updateArrowAnnotation(annotation.id, { [field]: parsed });
   };
+  const endpoint = splitEdgeConnector(annotation.shape);
+  const updateEndpoint = (
+    side: 'start' | 'end',
+    decoration: EdgeEndpointDecoration,
+  ) => {
+    updateArrowAnnotation(annotation.id, {
+      shape: withEdgeEndpointDecoration(annotation.shape, side, decoration),
+    });
+  };
 
   return (
     <aside className={styles.inspector} aria-label="Annotation inspector">
@@ -85,6 +99,38 @@ function ArrowAnnotationInspector({
               }}
               aria-label="Arrow shape"
             />
+          </label>
+          <label className={styles.inspectorField}>
+            <span>Start endpoint</span>
+            <select
+              value={endpoint.start}
+              onChange={(event) => updateEndpoint(
+                'start',
+                event.target.value as EdgeEndpointDecoration,
+              )}
+              aria-label="Arrow start endpoint"
+            >
+              <option value="none">None</option>
+              <option value="arrow">Arrow</option>
+              <option value="square">Square</option>
+              <option value="circle">Circle</option>
+            </select>
+          </label>
+          <label className={styles.inspectorField}>
+            <span>End endpoint</span>
+            <select
+              value={endpoint.end}
+              onChange={(event) => updateEndpoint(
+                'end',
+                event.target.value as EdgeEndpointDecoration,
+              )}
+              aria-label="Arrow end endpoint"
+            >
+              <option value="none">None</option>
+              <option value="arrow">Arrow</option>
+              <option value="square">Square</option>
+              <option value="circle">Circle</option>
+            </select>
           </label>
           <label className={styles.inspectorField}>
             <span>Text</span>
