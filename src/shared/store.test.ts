@@ -111,6 +111,42 @@ describe('useStore', () => {
     ).toBe(1.2);
   });
 
+  it('paints an analogue cell range as one undoable brush stroke', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('analogue');
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'analogue') return;
+    const historyBeforePaint = useStore.getState().history.length;
+
+    useStore.getState().paintAnalogueCellRange(
+      signal.id,
+      2,
+      4,
+      'samples',
+      1.2,
+    );
+
+    const painted = useStore.getState().diagram.signals[0];
+    if (!painted || painted.type !== 'analogue') return;
+    expect(useStore.getState().history).toHaveLength(historyBeforePaint + 1);
+    expect(painted.analogueCells?.slice(2, 5)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ kind: 'samples', value: 1.2 }),
+      ]),
+    );
+    expect(painted.analogueCells?.[2]?.samples).toEqual([
+      { offset: 0, value: 0 },
+      { offset: 1, value: 1.2 },
+    ]);
+
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.signals[0];
+    expect(
+      restored?.type === 'analogue'
+        && restored.analogueCells?.slice(2, 5).map((cell) => cell.value),
+    ).toEqual([0, 0, 0]);
+  });
+
   it('records a raw diagram edit in unified undo history and dirtiness', () => {
     const edited = createDefaultDiagram();
     edited.config.head = { text: 'raw edit' };

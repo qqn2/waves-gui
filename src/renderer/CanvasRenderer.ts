@@ -20,6 +20,7 @@ import { measureHeadFoot, renderHeadFoot } from './renderHeadFoot';
 import type { ViewTransform } from './coordinates';
 import { renderTextAnnotations } from './renderAnnotations';
 import { renderAnalogueSignal } from './renderAnalogueSignal';
+import { applyAnalogueBrushRange } from '../shared/analogue';
 
 function previewToggleGapColumns(signal: Signal, lo: number, hi: number): Signal {
   const len = signal.type === 'bit' ? signal.states.length : signal.stepGaps?.length ?? 0;
@@ -307,9 +308,31 @@ export class CanvasRenderer {
           rowIndex++;
         } else if (item.type === 'analogue') {
           if (diagram.compatibility?.extensionsEnabled === true) {
+            let drawSignal = item;
+            const draft = view.paintDraft;
+            if (
+              draft
+              && draft.signalId === item.id
+              && draft.lane === 'analogue'
+            ) {
+              drawSignal = {
+                ...item,
+                analogueCells: item.analogueCells?.map((cell) => ({
+                  ...cell,
+                  samples: cell.samples?.map((point) => ({ ...point })),
+                })),
+              };
+              applyAnalogueBrushRange(
+                drawSignal,
+                draft.startStep,
+                draft.endStep,
+                draft.analogueKind ?? 'step',
+                draft.analogueValue ?? 0,
+              );
+            }
             renderAnalogueSignal(
               this.ctx,
-              item,
+              drawSignal,
               row.y,
               row.height,
               transform,

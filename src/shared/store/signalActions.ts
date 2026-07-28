@@ -33,7 +33,7 @@ import {
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
-import { normalizeAnalogueSignal } from '../analogue';
+import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
 import {
   DEFAULT_ANALOGUE_CONTEXT,
   evaluateAnalogueCurve,
@@ -182,6 +182,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'removeSignal'
   | 'renameSignal'
   | 'updateAnalogueCell'
+  | 'paintAnalogueCellRange'
   | 'updateAnalogueSignal'
   | 'updateAnalogueContext'
   | 'updateDigitalTimingCell'
@@ -410,6 +411,20 @@ export function createSignalActions(set: ImmerSet): Pick<
           )
         ) delete cell.expression;
         Object.assign(cell, patch);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+      });
+    },
+
+    paintAnalogueCellRange(signalId, startStep, endStep, kind, value) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        pushHistory(s);
+        applyAnalogueBrushRange(target, startStep, endStep, kind, value);
         normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
       });
     },

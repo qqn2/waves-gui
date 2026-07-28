@@ -549,7 +549,8 @@ Primary automated coverage:
   analogue inspector.
 - [X] Add a dedicated sampled-curve/point editor for normalized offsets and
   values, including add and remove controls.
-- [ ] Decide whether analogue cell painting belongs in the shared Draw tool or
-  a dedicated Undulate tool.
+- [X] Keep analogue cell painting in a dedicated Undulate tool, with
+  Hold/Step/Curve/Samples brushes, numeric target values, drag previews, and
+  one-history-entry range commits.
 - [ ] Add task-oriented samples that demonstrate each supported Undulate
   feature, in addition to the existing protocol-oriented samples.

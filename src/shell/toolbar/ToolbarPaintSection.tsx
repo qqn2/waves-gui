@@ -3,8 +3,13 @@ import {
   WAVEDROM_COLOR_INDEXES,
   type WavedromColorIndex,
 } from '../../wavedromBridge/wavedromColors';
-import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
-import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
+import type {
+  AnalogueTransition,
+  BitState,
+  PaintMode,
+  PaintStyle,
+} from '../../shared/types';
+import { Activity, ArrowLeftRight, Columns2, Plus, Zap } from 'lucide-react';
 import { useRef } from 'react';
 import { BitStateButton } from './BitStateButton';
 import {
@@ -148,6 +153,83 @@ export function ToolbarPaintSection({
 export interface ToolbarBusSectionProps {
   activeBusColorIndex: WavedromColorIndex;
   onBusColorIndex: (index: WavedromColorIndex) => void;
+}
+
+export interface ToolbarAnaloguePaintSectionProps {
+  kind: AnalogueTransition;
+  value: number;
+  onKindChange: (kind: AnalogueTransition) => void;
+  onValueChange: (value: number) => void;
+  onAddLane: () => void;
+}
+
+const ANALOGUE_BRUSHES: Array<{
+  kind: AnalogueTransition;
+  label: string;
+  title: string;
+}> = [
+  { kind: 'hold', label: 'Hold', title: 'Hold the painted value across each cell' },
+  { kind: 'step', label: 'Step', title: 'Step immediately to the painted value' },
+  { kind: 'capacitive', label: 'Curve', title: 'Slew toward the painted value' },
+  {
+    kind: 'samples',
+    label: 'Samples',
+    title: 'Create editable sampled cells from the previous value to this value',
+  },
+];
+
+export function ToolbarAnaloguePaintSection({
+  kind,
+  value,
+  onKindChange,
+  onValueChange,
+  onAddLane,
+}: ToolbarAnaloguePaintSectionProps) {
+  return (
+    <>
+      <span className={styles.toolGroupLabel}>Brush</span>
+      {ANALOGUE_BRUSHES.map((brush) => (
+        <button
+          key={brush.kind}
+          type="button"
+          title={brush.title}
+          className={`${styles.toolBtn} ${
+            kind === brush.kind ? styles.toolActive : ''
+          }`}
+          aria-pressed={kind === brush.kind}
+          onClick={() => onKindChange(brush.kind)}
+        >
+          {brush.kind === 'capacitive' ? <Activity size={14} aria-hidden /> : null}
+          {brush.label}
+        </button>
+      ))}
+      <label className={styles.hscaleWrap} title="Target analogue value painted into cells">
+        <span className={styles.hscaleLabel}>Value</span>
+        <input
+          type="number"
+          step="any"
+          className={styles.hscaleInput}
+          value={value}
+          aria-label="Analogue brush value"
+          onChange={(event) => {
+            const next = Number(event.target.value);
+            if (Number.isFinite(next)) onValueChange(next);
+          }}
+        />
+      </label>
+      <button
+        type="button"
+        className={styles.toolBtn}
+        title="Insert and select a new analogue lane"
+        onClick={onAddLane}
+      >
+        <Plus size={14} aria-hidden /> Add lane
+      </button>
+      <span className={styles.contextHint}>
+        Drag across an analogue lane to paint cells
+      </span>
+    </>
+  );
 }
 
 export function ToolbarBusSection({

@@ -33,6 +33,7 @@ const CORE_MODES: ToolMode[] = [
 ];
 
 const UNDULATE_MODES: ToolMode[] = [
+  { id: 'analogue-paint', label: 'Analog', shortcut: 'Shift+D', Icon: Activity },
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'structured-arrow', label: 'Arrow', shortcut: 'Shift+A', Icon: ArrowRight },
   { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
@@ -108,14 +109,6 @@ export function EditToolbar() {
               </button>
             );
           })}
-          <button
-            type="button"
-            className={styles.railBtn}
-            onClick={() => addSignal('analogue')}
-          >
-            <Activity size={21} strokeWidth={1.8} aria-hidden />
-            <span>Analog</span>
-          </button>
         </div>
       )}
     </nav>

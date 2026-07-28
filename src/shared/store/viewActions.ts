@@ -1,4 +1,11 @@
-import type { BitState, PaintMode, PaintStyle, Theme, Tool } from '../types';
+import type {
+  AnalogueTransition,
+  BitState,
+  PaintMode,
+  PaintStyle,
+  Theme,
+  Tool,
+} from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
 import { saveThemeSettings, themeSettingsFromView } from '../theme';
@@ -23,6 +30,8 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setScroll'
   | 'setTool'
   | 'setActiveBitState'
+  | 'setActiveAnalogueKind'
+  | 'setActiveAnalogueValue'
   | 'setActiveBusLabel'
   | 'setActiveTimespanLabel'
   | 'setActiveEdgeLabel'
@@ -75,6 +84,19 @@ export function createViewActions(set: ImmerSet): Pick<
     setActiveTimespanLabel(label) {
       set((s) => {
         s.view.activeTimespanLabel = label;
+      });
+    },
+
+    setActiveAnalogueKind(kind: AnalogueTransition) {
+      set((s) => {
+        s.view.activeAnalogueKind = kind;
+      });
+    },
+
+    setActiveAnalogueValue(value: number) {
+      if (!Number.isFinite(value)) return;
+      set((s) => {
+        s.view.activeAnalogueValue = value;
       });
     },
 

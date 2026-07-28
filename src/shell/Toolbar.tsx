@@ -29,6 +29,7 @@ import { ExtensionsModeToggle } from './ExtensionsModeToggle';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import {
   ToolbarBusSection,
+  ToolbarAnaloguePaintSection,
   ToolbarEdgeSection,
   ToolbarPaintSection,
 } from './toolbar/ToolbarPaintSection';
@@ -51,6 +52,8 @@ export function Toolbar({
   const paintMode = useStore((s) => s.view.paintMode);
   const paintStyle = useStore((s) => s.view.paintStyle);
   const activeBit = useStore((s) => s.view.activeBitState);
+  const activeAnalogueKind = useStore((s) => s.view.activeAnalogueKind);
+  const activeAnalogueValue = useStore((s) => s.view.activeAnalogueValue);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
   const setActiveTimespanLabel = useStore((s) => s.setActiveTimespanLabel);
   const activeEdgeConnector = useStore((s) => s.view.activeEdgeConnector);
@@ -66,6 +69,10 @@ export function Toolbar({
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
+  const setActiveAnalogueKind = useStore((s) => s.setActiveAnalogueKind);
+  const setActiveAnalogueValue = useStore((s) => s.setActiveAnalogueValue);
+  const addSignal = useStore((s) => s.addSignal);
+  const setActiveSignalIds = useStore((s) => s.setActiveSignalIds);
   const setPaintMode = useStore((s) => s.setPaintMode);
   const setPaintStyle = useStore((s) => s.setPaintStyle);
   const setZoom = useStore((s) => s.setZoom);
@@ -139,11 +146,19 @@ export function Toolbar({
     }
   };
 
+  const addAnalogueLane = () => {
+    addSignal('analogue');
+    const added = useStore.getState().diagram.signals.at(-1);
+    if (added && added.type !== 'group') setActiveSignalIds([added.id]);
+  };
+
   const toolLabel =
     tool === 'cursor' || tool === 'select'
       ? 'Select'
       : tool === 'paint'
         ? 'Draw'
+        : tool === 'analogue-paint'
+          ? 'Analog'
         : tool === 'erase'
           ? 'Erase'
           : tool === 'arrow'
@@ -313,6 +328,15 @@ export function Toolbar({
               state,
               ...recent.filter((item) => item !== state),
             ].slice(0, 3))}
+          />
+        ) : null}
+        {tool === 'analogue-paint' ? (
+          <ToolbarAnaloguePaintSection
+            kind={activeAnalogueKind}
+            value={activeAnalogueValue}
+            onKindChange={setActiveAnalogueKind}
+            onValueChange={setActiveAnalogueValue}
+            onAddLane={addAnalogueLane}
           />
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (

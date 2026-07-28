@@ -104,6 +104,10 @@ export function PointerMarker({
           ? ` → ${view.activeBitState}`
           : ` ${current}→${toggleBinaryBitState(current)}`
       : '';
+  const analoguePaintHint =
+    tool === 'analogue-paint' && hit.signalType === 'analogue'
+      ? ` · ${view.activeAnalogueKind} → ${view.activeAnalogueValue}`
+      : '';
 
   let edgeHint = '';
   if (tool === 'arrow') {
@@ -144,6 +148,7 @@ export function PointerMarker({
       <div className="pointerMarkerLabel" style={{ left: left + 4, top: top + 2 }}>
         t{hit.step} · {signalName}
         {paintHint}
+        {analoguePaintHint}
         {edgeHint}
       </div>
     </>

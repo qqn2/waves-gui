@@ -34,6 +34,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     paintMode: 'set',
     paintStyle: 'replace',
     activeBitState: '0',
+    activeAnalogueKind: 'step',
+    activeAnalogueValue: 0.9,
     activeBusLabel: '',
     activeTimespanLabel: '',
     activeBusColorIndex: 2,

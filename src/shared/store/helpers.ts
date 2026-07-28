@@ -39,6 +39,8 @@ export function defaultView(): ViewState {
     paintMode: 'set',
     paintStyle: 'replace',
     activeBitState: '1',
+    activeAnalogueKind: 'step',
+    activeAnalogueValue: 0.9,
     activeBusLabel: 'data',
     activeTimespanLabel: '5 ms',
     activeEdgeLabel: '',

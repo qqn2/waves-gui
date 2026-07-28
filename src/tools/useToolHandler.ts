@@ -14,6 +14,7 @@ import type { HitTestResult } from '../renderer/hitTest';
 import type { SelectOverlayRect } from './toolState';
 import { toolState } from './toolState';
 import * as paint from './paintTool';
+import * as analoguePaint from './analoguePaintTool';
 import * as erase from './eraseTool';
 import * as select from './selectTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
@@ -73,6 +74,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   const cancelOperation = useCallback(() => {
     const el = canvasRef.current;
     paint.paintCancel(el);
+    analoguePaint.analoguePaintCancel(el);
     erase.eraseCancel(el);
     select.selectCancel(el);
     cancelStructuredArrow();
@@ -146,7 +148,12 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         if (e.ctrlKey || e.metaKey) return;
         setTool('cursor');
       } else if (e.key === 'd' || e.key === 'D') {
-        setTool('paint');
+        setTool(
+          e.key === 'D'
+          && useStore.getState().diagram.compatibility?.extensionsEnabled
+            ? 'analogue-paint'
+            : 'paint',
+        );
       } else if (e.key === 'e' || e.key === 'E') {
         setTool('erase');
       } else if (e.key === 'i' || e.key === 'I') {
@@ -236,6 +243,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       flushPendingCodeToDiagram();
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
+      else if (tool === 'analogue-paint') {
+        analoguePaint.analoguePaintPointerDown(e, hit, el);
+      }
       else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
       else if (tool === 'annotation') annotationPointerDown(e, hit);
       else if (tool === 'vertical-line') verticalLinePointerDown(e, hit);
@@ -256,6 +266,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     (e: PointerEvent, hit: HitTestResult) => {
       curveDrag.onPointerMove(e);
       if (tool === 'paint') paint.paintPointerMove(e);
+      else if (tool === 'analogue-paint') analoguePaint.analoguePaintPointerMove(e);
       else if (tool === 'erase') erase.erasePointerMove(e);
       else if (tool === 'arrow' || tool === 'timespan') edge.onPointerMove(e, hit);
       else if (tool === 'structured-arrow') {
@@ -279,6 +290,9 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       curveDrag.onPointerUp(e);
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerUp(e, el);
+      else if (tool === 'analogue-paint') {
+        analoguePaint.analoguePaintPointerUp(e, el);
+      }
       else if (tool === 'erase') erase.erasePointerUp(e, el);
       else if (tool === 'arrow' || tool === 'timespan') edge.onPointerUp(e, hit);
       else if (tool === 'cursor' || tool === 'select') {

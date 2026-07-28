@@ -318,6 +318,7 @@ export interface DiagramState {
 
 export type Tool =
   | 'paint'
+  | 'analogue-paint'
   | 'erase'
   | 'select'
   | 'annotation'
@@ -351,6 +352,9 @@ export interface ViewState {
   /** Replace vs additive when painting values and gaps (Draw tool). */
   paintStyle: PaintStyle;
   activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
+  /** Brush used by the dedicated Undulate analogue cell-painting tool. */
+  activeAnalogueKind: AnalogueTransition;
+  activeAnalogueValue: number;
   /** Label written on bus lanes when painting with the paint tool (= span) */
   activeBusLabel: string;
   /** Label for new timespan edges (WaveDrom edge[] text after path) */
@@ -411,11 +415,13 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
-  lane: 'bit' | 'vector';
+  lane: 'bit' | 'vector' | 'analogue';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set' | 'glitch' | 'gap'; // paint only; erase ignores
   busLabel?: string; // vector paint: WaveDrom data[] label
   busColorFill?: string; // vector paint: WaveDrom bus fill hex
+  analogueKind?: AnalogueTransition;
+  analogueValue?: number;
   mode: 'paint' | 'erase';
   /** Erase tool: WaveDrom edge[] index to remove on pointer up */
   edgeIndex?: number;

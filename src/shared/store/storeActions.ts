@@ -1,6 +1,7 @@
 import type {
   BitState,
   AnalogueCell,
+  AnalogueTransition,
   TextAnnotation,
   VerticalLineAnnotation,
   HorizontalLineAnnotation,
@@ -41,6 +42,13 @@ export interface StoreActions {
       overlay?: boolean;
       order?: number;
     },
+  ): void;
+  paintAnalogueCellRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    kind: AnalogueTransition,
+    value: number,
   ): void;
   updateAnalogueContext(patch: { vssa?: number; vdda?: number }): void;
   updateDigitalTimingCell(
@@ -207,6 +215,8 @@ export interface StoreActions {
   setScroll(x: number, y: number): void;
   setTool(tool: Tool): void;
   setActiveBitState(state: BitState): void;
+  setActiveAnalogueKind(kind: AnalogueTransition): void;
+  setActiveAnalogueValue(value: number): void;
   setActiveBusLabel(label: string): void;
   setActiveTimespanLabel(label: string): void;
   setActiveEdgeLabel(label: string): void;

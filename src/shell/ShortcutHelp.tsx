@@ -9,6 +9,7 @@ export interface ShortcutHelpProps {
 
 const SHORTCUTS: Array<{ keys: string; action: string }> = [
   { keys: 'V / D / E', action: 'Pointer / draw / erase tool' },
+  { keys: 'Shift+D', action: 'Undulate analogue cell painter' },
   { keys: 'G / | / T', action: 'Glitch / timeline gap / invert mode' },
   { keys: '1 / 0 / P / N / Z / X', action: 'Primary paint values' },
   { keys: 'Ctrl+Z / Ctrl+Y', action: 'Undo / redo' },

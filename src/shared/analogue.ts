@@ -1,5 +1,10 @@
 import { nanoid } from 'nanoid';
-import type { AnalogueCell, AnaloguePoint, Signal } from './types';
+import type {
+  AnalogueCell,
+  AnaloguePoint,
+  AnalogueTransition,
+  Signal,
+} from './types';
 import { ROW_HEIGHT } from './constants';
 import { ANALOGUE_EXPRESSION_MAX_LENGTH } from './analogueExpressions';
 
@@ -133,4 +138,41 @@ export function resizeAnalogueCells(
     previous = cell.value;
   }
   signal.analogueCells = cells;
+}
+
+/** Apply one analogue brush over an inclusive range without replacing cell IDs. */
+export function applyAnalogueBrushRange(
+  signal: Signal,
+  startStep: number,
+  endStep: number,
+  kind: AnalogueTransition,
+  value: number,
+): void {
+  if (signal.type !== 'analogue' || !signal.analogueCells?.length) return;
+  const lo = Math.max(0, Math.min(startStep, endStep));
+  const hi = Math.min(
+    signal.analogueCells.length - 1,
+    Math.max(startStep, endStep),
+  );
+  if (lo > hi) return;
+
+  const normalizedValue = finiteClamped(value, signal.analogueMin ?? 0);
+  for (let index = lo; index <= hi; index++) {
+    const cell = signal.analogueCells[index]!;
+    const previousValue =
+      index > 0
+        ? signal.analogueCells[index - 1]!.value
+        : signal.analogueMin ?? DEFAULT_ANALOGUE_MIN;
+    cell.kind = kind;
+    cell.value = normalizedValue;
+    delete cell.expression;
+    if (kind === 'samples') {
+      cell.samples = [
+        { offset: 0, value: previousValue },
+        { offset: 1, value: normalizedValue },
+      ];
+    } else {
+      delete cell.samples;
+    }
+  }
 }

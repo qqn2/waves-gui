@@ -20,6 +20,8 @@ function minimal(overrides?: Partial<ViewState>): {
     paintMode: 'set',
     paintStyle: 'replace',
     activeBitState: '1',
+    activeAnalogueKind: 'step',
+    activeAnalogueValue: 0.9,
     activeBusLabel: 'data',
     activeBusColorIndex: 2,
     activeSignalIds: [],

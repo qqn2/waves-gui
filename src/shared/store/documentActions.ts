@@ -47,7 +47,8 @@ function disableExtensionView(s: AppState & StoreActions): void {
     s.view.activeBitState = '1';
   }
   if (
-    s.view.selectedTool === 'annotation'
+    s.view.selectedTool === 'analogue-paint'
+    || s.view.selectedTool === 'annotation'
     || s.view.selectedTool === 'vertical-line'
     || s.view.selectedTool === 'horizontal-line'
     || s.view.selectedTool === 'global-compression'
