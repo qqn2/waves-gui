@@ -4,6 +4,8 @@ Status: implementation audit
 
 Last audited: 2026-07-28
 
+Actionable implementation progress: **137 / 172 (79.7%)**
+
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
 
@@ -15,16 +17,43 @@ contract live in
 
 ## Status legend
 
-- [X] Supported: imported, represented, rendered, and exported with automated
+- **Supported:** imported, represented, rendered, and exported with automated
   coverage unless a narrower scope is stated.
-- [ ] Partial: a useful subset works, but the documented Undulate feature is
+- **Partial:** a useful subset works, but the documented Undulate feature is
   not complete.
-- [ ] Unsupported: unavailable in the current implementation. Unless the item
+- **Unsupported:** unavailable in the current implementation. Unless the item
   is explicitly marked **Out of scope**, the main plan classifies it as WIP.
-- [ ] Out of scope: intentionally not planned.
-- [ ] Round-trip risk: currently accepted without an error but not preserved.
+- **Out of scope:** intentionally not planned.
+- **Round-trip risk:** currently accepted without an error but not preserved.
   Treat this as unsupported until validation blocks it or the bridge preserves
   it.
+
+## Support contract
+
+The product goal is semantic compatibility with every documented declarative
+waveform feature at the pinned Undulate revision. Compatibility has three
+levels:
+
+1. **Modeled and rendered:** the GUI understands, edits, renders, and exports
+   the feature.
+2. **Safely preserved:** safe declarative data that is not yet modeled, or was
+   introduced by a newer Undulate revision, round-trips opaquely with an
+   explicit compatibility report.
+3. **Intentionally rejected:** unsafe or permanently excluded behavior is
+   blocked with a specific explanation and is never silently discarded.
+
+The only permanent exclusions are:
+
+- Register diagrams.
+- Arbitrary code execution. The bounded documented expression subset remains
+  supported.
+- Unsafe remote resources and arbitrary CSS execution.
+- Exact implementation/backend reproduction, including embedding or invoking
+  Undulate's Python/Cairo renderer and promising pixel-identical output.
+
+Everything else in this checklist is implemented or planned. Completion
+percentages count supported items against supported plus actionable unchecked
+items; legend examples and permanent exclusions are not counted.
 
 ## Executive summary
 
@@ -40,11 +69,11 @@ contract live in
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Unsupported: styled signals, relaxed JSON/JSONML, and opaque
+- [ ] Planned: styled signals, relaxed JSON/JSONML, and opaque
   preservation. JSON, YAML, and TOML semantic interchange are supported for
   the schema subset listed here.
-- [ ] Out of scope: register diagrams and execution of Python-like analogue
-  expressions.
+- **Permanent exclusions:** register diagrams and arbitrary code execution.
+  Safe documented analogue expressions remain supported.
 
 ## 1. File formats and interchange
 
@@ -115,7 +144,7 @@ contract live in
   deterministic canonical TOML.
 - [ ] Partial: changed or newly inserted values follow the retained document's
   detected style, but byte-for-byte source preservation is not promised.
-- [ ] Unsupported: opaque preservation of unknown Undulate fields.
+- [ ] Planned: opaque preservation of safe unknown Undulate fields.
 - [X] Unknown fields on ordinary digital signals and unknown top-level fields
   route through the Undulate classifier and are rejected with revision-pinned
   object paths.
@@ -330,15 +359,16 @@ Upstream references:
 
 ### Unsupported
 
-- [ ] Unsupported: general Python expressions, arbitrary list comprehensions,
+- **Permanent exclusion:** general Python expressions, arbitrary list
+  comprehensions,
   attribute access, assignment, user-defined variables/functions, and code
   execution outside the safe documented subset.
 - [ ] Unsupported: per-signal `stroke`, `fill`, `stroke-width`,
   `stroke-dasharray`, and `font-size`.
 - [ ] Unsupported: mixed metastability/impulse symbols inside analogue wave
   strings as true Undulate states. Do not rely on `m`, `M`, `i`, or `I`.
-- [ ] Out of scope: evaluating imported Python or reproducing Undulate's
-  unrestricted expression runtime.
+- The safe documented expression subset remains the supported alternative to
+  executing imported Python.
 
 Upstream references:
 [analogue cells](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_ana_step1.rst),
@@ -359,9 +389,12 @@ Upstream references:
 ### Unsupported
 
 - [ ] Unsupported: Undulate per-object CSS-style fields on signals and edges.
-- [ ] Unsupported: remote resources, gradients, CSS variables, named colors,
-  and arbitrary CSS in annotation style values.
-- [ ] Unsupported: global Undulate CSS files and renderer style overloading.
+- [ ] Planned: expand normalized local style support, including a reviewed
+  allowlist for safe gradients, variables, and named colors where semantics
+  can be represented without CSS execution.
+- **Permanent exclusion:** remote resources, arbitrary CSS values, global CSS
+  files, and renderer style overloading that would execute or load unsafe
+  content.
 - [ ] Unsupported: lossless translation between app-native visual settings
   and Undulate style fields.
 
@@ -387,12 +420,13 @@ Upstream references:
 
 ### Unsupported
 
-- [ ] Out of scope: PDF export.
-- [ ] Unsupported: PostScript or EPS export.
-- [ ] Unsupported: terminal rendering.
-- [ ] Unsupported: invoking Undulate's Python/Cairo renderer locally.
-- [ ] Out of scope: pixel-identical output with Undulate's SVG or Cairo
-  renderers.
+- [ ] Planned: PDF export from the app renderer.
+- [ ] Planned: PostScript or EPS export where a safe client-side conversion
+  path is practical.
+- [ ] Planned: terminal rendering.
+- **Permanent exclusion:** invoking or embedding Undulate's Python/Cairo
+  renderer locally or through a server, and promising pixel-identical output
+  with Undulate's SVG or Cairo backends.
 
 Upstream reference:
 [Undulate README output formats](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/README.md).
@@ -428,11 +462,11 @@ Upstream reference:
 
 ## 9. Intentionally out of scope
 
-- [ ] Undulate register diagrams.
-- [ ] Executing Python-like analogue expressions.
-- [ ] Embedding Python, Pyodide, Cairo, or a server renderer.
-- [ ] Byte-for-byte source round-trip.
-- [ ] Pixel-identical reproduction of every Undulate renderer.
+- Register diagrams.
+- Arbitrary code execution, including unrestricted imported Python.
+- Unsafe remote resources and arbitrary CSS execution.
+- Exact implementation/backend reproduction, including embedding Python,
+  Pyodide, Cairo, or a server renderer and promising pixel-identical output.
 
 ## 10. Highest-priority gaps
 
@@ -456,6 +490,9 @@ Upstream reference:
   import plus canonical export are implemented alongside JSON. Source-
   preserving mapping-format edits are explicitly deferred; evaluate PDF
   independently after the semantic model is stable.
+- [ ] **P4 — Source and secondary-output fidelity.** Preserve comments and
+  concrete syntax for YAML/TOML where practical, and add PDF, PostScript/EPS,
+  and terminal outputs using safe app-native implementations.
 
 ## 11. Audit evidence in this repository
 

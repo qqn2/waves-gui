@@ -4,7 +4,7 @@ Status: design and implementation plan
 
 Audience: maintainers and future contributors
 
-Last updated: 2026-07-24
+Last updated: 2026-07-28
 
 Target application: `waves-gui`
 
@@ -23,18 +23,34 @@ Every documented Undulate property, value form, annotation shape, input
 format, and output capability must be classified before the application accepts
 it.
 
+The product target is every documented declarative waveform feature at the
+pinned revision. The only permanent exclusions are:
+
+1. register diagrams;
+2. arbitrary code execution;
+3. unsafe remote resources and arbitrary CSS execution;
+4. exact implementation/backend reproduction, including embedding or invoking
+   Undulate's Python/Cairo renderer and promising pixel-identical output.
+
+Byte-level source fidelity, safe additional outputs, and all other declarative
+features remain implementation targets rather than exclusions.
+
 The application must follow this decision tree:
 
 1. Detect every property and relevant value form known to the pinned Undulate
    revision.
-2. Import normally only when the feature is classified as **Supported**.
-3. Reject planned but incomplete features with
+2. Import normally when the feature is classified as **Supported**.
+3. Once opaque preservation is implemented, retain safe declarative properties
+   that are not yet modeled or come from a newer revision, report them as
+   **Preserved**, and export them unchanged.
+4. Reject planned but incomplete features that cannot yet be preserved with
    `[WIP] Feature not supported yet`.
-4. Reject intentionally excluded features with
+5. Reject the four permanent exclusions with
    `Unsupported by design`.
-5. Reject malformed, unsafe, or over-limit content as **Invalid**.
-6. Reject unrecognized properties as **Unknown**.
-7. Never accept and silently discard any of these categories.
+6. Reject malformed, unsafe, or over-limit content as **Invalid**.
+7. Until opaque preservation is available, reject unrecognized properties as
+   **Unknown**.
+8. Never accept and silently discard any category.
 
 The absence of a validation error is a product promise: applying the document
 and saving it again must not silently remove semantics.
@@ -49,6 +65,16 @@ The implemented subset is explicitly described and has completed every
 applicable item in the per-feature acceptance checklist below.
 
 Recognition or parsing alone does not count as support.
+
+#### Preserved
+
+The data is declarative and safe to retain, but the current GUI does not model
+or render it. It remains attached to its owning object, is included in
+compatibility reporting, and is exported unchanged unless a conflicting edit
+requires an explicit user decision.
+
+Preservation is a forward-compatibility guarantee, not a claim that the
+feature is rendered.
 
 #### WIP
 
@@ -76,7 +102,9 @@ intentionally excluded behavior.
 The feature is intentionally outside the product scope. The rejection must
 include the reason and, when useful, a safe alternative.
 
-Examples include register diagrams and executing imported Python expressions.
+This classification is limited to register diagrams, arbitrary code execution,
+unsafe remote/CSS resources, and exact implementation/backend reproduction.
+Safe documented analogue expressions are not excluded.
 
 Required message form:
 
@@ -125,6 +153,7 @@ type UndulateFindingKind =
   | 'unsupported-by-design'
   | 'invalid'
   | 'unknown'
+  | 'preserved'
   | 'converted';
 
 interface UndulateFinding {
@@ -637,10 +666,10 @@ Evidence:
 
 Classification: Supported safe subset
 
-Scope: safe declarative `fill`, `stroke`, `stroke-width`, and
-`stroke-dasharray` fields on the currently typed text, vertical-line,
-horizontal-line, and full-span global-compression annotations. Remote
-resources, CSS variables, gradients, and arbitrary CSS remain invalid.
+Scope: safe declarative `fill`, `stroke`, `stroke-width`,
+`stroke-dasharray`, `font-size`, and `text_background` fields on typed
+annotations. Remote resources and arbitrary CSS remain invalid; additional
+normalized local style values remain planned.
 
 Acceptance:
 
@@ -669,14 +698,14 @@ Evidence:
 - Fixtures: `tests/fixtures/undulate/annotations-styles.json`.
 - UX: Fill, Stroke, Stroke width, and Dash pattern fields appear in the
   annotation inspector.
-- Remaining limitations: font sizing and `text_background` remain WIP.
+- Remaining limitations: additional local style vocabularies remain WIP.
 
 #### WIP — analogue
 
-- [ ] Proven semantic conversion for analogue `repeat`.
+- [x] Proven semantic conversion for analogue `repeat`.
 - [ ] Proven semantic conversion for arbitrary `a` sample times.
-- [ ] Explicit `VDDA` and `VSSA` context.
-- [ ] Dedicated graphical sampled-curve editor.
+- [x] Explicit `VDDA` and `VSSA` context.
+- [x] Dedicated graphical sampled-curve editor.
 - [ ] Explicit overlay-group model.
 - [ ] Four-wave interoperability constraint.
 - [ ] Ambiguous overlay selection and cycling.
@@ -691,16 +720,16 @@ Evidence:
 - [ ] Safe global style configuration.
 - [ ] PDF export.
 - [ ] PostScript/EPS export, if still product-relevant when PDF lands.
+- [ ] Terminal rendering.
+- [ ] Byte-for-byte JSON/YAML/TOML source preservation where practical.
 
 #### Unsupported by design
 
-- [ ] Register diagrams — separate diagram product outside this waveform
-  editor.
-- [ ] Executing imported Python-like expressions — violates the local safe-data
-  model.
-- [ ] Embedding Python, Pyodide, Cairo, or a server renderer.
-- [ ] Byte-for-byte source preservation.
-- [ ] Pixel-identical reproduction of every Undulate renderer.
+- Register diagrams — a separate diagram product outside this waveform editor.
+- Arbitrary code execution — safe documented expressions remain supported.
+- Unsafe remote resources and arbitrary CSS execution.
+- Exact implementation/backend reproduction, including embedding Python,
+  Pyodide, Cairo, or a server renderer and promising pixel-identical output.
 
 ### 0.9 Required work order
 
@@ -926,6 +955,7 @@ The project will not:
 - embed or reproduce Undulate's Python execution runtime;
 - embed Python, Pyodide, Cairo, or a server-side renderer;
 - execute imported Python analogue expressions;
+- load unsafe remote style resources or execute arbitrary CSS;
 - promise pixel-identical output with every Undulate renderer;
 - support Undulate register diagrams; register descriptions are a separate
   diagram product and are intentionally outside the waveform editor scope;
@@ -933,11 +963,11 @@ The project will not:
 - redesign the primary toolbar or general application layout;
 - silently delete, flatten, or approximate unsupported features.
 
-Except for register diagrams, arbitrary Python execution, and pixel-identical
-Cairo reproduction, standard Undulate waveform features and formats remain
-implementation targets. PDF, PostScript, and EPS may be added through safe
-browser-native exporters without requiring Cairo compatibility at the byte or
-pixel level.
+Except for register diagrams, arbitrary code execution, unsafe remote/CSS
+resources, and exact implementation/backend reproduction, standard Undulate
+waveform features and formats remain implementation targets. PDF, PostScript,
+EPS, terminal output, and concrete-syntax preservation may be added through
+safe app-native implementations without requiring backend compatibility.
 
 ## 5. Terminology
 
@@ -2237,9 +2267,10 @@ evidence warrants revisiting them:
 12. JSON support comes before YAML and TOML.
 13. Annotations and styling should precede analogue overlays.
 14. Python/Cairo is not embedded into the browser app.
-15. Register diagrams are permanently out of scope; all other declarative and
-    numeric Undulate waveform features remain browser-native implementation
-    targets.
+15. The permanent exclusions are register diagrams, arbitrary code execution,
+    unsafe remote/CSS resources, and exact implementation/backend
+    reproduction. All other declarative and numeric Undulate waveform features
+    remain implementation targets.
 
 ## 27. Open design questions
 
