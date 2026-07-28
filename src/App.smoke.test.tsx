@@ -98,7 +98,7 @@ describe('App smoke', () => {
     ).toContain('Analog inspector');
     expect(
       host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
-    ).toContain('Ludwig context');
+    ).toContain('Static context');
 
     await act(async () => {
       const annotationId = useStore.getState().addTextAnnotation({

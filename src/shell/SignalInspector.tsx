@@ -278,7 +278,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               </section>
 
               <section className={styles.inspectorSection}>
-                <h2>Ludwig context</h2>
+                <h2>Static context</h2>
                 <label className={styles.inspectorField}>
                   <span>VSSA</span>
                   <input
