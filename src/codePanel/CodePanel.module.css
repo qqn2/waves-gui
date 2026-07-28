@@ -41,6 +41,41 @@
   justify-content: flex-end;
 }
 
+.formatToggle {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border, #333);
+  border-radius: 4px;
+}
+
+.formatToggleButton {
+  padding: 3px 7px;
+  border: 0;
+  border-right: 1px solid var(--border, #333);
+  background: var(--bg-app, #1a1a1a);
+  color: var(--text-secondary, #999);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  cursor: pointer;
+}
+
+.formatToggleButton:last-child {
+  border-right: 0;
+}
+
+.formatToggleButton:hover:not(:disabled) {
+  color: var(--accent, #4a9eff);
+}
+
+.formatToggleButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.formatToggleButtonActive {
+  background: var(--selection-fill);
+  color: var(--accent, #4a9eff);
+}
+
 .iconBtn {
   display: inline-flex;
   align-items: center;

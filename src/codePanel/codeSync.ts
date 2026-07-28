@@ -68,6 +68,23 @@ export function diagramToCodeString(diagram: DiagramState): string {
   return diagramToCodeStringForFormat(diagram, diagramCodeFormat(diagram));
 }
 
+export function diagramWithUndulateCodeFormat(
+  diagram: DiagramState,
+  format: Extract<DiagramCodeFormat, 'undulate' | 'undulate-yaml'>,
+): DiagramState {
+  return {
+    ...diagram,
+    version: 2,
+    compatibility: {
+      ...diagram.compatibility,
+      extensionsEnabled: true,
+      sourceFormat:
+        format === 'undulate-yaml' ? 'undulate-yaml' : 'undulate-json',
+      sourceText: undefined,
+    },
+  };
+}
+
 export interface ParseCodeOptions {
   preferUndulate?: boolean;
   preferYAML?: boolean;

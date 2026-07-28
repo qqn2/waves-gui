@@ -2,6 +2,9 @@ import { Copy, ExternalLink } from 'lucide-react';
 import { CodeEditor } from './CodeEditor';
 import { confirmAndOpenInWavedrom } from './openInWavedrom';
 import { useDiagramCode } from './useDiagramCode';
+import { useStore } from '../shared/store';
+import { diagramWithUndulateCodeFormat } from './codeSync';
+import { switchCurrentDiagramFileFormat } from '../shell/FileOperations';
 import styles from './CodePanel.module.css';
 
 export function CodePanel() {
@@ -21,6 +24,16 @@ export function CodePanel() {
     }
   };
 
+  const handleFormatSwitch = (next: 'undulate' | 'undulate-yaml') => {
+    if (error || format === next) return;
+    flushCodeToDiagram();
+    const store = useStore.getState();
+    const sourceFormat =
+      next === 'undulate-yaml' ? 'undulate-yaml' : 'undulate-json';
+    switchCurrentDiagramFileFormat(sourceFormat);
+    store.applyDiagramEdit(diagramWithUndulateCodeFormat(store.diagram, next));
+  };
+
   return (
     <div className={styles.panel}>
       <div className={`${styles.toolbar} ${styles.toolbarCompact}`}>
@@ -29,6 +42,41 @@ export function CodePanel() {
             ? 'Undulate YAML'
             : format === 'undulate' ? 'Undulate JSON' : 'WaveDrom JSON'}
         </span>
+        {format !== 'wavedrom' ? (
+          <div
+            className={styles.formatToggle}
+            role="group"
+            aria-label="Undulate editor syntax"
+            title={
+              error
+                ? 'Fix the current source before changing syntax'
+                : 'Convert the current Undulate document between JSON and YAML'
+            }
+          >
+            <button
+              type="button"
+              className={`${styles.formatToggleButton} ${
+                format === 'undulate' ? styles.formatToggleButtonActive : ''
+              }`}
+              aria-pressed={format === 'undulate'}
+              disabled={Boolean(error)}
+              onClick={() => handleFormatSwitch('undulate')}
+            >
+              JSON
+            </button>
+            <button
+              type="button"
+              className={`${styles.formatToggleButton} ${
+                format === 'undulate-yaml' ? styles.formatToggleButtonActive : ''
+              }`}
+              aria-pressed={format === 'undulate-yaml'}
+              disabled={Boolean(error)}
+              onClick={() => handleFormatSwitch('undulate-yaml')}
+            >
+              YAML
+            </button>
+          </div>
+        ) : null}
         <span className={styles.toolbarSpacer} />
         <div className={styles.toolbarActions}>
           {format === 'wavedrom' ? (

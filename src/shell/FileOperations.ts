@@ -44,6 +44,24 @@ export function forgetCurrentFileHandle(): void {
   retainedFileFormat = null;
 }
 
+export function switchCurrentDiagramFileFormat(
+  format: Extract<DiagramSourceFormat, 'undulate-json' | 'undulate-yaml'>,
+): void {
+  retainedFileHandle = null;
+  retainedFileFormat = format;
+  useStore.setState((state) => {
+    const name = state.view.fileName;
+    if (!name) return;
+    const base = name
+      .replace(/\.undulate\.(?:json|ya?ml)$/i, '')
+      .replace(/\.(?:json|wp|ya?ml)$/i, '');
+    state.view.fileName =
+      format === 'undulate-yaml'
+        ? `${base}.undulate.yaml`
+        : `${base}.undulate.json`;
+  });
+}
+
 type DiagramFileFormat = NonNullable<typeof retainedFileFormat>;
 
 function detectJSONFormat(value: unknown): Exclude<DiagramFileFormat, 'undulate-yaml'> {
@@ -252,7 +270,11 @@ export async function saveDiagramFile(
   if (w.showSaveFilePicker) {
     try {
       const handle = await w.showSaveFilePicker({
-        suggestedName: existingName ?? 'diagram.json',
+        suggestedName:
+          existingName
+          ?? (format === 'undulate-yaml'
+            ? 'diagram.undulate.yaml'
+            : 'diagram.json'),
         types: [
           {
             description: 'Waveform document',

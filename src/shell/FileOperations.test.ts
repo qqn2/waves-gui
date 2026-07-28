@@ -7,6 +7,7 @@ import {
   openDiagramFile,
   saveCurrentDiagramFile,
   saveDiagramFile,
+  switchCurrentDiagramFileFormat,
 } from './FileOperations';
 import { DRAFT_STORAGE_KEY, saveDraft } from './soloDesk/localDraft';
 
@@ -243,6 +244,42 @@ annotations:
     expect(saved).toContain('system clock:');
     expect(saved).toContain('annotations:');
     expect(saved).not.toContain('signal:');
+  });
+
+  it('detaches the retained handle and changes the suggested name when syntax is toggled', async () => {
+    const originalWritable = vi.fn();
+    const file = new File([
+      JSON.stringify({
+        signal: [{ name: 'clk', wave: 'p...' }],
+        annotations: [{ text: 'Setup', x: 1.5, y: 0.5 }],
+      }),
+    ], 'opened.undulate.json', { type: 'application/json' });
+    const openedHandle = {
+      name: 'opened.undulate.json',
+      getFile: vi.fn().mockResolvedValue(file),
+      createWritable: originalWritable,
+    } as unknown as FileSystemFileHandle;
+    const replacementHandle = {
+      name: 'opened.undulate.yaml',
+      createWritable: vi.fn().mockResolvedValue({
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
+      }),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([
+      openedHandle,
+    ]);
+    const savePicker = vi.fn().mockResolvedValue(replacementHandle);
+    (window as PickerWindow).showSaveFilePicker = savePicker;
+
+    await openDiagramFile();
+    switchCurrentDiagramFileFormat('undulate-yaml');
+    await saveCurrentDiagramFile();
+
+    expect(originalWritable).not.toHaveBeenCalled();
+    expect(savePicker).toHaveBeenCalledWith(expect.objectContaining({
+      suggestedName: 'opened.undulate.yaml',
+    }));
   });
 
   it('rejects WIP file content without mutating the open document or handle', async () => {

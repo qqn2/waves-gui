@@ -81,6 +81,10 @@ contract live in
   dependency edges, annotations, and `(x, y)` coordinate anchors.
 - [X] Canonical Undulate YAML output through Save and Export. Opened `.yaml`
   and `.yml` files remain YAML after GUI and code-editor changes.
+- [X] The Undulate code-panel toolbar can explicitly convert a valid document
+  between JSON and YAML syntax. Conversion preserves diagram semantics,
+  changes the subsequent Save format, and detaches an incompatible retained
+  file handle so the original file is not overwritten with the wrong syntax.
 - [X] YAML import rejects duplicate keys, aliases/anchors, explicit tags,
   merge keys, unsafe object keys, oversized documents, excessive node counts,
   and excessive nesting before schema validation.

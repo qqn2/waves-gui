@@ -5,6 +5,7 @@ import {
   detectCodeFormat,
   diagramCodeFormat,
   diagramToCodeString,
+  diagramWithUndulateCodeFormat,
   validateCodeString,
   parseCodeToDiagram,
 } from './codeSync';
@@ -59,6 +60,25 @@ annotations:
       preferUndulate: true,
       preferYAML: true,
     })).toBeNull();
+  });
+
+  it('switches Undulate editor syntax without mutating diagram content', () => {
+    const diagram = sampleDiagram();
+    diagram.compatibility = {
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+      sourceText: '{"signal":[]}',
+    };
+
+    const yaml = diagramWithUndulateCodeFormat(diagram, 'undulate-yaml');
+    expect(yaml).not.toBe(diagram);
+    expect(yaml.signals).toBe(diagram.signals);
+    expect(yaml.compatibility).toMatchObject({
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-yaml',
+    });
+    expect(yaml.compatibility?.sourceText).toBeUndefined();
+    expect(diagram.compatibility.sourceFormat).toBe('undulate-json');
   });
 
   it('validateCodeString rejects invalid JSON and schema errors', () => {
