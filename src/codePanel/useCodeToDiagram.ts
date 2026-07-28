@@ -14,9 +14,11 @@ export function useCodeToDiagram(onApplied?: () => void) {
 
   const applyCodeToDiagram = useCallback(
     (newCode: string): string | null => {
-      const preferUndulate =
-        diagramCodeFormat(useStore.getState().diagram) === 'undulate';
-      const result = parseCodeToDiagram(newCode, { preferUndulate });
+      const format = diagramCodeFormat(useStore.getState().diagram);
+      const result = parseCodeToDiagram(newCode, {
+        preferUndulate: format !== 'wavedrom',
+        preferYAML: format === 'undulate-yaml',
+      });
       if (result.ok === false) return result.error;
       applyDiagramEdit(result.diagram);
       suppressDiagramToCodeSyncRef.current = useStore.getState().view.diagramRevision;

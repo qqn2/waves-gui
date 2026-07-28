@@ -2,6 +2,7 @@ import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import {
   fromUndulateJSON,
   isUndulateJSON,
+  parseUndulateYAML,
   validateUndulateJSON,
   type UndulateRoot,
 } from '../undulateBridge';
@@ -35,7 +36,7 @@ type FilePickerWindow = Window & {
 let retainedFileHandle: FileSystemFileHandle | null = null;
 let retainedFileFormat: Extract<
   DiagramSourceFormat,
-  'wavedrom-json' | 'undulate-json'
+  'wavedrom-json' | 'undulate-json' | 'undulate-yaml'
 > | null = null;
 
 export function forgetCurrentFileHandle(): void {
@@ -43,9 +44,9 @@ export function forgetCurrentFileHandle(): void {
   retainedFileFormat = null;
 }
 
-type JSONFileFormat = NonNullable<typeof retainedFileFormat>;
+type DiagramFileFormat = NonNullable<typeof retainedFileFormat>;
 
-function detectJSONFormat(value: unknown): JSONFileFormat {
+function detectJSONFormat(value: unknown): Exclude<DiagramFileFormat, 'undulate-yaml'> {
   return isUndulateJSON(value)
     ? 'undulate-json'
     : 'wavedrom-json';
@@ -53,7 +54,7 @@ function detectJSONFormat(value: unknown): JSONFileFormat {
 
 function parseDiagramJSON(value: unknown, sourceText?: string): {
   diagram: DiagramState;
-  format: JSONFileFormat;
+  format: DiagramFileFormat;
 } | { error: string } {
   const format = detectJSONFormat(value);
   const error =
@@ -81,7 +82,7 @@ function parseDiagramJSON(value: unknown, sourceText?: string): {
 
 function parseDiagramFile(file: File, text: string): {
   diagram: DiagramState;
-  format: JSONFileFormat;
+  format: DiagramFileFormat;
 } | { error: string } {
   if (file.name.toLowerCase().endsWith('.vcd')) {
     const root = vcdToWavedromJSON(text);
@@ -92,6 +93,24 @@ function parseDiagramFile(file: File, text: string): {
       format: 'wavedrom-json',
     };
   }
+  if (/\.ya?ml$/i.test(file.name)) {
+    try {
+      const root = parseUndulateYAML(text);
+      const error = validateUndulateJSON(root);
+      if (error) return { error };
+      const diagram = fromUndulateJSON(root);
+      diagram.compatibility = {
+        ...diagram.compatibility,
+        sourceFormat: 'undulate-yaml',
+        sourceText: text,
+      };
+      return { diagram, format: 'undulate-yaml' };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : 'Invalid Undulate YAML',
+      };
+    }
+  }
   try {
     return parseDiagramJSON(parseJSON5Source(text), text);
   } catch (error) {
@@ -99,7 +118,11 @@ function parseDiagramFile(file: File, text: string): {
   }
 }
 
-function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
+function saveFormatForDiagram(diagram: DiagramState): DiagramFileFormat {
+  if (retainedFileFormat === 'undulate-yaml') return 'undulate-yaml';
+  if (diagram.compatibility?.sourceFormat === 'undulate-yaml') {
+    return 'undulate-yaml';
+  }
   if (scanExtensionContent(diagram).hasExtensions) return 'undulate-json';
   if (retainedFileFormat) return retainedFileFormat;
   return diagram.compatibility?.sourceFormat === 'undulate-json'
@@ -107,12 +130,18 @@ function saveFormatForDiagram(diagram: DiagramState): JSONFileFormat {
     : 'wavedrom-json';
 }
 
-function diagramBlob(diagram: DiagramState, format: JSONFileFormat): Blob {
+function diagramBlob(diagram: DiagramState, format: DiagramFileFormat): Blob {
   const codeFormat: DiagramCodeFormat =
-    format === 'undulate-json' ? 'undulate' : 'wavedrom';
+    format === 'undulate-yaml'
+      ? 'undulate-yaml'
+      : format === 'undulate-json' ? 'undulate' : 'wavedrom';
   return new Blob(
     [diagramToCodeStringForFormat(diagram, codeFormat)],
-    { type: 'application/json;charset=utf-8' },
+    {
+      type: format === 'undulate-yaml'
+        ? 'application/yaml;charset=utf-8'
+        : 'application/json;charset=utf-8',
+    },
   );
 }
 
@@ -145,7 +174,11 @@ export async function openDiagramFile(): Promise<void> {
         types: [
           {
             description: 'Waveform files',
-            accept: { 'application/json': ['.json', '.wp'], 'text/plain': ['.vcd'] },
+            accept: {
+              'application/json': ['.json', '.wp'],
+              'application/yaml': ['.yaml', '.yml'],
+              'text/plain': ['.vcd'],
+            },
           },
         ],
       });
@@ -170,7 +203,8 @@ export async function openDiagramFile(): Promise<void> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,.wp,.vcd,application/json,text/plain';
+    input.accept =
+      '.json,.wp,.yaml,.yml,.vcd,application/json,application/yaml,text/plain';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -221,8 +255,11 @@ export async function saveDiagramFile(
         suggestedName: existingName ?? 'diagram.json',
         types: [
           {
-            description: 'Waveform JSON',
-            accept: { 'application/json': ['.json'] },
+            description: 'Waveform document',
+            accept: {
+              'application/json': ['.json'],
+              'application/yaml': ['.yaml', '.yml'],
+            },
           },
         ],
       });

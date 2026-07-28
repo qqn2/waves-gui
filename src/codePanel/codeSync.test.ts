@@ -38,6 +38,29 @@ describe('codeSync', () => {
     expect(Array.isArray(parsed.signal)).toBe(true);
   });
 
+  it('edits an opened Undulate YAML document as YAML', () => {
+    const result = parseCodeToDiagram(`
+clk:
+  wave: p...
+annotations:
+  - text: Setup
+    x: 1.5
+    y: 0.5
+`, { preferUndulate: true, preferYAML: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.diagram.compatibility?.sourceFormat).toBe('undulate-yaml');
+    const code = diagramToCodeString(result.diagram);
+    expect(code).toContain('clk:');
+    expect(code).toContain('annotations:');
+    expect(code).not.toContain('"signal"');
+    expect(validateCodeString(code, {
+      preferUndulate: true,
+      preferYAML: true,
+    })).toBeNull();
+  });
+
   it('validateCodeString rejects invalid JSON and schema errors', () => {
     expect(validateCodeString('{not json')).toMatch(/Invalid JSON/);
     expect(validateCodeString('{"foo":1}')).toMatch(/signal/);

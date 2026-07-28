@@ -7,6 +7,7 @@ import {
   highlightActiveLine,
 } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
+import { yaml } from '@codemirror/lang-yaml';
 import { defaultKeymap } from '@codemirror/commands';
 import { linter, lintGutter } from '@codemirror/lint';
 import {
@@ -26,10 +27,11 @@ export interface CodeEditorProps {
   format: DiagramCodeFormat;
 }
 
-function jsonLinter(format: DiagramCodeFormat) {
+function codeLinter(format: DiagramCodeFormat) {
   return linter((view) => {
     const message = validateCodeString(view.state.doc.toString(), {
-      preferUndulate: format === 'undulate',
+      preferUndulate: format !== 'wavedrom',
+      preferYAML: format === 'undulate-yaml',
     });
     if (!message) return [];
     return [
@@ -112,6 +114,7 @@ export function CodeEditor({
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const lintCompartmentRef = useRef(new Compartment());
+  const languageCompartmentRef = useRef(new Compartment());
   const onChangeRef = useRef(onChange);
   const onBlurRef = useRef(onBlur);
   const syncingRef = useRef(false);
@@ -129,8 +132,10 @@ export function CodeEditor({
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
-          json(),
-          lintCompartmentRef.current.of(jsonLinter(format)),
+          languageCompartmentRef.current.of(
+            format === 'undulate-yaml' ? yaml() : json(),
+          ),
+          lintCompartmentRef.current.of(codeLinter(format)),
           lintGutter(),
           editorTheme(),
           keymap.of([...unifiedHistoryKeymap, ...defaultKeymap]),
@@ -173,7 +178,12 @@ export function CodeEditor({
     const view = viewRef.current;
     if (!view) return;
     view.dispatch({
-      effects: lintCompartmentRef.current.reconfigure(jsonLinter(format)),
+      effects: [
+        languageCompartmentRef.current.reconfigure(
+          format === 'undulate-yaml' ? yaml() : json(),
+        ),
+        lintCompartmentRef.current.reconfigure(codeLinter(format)),
+      ],
     });
   }, [format]);
 

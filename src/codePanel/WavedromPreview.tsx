@@ -50,8 +50,11 @@ export function WavedromPreview({
     void (async () => {
       try {
         let parsed: { config?: { skin?: string } };
-        if (format === 'undulate') {
-          const result = parseCodeToDiagram(code, { preferUndulate: true });
+        if (format !== 'wavedrom') {
+          const result = parseCodeToDiagram(code, {
+            preferUndulate: true,
+            preferYAML: format === 'undulate-yaml',
+          });
           if (result.ok === false) throw new Error(result.error);
           if (extensionsEnabled) {
             const currentView = useStore.getState().view;

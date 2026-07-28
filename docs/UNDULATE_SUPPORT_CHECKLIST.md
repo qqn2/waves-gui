@@ -2,7 +2,7 @@
 
 Status: implementation audit
 
-Last audited: 2026-07-27
+Last audited: 2026-07-28
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -40,8 +40,9 @@ contract live in
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Unsupported: styled signals, YAML, TOML, relaxed JSON/JSONML, and opaque
-  preservation.
+- [ ] Unsupported: styled signals, TOML, relaxed JSON/JSONML, and opaque
+  preservation. YAML semantic interchange is supported for the schema subset
+  listed here.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
   expressions.
 
@@ -75,12 +76,25 @@ contract live in
   are accepted in Undulate mode and reported as errors in WaveDrom mode.
 - [X] Online WaveDrom Editor export requires an explicit warning that the
   exported JSON is sent to `wavedrom.com`; cancelling sends nothing.
+- [X] Safe Undulate YAML 1.2 input through File Open and the code editor,
+  including upstream mapping-key signal names, nested mapping groups,
+  dependency edges, annotations, and `(x, y)` coordinate anchors.
+- [X] Canonical Undulate YAML output through Save and Export. Opened `.yaml`
+  and `.yml` files remain YAML after GUI and code-editor changes.
+- [X] YAML import rejects duplicate keys, aliases/anchors, explicit tags,
+  merge keys, unsafe object keys, oversized documents, excessive node counts,
+  and excessive nesting before schema validation.
+- [X] YAML export rejects duplicate or reserved signal names that cannot be
+  represented losslessly as mapping keys.
 
 ### Partial or unsupported
 
 - [ ] Partial: Undulate JSON is supported, but only the schema subset listed
   in this document. This is not full Undulate JSON compatibility.
-- [ ] Unsupported: YAML input and output.
+- [ ] Partial: YAML supports semantic import/edit/export for the same validated
+  Undulate subset as JSON. Comments, anchors, aliases, tags, original quoting,
+  and byte-level formatting are intentionally not preserved in this first
+  slice; Save writes deterministic canonical YAML.
 - [ ] Unsupported: TOML input and output.
 - [ ] Partial: changed or newly inserted values follow the retained document's
   detected style, but byte-for-byte source preservation is not promised.
@@ -421,8 +435,9 @@ Upstream reference:
   Signal and edge styles remain.
 - [ ] **P2 — Opaque preservation.** Retain safe unknown declarative data and
   report when an edit invalidates it.
-- [ ] **P3 — Additional formats and outputs.** Add safe YAML/TOML adapters and
-  evaluate PDF only after the semantic model is stable.
+- [ ] **P3 — Additional formats and outputs.** Safe semantic YAML import and
+  canonical export are implemented. TOML and any later source-preserving YAML
+  mode remain; evaluate PDF only after the semantic model is stable.
 
 ## 11. Audit evidence in this repository
 
@@ -432,6 +447,7 @@ Primary implementation:
 - `src/codePanel/codeSync.ts`
 - `src/shell/FileOperations.ts`
 - `src/undulateBridge/undulateJSON.ts`
+- `src/undulateBridge/undulateYAML.ts`
 - `src/undulateBridge/types.ts`
 - `src/shared/types.ts`
 - `src/shared/analogue.ts`
@@ -450,6 +466,7 @@ Primary automated coverage:
 - `src/shell/FileOperations.test.ts`
 - `src/shell/soloDesk/soloDesk.test.ts`
 - `src/undulateBridge/undulateJSON.test.ts`
+- `src/undulateBridge/undulateYAML.test.ts`
 - `src/undulateBridge/upstreamRoundTrip.test.ts`
 - `src/undulateBridge/visualConformance.test.ts`
 - `src/shared/store.test.ts`

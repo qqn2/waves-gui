@@ -25,7 +25,9 @@ export function CodePanel() {
     <div className={styles.panel}>
       <div className={`${styles.toolbar} ${styles.toolbarCompact}`}>
         <span className={styles.title}>
-          {format === 'undulate' ? 'Undulate JSON' : 'WaveDrom JSON'}
+          {format === 'undulate-yaml'
+            ? 'Undulate YAML'
+            : format === 'undulate' ? 'Undulate JSON' : 'WaveDrom JSON'}
         </span>
         <span className={styles.toolbarSpacer} />
         <div className={styles.toolbarActions}>

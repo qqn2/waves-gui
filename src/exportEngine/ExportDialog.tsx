@@ -2,7 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
-import { exportUndulateJSON, exportWavedromJSON } from './exportJSON';
+import {
+  exportUndulateJSON,
+  exportUndulateYAML,
+  exportWavedromJSON,
+} from './exportJSON';
 import {
   undulateCompatibilityFindings,
   waveDromCompatibilityFindings,
@@ -26,6 +30,7 @@ export type ExportFormat =
   | 'jpg'
   | 'json'
   | 'undulate-json'
+  | 'undulate-yaml'
   | 'wavedrom-editor';
 
 export interface ExportDialogProps {
@@ -82,7 +87,7 @@ export function ExportDialog({
   const compatibilityFindings =
     format === 'json' || format === 'wavedrom-editor'
       ? waveDromCompatibilityFindings(diagram)
-      : format === 'undulate-json'
+      : format === 'undulate-json' || format === 'undulate-yaml'
         ? undulateCompatibilityFindings(diagram)
         : [];
 
@@ -96,6 +101,8 @@ export function ExportDialog({
         exportWavedromJSON(diagram, view);
       } else if (format === 'undulate-json') {
         exportUndulateJSON(diagram, view);
+      } else if (format === 'undulate-yaml') {
+        exportUndulateYAML(diagram, view);
       } else if (format === 'wavedrom-editor') {
         const code = JSON.stringify(toWavedromJSON(diagram), null, 2);
         if (!confirmAndOpenInWavedrom(code)) return;
@@ -210,6 +217,7 @@ export function ExportDialog({
             <option value="jpg">JPG</option>
             <option value="json">WaveDrom JSON</option>
             <option value="undulate-json">Undulate JSON</option>
+            <option value="undulate-yaml">Undulate YAML</option>
             <option value="wavedrom-editor">Open in WaveDrom Editor (online)</option>
           </select>
         </div>

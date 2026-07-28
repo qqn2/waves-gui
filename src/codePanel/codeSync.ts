@@ -18,6 +18,8 @@ import {
 import {
   fromUndulateJSON,
   isUndulateJSON,
+  parseUndulateYAML,
+  stringifyUndulateYAML,
   toUndulateJSON,
   validateUndulateJSON,
 } from '../undulateBridge';
@@ -33,14 +35,14 @@ import {
 
 export const CODE_DEBOUNCE_MS = 400;
 
-export type DiagramCodeFormat = 'wavedrom' | 'undulate';
+export type DiagramCodeFormat = 'wavedrom' | 'undulate' | 'undulate-yaml';
 
 export function diagramCodeFormat(diagram: DiagramState): DiagramCodeFormat {
   const sourceFormat = diagram.compatibility?.sourceFormat;
+  if (sourceFormat === 'undulate-yaml') return 'undulate-yaml';
   return (
     diagram.compatibility?.extensionsEnabled === true
     || sourceFormat === 'undulate-json'
-    || sourceFormat === 'undulate-yaml'
     || sourceFormat === 'undulate-toml'
     || scanExtensionContent(diagram).hasExtensions
   )
@@ -52,6 +54,9 @@ export function diagramToCodeStringForFormat(
   diagram: DiagramState,
   format: DiagramCodeFormat,
 ): string {
+  if (format === 'undulate-yaml') {
+    return stringifyUndulateYAML(toUndulateJSON(diagram));
+  }
   const root =
     format === 'undulate'
       ? toUndulateJSON(diagram)
@@ -65,6 +70,17 @@ export function diagramToCodeString(diagram: DiagramState): string {
 
 export interface ParseCodeOptions {
   preferUndulate?: boolean;
+  preferYAML?: boolean;
+}
+
+function parseCodeSource(
+  code: string,
+  options: ParseCodeOptions,
+): { parsed: unknown; yaml: boolean } {
+  if (options.preferYAML) {
+    return { parsed: parseUndulateYAML(code), yaml: true };
+  }
+  return { parsed: parseJSON5Source(code), yaml: false };
 }
 
 export function detectCodeFormat(
@@ -72,11 +88,15 @@ export function detectCodeFormat(
   options: ParseCodeOptions = {},
 ): DiagramCodeFormat {
   try {
-    return isUndulateJSON(parseJSON5Source(code)) || options.preferUndulate
+    const { parsed, yaml } = parseCodeSource(code, options);
+    if (yaml) return 'undulate-yaml';
+    return isUndulateJSON(parsed) || options.preferUndulate
       ? 'undulate'
       : 'wavedrom';
   } catch {
-    return options.preferUndulate ? 'undulate' : 'wavedrom';
+    return options.preferYAML
+      ? 'undulate-yaml'
+      : options.preferUndulate ? 'undulate' : 'wavedrom';
   }
 }
 
@@ -87,11 +107,13 @@ export function validateCodeString(
 ): string | null {
   let parsed: unknown;
   try {
-    parsed = parseJSON5Source(code);
+    parsed = parseCodeSource(code, options).parsed;
   } catch (error) {
-    return json5SyntaxError(error);
+    return options.preferYAML
+      ? error instanceof Error ? error.message : 'Invalid Undulate YAML'
+      : json5SyntaxError(error);
   }
-  return isUndulateJSON(parsed) || options.preferUndulate
+  return options.preferYAML || isUndulateJSON(parsed) || options.preferUndulate
     ? validateUndulateJSON(parsed)
     : validateWavedromJSON(parsed);
 }
@@ -106,11 +128,17 @@ export function parseCodeToDiagram(
 ): ApplyCodeResult {
   let parsed: unknown;
   try {
-    parsed = parseJSON5Source(code);
+    parsed = parseCodeSource(code, options).parsed;
   } catch (error) {
-    return { ok: false, error: json5SyntaxError(error) };
+    return {
+      ok: false,
+      error: options.preferYAML
+        ? error instanceof Error ? error.message : 'Invalid Undulate YAML'
+        : json5SyntaxError(error),
+    };
   }
-  const undulate = isUndulateJSON(parsed) || options.preferUndulate;
+  const undulate =
+    options.preferYAML || isUndulateJSON(parsed) || options.preferUndulate;
   const err = undulate
     ? validateUndulateJSON(parsed)
     : validateWavedromJSON(parsed);
@@ -125,6 +153,7 @@ export function parseCodeToDiagram(
         undulate && options.preferUndulate === true
       ),
     sourceText: code,
+    ...(options.preferYAML ? { sourceFormat: 'undulate-yaml' as const } : {}),
   };
   if (undulate && options.preferUndulate && diagram.compatibility) {
     diagram.compatibility.extensionsEnabled = true;

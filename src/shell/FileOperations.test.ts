@@ -201,6 +201,50 @@ describe('FileOperations', () => {
     });
   });
 
+  it('opens mapping-based Undulate YAML and saves canonical YAML to the retained handle', async () => {
+    const write = vi.fn().mockResolvedValue(undefined);
+    const file = new File([`
+clk:
+  wave: p...
+bus:
+  wave: x=..
+  data: [idle]
+annotations:
+  - text: Setup
+    x: 1.5
+    y: 0.5
+`], 'opened.undulate.yaml', { type: 'application/yaml' });
+    const handle = {
+      name: 'opened.undulate.yaml',
+      getFile: vi.fn().mockResolvedValue(file),
+      createWritable: vi.fn().mockResolvedValue({
+        write,
+        close: vi.fn().mockResolvedValue(undefined),
+      }),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([handle]);
+
+    await openDiagramFile();
+
+    expect(useStore.getState().diagram.compatibility).toMatchObject({
+      sourceFormat: 'undulate-yaml',
+      extensionsEnabled: true,
+    });
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      name: 'clk',
+    });
+
+    const clock = useStore.getState().diagram.signals[0];
+    if (!clock || clock.type === 'group') return;
+    useStore.getState().renameSignal(clock.id, 'system clock');
+    await saveCurrentDiagramFile();
+
+    const saved = await (write.mock.calls[0]![0] as Blob).text();
+    expect(saved).toContain('system clock:');
+    expect(saved).toContain('annotations:');
+    expect(saved).not.toContain('signal:');
+  });
+
   it('rejects WIP file content without mutating the open document or handle', async () => {
     const firstFile = new File([
       JSON.stringify({ signal: [{ name: 'kept', wave: '01' }] }),
