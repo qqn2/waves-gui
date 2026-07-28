@@ -398,7 +398,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   });
 
   await page.getByRole('button', { name: /File/ }).click();
-  await page.getByRole('button', { name: 'Open…', exact: true }).click();
+  await page.getByRole('button', { name: 'Open JSON/VCD…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
