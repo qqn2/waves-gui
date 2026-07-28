@@ -53,11 +53,8 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
 
 test('round-trips Undulate canvas edits through JSON and the local render', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
-  await page.getByRole('button', { name: 'Analog', exact: true }).click();
+  await page.getByRole('button', { name: 'Add analog', exact: true }).click();
   await signalRow(page, 'analog').click();
-  const inspectorButton = page.getByRole('button', { name: /Inspector/ });
-  await expect(inspectorButton).toBeEnabled();
-  await inspectorButton.click();
   await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
 
   const editor = page.locator('.cm-content');
@@ -201,7 +198,7 @@ test('offers preserve, cancel, and remove choices when hiding Undulate', async (
   const toggle = page.getByLabel('Undulate extensions');
   const editor = page.locator('.cm-content');
   await toggle.check();
-  await page.getByRole('button', { name: 'Analog', exact: true }).click();
+  await page.getByRole('button', { name: 'Add analog', exact: true }).click();
   await expect(editor).toContainText('"analogue"');
 
   await toggle.click();
@@ -293,7 +290,10 @@ test('appends an Undulate section after the core toolbar sections', async ({ pag
     'Undulate',
   ]);
   await expect.poll(() => titlesIn(undulateTools)).toEqual([
+    'Add an analogue signal and open it in the Inspector',
+    'Analog paint (Shift+D)',
     'Text (I)',
+    'Arrow (Shift+A)',
     'V line (L)',
     'H line (Shift+L)',
     'Compress (Shift+C)',
@@ -305,11 +305,13 @@ test('appends an Undulate section after the core toolbar sections', async ({ pag
     'Group',
   ]);
   await expect(undulateTools.locator('button span')).toHaveText([
+    'Add analog',
+    'Analog paint',
     'Text',
+    'Arrow',
     'V line',
     'H line',
     'Compress',
-    'Analog',
   ]);
 });
 
@@ -708,7 +710,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   });
 
   await page.getByRole('button', { name: /File/ }).click();
-  await page.getByRole('button', { name: 'Open JSON/VCD…', exact: true }).click();
+  await page.getByRole('button', { name: 'Open document…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
@@ -743,7 +745,7 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await expect(steps).toHaveValue(before);
 });
 
-test('WIP and unknown Undulate properties report together without data loss', async ({ page }) => {
+test('unknown Undulate properties report without data loss', async ({ page }) => {
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   await replaceJson(page, JSON.stringify({
@@ -751,18 +753,15 @@ test('WIP and unknown Undulate properties report together without data loss', as
       name: 'blocked',
       wave: 'p',
       repeat: 8,
-      duty_cycles: [0.5],
       future_lane: true,
     }],
     edges: ['a->b'],
   }, null, 2));
 
   const report = page.locator('[role="alert"]').filter({
-    hasText: '[WIP] signal[0].repeat',
+    hasText: 'Unknown Undulate property signal[0].future_lane',
   });
-  await expect(report).toContainText('[WIP] signal[0].duty_cycles');
   await expect(report).toContainText('Unknown Undulate property signal[0].future_lane');
-  await expect(report).toContainText('[WIP] edges');
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(signalRow(page, 'blocked')).toHaveCount(0);
   await expect(steps).toHaveValue(before);
