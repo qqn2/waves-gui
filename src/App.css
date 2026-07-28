@@ -137,6 +137,32 @@
   white-space: nowrap;
 }
 
+.analogueBrushGhost {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+  color: var(--selection-stroke);
+  filter: drop-shadow(0 0 2px var(--bg-canvas));
+}
+
+.analogueBrushGhost path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.analogueBrushGhost circle {
+  fill: var(--bg-canvas);
+  stroke: currentColor;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
 .structuredArrowPreview {
   position: absolute;
   inset: 0;

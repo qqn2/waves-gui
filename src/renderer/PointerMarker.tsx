@@ -1,6 +1,9 @@
 import type {
+  AnalogueTransition,
+  BitState,
   DiagramState,
   EdgeAnchorPending,
+  Signal,
   Tool,
   ViewState,
 } from '../shared/types';
@@ -10,8 +13,47 @@ import { measureHeadFoot } from './renderHeadFoot';
 import type { HitTestResult } from './hitTest';
 import { findSignal } from '../shared/store';
 import { toggleBinaryBitState } from '../shared/bitToggle';
-import type { BitState } from '../shared/types';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
+
+function analogueHoverShape(
+  signal: Signal,
+  step: number,
+  kind: AnalogueTransition,
+  requestedValue: number,
+): { path: string; points: Array<{ x: number; y: number }> } {
+  const min = signal.analogueMin ?? 0;
+  const max = signal.analogueMax ?? 1.8;
+  const span = Math.max(Number.EPSILON, max - min);
+  const previous =
+    step > 0
+      ? signal.analogueCells?.[step - 1]?.value ?? min
+      : min;
+  const target = kind === 'hold' ? previous : requestedValue;
+  const y = (value: number) =>
+    8 + (1 - Math.max(0, Math.min(1, (value - min) / span))) * 84;
+  const previousY = y(previous);
+  const targetY = y(target);
+
+  if (kind === 'hold') {
+    return { path: `M0 ${previousY}H100`, points: [] };
+  }
+  if (kind === 'step') {
+    return {
+      path: `M0 ${previousY}H10V${targetY}H100`,
+      points: [],
+    };
+  }
+  if (kind === 'capacitive') {
+    return {
+      path: `M0 ${previousY}C18 ${previousY} 12 ${targetY} 48 ${targetY}S82 ${targetY} 100 ${targetY}`,
+      points: [],
+    };
+  }
+  return {
+    path: `M0 ${previousY}L100 ${targetY}`,
+    points: [{ x: 0, y: previousY }, { x: 100, y: targetY }],
+  };
+}
 
 export interface PointerMarkerProps {
   hit: HitTestResult | null;
@@ -106,8 +148,25 @@ export function PointerMarker({
       : '';
   const analoguePaintHint =
     tool === 'analogue-paint' && hit.signalType === 'analogue'
-      ? ` · ${view.activeAnalogueKind} → ${view.activeAnalogueValue}`
+      ? view.activeAnalogueKind === 'hold'
+        ? ' · . hold previous'
+        : ` · ${
+            view.activeAnalogueKind === 'step'
+              ? 's step'
+              : view.activeAnalogueKind === 'capacitive'
+                ? 'c curve'
+                : 'a samples'
+          } → ${view.activeAnalogueValue}`
       : '';
+  const analoguePreview =
+    tool === 'analogue-paint' && targetSignal.type === 'analogue'
+      ? analogueHoverShape(
+          targetSignal,
+          hit.step,
+          view.activeAnalogueKind,
+          view.activeAnalogueValue,
+        )
+      : null;
 
   let edgeHint = '';
   if (tool === 'arrow') {
@@ -145,6 +204,25 @@ export function PointerMarker({
         style={{ top, height, left: 0, right: 0 }}
         aria-hidden
       />
+      {analoguePreview ? (
+        <svg
+          className="analogueBrushGhost"
+          style={{
+            left: left + 3,
+            width: Math.max(0, cellW - 6),
+            top: top + 3,
+            height: Math.max(0, height - 6),
+          }}
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <path d={analoguePreview.path} />
+          {analoguePreview.points.map((point) => (
+            <circle key={`${point.x}-${point.y}`} cx={point.x} cy={point.y} r="3.5" />
+          ))}
+        </svg>
+      ) : null}
       <div className="pointerMarkerLabel" style={{ left: left + 4, top: top + 2 }}>
         t{hit.step} · {signalName}
         {paintHint}

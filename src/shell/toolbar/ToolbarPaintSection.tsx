@@ -9,8 +9,8 @@ import type {
   PaintMode,
   PaintStyle,
 } from '../../shared/types';
-import { Activity, ArrowLeftRight, Columns2, Plus, Zap } from 'lucide-react';
-import { useRef } from 'react';
+import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { BitStateButton } from './BitStateButton';
 import {
   BIT_STATE_LABELS,
@@ -20,6 +20,13 @@ import {
   UNDULATE_BIT_STATES,
 } from './bitStateConstants';
 import { BitValuePalette } from './BitValuePalette';
+import {
+  AnalogueBrushPalette,
+} from './AnalogueBrushPalette';
+import {
+  ANALOGUE_BRUSH_OPTIONS,
+  analogueBrushPreviewPath,
+} from './analogueBrushOptions';
 import styles from '../shell.module.css';
 
 export interface ToolbarPaintSectionProps {
@@ -160,56 +167,63 @@ export interface ToolbarAnaloguePaintSectionProps {
   value: number;
   onKindChange: (kind: AnalogueTransition) => void;
   onValueChange: (value: number) => void;
-  onAddLane: () => void;
 }
-
-const ANALOGUE_BRUSHES: Array<{
-  kind: AnalogueTransition;
-  label: string;
-  title: string;
-}> = [
-  { kind: 'hold', label: 'Hold', title: 'Hold the painted value across each cell' },
-  { kind: 'step', label: 'Step', title: 'Step immediately to the painted value' },
-  { kind: 'capacitive', label: 'Curve', title: 'Slew toward the painted value' },
-  {
-    kind: 'samples',
-    label: 'Samples',
-    title: 'Create editable sampled cells from the previous value to this value',
-  },
-];
 
 export function ToolbarAnaloguePaintSection({
   kind,
   value,
   onKindChange,
   onValueChange,
-  onAddLane,
 }: ToolbarAnaloguePaintSectionProps) {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const paletteButtonRef = useRef<HTMLButtonElement>(null);
+  const activeOption =
+    ANALOGUE_BRUSH_OPTIONS.find((option) => option.kind === kind)
+    ?? ANALOGUE_BRUSH_OPTIONS[0]!;
+
   return (
     <>
-      <span className={styles.toolGroupLabel}>Brush</span>
-      {ANALOGUE_BRUSHES.map((brush) => (
-        <button
-          key={brush.kind}
-          type="button"
-          title={brush.title}
-          className={`${styles.toolBtn} ${
-            kind === brush.kind ? styles.toolActive : ''
-          }`}
-          aria-pressed={kind === brush.kind}
-          onClick={() => onKindChange(brush.kind)}
+      <span className={styles.toolGroupLabel}>Shape</span>
+      <button
+        ref={paletteButtonRef}
+        type="button"
+        title="Choose an analogue cell shape with waveform previews"
+        className={`${styles.toolBtn} ${styles.toolActive}`}
+        aria-expanded={paletteOpen}
+        onClick={() => setPaletteOpen((open) => !open)}
+      >
+        <svg
+          className={styles.analogueBrushButtonPreview}
+          viewBox="0 0 64 22"
+          aria-hidden
         >
-          {brush.kind === 'capacitive' ? <Activity size={14} aria-hidden /> : null}
-          {brush.label}
-        </button>
-      ))}
-      <label className={styles.hscaleWrap} title="Target analogue value painted into cells">
-        <span className={styles.hscaleLabel}>Value</span>
+          <path d={analogueBrushPreviewPath(kind)} />
+        </svg>
+        {activeOption.label} ▾
+      </button>
+      {paletteOpen ? (
+        <AnalogueBrushPalette
+          anchorRef={paletteButtonRef}
+          activeKind={kind}
+          onSelect={onKindChange}
+          onClose={() => setPaletteOpen(false)}
+        />
+      ) : null}
+      <label
+        className={styles.hscaleWrap}
+        title={
+          kind === 'hold'
+            ? 'Hold previous ignores the target value'
+            : 'Target analogue value painted into cells'
+        }
+      >
+        <span className={styles.hscaleLabel}>Target</span>
         <input
           type="number"
           step="any"
           className={styles.hscaleInput}
           value={value}
+          disabled={kind === 'hold'}
           aria-label="Analogue brush value"
           onChange={(event) => {
             const next = Number(event.target.value);
@@ -217,16 +231,11 @@ export function ToolbarAnaloguePaintSection({
           }}
         />
       </label>
-      <button
-        type="button"
-        className={styles.toolBtn}
-        title="Insert and select a new analogue lane"
-        onClick={onAddLane}
-      >
-        <Plus size={14} aria-hidden /> Add lane
-      </button>
       <span className={styles.contextHint}>
-        Drag across an analogue lane to paint cells
+        {kind === 'hold'
+          ? 'Paint . to continue the previous voltage'
+          : `Paint ${activeOption.symbol} toward ${value}`}
+        {' · '}Inspector edits exact cells and points
       </span>
     </>
   );

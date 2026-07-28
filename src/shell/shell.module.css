@@ -1421,6 +1421,26 @@
   stroke-linejoin: round;
 }
 
+.valuePalettePreview circle {
+  fill: var(--bg-panel);
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.analogueBrushButtonPreview {
+  width: 34px;
+  height: 18px;
+  color: currentColor;
+}
+
+.analogueBrushButtonPreview path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .valuePaletteTileText {
   display: grid;
   min-width: 0;

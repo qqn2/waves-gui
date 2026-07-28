@@ -33,7 +33,7 @@ const CORE_MODES: ToolMode[] = [
 ];
 
 const UNDULATE_MODES: ToolMode[] = [
-  { id: 'analogue-paint', label: 'Analog', shortcut: 'Shift+D', Icon: Activity },
+  { id: 'analogue-paint', label: 'Analog paint', shortcut: 'Shift+D', Icon: Paintbrush },
   { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
   { id: 'structured-arrow', label: 'Arrow', shortcut: 'Shift+A', Icon: ArrowRight },
   { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
@@ -45,10 +45,16 @@ export function EditToolbar() {
   const tool = useStore((s) => s.view.selectedTool);
   const setTool = useStore((s) => s.setTool);
   const addSignal = useStore((s) => s.addSignal);
+  const setActiveSignalIds = useStore((s) => s.setActiveSignalIds);
   const addGroup = useStore((s) => s.addGroup);
   const extensionsEnabled = useStore(
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
+  const addAnalogueSignal = () => {
+    addSignal('analogue');
+    const added = useStore.getState().diagram.signals.at(-1);
+    if (added && added.type !== 'group') setActiveSignalIds([added.id]);
+  };
 
   return (
     <nav className={styles.editRail} aria-label="Waveform editing tools">
@@ -93,6 +99,15 @@ export function EditToolbar() {
       {extensionsEnabled && (
         <div className={styles.editRailGroup} role="group" aria-label="Undulate">
           <span className={styles.editRailLabel}>Undulate</span>
+          <button
+            type="button"
+            className={styles.railBtn}
+            title="Add an analogue signal and open it in the Inspector"
+            onClick={addAnalogueSignal}
+          >
+            <Activity size={21} strokeWidth={1.8} aria-hidden />
+            <span>Add analog</span>
+          </button>
           {UNDULATE_MODES.map(({ id, label, shortcut, Icon }) => {
             const active = tool === id;
             return (

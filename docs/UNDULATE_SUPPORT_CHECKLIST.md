@@ -551,6 +551,8 @@ Primary automated coverage:
   values, including add and remove controls.
 - [X] Keep analogue cell painting in a dedicated Undulate tool, with
   Hold/Step/Curve/Samples brushes, numeric target values, drag previews, and
-  one-history-entry range commits.
+  one-history-entry range commits. Keep Add analog and Analog paint as separate
+  actions within the Undulate group, and select new lanes for detailed
+  Inspector editing.
 - [ ] Add task-oriented samples that demonstrate each supported Undulate
   feature, in addition to the existing protocol-oriented samples.

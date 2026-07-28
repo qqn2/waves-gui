@@ -193,7 +193,10 @@ function App() {
       setInspectorVisible(true);
     } else if (!selectedSignalId) {
       setInspectorVisible(false);
-    } else if (selectedSignalType === 'vector') {
+    } else if (
+      selectedSignalType === 'vector'
+      || selectedSignalType === 'analogue'
+    ) {
       setInspectorVisible(true);
     }
   }, [selectedAnnotation, selectedSignalId, selectedSignalType]);

@@ -164,7 +164,7 @@ export function applyAnalogueBrushRange(
         ? signal.analogueCells[index - 1]!.value
         : signal.analogueMin ?? DEFAULT_ANALOGUE_MIN;
     cell.kind = kind;
-    cell.value = normalizedValue;
+    cell.value = kind === 'hold' ? previousValue : normalizedValue;
     delete cell.expression;
     if (kind === 'samples') {
       cell.samples = [

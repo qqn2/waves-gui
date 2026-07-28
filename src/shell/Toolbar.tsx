@@ -71,8 +71,6 @@ export function Toolbar({
   const setActiveBitState = useStore((s) => s.setActiveBitState);
   const setActiveAnalogueKind = useStore((s) => s.setActiveAnalogueKind);
   const setActiveAnalogueValue = useStore((s) => s.setActiveAnalogueValue);
-  const addSignal = useStore((s) => s.addSignal);
-  const setActiveSignalIds = useStore((s) => s.setActiveSignalIds);
   const setPaintMode = useStore((s) => s.setPaintMode);
   const setPaintStyle = useStore((s) => s.setPaintStyle);
   const setZoom = useStore((s) => s.setZoom);
@@ -146,19 +144,13 @@ export function Toolbar({
     }
   };
 
-  const addAnalogueLane = () => {
-    addSignal('analogue');
-    const added = useStore.getState().diagram.signals.at(-1);
-    if (added && added.type !== 'group') setActiveSignalIds([added.id]);
-  };
-
   const toolLabel =
     tool === 'cursor' || tool === 'select'
       ? 'Select'
       : tool === 'paint'
         ? 'Draw'
         : tool === 'analogue-paint'
-          ? 'Analog'
+          ? 'Analog paint'
         : tool === 'erase'
           ? 'Erase'
           : tool === 'arrow'
@@ -336,7 +328,6 @@ export function Toolbar({
             value={activeAnalogueValue}
             onKindChange={setActiveAnalogueKind}
             onValueChange={setActiveAnalogueValue}
-            onAddLane={addAnalogueLane}
           />
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (

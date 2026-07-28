@@ -147,6 +147,30 @@ describe('useStore', () => {
     ).toEqual([0, 0, 0]);
   });
 
+  it('paints hold cells with the previous voltage instead of the target', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('analogue');
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'analogue') return;
+
+    useStore.getState().paintAnalogueCellRange(signal.id, 0, 0, 'step', 1.2);
+    useStore.getState().paintAnalogueCellRange(signal.id, 1, 2, 'hold', 0.3);
+
+    const painted = useStore.getState().diagram.signals[0];
+    expect(
+      painted?.type === 'analogue'
+        ? painted.analogueCells?.slice(0, 3).map((cell) => ({
+            kind: cell.kind,
+            value: cell.value,
+          }))
+        : null,
+    ).toEqual([
+      { kind: 'step', value: 1.2 },
+      { kind: 'hold', value: 1.2 },
+      { kind: 'hold', value: 1.2 },
+    ]);
+  });
+
   it('records a raw diagram edit in unified undo history and dirtiness', () => {
     const edited = createDefaultDiagram();
     edited.config.head = { text: 'raw edit' };
