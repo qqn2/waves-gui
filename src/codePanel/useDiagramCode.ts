@@ -39,17 +39,18 @@ export function DiagramCodeProvider({ children }: { children: ReactNode }) {
   const preferredFormat = useStore((s) => diagramCodeFormat(s.diagram));
   const preferUndulate = preferredFormat !== 'wavedrom';
   const preferYAML = preferredFormat === 'undulate-yaml';
+  const preferTOML = preferredFormat === 'undulate-toml';
   const [code, setCode] = useState(() => diagramToCodeString(useStore.getState().diagram));
   const { debouncedApply, suppressDiagramToCodeSyncRef } = useCodeToDiagram();
   const [previewCode] = useDebounce(code, PREVIEW_DEBOUNCE_MS);
 
   const format = useMemo(
-    () => detectCodeFormat(code, { preferUndulate, preferYAML }),
-    [code, preferUndulate, preferYAML],
+    () => detectCodeFormat(code, { preferUndulate, preferYAML, preferTOML }),
+    [code, preferUndulate, preferYAML, preferTOML],
   );
   const error = useMemo(
-    () => validateCodeString(code, { preferUndulate, preferYAML }),
-    [code, preferUndulate, preferYAML],
+    () => validateCodeString(code, { preferUndulate, preferYAML, preferTOML }),
+    [code, preferUndulate, preferYAML, preferTOML],
   );
 
   useEffect(() => {

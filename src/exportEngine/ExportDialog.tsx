@@ -4,6 +4,7 @@ import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
 import {
   exportUndulateJSON,
+  exportUndulateTOML,
   exportUndulateYAML,
   exportWavedromJSON,
 } from './exportJSON';
@@ -31,6 +32,7 @@ export type ExportFormat =
   | 'json'
   | 'undulate-json'
   | 'undulate-yaml'
+  | 'undulate-toml'
   | 'wavedrom-editor';
 
 export interface ExportDialogProps {
@@ -87,7 +89,9 @@ export function ExportDialog({
   const compatibilityFindings =
     format === 'json' || format === 'wavedrom-editor'
       ? waveDromCompatibilityFindings(diagram)
-      : format === 'undulate-json' || format === 'undulate-yaml'
+      : format === 'undulate-json'
+        || format === 'undulate-yaml'
+        || format === 'undulate-toml'
         ? undulateCompatibilityFindings(diagram)
         : [];
 
@@ -103,6 +107,8 @@ export function ExportDialog({
         exportUndulateJSON(diagram, view);
       } else if (format === 'undulate-yaml') {
         exportUndulateYAML(diagram, view);
+      } else if (format === 'undulate-toml') {
+        exportUndulateTOML(diagram, view);
       } else if (format === 'wavedrom-editor') {
         const code = JSON.stringify(toWavedromJSON(diagram), null, 2);
         if (!confirmAndOpenInWavedrom(code)) return;
@@ -218,6 +224,7 @@ export function ExportDialog({
             <option value="json">WaveDrom JSON</option>
             <option value="undulate-json">Undulate JSON</option>
             <option value="undulate-yaml">Undulate YAML</option>
+            <option value="undulate-toml">Undulate TOML</option>
             <option value="wavedrom-editor">Open in WaveDrom Editor (online)</option>
           </select>
         </div>

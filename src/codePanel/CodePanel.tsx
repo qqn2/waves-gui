@@ -24,12 +24,16 @@ export function CodePanel() {
     }
   };
 
-  const handleFormatSwitch = (next: 'undulate' | 'undulate-yaml') => {
+  const handleFormatSwitch = (
+    next: 'undulate' | 'undulate-yaml' | 'undulate-toml',
+  ) => {
     if (error || format === next) return;
     flushCodeToDiagram();
     const store = useStore.getState();
     const sourceFormat =
-      next === 'undulate-yaml' ? 'undulate-yaml' : 'undulate-json';
+      next === 'undulate-yaml'
+        ? 'undulate-yaml'
+        : next === 'undulate-toml' ? 'undulate-toml' : 'undulate-json';
     switchCurrentDiagramFileFormat(sourceFormat);
     store.applyDiagramEdit(diagramWithUndulateCodeFormat(store.diagram, next));
   };
@@ -40,6 +44,8 @@ export function CodePanel() {
         <span className={styles.title}>
           {format === 'undulate-yaml'
             ? 'Undulate YAML'
+            : format === 'undulate-toml'
+              ? 'Undulate TOML'
             : format === 'undulate' ? 'Undulate JSON' : 'WaveDrom JSON'}
         </span>
         {format !== 'wavedrom' ? (
@@ -50,7 +56,7 @@ export function CodePanel() {
             title={
               error
                 ? 'Fix the current source before changing syntax'
-                : 'Convert the current Undulate document between JSON and YAML'
+                : 'Convert the current Undulate document between JSON, YAML, and TOML'
             }
           >
             <button
@@ -74,6 +80,17 @@ export function CodePanel() {
               onClick={() => handleFormatSwitch('undulate-yaml')}
             >
               YAML
+            </button>
+            <button
+              type="button"
+              className={`${styles.formatToggleButton} ${
+                format === 'undulate-toml' ? styles.formatToggleButtonActive : ''
+              }`}
+              aria-pressed={format === 'undulate-toml'}
+              disabled={Boolean(error)}
+              onClick={() => handleFormatSwitch('undulate-toml')}
+            >
+              TOML
             </button>
           </div>
         ) : null}

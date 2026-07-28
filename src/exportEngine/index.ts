@@ -7,6 +7,7 @@ export {
 export { exportSVG } from './exportSVG';
 export {
   exportUndulateJSON,
+  exportUndulateTOML,
   exportUndulateYAML,
   exportWavedromJSON,
 } from './exportJSON';

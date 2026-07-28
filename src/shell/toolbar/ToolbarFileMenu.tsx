@@ -31,7 +31,7 @@ export function ToolbarFileMenu({
               New
             </button>
             <button type="button" onClick={() => { void openDiagramFile(); onClose(); }}>
-              Open JSON/VCD…
+              Open JSON/YAML/TOML/VCD…
             </button>
             <button
               type="button"

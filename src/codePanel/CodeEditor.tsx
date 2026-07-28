@@ -8,6 +8,8 @@ import {
 } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { yaml } from '@codemirror/lang-yaml';
+import { StreamLanguage } from '@codemirror/language';
+import { toml } from '@codemirror/legacy-modes/mode/toml';
 import { defaultKeymap } from '@codemirror/commands';
 import { linter, lintGutter } from '@codemirror/lint';
 import {
@@ -32,6 +34,7 @@ function codeLinter(format: DiagramCodeFormat) {
     const message = validateCodeString(view.state.doc.toString(), {
       preferUndulate: format !== 'wavedrom',
       preferYAML: format === 'undulate-yaml',
+      preferTOML: format === 'undulate-toml',
     });
     if (!message) return [];
     return [
@@ -43,6 +46,12 @@ function codeLinter(format: DiagramCodeFormat) {
       },
     ];
   });
+}
+
+function codeLanguage(format: DiagramCodeFormat): Extension {
+  if (format === 'undulate-yaml') return yaml();
+  if (format === 'undulate-toml') return StreamLanguage.define(toml);
+  return json();
 }
 
 function editorTheme(): Extension {
@@ -132,9 +141,7 @@ export function CodeEditor({
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
-          languageCompartmentRef.current.of(
-            format === 'undulate-yaml' ? yaml() : json(),
-          ),
+          languageCompartmentRef.current.of(codeLanguage(format)),
           lintCompartmentRef.current.of(codeLinter(format)),
           lintGutter(),
           editorTheme(),
@@ -179,9 +186,7 @@ export function CodeEditor({
     if (!view) return;
     view.dispatch({
       effects: [
-        languageCompartmentRef.current.reconfigure(
-          format === 'undulate-yaml' ? yaml() : json(),
-        ),
+        languageCompartmentRef.current.reconfigure(codeLanguage(format)),
         lintCompartmentRef.current.reconfigure(codeLinter(format)),
       ],
     });

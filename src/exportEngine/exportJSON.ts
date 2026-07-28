@@ -1,6 +1,10 @@
 import { saveAs } from 'file-saver';
 import type { DiagramState, ViewState } from '../shared/types';
-import { stringifyUndulateYAML, toUndulateJSON } from '../undulateBridge';
+import {
+  stringifyUndulateTOML,
+  stringifyUndulateYAML,
+  toUndulateJSON,
+} from '../undulateBridge';
 import { toWavedromJSON } from '../wavedromBridge/toWavedromJSON';
 import { exportBaseName } from './fileName';
 
@@ -34,4 +38,14 @@ export function exportUndulateYAML(
   const blob = new Blob([text], { type: 'application/yaml;charset=utf-8' });
   const base = view ? exportBaseName(view) : 'waveform';
   saveAs(blob, `${base}.undulate.yaml`);
+}
+
+export function exportUndulateTOML(
+  diagram: DiagramState,
+  view?: ViewState,
+): void {
+  const text = stringifyUndulateTOML(toUndulateJSON(diagram));
+  const blob = new Blob([text], { type: 'application/toml;charset=utf-8' });
+  const base = view ? exportBaseName(view) : 'waveform';
+  saveAs(blob, `${base}.undulate.toml`);
 }

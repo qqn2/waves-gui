@@ -81,6 +81,34 @@ annotations:
     expect(diagram.compatibility.sourceFormat).toBe('undulate-json');
   });
 
+  it('edits an opened Undulate TOML document as TOML', () => {
+    const result = parseCodeToDiagram(`
+clk.wave = "p..."
+
+[[annotations]]
+text = "Setup"
+x = 1.5
+y = 0.5
+`, { preferUndulate: true, preferTOML: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.diagram.compatibility?.sourceFormat).toBe('undulate-toml');
+    const code = diagramToCodeString(result.diagram);
+    expect(code).toContain('[clk]');
+    expect(code).toContain('[[annotations]]');
+    expect(code).not.toContain('"signal"');
+    expect(validateCodeString(code, {
+      preferUndulate: true,
+      preferTOML: true,
+    })).toBeNull();
+
+    const yaml = diagramWithUndulateCodeFormat(result.diagram, 'undulate-yaml');
+    const toml = diagramWithUndulateCodeFormat(yaml, 'undulate-toml');
+    expect(toml.compatibility?.sourceFormat).toBe('undulate-toml');
+    expect(toml.signals).toEqual(result.diagram.signals);
+  });
+
   it('validateCodeString rejects invalid JSON and schema errors', () => {
     expect(validateCodeString('{not json')).toMatch(/Invalid JSON/);
     expect(validateCodeString('{"foo":1}')).toMatch(/signal/);

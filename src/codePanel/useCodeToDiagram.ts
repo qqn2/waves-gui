@@ -18,6 +18,7 @@ export function useCodeToDiagram(onApplied?: () => void) {
       const result = parseCodeToDiagram(newCode, {
         preferUndulate: format !== 'wavedrom',
         preferYAML: format === 'undulate-yaml',
+        preferTOML: format === 'undulate-toml',
       });
       if (result.ok === false) return result.error;
       applyDiagramEdit(result.diagram);

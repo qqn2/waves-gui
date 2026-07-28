@@ -193,8 +193,8 @@ export interface DiagramCompatibility {
   sourceFormat?: DiagramSourceFormat;
   sourceRevision?: string;
   /**
-   * Original source text. JSON5 uses it for CST-preserving edits; YAML keeps
-   * it only as source metadata and is rewritten canonically after GUI edits.
+   * Original source text. JSON5 uses it for CST-preserving edits; YAML and
+   * TOML keep it only as metadata and are rewritten canonically after edits.
    */
   sourceText?: string;
 }

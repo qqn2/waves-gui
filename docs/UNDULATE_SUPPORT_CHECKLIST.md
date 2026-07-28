@@ -40,9 +40,9 @@ contract live in
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Unsupported: styled signals, TOML, relaxed JSON/JSONML, and opaque
-  preservation. YAML semantic interchange is supported for the schema subset
-  listed here.
+- [ ] Unsupported: styled signals, relaxed JSON/JSONML, and opaque
+  preservation. JSON, YAML, and TOML semantic interchange are supported for
+  the schema subset listed here.
 - [ ] Out of scope: register diagrams and execution of Python-like analogue
   expressions.
 
@@ -90,6 +90,16 @@ contract live in
   and excessive nesting before schema validation.
 - [X] YAML export rejects duplicate or reserved signal names that cannot be
   represented losslessly as mapping keys.
+- [X] Safe Undulate TOML input through File Open and the code editor, including
+  upstream dotted-key signals, nested tables/groups, arrays of annotation
+  tables, dependency edges, and coordinate anchors.
+- [X] Canonical Undulate TOML output through Save and Export. Opened `.toml`
+  files remain TOML after GUI and code-editor changes.
+- [X] TOML import rejects duplicate and unsafe keys, dates/times, non-finite
+  values, lossy integers, oversized documents, excessive value counts, and
+  excessive nesting before schema validation.
+- [X] The Undulate code-panel toolbar converts valid documents among all three
+  supported interchange syntaxes: JSON, YAML, and TOML.
 
 ### Partial or unsupported
 
@@ -99,7 +109,10 @@ contract live in
   Undulate subset as JSON. Comments, anchors, aliases, tags, original quoting,
   and byte-level formatting are intentionally not preserved in this first
   slice; Save writes deterministic canonical YAML.
-- [ ] Unsupported: TOML input and output.
+- [ ] Partial: TOML supports semantic import/edit/export for the same validated
+  Undulate subset as JSON. Comments, original dotted/table layout, quoting, and
+  byte-level formatting are intentionally not preserved; Save writes
+  deterministic canonical TOML.
 - [ ] Partial: changed or newly inserted values follow the retained document's
   detected style, but byte-for-byte source preservation is not promised.
 - [ ] Unsupported: opaque preservation of unknown Undulate fields.
@@ -439,9 +452,10 @@ Upstream reference:
   Signal and edge styles remain.
 - [ ] **P2 — Opaque preservation.** Retain safe unknown declarative data and
   report when an edit invalidates it.
-- [ ] **P3 — Additional formats and outputs.** Safe semantic YAML import and
-  canonical export are implemented. TOML and any later source-preserving YAML
-  mode remain; evaluate PDF only after the semantic model is stable.
+- [X] **P3 — Additional formats and outputs.** Safe semantic YAML and TOML
+  import plus canonical export are implemented alongside JSON. Source-
+  preserving mapping-format edits are explicitly deferred; evaluate PDF
+  independently after the semantic model is stable.
 
 ## 11. Audit evidence in this repository
 
@@ -452,6 +466,8 @@ Primary implementation:
 - `src/shell/FileOperations.ts`
 - `src/undulateBridge/undulateJSON.ts`
 - `src/undulateBridge/undulateYAML.ts`
+- `src/undulateBridge/undulateTOML.ts`
+- `src/undulateBridge/mappingFormat.ts`
 - `src/undulateBridge/types.ts`
 - `src/shared/types.ts`
 - `src/shared/analogue.ts`
@@ -471,6 +487,7 @@ Primary automated coverage:
 - `src/shell/soloDesk/soloDesk.test.ts`
 - `src/undulateBridge/undulateJSON.test.ts`
 - `src/undulateBridge/undulateYAML.test.ts`
+- `src/undulateBridge/undulateTOML.test.ts`
 - `src/undulateBridge/upstreamRoundTrip.test.ts`
 - `src/undulateBridge/visualConformance.test.ts`
 - `src/shared/store.test.ts`

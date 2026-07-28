@@ -2,6 +2,7 @@ import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import {
   fromUndulateJSON,
   isUndulateJSON,
+  parseUndulateTOML,
   parseUndulateYAML,
   validateUndulateJSON,
   type UndulateRoot,
@@ -36,7 +37,7 @@ type FilePickerWindow = Window & {
 let retainedFileHandle: FileSystemFileHandle | null = null;
 let retainedFileFormat: Extract<
   DiagramSourceFormat,
-  'wavedrom-json' | 'undulate-json' | 'undulate-yaml'
+  'wavedrom-json' | 'undulate-json' | 'undulate-yaml' | 'undulate-toml'
 > | null = null;
 
 export function forgetCurrentFileHandle(): void {
@@ -45,7 +46,10 @@ export function forgetCurrentFileHandle(): void {
 }
 
 export function switchCurrentDiagramFileFormat(
-  format: Extract<DiagramSourceFormat, 'undulate-json' | 'undulate-yaml'>,
+  format: Extract<
+    DiagramSourceFormat,
+    'undulate-json' | 'undulate-yaml' | 'undulate-toml'
+  >,
 ): void {
   retainedFileHandle = null;
   retainedFileFormat = format;
@@ -53,18 +57,22 @@ export function switchCurrentDiagramFileFormat(
     const name = state.view.fileName;
     if (!name) return;
     const base = name
-      .replace(/\.undulate\.(?:json|ya?ml)$/i, '')
-      .replace(/\.(?:json|wp|ya?ml)$/i, '');
+      .replace(/\.undulate\.(?:json|ya?ml|toml)$/i, '')
+      .replace(/\.(?:json|wp|ya?ml|toml)$/i, '');
     state.view.fileName =
       format === 'undulate-yaml'
         ? `${base}.undulate.yaml`
-        : `${base}.undulate.json`;
+        : format === 'undulate-toml'
+          ? `${base}.undulate.toml`
+          : `${base}.undulate.json`;
   });
 }
 
 type DiagramFileFormat = NonNullable<typeof retainedFileFormat>;
 
-function detectJSONFormat(value: unknown): Exclude<DiagramFileFormat, 'undulate-yaml'> {
+function detectJSONFormat(
+  value: unknown,
+): Exclude<DiagramFileFormat, 'undulate-yaml' | 'undulate-toml'> {
   return isUndulateJSON(value)
     ? 'undulate-json'
     : 'wavedrom-json';
@@ -129,6 +137,24 @@ function parseDiagramFile(file: File, text: string): {
       };
     }
   }
+  if (/\.toml$/i.test(file.name)) {
+    try {
+      const root = parseUndulateTOML(text);
+      const error = validateUndulateJSON(root);
+      if (error) return { error };
+      const diagram = fromUndulateJSON(root);
+      diagram.compatibility = {
+        ...diagram.compatibility,
+        sourceFormat: 'undulate-toml',
+        sourceText: text,
+      };
+      return { diagram, format: 'undulate-toml' };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : 'Invalid Undulate TOML',
+      };
+    }
+  }
   try {
     return parseDiagramJSON(parseJSON5Source(text), text);
   } catch (error) {
@@ -138,8 +164,12 @@ function parseDiagramFile(file: File, text: string): {
 
 function saveFormatForDiagram(diagram: DiagramState): DiagramFileFormat {
   if (retainedFileFormat === 'undulate-yaml') return 'undulate-yaml';
+  if (retainedFileFormat === 'undulate-toml') return 'undulate-toml';
   if (diagram.compatibility?.sourceFormat === 'undulate-yaml') {
     return 'undulate-yaml';
+  }
+  if (diagram.compatibility?.sourceFormat === 'undulate-toml') {
+    return 'undulate-toml';
   }
   if (scanExtensionContent(diagram).hasExtensions) return 'undulate-json';
   if (retainedFileFormat) return retainedFileFormat;
@@ -152,12 +182,16 @@ function diagramBlob(diagram: DiagramState, format: DiagramFileFormat): Blob {
   const codeFormat: DiagramCodeFormat =
     format === 'undulate-yaml'
       ? 'undulate-yaml'
+      : format === 'undulate-toml'
+        ? 'undulate-toml'
       : format === 'undulate-json' ? 'undulate' : 'wavedrom';
   return new Blob(
     [diagramToCodeStringForFormat(diagram, codeFormat)],
     {
       type: format === 'undulate-yaml'
         ? 'application/yaml;charset=utf-8'
+        : format === 'undulate-toml'
+          ? 'application/toml;charset=utf-8'
         : 'application/json;charset=utf-8',
     },
   );
@@ -195,6 +229,7 @@ export async function openDiagramFile(): Promise<void> {
             accept: {
               'application/json': ['.json', '.wp'],
               'application/yaml': ['.yaml', '.yml'],
+              'application/toml': ['.toml'],
               'text/plain': ['.vcd'],
             },
           },
@@ -222,7 +257,7 @@ export async function openDiagramFile(): Promise<void> {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept =
-      '.json,.wp,.yaml,.yml,.vcd,application/json,application/yaml,text/plain';
+      '.json,.wp,.yaml,.yml,.toml,.vcd,application/json,application/yaml,application/toml,text/plain';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -274,6 +309,8 @@ export async function saveDiagramFile(
           existingName
           ?? (format === 'undulate-yaml'
             ? 'diagram.undulate.yaml'
+            : format === 'undulate-toml'
+              ? 'diagram.undulate.toml'
             : 'diagram.json'),
         types: [
           {
@@ -281,6 +318,7 @@ export async function saveDiagramFile(
             accept: {
               'application/json': ['.json'],
               'application/yaml': ['.yaml', '.yml'],
+              'application/toml': ['.toml'],
             },
           },
         ],

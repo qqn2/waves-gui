@@ -54,6 +54,7 @@ export function WavedromPreview({
           const result = parseCodeToDiagram(code, {
             preferUndulate: true,
             preferYAML: format === 'undulate-yaml',
+            preferTOML: format === 'undulate-toml',
           });
           if (result.ok === false) throw new Error(result.error);
           if (extensionsEnabled) {
