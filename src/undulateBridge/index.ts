@@ -17,6 +17,14 @@ export {
   stringifyUndulateYAML,
   undulateRootToYAMLObject,
 } from './undulateYAML';
+export {
+  MAX_UNDULATE_TOML_BYTES,
+  MAX_UNDULATE_TOML_DEPTH,
+  MAX_UNDULATE_TOML_NODES,
+  parseUndulateTOML,
+  stringifyUndulateTOML,
+  undulateRootToTOMLObject,
+} from './undulateTOML';
 export type {
   UndulateRoot,
   UndulateAnalogueValue,
