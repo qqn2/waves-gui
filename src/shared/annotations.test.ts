@@ -111,6 +111,7 @@ describe('annotations', () => {
     expect(scanExtensionContent({ annotations: [] })).toEqual({
       annotationCount: 0,
       analogueSignalCount: 0,
+      extendedDigitalSignalCount: 0,
       totalCount: 0,
       hasExtensions: false,
     });
@@ -123,6 +124,29 @@ describe('annotations', () => {
     ).toEqual({
       annotationCount: 1,
       analogueSignalCount: 0,
+      extendedDigitalSignalCount: 0,
+      totalCount: 1,
+      hasExtensions: true,
+    });
+    expect(
+      scanExtensionContent({
+        annotations: [],
+        signals: [
+          {
+            id: 'extended',
+            name: 'extended',
+            type: 'bit',
+            states: ['0', 'h', 'L', '1'],
+            segments: [],
+            color: '#4A9EFF',
+            rowHeight: 40,
+          },
+        ],
+      }),
+    ).toEqual({
+      annotationCount: 0,
+      analogueSignalCount: 0,
+      extendedDigitalSignalCount: 1,
       totalCount: 1,
       hasExtensions: true,
     });

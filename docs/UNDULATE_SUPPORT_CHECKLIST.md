@@ -35,6 +35,8 @@ contract live in
 - [X] Browser-native live rendering plus SVG, PNG, and JPEG export.
 - [X] Undo/redo, autosave, JSON editing, compatibility reporting, and the
   three-action disable flow for supported extension content.
+- [X] A semantic waveform-value palette exposes extended digital states by
+  meaning, preview, and JSON symbol without expanding every state inline.
 - [ ] Partial: ordinary and mixed extended digital lanes are available in
   Undulate JSON, including data, impulse, metastability, and `h`/`H`/`l`/`L`
   held clock-edge cells; extended timing arrays remain incomplete.
@@ -120,7 +122,10 @@ Upstream references:
 - [X] Metastability states `m` and `M`, resolving to zero and one.
 - [X] Impulse states `i` and `I`.
 - [X] Held clock-edge states `h`, `H`, `l`, and `L`, including uppercase edge
-  arrows and paint controls while Undulate extensions are enabled.
+  arrows.
+- [X] Undulate-only digital paint states are available from a categorized
+  value palette with semantic labels, waveform previews, raw symbols, recent
+  choices, and the active extended brush shown on the toolbar.
 
 ### Partial or unsupported
 
@@ -341,14 +346,18 @@ Upstream reference:
 - [X] **Remove Undulate features** deletes supported annotations and analogue
   lanes as one undoable edit.
 - [X] Enabling and disabling the mode participates in document history.
+- [X] Turning the mode off opens the three-action confirmation when supported
+  annotations, analogue lanes, or Undulate-only digital wave characters are
+  present; ordinary WaveDrom-only documents turn off without an unnecessary
+  prompt.
 - [X] WaveDrom export reports supported annotations and analogue lanes as
   incompatible rather than silently claiming lossless output.
 
 ### Partial
 
-- [ ] Partial: the feature-loss summary counts supported annotations and
-  analogue lanes only. It cannot count unknown fields because opaque data is
-  not preserved.
+- [ ] Partial: the feature-loss summary counts supported annotations, analogue
+  lanes, and extended digital signals. It cannot count unknown fields because
+  opaque data is not preserved.
 - [ ] Partial: the compatibility report covers typed extension objects, not
   every documented Undulate property.
 
@@ -368,7 +377,9 @@ Upstream reference:
 - [X] **P0 — Add upstream round-trip fixtures.** Import and re-export pinned
   examples for every feature marked supported.
 - [ ] **P1 — Extended digital timing.** Add `repeat`, variable periods, duty
-  cycles, and digital slew.
+  cycles, and digital slew. Start with the integer-tick foundation and
+  `repeat`/`periods` vertical slice defined in
+  [`UNDULATE_FINE_TIMING_DESIGN.md`](./UNDULATE_FINE_TIMING_DESIGN.md).
 - [ ] **P1 — Complete annotation geometry.** Add structured arrows and shapes
   with node/coordinate anchors and `dx`/`dy`. Ranged lines, compression, and
   fractional coordinates are already supported.
@@ -422,6 +433,10 @@ Primary automated coverage:
 
 - [X] Add analogue lanes from the dedicated Undulate group.
 - [X] Make selected analogue lanes available to the properties inspector.
+- [X] Keep the selected lane and properties inspector attached across JSON
+  edits that regenerate signal IDs, including safe path/name/type fallback.
+- [X] Put direct analogue step value and transition editing at the top of the
+  analogue inspector.
 - [ ] Add a dedicated sampled-curve/point editor; the current inspector edits
   the cell kind and settled value only.
 - [ ] Decide whether analogue cell painting belongs in the shared Draw tool or

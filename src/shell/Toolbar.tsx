@@ -80,6 +80,7 @@ export function Toolbar({
   const [fileOpen, setFileOpen] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
+  const [recentBits, setRecentBits] = useState<BitState[]>([]);
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -298,10 +299,16 @@ export function Toolbar({
               diagram.compatibility?.extensionsEnabled === true
             }
             moreBitsOpen={moreBitsOpen}
+            recentBits={recentBits}
             onSetPaintMode={setPaintMode}
             onSetPaintStyle={setPaintStyle}
             onSelectBit={selectBitValue}
             onToggleMoreBits={() => setMoreBitsOpen((o) => !o)}
+            onCloseMoreBits={() => setMoreBitsOpen(false)}
+            onRememberBit={(state) => setRecentBits((recent) => [
+              state,
+              ...recent.filter((item) => item !== state),
+            ].slice(0, 3))}
           />
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (

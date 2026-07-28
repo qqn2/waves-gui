@@ -93,6 +93,14 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   }, null, 2));
 
   await expect(signalRow(page, 'supply')).toBeVisible();
+  await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
+  await expect(
+    page.getByLabel('Properties inspector').locator('strong'),
+  ).toHaveText('supply');
+  const analogValue = page.getByLabel('Analog cell value');
+  await expect(analogValue).toHaveValue('0.6');
+  await analogValue.fill('0.9');
+  await expect(editor).toContainText('0.9');
   await expect(preview.locator('svg')).toContainText('Settled');
   await expect(editor).toContainText('"slewing": 4');
   await expect(editor).toContainText('"shape": "||"');
@@ -139,10 +147,21 @@ test('round-trips and renders Undulate extended digital states', async ({ page }
 
   await page.getByRole('button', { name: 'Draw', exact: true }).click();
   await page.getByRole('button', { name: 'More ▾', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'h', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'H', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'l', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'L', exact: true })).toBeVisible();
+  const valuePalette = page.getByRole('dialog', { name: 'Waveform value palette' });
+  await expect(valuePalette).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Low-going impulse (i)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'High-going impulse (I)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Resolves low (m)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Resolves high (M)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Rise and hold (h)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Rise, arrow, hold (H)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Fall and hold (l)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Fall, arrow, hold (L)' })).toBeVisible();
+  await valuePalette.getByRole('button', { name: 'Resolves high (M)' }).click();
+  await expect(valuePalette).not.toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Resolves high (M) ▾', exact: true }),
+  ).toBeVisible();
 });
 
 test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {
@@ -209,6 +228,30 @@ test('offers preserve, cancel, and remove choices when hiding Undulate', async (
   await expect(toggle).not.toBeChecked();
   await expect(editor).not.toContainText('"analogue"');
   await expect(page.getByText('WaveDrom JSON', { exact: true })).toBeVisible();
+});
+
+test('prompts before hiding Undulate wave characters', async ({ page }) => {
+  const toggle = page.getByLabel('Undulate extensions');
+
+  await toggle.check();
+  await toggle.click();
+  await expect(page.getByRole('dialog', { name: 'Turn off Undulate?' })).toHaveCount(0);
+  await expect(toggle).not.toBeChecked();
+
+  await toggle.check();
+  await replaceJson(page, JSON.stringify({
+    signal: [{ name: 'extended', wave: '0hL1' }],
+  }, null, 2));
+  await expect(signalRow(page, 'extended')).toBeVisible();
+
+  await toggle.click();
+  const dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText(
+    '1 digital signal with Undulate wave characters',
+  );
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(toggle).toBeChecked();
 });
 
 test('appends an Undulate section after the core toolbar sections', async ({ page }) => {

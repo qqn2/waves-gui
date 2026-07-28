@@ -73,7 +73,10 @@ export function ExtensionsModeToggle() {
               {summary.totalCount === 1 ? '' : 's'}: {summary.annotationCount}{' '}
               annotation{summary.annotationCount === 1 ? '' : 's'} and{' '}
               {summary.analogueSignalCount} analogue signal
-              {summary.analogueSignalCount === 1 ? '' : 's'}.
+              {summary.analogueSignalCount === 1 ? '' : 's'}, and{' '}
+              {summary.extendedDigitalSignalCount} digital signal
+              {summary.extendedDigitalSignalCount === 1 ? '' : 's'} with
+              Undulate wave characters.
             </p>
             <p>
               You can hide the features while preserving the Undulate JSON, or

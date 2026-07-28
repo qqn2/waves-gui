@@ -336,8 +336,20 @@ export function normalizeAnnotations(
 export interface ExtensionContentSummary {
   annotationCount: number;
   analogueSignalCount: number;
+  extendedDigitalSignalCount: number;
   totalCount: number;
   hasExtensions: boolean;
+}
+
+const UNDULATE_ONLY_DIGITAL_STATE_PATTERN = /[X=2-9iImMhHlL]/;
+
+export function hasUndulateOnlyDigitalStates(
+  signal: Exclude<SignalOrGroup, { type: 'group' }>,
+): boolean {
+  if (signal.type !== 'bit') return false;
+  return signal.states.some((state) => UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(state))
+    || UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(signal.wave ?? '')
+    || UNDULATE_ONLY_DIGITAL_STATE_PATTERN.test(signal.waveOverride ?? '');
 }
 
 export function scanExtensionContent(
@@ -347,17 +359,21 @@ export function scanExtensionContent(
 ): ExtensionContentSummary {
   const annotationCount = diagram.annotations?.length ?? 0;
   let analogueSignalCount = 0;
-  const countAnalogue = (signals: SignalOrGroup[]) => {
+  let extendedDigitalSignalCount = 0;
+  const countSignals = (signals: SignalOrGroup[]) => {
     for (const signal of signals) {
-      if (signal.type === 'group') countAnalogue(signal.children);
+      if (signal.type === 'group') countSignals(signal.children);
       else if (signal.type === 'analogue') analogueSignalCount++;
+      else if (hasUndulateOnlyDigitalStates(signal)) extendedDigitalSignalCount++;
     }
   };
-  countAnalogue(diagram.signals ?? []);
-  const totalCount = annotationCount + analogueSignalCount;
+  countSignals(diagram.signals ?? []);
+  const totalCount =
+    annotationCount + analogueSignalCount + extendedDigitalSignalCount;
   return {
     annotationCount,
     analogueSignalCount,
+    extendedDigitalSignalCount,
     totalCount,
     hasExtensions: totalCount > 0,
   };

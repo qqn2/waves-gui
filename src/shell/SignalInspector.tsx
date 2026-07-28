@@ -32,8 +32,14 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
-    setAnalogueCellIndex(0);
   }, [signal?.id, signal?.name]);
+
+  useEffect(() => {
+    setAnalogueCellIndex((index) => Math.max(
+      0,
+      Math.min((signal?.analogueCells?.length ?? 1) - 1, index),
+    ));
+  }, [signal?.analogueCells?.length]);
 
   const isBus = signal?.type === 'vector';
   const isAnalogue = signal?.type === 'analogue';
@@ -120,6 +126,70 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
 
           {isAnalogue ? (
             <>
+              <section className={styles.inspectorSection}>
+                <h2>Analog values</h2>
+                <label className={styles.inspectorField}>
+                  <span>Step</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={signal.analogueCells?.length ?? 1}
+                    value={analogueCellIndex + 1}
+                    aria-label="Analog value step"
+                    onChange={(event) => {
+                      const next = Number(event.target.value) - 1;
+                      setAnalogueCellIndex(Math.max(
+                        0,
+                        Math.min((signal.analogueCells?.length ?? 1) - 1, next),
+                      ));
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Value</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={analogueCell?.value ?? 0}
+                    aria-label="Analog cell value"
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        updateAnalogueCell(signal.id, analogueCellIndex, {
+                          value: Number(event.target.value),
+                        });
+                      }
+                    }}
+                  />
+                </label>
+                <label className={styles.inspectorField}>
+                  <span>Transition</span>
+                  <select
+                    value={analogueCell?.kind ?? 'hold'}
+                    aria-label="Analog cell transition"
+                    onChange={(event) => updateAnalogueCell(
+                      signal.id,
+                      analogueCellIndex,
+                      {
+                        kind: event.target.value as
+                          | 'hold'
+                          | 'step'
+                          | 'capacitive'
+                          | 'samples',
+                      },
+                    )}
+                  >
+                    <option value="hold">Hold</option>
+                    <option value="step">Step</option>
+                    <option value="capacitive">Capacitive</option>
+                    <option value="samples">Samples</option>
+                  </select>
+                </label>
+                <p className={styles.inspectorFieldHint}>
+                  Edit each waveform value directly; change Step to move through
+                  the analog cells.
+                </p>
+              </section>
+
               <section className={styles.inspectorSection}>
                 <h2>Analog range</h2>
                 <label className={styles.inspectorField}>
@@ -214,62 +284,6 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 </label>
               </section>
 
-              <section className={styles.inspectorSection}>
-                <h2>Cell</h2>
-                <label className={styles.inspectorField}>
-                  <span>Step</span>
-                  <input
-                    type="number"
-                    min={1}
-                    max={signal.analogueCells?.length ?? 1}
-                    value={analogueCellIndex + 1}
-                    onChange={(event) => {
-                      const next = Number(event.target.value) - 1;
-                      setAnalogueCellIndex(Math.max(
-                        0,
-                        Math.min((signal.analogueCells?.length ?? 1) - 1, next),
-                      ));
-                    }}
-                  />
-                </label>
-                <label className={styles.inspectorField}>
-                  <span>Transition</span>
-                  <select
-                    value={analogueCell?.kind ?? 'hold'}
-                    onChange={(event) => updateAnalogueCell(
-                      signal.id,
-                      analogueCellIndex,
-                      {
-                        kind: event.target.value as
-                          | 'hold'
-                          | 'step'
-                          | 'capacitive'
-                          | 'samples',
-                      },
-                    )}
-                  >
-                    <option value="hold">Hold</option>
-                    <option value="step">Step</option>
-                    <option value="capacitive">Capacitive</option>
-                    <option value="samples">Samples</option>
-                  </select>
-                </label>
-                <label className={styles.inspectorField}>
-                  <span>Value</span>
-                  <input
-                    type="number"
-                    step="any"
-                    value={analogueCell?.value ?? 0}
-                    onChange={(event) => {
-                      if (event.target.value) {
-                        updateAnalogueCell(signal.id, analogueCellIndex, {
-                          value: Number(event.target.value),
-                        });
-                      }
-                    }}
-                  />
-                </label>
-              </section>
             </>
           ) : null}
 

@@ -184,6 +184,36 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
   });
 
+  it('keeps the corresponding signal selected across raw JSON edits', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    useStore.getState().addSignal('bit');
+    useStore.getState().addSignal('analogue');
+    const previous = useStore.getState().diagram;
+    const selected = previous.signals[1];
+    if (!selected || selected.type !== 'analogue') return;
+    useStore.getState().setActiveSignalIds([selected.id]);
+
+    const edited = structuredClone(previous);
+    edited.signals = [edited.signals[1]!];
+    const replacement = edited.signals[0];
+    if (!replacement || replacement.type !== 'analogue') return;
+    replacement.id = 'json-replacement-id';
+    replacement.name = 'supply';
+    replacement.analogueMax = 3.3;
+    replacement.analogueCells![2]!.value = 2.4;
+
+    useStore.getState().applyDiagramEdit(edited);
+
+    expect(useStore.getState().view.activeSignalIds).toEqual([
+      'json-replacement-id',
+    ]);
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      id: 'json-replacement-id',
+      type: 'analogue',
+      analogueMax: 3.3,
+    });
+  });
+
   it('toggles Undulate extensions as an undoable document edit', () => {
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(false);
 

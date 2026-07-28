@@ -5,13 +5,16 @@ import {
 } from '../../wavedromBridge/wavedromColors';
 import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
 import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
+import { useRef } from 'react';
 import { BitStateButton } from './BitStateButton';
 import {
+  BIT_STATE_LABELS,
   EDGE_CONNECTOR_GROUPS,
   MORE_BIT_STATES,
   PRIMARY_BIT_STATES,
   UNDULATE_BIT_STATES,
 } from './bitStateConstants';
+import { BitValuePalette } from './BitValuePalette';
 import styles from '../shell.module.css';
 
 export interface ToolbarPaintSectionProps {
@@ -20,10 +23,13 @@ export interface ToolbarPaintSectionProps {
   activeBit: BitState;
   extensionsEnabled: boolean;
   moreBitsOpen: boolean;
+  recentBits: BitState[];
   onSetPaintMode: (mode: PaintMode) => void;
   onSetPaintStyle: (style: PaintStyle) => void;
   onSelectBit: (st: BitState) => void;
   onToggleMoreBits: () => void;
+  onCloseMoreBits: () => void;
+  onRememberBit: (state: BitState) => void;
 }
 
 export function ToolbarPaintSection({
@@ -32,11 +38,15 @@ export function ToolbarPaintSection({
   activeBit,
   extensionsEnabled,
   moreBitsOpen,
+  recentBits,
   onSetPaintMode,
   onSetPaintStyle,
   onSelectBit,
   onToggleMoreBits,
+  onCloseMoreBits,
+  onRememberBit,
 }: ToolbarPaintSectionProps) {
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
   const moreBitStates = extensionsEnabled
     ? [...MORE_BIT_STATES, ...UNDULATE_BIT_STATES]
     : MORE_BIT_STATES;
@@ -65,6 +75,7 @@ export function ToolbarPaintSection({
       </button>
       <span className={styles.toolGroupLabel}>Value</span>
       <button
+        ref={moreButtonRef}
         type="button"
         title="Glitch — add a spurious transition (G)"
         className={`${styles.toolBtn} ${paintMode === 'glitch' ? styles.toolActive : ''}`}
@@ -101,7 +112,11 @@ export function ToolbarPaintSection({
       ))}
       <button
         type="button"
-        title="More values — p, n, weak pull-up/down (u, d), Set mode"
+        title={
+          extensionsEnabled
+            ? 'More values — clocks, weak pull-up/down, impulse, metastability, held edges'
+            : 'More values — p, n, weak pull-up/down (u, d), Set mode'
+        }
         className={`${styles.toolBtn} ${
           moreBitsOpen || moreBitsActive ? styles.toolActive : ''
         }`}
@@ -109,28 +124,22 @@ export function ToolbarPaintSection({
         aria-pressed={moreBitsOpen}
         aria-expanded={moreBitsOpen}
       >
-        More{moreBitsActive && !moreBitsOpen ? ` (${activeBit})` : ''} ▾
+        {moreBitsActive
+          ? `${BIT_STATE_LABELS[activeBit] ?? 'More'} (${activeBit})`
+          : 'More'} ▾
       </button>
       {moreBitsOpen ? (
-        <span className={styles.paintMoreGroup}>
-          {moreBitStates.map((st) => (
-            <BitStateButton
-              key={st}
-              st={st}
-              active={paintMode === 'set' && activeBit === st}
-              onSelect={onSelectBit}
-            />
-          ))}
-          <button
-            type="button"
-            title="Set — apply the selected value"
-            className={`${styles.toolBtn} ${paintMode === 'set' ? styles.toolActive : ''}`}
-            onClick={() => onSetPaintMode('set')}
-            aria-pressed={paintMode === 'set'}
-          >
-            Set
-          </button>
-        </span>
+        <BitValuePalette
+          anchorRef={moreButtonRef}
+          activeBit={activeBit}
+          extensionsEnabled={extensionsEnabled}
+          recentBits={recentBits}
+          onSelect={(state) => {
+            onSelectBit(state);
+            onRememberBit(state);
+          }}
+          onClose={onCloseMoreBits}
+        />
       ) : null}
     </>
   );

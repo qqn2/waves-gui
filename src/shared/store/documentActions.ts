@@ -13,11 +13,12 @@ import type {
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
+  Signal,
   SignalOrGroup,
 } from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
-import { diagramsEqual, pushHistory } from './helpers';
+import { diagramsEqual, findSignal, pushHistory } from './helpers';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
@@ -31,7 +32,11 @@ function disableExtensionView(s: AppState & StoreActions): void {
   s.view.activeAnnotationId = null;
   s.view.activeSignalIds = [];
   if (
-    s.view.activeBitState === 'h'
+    s.view.activeBitState === 'i'
+    || s.view.activeBitState === 'I'
+    || s.view.activeBitState === 'm'
+    || s.view.activeBitState === 'M'
+    || s.view.activeBitState === 'h'
     || s.view.activeBitState === 'H'
     || s.view.activeBitState === 'l'
     || s.view.activeBitState === 'L'
@@ -60,6 +65,88 @@ function removeAnalogueSignals(signals: SignalOrGroup[]): SignalOrGroup[] {
     if (children.length > 0) remaining.push({ ...signal, children });
   }
   return remaining;
+}
+
+interface SignalSelectionIdentity {
+  id: string;
+  name: string;
+  type: Signal['type'];
+  path: number[];
+}
+
+function findSignalSelectionIdentity(
+  signals: SignalOrGroup[],
+  id: string,
+  parentPath: number[] = [],
+): SignalSelectionIdentity | null {
+  for (let index = 0; index < signals.length; index++) {
+    const item = signals[index]!;
+    const path = [...parentPath, index];
+    if (item.type === 'group') {
+      const nested = findSignalSelectionIdentity(item.children, id, path);
+      if (nested) return nested;
+    } else if (item.id === id) {
+      return { id, name: item.name, type: item.type, path };
+    }
+  }
+  return null;
+}
+
+function signalAtPath(
+  signals: SignalOrGroup[],
+  path: number[],
+): Signal | null {
+  let level = signals;
+  for (let depth = 0; depth < path.length; depth++) {
+    const item = level[path[depth]!];
+    if (!item) return null;
+    if (depth === path.length - 1) return item.type === 'group' ? null : item;
+    if (item.type !== 'group') return null;
+    level = item.children;
+  }
+  return null;
+}
+
+function collectMatchingSignals(
+  signals: SignalOrGroup[],
+  identity: SignalSelectionIdentity,
+  requireSameName: boolean,
+  matches: Signal[] = [],
+): Signal[] {
+  for (const item of signals) {
+    if (item.type === 'group') {
+      collectMatchingSignals(item.children, identity, requireSameName, matches);
+    } else if (
+      item.type === identity.type
+      && (!requireSameName || item.name === identity.name)
+    ) {
+      matches.push(item);
+    }
+  }
+  return matches;
+}
+
+function reconcileSignalSelection(
+  previousSignals: SignalOrGroup[],
+  nextSignals: SignalOrGroup[],
+  activeIds: string[],
+): string[] {
+  const reconciled = activeIds.flatMap((id) => {
+    let sameId: Signal | null = null;
+    findSignal(nextSignals, id, (signal) => { sameId = signal; });
+    if (sameId) return [sameId.id];
+
+    const identity = findSignalSelectionIdentity(previousSignals, id);
+    if (!identity) return [];
+    const samePath = signalAtPath(nextSignals, identity.path);
+    if (samePath?.type === identity.type) return [samePath.id];
+
+    const sameNameAndType = collectMatchingSignals(nextSignals, identity, true);
+    if (sameNameAndType.length === 1) return [sameNameAndType[0]!.id];
+    const onlySignalOfType = collectMatchingSignals(nextSignals, identity, false);
+    return onlySignalOfType.length === 1 ? [onlySignalOfType[0]!.id] : [];
+  });
+  return [...new Set(reconciled)];
 }
 
 export function createEdgeActions(set: ImmerSet): Pick<
@@ -233,8 +320,14 @@ export function createDocumentActions(set: ImmerSet): Pick<
       set((s) => {
         const normalized = normalizeDiagram(diagram);
         if (diagramsEqual(current(s.diagram), normalized)) return;
+        const activeSignalIds = reconcileSignalSelection(
+          s.diagram.signals,
+          normalized.signals,
+          s.view.activeSignalIds,
+        );
         pushHistory(s);
         s.diagram = normalized;
+        s.view.activeSignalIds = activeSignalIds;
         s.view.paintDraft = null;
         s.view.edgeAnchorPending = null;
         s.view.edgeToolHover = null;

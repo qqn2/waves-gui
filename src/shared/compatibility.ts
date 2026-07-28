@@ -37,32 +37,7 @@ export function waveDromCompatibilityFindings(
       consequence: 'Analogue lanes will be omitted from the compatible subset.',
     });
   }
-  let extendedDigitalCount = 0;
-  const countExtendedDigital = (signals: DiagramState['signals']) => {
-    for (const signal of signals) {
-      if (signal.type === 'group') {
-        countExtendedDigital(signal.children);
-      } else if (
-        signal.type === 'bit'
-        && signal.states.some((state) =>
-          state === 'X'
-          || state === '='
-          || (state >= '2' && state <= '9')
-          || state === 'i'
-          || state === 'I'
-          || state === 'm'
-          || state === 'M'
-          || state === 'h'
-          || state === 'H'
-          || state === 'l'
-          || state === 'L'
-        )
-      ) {
-        extendedDigitalCount++;
-      }
-    }
-  };
-  countExtendedDigital(diagram.signals);
+  const extendedDigitalCount = summary.extendedDigitalSignalCount;
   if (extendedDigitalCount > 0) {
     findings.push({
       level: 'unsupported',
