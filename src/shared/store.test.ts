@@ -279,7 +279,7 @@ describe('useStore', () => {
     if (bit.type !== 'group') {
       bit.node = '....';
       bit.nodeNames = { 1: 'request.ready' };
-      withNodes.edges = ['request.ready->b remove'];
+      withNodes.edges = ['request.ready->b remove', 'a-#b marked'];
     }
     useStore.getState().loadDiagram(withNodes);
     useStore.getState().addTextAnnotation({
@@ -308,7 +308,7 @@ describe('useStore', () => {
     if (bit.type !== 'group') {
       bit.node = '....';
       bit.nodeNames = { 1: 'request.ready' };
-      withNodes.edges = ['request.ready->b remove'];
+      withNodes.edges = ['request.ready->b remove', 'a-#b marked'];
     }
     useStore.getState().loadDiagram(withNodes);
     useStore.getState().addTextAnnotation({
@@ -339,6 +339,7 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.annotations).toHaveLength(1);
     expect(useStore.getState().diagram.edges).toEqual([
       'request.ready->b remove',
+      'a-#b marked',
     ]);
     expect(useStore.getState().diagram.signals[0]).toHaveProperty(
       'nodeNames.1',

@@ -33,6 +33,12 @@ export function EdgeOverlay() {
       d: string;
       hasStartArrow: boolean;
       hasArrow: boolean;
+      startMarker?: 'square' | 'circle';
+      endMarker?: 'square' | 'circle';
+      fromX: number;
+      fromY: number;
+      toX: number;
+      toY: number;
       label: string;
       labelX: number;
       labelY: number;
@@ -43,6 +49,10 @@ export function EdgeOverlay() {
     (diagram.edges ?? []).forEach((edgeStr, i) => {
       const parsed = parseEdge(edgeStr);
       if (!parsed) return;
+      if (
+        diagram.compatibility?.extensionsEnabled !== true
+        && (parsed.startMarker || parsed.endMarker)
+      ) return;
       const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
       if (!anchors) return;
       const curve = isCurvyEdgeShape(parsed.shape)
@@ -76,6 +86,12 @@ export function EdgeOverlay() {
         d,
         hasStartArrow: parsed.hasStartArrow,
         hasArrow: parsed.hasArrow,
+        ...(parsed.startMarker ? { startMarker: parsed.startMarker } : {}),
+        ...(parsed.endMarker ? { endMarker: parsed.endMarker } : {}),
+        fromX: anchors.from.x,
+        fromY: anchors.from.y,
+        toX: anchors.to.x,
+        toY: anchors.to.y,
         label: parsed.label,
         labelX: labelPos.x,
         labelY: labelPos.y - 4,
@@ -104,6 +120,38 @@ export function EdgeOverlay() {
             markerStart={s.hasStartArrow ? `url(#${ARROW_ID})` : undefined}
             markerEnd={s.hasArrow ? `url(#${ARROW_ID})` : undefined}
           />
+          {s.startMarker === 'square' ? (
+            <rect
+              className={styles.edgeEndpointMarker}
+              x={s.fromX - 4}
+              y={s.fromY - 4}
+              width={8}
+              height={8}
+            />
+          ) : s.startMarker === 'circle' ? (
+            <circle
+              className={styles.edgeEndpointMarker}
+              cx={s.fromX}
+              cy={s.fromY}
+              r={4}
+            />
+          ) : null}
+          {s.endMarker === 'square' ? (
+            <rect
+              className={styles.edgeEndpointMarker}
+              x={s.toX - 4}
+              y={s.toY - 4}
+              width={8}
+              height={8}
+            />
+          ) : s.endMarker === 'circle' ? (
+            <circle
+              className={styles.edgeEndpointMarker}
+              cx={s.toX}
+              cy={s.toY}
+              r={4}
+            />
+          ) : null}
           {s.label ? (
             <text
               className={styles.edgeLabel}

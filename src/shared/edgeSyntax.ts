@@ -24,7 +24,9 @@ export function parseUndulateEdge(value: string): ParsedUndulateEdge | null {
 export function normalizeUndulateEdge(value: string): string | null {
   const parsed = parseUndulateEdge(value);
   if (!parsed) return null;
-  const path = `${parsed.from}${parsed.connector}${parsed.to}`;
+  const path = parsed.connector.includes('#') || parsed.connector.includes('*')
+    ? `${parsed.from} ${parsed.connector} ${parsed.to}`
+    : `${parsed.from}${parsed.connector}${parsed.to}`;
   return parsed.label ? `${path} ${parsed.label}` : path;
 }
 

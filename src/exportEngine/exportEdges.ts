@@ -18,6 +18,21 @@ function edgeStroke(): string {
   );
 }
 
+function svgEndpointMarker(
+  marker: 'square' | 'circle' | undefined,
+  x: number,
+  y: number,
+  fill: string,
+): string {
+  if (marker === 'square') {
+    return `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" fill="${fill}"/>`;
+  }
+  if (marker === 'circle') {
+    return `<circle cx="${x}" cy="${y}" r="4" fill="${fill}"/>`;
+  }
+  return '';
+}
+
 export function svgEdges(
   diagram: DiagramState,
   view: ViewState,
@@ -48,6 +63,20 @@ export function svgEdges(
     parts.push(
       `<path d="${item.d}" fill="none" stroke="${stroke}" stroke-width="2" ${markers}/>`,
     );
+    const startMarker = svgEndpointMarker(
+      item.startMarker,
+      item.from.x,
+      item.from.y,
+      stroke,
+    );
+    const endMarker = svgEndpointMarker(
+      item.endMarker,
+      item.to.x,
+      item.to.y,
+      stroke,
+    );
+    if (startMarker) parts.push(startMarker);
+    if (endMarker) parts.push(endMarker);
     if (item.label) {
       parts.push(
         `<text x="${item.labelX + labelOffsetX}" y="${item.labelY}" fill="${stroke}" font-size="11" font-family="sans-serif" text-anchor="middle">${esc(item.label)}</text>`,
@@ -90,6 +119,8 @@ export function drawEdgesOnCanvas(
         drawArrowheadAtStart(ctx, item.d, stroke);
       }
     }
+    drawEndpointMarker(ctx, item.startMarker, item.from.x, item.from.y);
+    drawEndpointMarker(ctx, item.endMarker, item.to.x, item.to.y);
     if (item.label) {
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
@@ -98,6 +129,19 @@ export function drawEdgesOnCanvas(
     }
   }
   ctx.restore();
+}
+
+function drawEndpointMarker(
+  ctx: CanvasRenderingContext2D,
+  marker: 'square' | 'circle' | undefined,
+  x: number,
+  y: number,
+): void {
+  if (!marker) return;
+  ctx.beginPath();
+  if (marker === 'square') ctx.rect(x - 4, y - 4, 8, 8);
+  else ctx.arc(x, y, 4, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawArrowheadAtEnd(

@@ -117,6 +117,7 @@ describe('annotations', () => {
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 0,
       expandedNodeCount: 0,
+      extendedEdgeCount: 0,
       totalCount: 0,
       hasExtensions: false,
     });
@@ -131,6 +132,7 @@ describe('annotations', () => {
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 0,
       expandedNodeCount: 0,
+      extendedEdgeCount: 0,
       totalCount: 1,
       hasExtensions: true,
     });
@@ -154,6 +156,7 @@ describe('annotations', () => {
       analogueSignalCount: 0,
       extendedDigitalSignalCount: 1,
       expandedNodeCount: 0,
+      extendedEdgeCount: 0,
       totalCount: 1,
       hasExtensions: true,
     });
@@ -173,6 +176,16 @@ describe('annotations', () => {
       }),
     ).toMatchObject({
       expandedNodeCount: 1,
+      totalCount: 1,
+      hasExtensions: true,
+    });
+    expect(
+      scanExtensionContent({
+        annotations: [],
+        edges: ['a-#b', 'a->b'],
+      }),
+    ).toMatchObject({
+      extendedEdgeCount: 1,
       totalCount: 1,
       hasExtensions: true,
     });

@@ -55,6 +55,14 @@ export function waveDromCompatibilityFindings(
       consequence: 'Long node names will be omitted from the compatible subset.',
     });
   }
+  if (summary.extendedEdgeCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'extended-edge-markers',
+      message: `${summary.extendedEdgeCount} dependency edge${summary.extendedEdgeCount === 1 ? '' : 's'} use Undulate-only square or circle endpoint markers.`,
+      consequence: 'WaveDrom does not support # or * edge endpoint markers.',
+    });
+  }
   return findings;
 }
 

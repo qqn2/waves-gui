@@ -374,18 +374,6 @@ function scanProperties(root: Record<string, unknown>): UndulateFinding[] {
         scanNamedObject(root.head, 'head', HEAD_FIELDS, findings);
       } else if (field === 'foot') {
         scanNamedObject(root.foot, 'foot', FOOT_FIELDS, findings);
-      } else if (
-        (field === 'edge' || field === 'edges')
-        && Array.isArray(root[field])
-      ) {
-        root[field].forEach((edge, index) => {
-          if (typeof edge === 'string' && hasUndulateOnlyEdgeMarker(edge)) {
-            findings.push(wip(
-              `${field}[${index}]`,
-              'Undulate extended edge markers # and *',
-            ));
-          }
-        });
       } else if (field === 'annotations') {
         scanAnnotations(root.annotations, findings);
       }
@@ -807,6 +795,15 @@ export function isUndulateJSON(value: unknown): value is UndulateRoot {
   if (!isRecord(value)) return false;
   if (
     Object.prototype.hasOwnProperty.call(value, 'annotations')
+    || Object.prototype.hasOwnProperty.call(value, 'edges')
+    || (
+      Array.isArray(value.edge)
+      && value.edge.some(
+        (edge) =>
+          typeof edge === 'string'
+          && hasUndulateOnlyEdgeMarker(edge),
+      )
+    )
     || scanProperties(value).length > 0
   ) {
     return true;

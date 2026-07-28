@@ -132,15 +132,18 @@ Upstream references:
 - [X] Undulate expanded long node identifiers use `#` waveform placeholders
   and trailing names, resolve in dependency edges and structured annotation
   anchors, and round-trip semantically.
-- [ ] Unsupported: Undulate-only edge markers `#` and `*` and the complete
-  extended path set as structured annotations.
+- [X] Undulate dependency-edge endpoint markers `#` (square) and `*` (circle)
+  render in the live canvas and SVG/image exports and round-trip semantically.
+- [ ] Partial: dependency edges cover the complete extended path set, but the
+  arrow inspector does not yet expose square/circle endpoint markers for
+  structured annotation objects.
 - [X] Undulate's plural `edges` field imports whitespace-tolerant dependency
   paths, normalizes them for live editing/rendering, and exports canonically as
   `edges`. The shared WaveDrom `edge` spelling remains accepted on import.
 - [X] All documented straight, curved, mixed, and orthogonal middle paths are
   accepted through the plural-field adapter.
-- [X] Known extended `#` and `*` endpoint markers are detected and rejected as
-  WIP before import.
+- [X] Marker edges participate in Undulate detection, hide/preserve, explicit
+  removal, undo, and WaveDrom compatibility reporting.
 
 Upstream references:
 [digital symbols](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_dig_step1.rst),

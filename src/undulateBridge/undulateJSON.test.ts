@@ -459,7 +459,7 @@ describe('Undulate JSON bridge', () => {
     })).toContain('one safe name per # slot');
   });
 
-  it('rejects ambiguous and malformed plural edge input', () => {
+  it('rejects ambiguous and malformed plural edge input while accepting markers', () => {
     const signal = [{ name: 'clk', wave: '01', node: 'ab' }];
     expect(validateUndulateJSON({
       signal,
@@ -473,7 +473,11 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal,
       edges: ['a -* b'],
-    })).toContain('[WIP]');
+    })).toBeNull();
+    expect(toUndulateJSON(fromUndulateJSON({
+      signal,
+      edges: ['a #-* b marked'],
+    })).edges).toEqual(['a #-* b marked']);
   });
 
   it('accepts safe analogue expressions and rejects language escapes', () => {

@@ -30,6 +30,8 @@ export interface ParsedEdge {
   toNode: string;
   hasStartArrow: boolean;
   hasArrow: boolean;
+  startMarker?: 'square' | 'circle';
+  endMarker?: 'square' | 'circle';
   shape: string;
   label: string;
 }
@@ -73,13 +75,25 @@ export function parseEdge(edge: string): ParsedEdge | null {
     let connector = undulate.connector;
     const hasStartArrow = connector.startsWith('<');
     const hasArrow = connector.endsWith('>');
-    if (hasStartArrow) connector = connector.slice(1);
-    if (hasArrow) connector = connector.slice(0, -1);
+    const startMarker = connector.startsWith('#')
+      ? 'square'
+      : connector.startsWith('*')
+        ? 'circle'
+        : undefined;
+    const endMarker = connector.endsWith('#')
+      ? 'square'
+      : connector.endsWith('*')
+        ? 'circle'
+        : undefined;
+    if (hasStartArrow || startMarker) connector = connector.slice(1);
+    if (hasArrow || endMarker) connector = connector.slice(0, -1);
     return {
       fromNode: undulate.from,
       toNode: undulate.to,
       hasStartArrow,
       hasArrow,
+      ...(startMarker ? { startMarker } : {}),
+      ...(endMarker ? { endMarker } : {}),
       shape: connector || '-',
       label: undulate.label,
     };
@@ -304,6 +318,10 @@ export interface EdgeDrawItem {
   d: string;
   hasArrow: boolean;
   bidirectional: boolean;
+  startMarker?: 'square' | 'circle';
+  endMarker?: 'square' | 'circle';
+  from: CanvasAnchor;
+  to: CanvasAnchor;
   label: string;
   labelX: number;
   labelY: number;
@@ -326,6 +344,10 @@ export function buildEdgeDrawItems(
     const edgeStr = edges[i]!;
     const parsed = parseEdge(edgeStr);
     if (!parsed) continue;
+    if (
+      diagram.compatibility?.extensionsEnabled !== true
+      && (parsed.startMarker || parsed.endMarker)
+    ) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) continue;
     const curve = isCurvyEdgeShape(parsed.shape)
@@ -338,6 +360,10 @@ export function buildEdgeDrawItems(
       d,
       hasArrow: parsed.hasArrow,
       bidirectional,
+      ...(parsed.startMarker ? { startMarker: parsed.startMarker } : {}),
+      ...(parsed.endMarker ? { endMarker: parsed.endMarker } : {}),
+      from: anchors.from,
+      to: anchors.to,
       label: parsed.label,
       labelX: labelPos.x,
       labelY: labelPos.y - 4,
@@ -478,6 +504,10 @@ export function hitTestDiagramEdge(
   for (let i = edges.length - 1; i >= 0; i--) {
     const parsed = parseEdge(edges[i]!);
     if (!parsed) continue;
+    if (
+      diagram.compatibility?.extensionsEnabled !== true
+      && (parsed.startMarker || parsed.endMarker)
+    ) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) continue;
     const poly = edgePathPolyline(anchors.from, anchors.to, parsed.shape);

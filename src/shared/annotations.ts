@@ -12,6 +12,7 @@ import type {
   TextAnnotation,
   VerticalLineAnnotation,
 } from './types';
+import { parseUndulateEdge } from './edgeSyntax';
 
 export const MAX_ANNOTATIONS = 1000;
 export const MAX_ANNOTATION_TEXT_LENGTH = 2000;
@@ -463,6 +464,7 @@ export interface ExtensionContentSummary {
   analogueSignalCount: number;
   extendedDigitalSignalCount: number;
   expandedNodeCount: number;
+  extendedEdgeCount: number;
   totalCount: number;
   hasExtensions: boolean;
 }
@@ -482,12 +484,17 @@ export function hasUndulateOnlyDigitalStates(
 export function scanExtensionContent(
   diagram:
     Pick<DiagramState, 'annotations'>
-    & Partial<Pick<DiagramState, 'signals'>>,
+    & Partial<Pick<DiagramState, 'signals' | 'edges'>>,
 ): ExtensionContentSummary {
   const annotationCount = diagram.annotations?.length ?? 0;
   let analogueSignalCount = 0;
   let extendedDigitalSignalCount = 0;
   let expandedNodeCount = 0;
+  const extendedEdgeCount = (diagram.edges ?? []).filter((edge) => {
+    const parsed = parseUndulateEdge(edge);
+    return parsed?.connector.includes('#') === true
+      || parsed?.connector.includes('*') === true;
+  }).length;
   const countSignals = (signals: SignalOrGroup[]) => {
     for (const signal of signals) {
       if (signal.type === 'group') countSignals(signal.children);
@@ -503,12 +510,14 @@ export function scanExtensionContent(
     annotationCount
     + analogueSignalCount
     + extendedDigitalSignalCount
-    + expandedNodeCount;
+    + expandedNodeCount
+    + extendedEdgeCount;
   return {
     annotationCount,
     analogueSignalCount,
     extendedDigitalSignalCount,
     expandedNodeCount,
+    extendedEdgeCount,
     totalCount,
     hasExtensions: totalCount > 0,
   };

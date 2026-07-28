@@ -66,6 +66,24 @@ describe('parseEdgeString', () => {
       label: 'accepted',
     });
   });
+
+  it('parses Undulate square and circle endpoint markers', () => {
+    expect(parseEdge('a #-* b marked')).toEqual({
+      fromNode: 'a',
+      toNode: 'b',
+      hasStartArrow: false,
+      hasArrow: false,
+      startMarker: 'square',
+      endMarker: 'circle',
+      shape: '-',
+      label: 'marked',
+    });
+    expect(parseEdge('a *~# b')).toMatchObject({
+      startMarker: 'circle',
+      endMarker: 'square',
+      shape: '~',
+    });
+  });
 });
 
 describe('buildNodeIndex', () => {

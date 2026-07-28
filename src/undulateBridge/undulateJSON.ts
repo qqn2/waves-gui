@@ -289,7 +289,7 @@ function withUndulateNode(entry: WdSignal, signal: Signal): WdSignal {
 export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const root: UndulateRoot = toWavedromJSON(diagram);
   if (root.edge && root.edge.length > 0) {
-    root.edges = [...root.edge];
+    root.edges = root.edge.map((edge) => normalizeUndulateEdge(edge) ?? edge);
     delete root.edge;
   }
   root.signal = mergeUndulateSignalEntries(

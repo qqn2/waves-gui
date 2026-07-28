@@ -89,4 +89,16 @@ describe('source compatibility findings', () => {
       }),
     ]);
   });
+
+  it('reports Undulate-only dependency edge endpoint markers', () => {
+    const diagram = createDefaultDiagram();
+    diagram.edges = ['a-#b', 'a-*b'];
+    expect(waveDromCompatibilityFindings(diagram)).toEqual([
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'extended-edge-markers',
+        consequence: 'WaveDrom does not support # or * edge endpoint markers.',
+      }),
+    ]);
+  });
 });

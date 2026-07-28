@@ -78,6 +78,9 @@ export function ExtensionsModeToggle() {
               {summary.extendedDigitalSignalCount === 1 ? '' : 's'} with
               Undulate wave characters, and {summary.expandedNodeCount} expanded
               node identifier{summary.expandedNodeCount === 1 ? '' : 's'}.
+              {' '}{summary.extendedEdgeCount} dependency edge
+              {summary.extendedEdgeCount === 1 ? '' : 's'} use Undulate endpoint
+              markers.
             </p>
             <p>
               You can hide the features while preserving the Undulate JSON, or

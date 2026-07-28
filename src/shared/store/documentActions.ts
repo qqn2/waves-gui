@@ -414,7 +414,9 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.diagram.edges = s.diagram.edges.filter((edge) => {
           const parsed = parseUndulateEdge(edge);
           return !parsed
-            || (!removedNodeNames.has(parsed.from)
+            || (!parsed.connector.includes('#')
+              && !parsed.connector.includes('*')
+              && !removedNodeNames.has(parsed.from)
               && !removedNodeNames.has(parsed.to));
         });
         delete s.diagram.config.ticksPerStep;
