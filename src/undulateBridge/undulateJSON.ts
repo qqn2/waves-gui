@@ -227,6 +227,17 @@ function isDefaultAnalogueContext(context: AnalogueContext): boolean {
     && context.vdda === DEFAULT_ANALOGUE_CONTEXT.vdda;
 }
 
+function analogueCellsFingerprint(cells: AnalogueCell[]): string {
+  return JSON.stringify(cells.map((cell) => ({
+    kind: cell.kind,
+    value: cell.value,
+    ...(cell.samples ? {
+      samples: cell.samples.map(({ offset, value }) => [offset, value]),
+    } : {}),
+    ...(cell.expression ? { expression: cell.expression } : {}),
+  })));
+}
+
 function analogueToUndulateEntry(
   signal: Signal,
   context: AnalogueContext,
@@ -266,7 +277,7 @@ function analogueToUndulateEntry(
     }
     return '.';
   }).join('');
-  return {
+  const expanded: WdSignal = {
     name: signal.name,
     wave,
     analogue: values,
@@ -278,6 +289,15 @@ function analogueToUndulateEntry(
     ...(signal.overlay !== undefined ? { overlay: signal.overlay } : {}),
     ...(signal.order !== undefined ? { order: signal.order } : {}),
   };
+  const source = signal.undulateAnalogueRepeat;
+  return source && source.fingerprint === analogueCellsFingerprint(cells)
+    ? {
+        ...expanded,
+        wave: source.wave,
+        analogue: JSON.parse(JSON.stringify(source.analogue)) as unknown[],
+        repeat: source.repeat,
+      }
+    : expanded;
 }
 
 function mergeUndulateSignalEntries(
@@ -716,6 +736,19 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
           repeat: raw.repeat,
           wave: raw.wave,
           states: [...parsed.states],
+        };
+      }
+      if (
+        Array.isArray(raw.analogue)
+        && typeof raw.wave === 'string'
+        && typeof raw.repeat === 'number'
+        && raw.repeat > 1
+      ) {
+        parsed.undulateAnalogueRepeat = {
+          repeat: raw.repeat,
+          wave: raw.wave,
+          analogue: JSON.parse(JSON.stringify(raw.analogue)) as unknown[],
+          fingerprint: analogueCellsFingerprint(parsed.analogueCells ?? []),
         };
       }
       const opaque = opaqueFields(

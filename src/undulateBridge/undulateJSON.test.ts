@@ -353,12 +353,20 @@ describe('Undulate JSON bridge', () => {
       { kind: 'hold', value: 1.25 },
     ]);
     expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
-      wave: 'sc.sc.',
-      analogue: [0.5, 1.25, 0.5, 1.25],
+      wave: 'sc.',
+      analogue: [0.5, 1.25],
+      repeat: 2,
     });
-    expect(
-      (toUndulateJSON(diagram).signal[0] as { repeat?: number }).repeat,
-    ).toBeUndefined();
+    if (!signal || signal.type !== 'analogue' || !signal.analogueCells) {
+      throw new Error('expected analogue signal');
+    }
+    signal.analogueCells[0]!.value = 0.75;
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      wave: 'sc.sc.',
+      analogue: [0.75, 1.25, 0.5, 1.25],
+    });
+    expect((toUndulateJSON(diagram).signal[0] as { repeat?: number }).repeat)
+      .toBeUndefined();
     expect(validateUndulateJSON({
       signal: [{
         name: 'invalid',

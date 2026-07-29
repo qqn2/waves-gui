@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **141 / 172 (82.0%)**
+Actionable implementation progress: **142 / 172 (82.6%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -335,9 +335,9 @@ Upstream references:
 
 ### Partial
 
-- [ ] Partial: analogue repeat syntax is deliberately exported as the
-  semantically equivalent expanded sequence instead of preserving the compact
-  spelling.
+- [X] Compact analogue `repeat` spelling and its value cycle are retained while
+  imported cells remain unchanged; cell edits invalidate the compact source
+  and export the canonical expanded sequence.
 - [ ] Partial: sampled `a` cells are accepted only when their time coordinates
   already use the lossless inclusive 0..1 cell range. Other finite timebases
   are rejected until an explicit conversion model exists.

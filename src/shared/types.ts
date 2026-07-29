@@ -124,6 +124,13 @@ export interface Signal {
     wave: string;
     states: BitState[];
   };
+  /** Original compact analogue repeat spelling, retained until a cell changes. */
+  undulateAnalogueRepeat?: {
+    repeat: number;
+    wave: string;
+    analogue: unknown[];
+    fingerprint: string;
+  };
   /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
   analogueMin?: number;
   analogueMax?: number;
