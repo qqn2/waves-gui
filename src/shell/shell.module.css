@@ -36,6 +36,22 @@
   flex-direction: column;
 }
 
+.bottomDockSideBySide {
+  flex: 0 0 auto;
+  min-height: 160px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  min-width: 0;
+}
+
+.bottomDockPane {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /** When one panel is right and one bottom, core column + full-height side column. */
 .workspaceRow {
   display: flex;
@@ -255,6 +271,15 @@
   align-items: center;
   gap: 2px;
   margin-left: auto;
+}
+
+.codePanelArrangementGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 4px;
+  padding-right: 6px;
+  border-right: 1px solid var(--border);
 }
 
 .codePanelOrderGroup {

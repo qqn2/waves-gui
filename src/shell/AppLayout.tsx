@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useEffect,
   useMemo,
   useRef,
@@ -16,6 +17,7 @@ import {
   dockSlotsForPlacement,
   useSharedSidePanelsLayout,
   type DockPanelLayout,
+  type BottomDockArrangement,
   type SidePanelId,
 } from './codePanelLayout';
 import { PanelResizeHandle } from './PanelResizeHandle';
@@ -90,7 +92,12 @@ export function AppLayout({
   showRenderPanel = true,
 }: AppLayoutProps) {
   const panelScrollRef = useRef<HTMLDivElement | null>(null);
-  const [panelsLayout, updatePanelLayout, movePanelInOrder] =
+  const [
+    panelsLayout,
+    updatePanelLayout,
+    movePanelInOrder,
+    updateBottomDockLayout,
+  ] =
     useSharedSidePanelsLayout();
   const narrowLayout = useNarrowLayout();
   const effectivePanelsLayout = useMemo(
@@ -100,6 +107,7 @@ export function AppLayout({
             ...panelsLayout,
             json: { ...panelsLayout.json, placement: 'bottom' as const, dockSize: 180 },
             render: { ...panelsLayout.render, placement: 'bottom' as const, dockSize: 180 },
+            bottomArrangement: 'stacked' as const,
           }
         : panelsLayout,
     [narrowLayout, panelsLayout],
@@ -156,6 +164,11 @@ export function AppLayout({
   );
 
   const isMixedDock = rightSlots.length > 0 && bottomSlots.length > 0;
+  const showBottomArrangementControls =
+    !narrowLayout && bottomSlots.length === 2;
+  const useSideBySideBottom =
+    showBottomArrangementControls
+    && effectivePanelsLayout.bottomArrangement === 'side-by-side';
 
   const floatJson =
     showCodePanel && effectivePanelsLayout.json.placement === 'float';
@@ -216,6 +229,16 @@ export function AppLayout({
       }}
       onLayoutChange={(patch) => updatePanelLayout(panelId, patch)}
       stackAxis="y"
+      bottomArrangement={
+        showBottomArrangementControls && index === 0
+          ? effectivePanelsLayout.bottomArrangement
+          : undefined
+      }
+      onBottomArrangementChange={
+        showBottomArrangementControls && index === 0
+          ? (bottomArrangement) => updateBottomDockLayout({ bottomArrangement })
+          : undefined
+      }
       {...stackMoveProps(
         index,
         bottomSlots.length,
@@ -224,6 +247,30 @@ export function AppLayout({
       )}
     />
   ));
+
+  const bottomDockContent = useSideBySideBottom ? (
+    <BottomDockSideBySide
+      slots={bottomSlots}
+      height={effectivePanelsLayout.bottomDockSize}
+      split={effectivePanelsLayout.bottomSplit}
+      onHeightResizeStart={() => {
+        dockResizeBase.current = effectivePanelsLayout.bottomDockSize;
+      }}
+      onHeightResizeDelta={(delta) => {
+        updateBottomDockLayout({
+          bottomDockSize: clampDockSize(dockResizeBase.current - delta, 'y'),
+        });
+      }}
+      onSplitChange={(bottomSplit) => updateBottomDockLayout({ bottomSplit })}
+      onPanelLayoutChange={updatePanelLayout}
+      onArrangementChange={(bottomArrangement) =>
+        updateBottomDockLayout({ bottomArrangement })
+      }
+      movePanelInOrder={movePanelInOrder}
+    />
+  ) : (
+    bottomRows
+  );
 
   const rightColumns = rightSlots.map(({ panelId, layout }, index) => (
     <RightDockColumn
@@ -246,14 +293,14 @@ export function AppLayout({
     <div className={styles.workspaceRow}>
       <div className={styles.workspaceCore}>
         {canvasRow}
-        {bottomRows}
+        {bottomDockContent}
       </div>
       {rightColumns}
     </div>
   ) : (
     <>
       {canvasRow}
-      {bottomRows}
+      {bottomDockContent}
     </>
   );
 
@@ -354,6 +401,100 @@ function RightDockColumn({
   );
 }
 
+function BottomDockSideBySide({
+  slots,
+  height,
+  split,
+  onHeightResizeStart,
+  onHeightResizeDelta,
+  onSplitChange,
+  onPanelLayoutChange,
+  onArrangementChange,
+  movePanelInOrder,
+}: {
+  slots: { panelId: SidePanelId; layout: DockPanelLayout }[];
+  height: number;
+  split: number;
+  onHeightResizeStart: () => void;
+  onHeightResizeDelta: (delta: number) => void;
+  onSplitChange: (split: number) => void;
+  onPanelLayoutChange: (
+    panelId: SidePanelId,
+    patch: Partial<DockPanelLayout>,
+  ) => void;
+  onArrangementChange: (arrangement: BottomDockArrangement) => void;
+  movePanelInOrder: (panelId: SidePanelId, direction: -1 | 1) => void;
+}) {
+  const dockRef = useRef<HTMLDivElement | null>(null);
+  const splitResizeBase = useRef(split);
+  const splitResizeWidth = useRef(1);
+
+  return (
+    <>
+      <PanelResizeHandle
+        axis="y"
+        onResizeStart={onHeightResizeStart}
+        onResizeDelta={onHeightResizeDelta}
+      />
+      <div
+        ref={dockRef}
+        className={styles.bottomDockSideBySide}
+        style={{
+          flex: `0 1 ${height}px`,
+          height,
+          maxHeight: '72vh',
+        }}
+      >
+        {slots.map(({ panelId, layout }, index) => (
+          <Fragment key={panelId}>
+            {index > 0 ? (
+              <PanelResizeHandle
+                axis="x"
+                title="Resize bottom panel widths"
+                onResizeStart={() => {
+                  splitResizeBase.current = split;
+                  splitResizeWidth.current =
+                    dockRef.current?.getBoundingClientRect().width ?? 1;
+                }}
+                onResizeDelta={(delta) => {
+                  onSplitChange(
+                    splitResizeBase.current + delta / splitResizeWidth.current,
+                  );
+                }}
+              />
+            ) : null}
+            <div
+              className={styles.bottomDockPane}
+              style={{
+                flexBasis: `${(index === 0 ? split : 1 - split) * 100}%`,
+              }}
+            >
+              <DockPanel
+                panelId={panelId}
+                layout={layout}
+                onLayoutChange={(patch) =>
+                  onPanelLayoutChange(panelId, patch)
+                }
+                stackAxis="x"
+                bottomArrangement={index === 0 ? 'side-by-side' : undefined}
+                onBottomArrangementChange={
+                  index === 0 ? onArrangementChange : undefined
+                }
+                {...stackMoveProps(
+                  index,
+                  slots.length,
+                  panelId,
+                  movePanelInOrder,
+                )}
+              />
+            </div>
+          </Fragment>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function BottomDockRow({
   panelId,
   layout,
@@ -365,6 +506,8 @@ function BottomDockRow({
   canMoveAwayFromCanvas,
   onMoveTowardCanvas,
   onMoveAwayFromCanvas,
+  bottomArrangement,
+  onBottomArrangementChange,
 }: {
   panelId: SidePanelId;
   layout: DockPanelLayout;
@@ -376,6 +519,8 @@ function BottomDockRow({
   canMoveAwayFromCanvas?: boolean;
   onMoveTowardCanvas?: () => void;
   onMoveAwayFromCanvas?: () => void;
+  bottomArrangement?: BottomDockArrangement;
+  onBottomArrangementChange?: (arrangement: BottomDockArrangement) => void;
 }) {
   return (
     <>
@@ -402,6 +547,8 @@ function BottomDockRow({
           canMoveAwayFromCanvas={canMoveAwayFromCanvas}
           onMoveTowardCanvas={onMoveTowardCanvas}
           onMoveAwayFromCanvas={onMoveAwayFromCanvas}
+          bottomArrangement={bottomArrangement}
+          onBottomArrangementChange={onBottomArrangementChange}
         />
       </div>
     </>

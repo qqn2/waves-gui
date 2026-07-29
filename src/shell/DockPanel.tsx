@@ -1,5 +1,9 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import type { DockPanelLayout, SidePanelId } from './codePanelLayout';
+import type {
+  BottomDockArrangement,
+  DockPanelLayout,
+  SidePanelId,
+} from './codePanelLayout';
 import { CodePanelChrome } from './CodePanelChrome';
 import styles from './shell.module.css';
 
@@ -13,6 +17,8 @@ export interface DockPanelProps {
   canMoveAwayFromCanvas?: boolean;
   onMoveTowardCanvas?: () => void;
   onMoveAwayFromCanvas?: () => void;
+  bottomArrangement?: BottomDockArrangement;
+  onBottomArrangementChange?: (arrangement: BottomDockArrangement) => void;
 }
 
 const PANEL_TITLES: Record<SidePanelId, string> = {
@@ -37,6 +43,8 @@ export function DockPanel({
   canMoveAwayFromCanvas,
   onMoveTowardCanvas,
   onMoveAwayFromCanvas,
+  bottomArrangement,
+  onBottomArrangementChange,
 }: DockPanelProps) {
   const body = children ?? (
     <Suspense fallback={<div className={styles.panelLoading}>Loading panel…</div>}>
@@ -55,6 +63,8 @@ export function DockPanel({
         canMoveAwayFromCanvas={canMoveAwayFromCanvas}
         onMoveTowardCanvas={onMoveTowardCanvas}
         onMoveAwayFromCanvas={onMoveAwayFromCanvas}
+        bottomArrangement={bottomArrangement}
+        onBottomArrangementChange={onBottomArrangementChange}
       />
       <div className={styles.codePanelBody}>{body}</div>
     </div>

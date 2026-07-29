@@ -4,11 +4,17 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Columns2,
   PanelBottom,
   PanelRight,
   PictureInPicture2,
+  Rows2,
 } from 'lucide-react';
-import type { DockPanelLayout, CodePanelPlacement } from './codePanelLayout';
+import type {
+  BottomDockArrangement,
+  DockPanelLayout,
+  CodePanelPlacement,
+} from './codePanelLayout';
 import styles from './shell.module.css';
 
 export interface CodePanelChromeProps {
@@ -22,6 +28,8 @@ export interface CodePanelChromeProps {
   canMoveAwayFromCanvas?: boolean;
   onMoveTowardCanvas?: () => void;
   onMoveAwayFromCanvas?: () => void;
+  bottomArrangement?: BottomDockArrangement;
+  onBottomArrangementChange?: (arrangement: BottomDockArrangement) => void;
 }
 
 const PLACEMENTS: {
@@ -44,6 +52,8 @@ export function CodePanelChrome({
   canMoveAwayFromCanvas,
   onMoveTowardCanvas,
   onMoveAwayFromCanvas,
+  bottomArrangement,
+  onBottomArrangementChange,
 }: CodePanelChromeProps) {
   const TowardIcon = stackAxis === 'x' ? ChevronLeft : ChevronUp;
   const AwayIcon = stackAxis === 'x' ? ChevronRight : ChevronDown;
@@ -82,6 +92,43 @@ export function CodePanelChrome({
         </div>
       ) : null}
       <div className={styles.codePanelChromeActions}>
+        {bottomArrangement && onBottomArrangementChange ? (
+          <div
+            className={styles.codePanelArrangementGroup}
+            aria-label="Bottom panel arrangement"
+          >
+            <button
+              type="button"
+              className={
+                bottomArrangement === 'stacked'
+                  ? `${styles.codePanelLayoutBtn} ${styles.codePanelLayoutBtnActive}`
+                  : styles.codePanelLayoutBtn
+              }
+              title="Stack bottom panels"
+              aria-label="Stack bottom panels"
+              aria-pressed={bottomArrangement === 'stacked'}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => onBottomArrangementChange('stacked')}
+            >
+              <Rows2 size={14} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={
+                bottomArrangement === 'side-by-side'
+                  ? `${styles.codePanelLayoutBtn} ${styles.codePanelLayoutBtnActive}`
+                  : styles.codePanelLayoutBtn
+              }
+              title="Place bottom panels side by side"
+              aria-label="Place bottom panels side by side"
+              aria-pressed={bottomArrangement === 'side-by-side'}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => onBottomArrangementChange('side-by-side')}
+            >
+              <Columns2 size={14} aria-hidden />
+            </button>
+          </div>
+        ) : null}
         {PLACEMENTS.map(({ id, title: placementTitle, Icon }) => (
           <button
             key={id}
