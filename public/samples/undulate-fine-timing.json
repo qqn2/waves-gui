@@ -1,0 +1,18 @@
+{
+  "signal": [
+    {
+      "name": "fractional clock",
+      "wave": "pnpn",
+      "periods": [0.5, 1, 1.5, 2],
+      "duty_cycles": [0.25, 0.5, 0.75, 0.5],
+      "phase": -0.25,
+      "slewing": 0.08
+    },
+    {
+      "name": "repeated enable",
+      "wave": "01",
+      "repeat": 2
+    }
+  ],
+  "head": { "text": "Edit Sub-Steps, periods, duty, and phase" }
+}

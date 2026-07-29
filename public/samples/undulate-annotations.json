@@ -1,0 +1,29 @@
+{
+  "signal": [
+    { "name": "request", "wave": "01..", "node": ".#.. request.ready" },
+    { "name": "ack", "wave": "0.1.", "node": "..#. ack.done" }
+  ],
+  "annotations": [
+    {
+      "text": "setup window",
+      "x": 1.25,
+      "y": 0.35,
+      "font": "serif",
+      "font-weight": 700,
+      "font-size": "14px",
+      "fill": "#224488"
+    },
+    { "shape": "|", "x": 1.5, "from": "0%", "to": "100%" },
+    { "shape": "-", "y": 1.5, "from": 1, "to": 3 },
+    { "shape": "||", "x": 3.5 },
+    {
+      "shape": "<~>",
+      "from": "request.ready(1,-1)",
+      "to": "ack.done",
+      "text": "latency",
+      "dx": 2,
+      "dy": -1
+    }
+  ],
+  "head": { "text": "Select, drag, style, and re-anchor annotations" }
+}

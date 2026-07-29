@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **148 / 172 (86.0%)**
+Actionable implementation progress: **155 / 172 (90.1%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -273,8 +273,8 @@ Implementation design:
 
 ### Partial
 
-- [ ] Partial: step snapping remains the default for annotations created in
-  the GUI, but can be disabled per annotation.
+- [X] Annotation creation exposes a Snap On/Off control before placement;
+  snapping remains the default and can also be changed per annotation.
 - [ ] Partial: annotations are limited to 1000 objects and text is limited to
   2000 characters.
 - [ ] Partial: colors are deliberately limited to local hex, `rgb()`, and
@@ -289,7 +289,9 @@ Implementation design:
 
 - [X] Structured arrows support inspector editing, direct two-click canvas
   creation, and draggable endpoint handles.
-- [ ] Unsupported: other text styles such as arbitrary fonts and weights.
+- [X] Annotation text and arrow labels support safe local generic
+  `sans-serif`, `serif`, or `monospace` families and numeric weights 100..900;
+  arbitrary or remotely loaded fonts remain rejected.
 - [X] Malformed structured arrow anchors are rejected before import.
 - [X] Over-limit annotation counts, text, and coordinates are rejected before
   normalization can truncate or clamp them.
@@ -342,9 +344,9 @@ Upstream references:
 - [X] Compact analogue `repeat` spelling and its value cycle are retained while
   imported cells remain unchanged; cell edits invalidate the compact source
   and export the canonical expanded sequence.
-- [ ] Partial: sampled `a` cells are accepted only when their time coordinates
-  already use the lossless inclusive 0..1 cell range. Other finite timebases
-  are rejected until an explicit conversion model exists.
+- [X] Sampled `a` cells accept ascending finite time coordinates on any finite
+  domain. An explicit affine timebase maps them to editable 0..1 offsets and
+  reconstructs the original domain on export.
 - [ ] Partial: imported voltage context starts at Ludwig's 0..1.8 defaults
   because `VDDA`/`VSSA` are renderer context rather than JSON fields. Custom
   GUI rails are saved in the app document; Undulate export resolves expressions
@@ -431,10 +433,12 @@ Upstream references:
 
 ### Unsupported
 
-- [ ] Planned: PDF export from the app renderer.
+- [X] PDF export embeds a high-resolution app-rendered diagram in a
+  standards-compliant single-page PDF without invoking an external backend.
 - [ ] Planned: PostScript or EPS export where a safe client-side conversion
   path is practical.
-- [ ] Planned: terminal rendering.
+- [X] Terminal-text export renders grouped digital, vector, and analogue lanes
+  plus annotation notes as deterministic UTF-8 text.
 - **Permanent exclusion:** invoking or embedding Undulate's Python/Cairo
   renderer locally or through a server, and promising pixel-identical output
   with Undulate's SVG or Cairo backends.
@@ -465,9 +469,9 @@ Upstream reference:
 
 ### Partial
 
-- [ ] Partial: the feature-loss summary counts supported annotations, analogue
-  lanes, and extended digital signals. The export report covers all preserved
-  opaque fields, including orphaned fields after a signal or annotation deletion.
+- [X] The feature-loss summary covers annotations, analogue lanes, extended
+  timing/states, expanded nodes, marked edges, signal styles, explicit overlay
+  groups, and all preserved or orphaned opaque fields for the selected target.
 - [ ] Partial: the compatibility report covers typed extension objects, not
   every documented Undulate property.
 
@@ -567,5 +571,6 @@ Primary automated coverage:
   one-history-entry range commits. Keep Add analog and Analog paint as separate
   actions within the Undulate group, and select new lanes for detailed
   Inspector editing.
-- [ ] Add task-oriented samples that demonstrate each supported Undulate
-  feature, in addition to the existing protocol-oriented samples.
+- [X] Task-oriented Undulate samples cover fine timing, analogue painting and
+  overlays, structured annotations, expanded nodes, marked edges, extended
+  states, and safe styling alongside the protocol-oriented samples.

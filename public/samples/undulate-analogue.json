@@ -1,0 +1,27 @@
+{
+  "signal": [
+    {
+      "name": "reference",
+      "wave": "0sca",
+      "analogue": [
+        "VDDA * 0.5",
+        1.4,
+        [[-2, 0.2], [0, 1.6], [4, 0.8]]
+      ],
+      "slewing": 6,
+      "vscale": 1.5,
+      "overlay": true,
+      "order": 0,
+      "stroke": "#3366cc"
+    },
+    {
+      "name": "threshold",
+      "wave": "s...",
+      "analogue": [0.9],
+      "order": 1,
+      "stroke": "#cc6633",
+      "stroke-dasharray": [4, 2]
+    }
+  ],
+  "head": { "text": "Paint cells, edit sample points, and manage the overlay" }
+}

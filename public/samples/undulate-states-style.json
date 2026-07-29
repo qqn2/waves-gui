@@ -1,0 +1,22 @@
+{
+  "signal": [
+    {
+      "name": "mixed states",
+      "wave": "0iImM1hHlL",
+      "node": "a#........ start.long",
+      "stroke": "#663399",
+      "stroke-width": 2
+    },
+    {
+      "name": "status",
+      "wave": "0..1......",
+      "node": ".........# done.long",
+      "stroke": "#228855",
+      "stroke-dasharray": [5, 2]
+    }
+  ],
+  "edges": [
+    "start.long #-* done.long marked dependency"
+  ],
+  "head": { "text": "Use More states, style controls, nodes, and marked edges" }
+}
