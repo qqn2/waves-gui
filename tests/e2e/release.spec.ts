@@ -544,14 +544,15 @@ test('keeps narrow view controls separated instead of shrinking labels together'
   }
 });
 
-test('separates document controls from tool options at desktop width', async ({ page }) => {
+test('wraps document controls without overlapping tool options at desktop width', async ({ page }) => {
   await page.setViewportSize({ width: 1222, height: 912 });
 
   const primary = await page.locator('[data-toolbar="primary"]').boundingBox();
   const context = await page.locator('[data-toolbar="context"]').boundingBox();
   expect(primary).not.toBeNull();
   expect(context).not.toBeNull();
-  expect(primary!.height).toBeLessThanOrEqual(48);
+  expect(primary!.height).toBeGreaterThan(48);
+  expect(primary!.height).toBeLessThanOrEqual(96);
   expect(context!.y).toBeGreaterThanOrEqual(primary!.y + primary!.height - 1);
 
   const viewControls = [
@@ -566,6 +567,7 @@ test('separates document controls from tool options at desktop width', async ({ 
     expect(box!.y).toBeGreaterThanOrEqual(primary!.y);
     expect(box!.y + box!.height).toBeLessThanOrEqual(primary!.y + primary!.height + 1);
   }
+  expect(boxes[0]!.y).toBeGreaterThan(primary!.y + 32);
   expect(boxes[0]!.width).toBeGreaterThanOrEqual(54);
   expect(boxes[1]!.width).toBeGreaterThanOrEqual(64);
   expect(boxes[2]!.width).toBeGreaterThanOrEqual(78);

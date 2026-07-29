@@ -894,11 +894,7 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .inspector {
-    flex-basis: 220px;
-  }
-
+@media (max-width: 1400px) {
   .toolbarPrimary {
     flex-wrap: wrap;
   }
@@ -912,6 +908,12 @@
     overflow-y: hidden;
     border-top: 1px solid var(--border-subtle);
     scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 1100px) {
+  .inspector {
+    flex-basis: 220px;
   }
 }
 
