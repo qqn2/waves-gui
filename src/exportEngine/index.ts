@@ -5,6 +5,8 @@ export {
   type ImageExportOptions,
 } from './exportImage';
 export { exportSVG } from './exportSVG';
+export { exportPDF, buildRasterPdf } from './exportPDF';
+export { exportTerminal, buildTerminalDiagram } from './exportTerminal';
 export {
   exportUndulateJSON,
   exportUndulateTOML,

@@ -17,6 +17,12 @@ export interface ImageExportOptions {
   background: string;
 }
 
+export interface RenderedImage {
+  blob: Blob;
+  width: number;
+  height: number;
+}
+
 function themeColor(varName: string, fallback: string): string {
   if (typeof document === 'undefined') return fallback;
   const v = getComputedStyle(document.documentElement)
@@ -29,11 +35,11 @@ function labelPanelBg(): string {
   return themeColor('--bg-panel', '#242424');
 }
 
-export async function exportImage(
+export async function renderDiagramImage(
   diagram: DiagramState,
   view: ViewState,
   options: ImageExportOptions,
-): Promise<void> {
+): Promise<RenderedImage> {
   const dims = computeExportDimensions(diagram, view);
   const pixelW = Math.ceil(dims.totalWidth * options.scale);
   const pixelH = Math.ceil(dims.totalHeight * options.scale);
@@ -80,13 +86,22 @@ export async function exportImage(
 
     const mime =
       options.format === 'jpg' ? 'image/jpeg' : 'image/png';
-    const ext = options.format === 'jpg' ? 'jpg' : 'png';
     const quality = options.format === 'jpg' ? 0.92 : undefined;
     const blob = await exportCanvasToBlob(canvas, mime, quality);
-    saveAs(blob, `${exportBaseName(view)}.${ext}`);
+    return { blob, width: pixelW, height: pixelH };
   } finally {
     disposeExportCanvas(canvas);
   }
+}
+
+export async function exportImage(
+  diagram: DiagramState,
+  view: ViewState,
+  options: ImageExportOptions,
+): Promise<void> {
+  const rendered = await renderDiagramImage(diagram, view, options);
+  const ext = options.format === 'jpg' ? 'jpg' : 'png';
+  saveAs(rendered.blob, `${exportBaseName(view)}.${ext}`);
 }
 
 export async function exportPNG(
