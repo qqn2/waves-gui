@@ -9,6 +9,7 @@ import {
   Maximize,
   PanelRight,
   Redo2,
+  SlidersHorizontal,
   Undo2,
 } from 'lucide-react';
 import { useStore } from '../shared/store';
@@ -26,6 +27,7 @@ import { measureHeadFoot } from '../renderer/renderHeadFoot';
 import { diagramLogicalWidth } from '../renderer/laneTiming';
 import { ThemeMenu } from './ThemeMenu';
 import { ExtensionsModeToggle } from './ExtensionsModeToggle';
+import { HeadFootFields } from './HeadFootFields';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import {
   ToolbarBusSection,
@@ -86,6 +88,7 @@ export function Toolbar({
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
   const [recentBits, setRecentBits] = useState<BitState[]>([]);
+  const [diagramControlsVisible, setDiagramControlsVisible] = useState(true);
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -188,6 +191,19 @@ export function Toolbar({
         <button type="button" className={styles.toolBtn} onClick={() => redo()} title="Redo (Ctrl+Shift+Z)">
           <Redo2 size={16} aria-hidden /><span>Redo</span>
         </button>
+
+        <span className={styles.divider} />
+        <button
+          type="button"
+          className={`${styles.toolBtn} ${diagramControlsVisible ? styles.toolActive : ''}`}
+          onClick={() => setDiagramControlsVisible((visible) => !visible)}
+          title="Show or hide Steps, Labels, and Scale controls"
+          aria-label="Diagram controls"
+          aria-pressed={diagramControlsVisible}
+        >
+          <SlidersHorizontal size={16} aria-hidden />
+        </button>
+        {diagramControlsVisible ? <HeadFootFields /> : null}
 
         <span className={styles.toolbarSpacer} />
 

@@ -888,13 +888,15 @@
   font: 700 9px var(--font-mono);
 }
 
+@media (max-width: 1280px) {
+  .appName {
+    display: none;
+  }
+}
+
 @media (max-width: 1100px) {
   .inspector {
     flex-basis: 220px;
-  }
-
-  .appName {
-    display: none;
   }
 
   .toolbarPrimary {
@@ -1587,15 +1589,38 @@
   padding-right: 1.5rem;
 }
 
-.headFootRow {
-  display: flex;
-  flex-wrap: wrap;
+.headFootToolbarControls {
+  display: inline-flex;
+  min-width: 0;
+  flex: 0 1 auto;
   align-items: center;
-  gap: 6px 10px;
-  padding: 2px 6px 4px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 78%, var(--bg-app)));
-  flex-shrink: 0;
+  gap: 5px;
+  padding: 0 2px;
+}
+
+.headFootMenuWrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.headFootPopover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 7px);
+  left: 0;
+  display: grid;
+  min-width: 260px;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 18%);
+}
+
+.headFootScalePopover {
+  grid-template-columns: auto auto;
+  min-width: 230px;
 }
 
 .headFootField {
@@ -1640,9 +1665,12 @@
 }
 
 .headFootAdvancedBtn {
+  display: inline-flex;
+  height: 26px;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
-  margin-left: 2px;
-  padding: 2px 8px;
+  padding: 0 7px;
   font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
   background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 72%, var(--bg-app)));
@@ -1745,6 +1773,11 @@
   background: var(--bg-app);
   color: var(--text-primary);
   text-align: center;
+}
+
+.headFootAdvancedBtn[data-has-value='true'] {
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
 }
 
 .stepsNumRejected {

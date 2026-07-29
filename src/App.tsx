@@ -24,7 +24,6 @@ import { findSignal, useStore } from './shared/store';
 import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
-import { HeadFootFields } from './shell/HeadFootFields';
 import './App.css';
 
 function IntegratedCanvas({
@@ -217,7 +216,6 @@ function App() {
             inspectorAvailable={selectedSignal !== null || selectedAnnotation !== null}
             onToggleInspector={() => setInspectorVisible((visible) => !visible)}
           />
-          <HeadFootFields />
         </header>
         <div className="mainArea">
           <div className="editorShell">
