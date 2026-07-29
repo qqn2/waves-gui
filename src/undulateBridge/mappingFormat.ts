@@ -95,8 +95,14 @@ function signalMapping(
     if (Array.isArray(entry)) {
       const name = String(entry[0] ?? '');
       if (!name) throw invalid('groups require a non-empty name');
-      if (reserved.has(name) || Object.prototype.hasOwnProperty.call(mapping, name)) {
-        throw invalid(`duplicate or reserved signal/group name ${JSON.stringify(name)}`);
+      if (
+        UNSAFE_MAPPING_KEYS.has(name)
+        || reserved.has(name)
+        || Object.prototype.hasOwnProperty.call(mapping, name)
+      ) {
+        throw invalid(
+          `duplicate, unsafe, or reserved signal/group name ${JSON.stringify(name)}`,
+        );
       }
       mapping[name] = signalMapping(
         entry.slice(1) as WdSignalEntry[],

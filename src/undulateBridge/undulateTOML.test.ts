@@ -72,5 +72,10 @@ to = "node_b"
     expect(() => stringifyUndulateTOML({
       signal: [{ name: 'edges', wave: '0' }],
     })).toThrow(/reserved/);
+    for (const name of ['__proto__', 'prototype', 'constructor']) {
+      expect(() => stringifyUndulateTOML({
+        signal: [[name, { name: 'nested', wave: '0' }]],
+      })).toThrow(/unsafe/);
+    }
   });
 });

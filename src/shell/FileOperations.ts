@@ -72,17 +72,22 @@ type DiagramFileFormat = NonNullable<typeof retainedFileFormat>;
 
 function detectJSONFormat(
   value: unknown,
+  preferUndulate = false,
 ): Exclude<DiagramFileFormat, 'undulate-yaml' | 'undulate-toml'> {
-  return isUndulateJSON(value)
+  return preferUndulate || isUndulateJSON(value)
     ? 'undulate-json'
     : 'wavedrom-json';
 }
 
-function parseDiagramJSON(value: unknown, sourceText?: string): {
+function parseDiagramJSON(
+  value: unknown,
+  sourceText?: string,
+  preferUndulate = false,
+): {
   diagram: DiagramState;
   format: DiagramFileFormat;
 } | { error: string } {
-  const format = detectJSONFormat(value);
+  const format = detectJSONFormat(value, preferUndulate);
   const error =
     format === 'undulate-json'
       ? validateUndulateJSON(value)
@@ -96,7 +101,12 @@ function parseDiagramJSON(value: unknown, sourceText?: string): {
     diagram.compatibility = {
       ...diagram.compatibility,
       extensionsEnabled:
-        diagram.compatibility?.extensionsEnabled === true,
+        format === 'undulate-json'
+        || diagram.compatibility?.extensionsEnabled === true,
+      sourceFormat:
+        format === 'undulate-json'
+          ? 'undulate-json'
+          : diagram.compatibility?.sourceFormat,
       sourceText,
     };
   }
@@ -163,7 +173,11 @@ function parseDiagramFile(
     }
   }
   try {
-    return parseDiagramJSON(parseJSON5Source(text), text);
+    return parseDiagramJSON(
+      parseJSON5Source(text),
+      text,
+      /\.undulate\.json$/i.test(file.name),
+    );
   } catch (error) {
     return { error: json5SyntaxError(error) };
   }

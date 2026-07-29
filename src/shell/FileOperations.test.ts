@@ -149,6 +149,31 @@ describe('FileOperations', () => {
     ]);
   });
 
+  it('uses an explicit .undulate.json suffix for extended digital states', async () => {
+    const file = new File([
+      JSON.stringify({
+        signal: [{ name: 'metastable', wave: 'mMiIhHlL' }],
+      }),
+    ], 'states.undulate.json', { type: 'application/json' });
+    const handle = {
+      name: 'states.undulate.json',
+      getFile: vi.fn().mockResolvedValue(file),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([
+      handle,
+    ]);
+
+    await openDiagramFile();
+
+    expect(useStore.getState().diagram.compatibility).toMatchObject({
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+    });
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      name: 'metastable',
+    });
+  });
+
   it('upgrades a WaveDrom save to Undulate JSON when annotations are added', async () => {
     const write = vi.fn().mockResolvedValue(undefined);
     const file = new File([

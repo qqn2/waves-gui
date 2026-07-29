@@ -83,5 +83,10 @@ annotations: []
     expect(() => stringifyUndulateYAML({
       signal: [{ name: 'edges', wave: '0' }],
     })).toThrow(/reserved/);
+    for (const name of ['__proto__', 'prototype', 'constructor']) {
+      expect(() => stringifyUndulateYAML({
+        signal: [[name, { name: 'nested', wave: '0' }]],
+      })).toThrow(/unsafe/);
+    }
   });
 });
