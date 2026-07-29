@@ -308,14 +308,27 @@ describe('Undulate JSON bridge', () => {
         slewing: 0.1,
       },
     });
-    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+    const compact = toUndulateJSON(diagram).signal[0];
+    expect(compact).toMatchObject({
       name: 'clk',
-      wave: 'p..',
+      wave: 'p',
+      repeat: 3,
       periods: [0.5, 1, 1.5],
       duty_cycles: [0.25, 0.5, 0.75],
       phase: -0.25,
       slewing: 0.1,
     });
+    expect(validateUndulateJSON({ signal: [compact] })).toBeNull();
+    if (!signal || signal.type === 'group') throw new Error('expected signal');
+    signal.states[1] = '0';
+    signal.wave = 'p0p';
+    if (signal.digitalTiming) signal.digitalTiming.cells[1]!.state = '0';
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      wave: 'p0p',
+    });
+    expect(
+      (toUndulateJSON(diagram).signal[0] as { repeat?: number }).repeat,
+    ).toBeUndefined();
   });
 
   it('expands analogue repeat with the upstream value-cycling semantics', () => {

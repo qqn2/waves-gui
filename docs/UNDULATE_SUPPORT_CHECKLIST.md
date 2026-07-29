@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **140 / 172 (81.4%)**
+Actionable implementation progress: **141 / 172 (82.0%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -225,8 +225,9 @@ Upstream references:
 
 ### Unsupported and round-trip risks
 
-- [ ] Partial: repeat is deliberately exported as the semantically equivalent
-  expanded sequence instead of preserving the original compact spelling.
+- [X] Compact digital `repeat` spelling is retained while the expanded cell
+  states remain unchanged; edits that invalidate it export the canonical
+  expanded sequence without semantic loss.
 - [ ] Partial: there is no global Sub-Steps toolbar control; the inspector
   exposes the document resolution and exact per-cell values.
 - [X] Timing-only JSON is automatically detected from `repeat`, `periods`,

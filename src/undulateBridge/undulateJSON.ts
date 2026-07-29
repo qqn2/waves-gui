@@ -103,6 +103,21 @@ function withOpaqueFields(
   return { ...(opaqueSignals?.[signal.id] ?? {}), ...entry } as WdSignal;
 }
 
+function retainCompactDigitalRepeat(entry: WdSignal, signal: Signal): WdSignal {
+  const source = signal.undulateRepeat;
+  if (
+    source
+    && signal.type !== 'analogue'
+    && signal.states.length === source.states.length
+    && signal.states.every((state, index) => state === source.states[index])
+  ) {
+    return { ...entry, wave: source.wave, repeat: source.repeat };
+  }
+  const expanded = { ...entry };
+  delete expanded.repeat;
+  return expanded;
+}
+
 function opaqueNamedObject(
   value: unknown,
   known: ReadonlySet<string>,
@@ -321,10 +336,17 @@ function mergeUndulateSignalEntries(
       entry.phase = timing.phaseTicks / timing.ticksPerStep;
       if (timing.slewing !== undefined) entry.slewing = timing.slewing;
       delete entry.repeat;
-      return withOpaqueFields(withUndulateNode(entry, signal), signal, opaqueSignals);
+      return withOpaqueFields(
+        retainCompactDigitalRepeat(withUndulateNode(entry, signal), signal),
+        signal,
+        opaqueSignals,
+      );
     }
     return withOpaqueFields(
-      withUndulateNode({ ...(shared as WdSignal) }, signal),
+      retainCompactDigitalRepeat(
+        withUndulateNode({ ...(shared as WdSignal) }, signal),
+        signal,
+      ),
       signal,
       opaqueSignals,
     );
@@ -684,6 +706,18 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         || hasAnalogueExpression;
       importDigitalTiming(raw, parsed, ticksPerStep);
       importExpandedNodes(raw, parsed);
+      if (
+        !Array.isArray(raw.analogue)
+        && typeof raw.wave === 'string'
+        && typeof raw.repeat === 'number'
+        && raw.repeat > 1
+      ) {
+        parsed.undulateRepeat = {
+          repeat: raw.repeat,
+          wave: raw.wave,
+          states: [...parsed.states],
+        };
+      }
       const opaque = opaqueFields(
         raw as unknown as Record<string, unknown>,
         Array.isArray(raw.analogue) ? ANALOGUE_FIELDS : DIGITAL_FIELDS,

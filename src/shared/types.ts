@@ -118,6 +118,12 @@ export interface Signal {
   analogueCells?: AnalogueCell[];
   /** Integer-tick timing for Undulate digital lanes. */
   digitalTiming?: DigitalTiming;
+  /** Original compact Undulate repeat spelling, retained while cell states stay unchanged. */
+  undulateRepeat?: {
+    repeat: number;
+    wave: string;
+    states: BitState[];
+  };
   /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
   analogueMin?: number;
   analogueMax?: number;
