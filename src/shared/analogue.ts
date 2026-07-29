@@ -42,6 +42,10 @@ export function normalizeAnalogueCell(
     value?.kind === 'step'
     || value?.kind === 'capacitive'
     || value?.kind === 'samples'
+    || value?.kind === 'metastable-low'
+    || value?.kind === 'metastable-high'
+    || value?.kind === 'impulse-low'
+    || value?.kind === 'impulse-high'
       ? value.kind
       : 'hold';
   let samples =
@@ -122,6 +126,14 @@ export function normalizeAnalogueSignal(
   let previous = signal.analogueMin;
   for (let index = 0; index < totalSteps; index++) {
     const cell = normalizeAnalogueCell(source[index], previous);
+    if (cell.kind === 'metastable-low' || cell.kind === 'impulse-high') {
+      cell.value = signal.analogueMin;
+    } else if (
+      cell.kind === 'metastable-high'
+      || cell.kind === 'impulse-low'
+    ) {
+      cell.value = signal.analogueMax;
+    }
     cells.push(cell);
     previous = cell.value;
   }
@@ -172,7 +184,14 @@ export function applyAnalogueBrushRange(
         ? signal.analogueCells[index - 1]!.value
         : signal.analogueMin ?? DEFAULT_ANALOGUE_MIN;
     cell.kind = kind;
-    cell.value = kind === 'hold' ? previousValue : normalizedValue;
+    cell.value =
+      kind === 'hold'
+        ? previousValue
+        : kind === 'metastable-low' || kind === 'impulse-high'
+          ? signal.analogueMin ?? DEFAULT_ANALOGUE_MIN
+          : kind === 'metastable-high' || kind === 'impulse-low'
+            ? signal.analogueMax ?? DEFAULT_ANALOGUE_MAX
+            : normalizedValue;
     delete cell.expression;
     delete cell.sampleTimebase;
     if (kind === 'samples') {

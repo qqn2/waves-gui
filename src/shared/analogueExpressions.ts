@@ -213,6 +213,13 @@ function hashSource(source: string): number {
   return hash >>> 0;
 }
 
+function expressionSeed(source: string, documentSeed?: number): number {
+  const normalized = Number.isInteger(documentSeed)
+    ? (documentSeed as number) >>> 0
+    : 0;
+  return (hashSource(source) ^ normalized) >>> 0;
+}
+
 function evaluateNode(
   node: ExpressionNode,
   variables: Record<string, number>,
@@ -268,7 +275,7 @@ export function evaluateAnalogueScalar(
   source: string,
   context: AnalogueContext,
   extraVariables: Record<string, number> = {},
-  seed = hashSource(source),
+  documentSeed?: number,
 ): number {
   const tree = parseExpression(source.trim());
   return evaluateNode(tree, {
@@ -276,7 +283,7 @@ export function evaluateAnalogueScalar(
     VSSA: context.vssa,
     pi: Math.PI,
     ...extraVariables,
-  }, seededRandom(seed));
+  }, seededRandom(expressionSeed(source, documentSeed)));
 }
 
 export function curveExpressionBody(source: string): string | null {
@@ -289,6 +296,7 @@ export function curveExpressionBody(source: string): string | null {
 export function evaluateAnalogueCurve(
   source: string,
   context: AnalogueContext,
+  documentSeed?: number,
 ): Array<[number, number]> {
   const body = curveExpressionBody(source);
   if (!body) {
@@ -297,7 +305,7 @@ export function evaluateAnalogueCurve(
     );
   }
   const tree = parseExpression(body);
-  const random = seededRandom(hashSource(source));
+  const random = seededRandom(expressionSeed(source, documentSeed));
   const points: Array<[number, number]> = [];
   for (let t = 0; t <= ANALOGUE_CURVE_INTERVALS; t++) {
     const value = evaluateNode(tree, {

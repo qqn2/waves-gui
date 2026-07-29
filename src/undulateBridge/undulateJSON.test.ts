@@ -683,6 +683,8 @@ describe('Undulate JSON bridge', () => {
         'stroke-width': 3,
         'stroke-dasharray': [5, 2],
         'font-size': '14px',
+        font: 'monospace',
+        'font-weight': 700,
       }],
     } as unknown as UndulateRoot;
 
@@ -698,6 +700,8 @@ describe('Undulate JSON bridge', () => {
       strokeWidth: 3,
       strokeDasharray: [5, 2],
       fontSize: 14,
+      fontFamily: 'monospace',
+      fontWeight: 700,
     });
     expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
       stroke: '#336699',
@@ -705,6 +709,8 @@ describe('Undulate JSON bridge', () => {
       'stroke-width': 3,
       'stroke-dasharray': [5, 2],
       'font-size': '14px',
+      font: 'monospace',
+      'font-weight': 700,
     });
     expect(validateUndulateJSON({
       signal: [{ name: 'unsafe', wave: '0', stroke: 'url(remote.svg)' }],
@@ -712,6 +718,63 @@ describe('Undulate JSON bridge', () => {
     expect(validateUndulateJSON({
       signal: [{ name: 'wide', wave: '0', 'stroke-width': 33 }],
     })).toContain('stroke-width must be');
+  });
+
+  it('preserves app-owned rails and random seeds while strict export is portable', () => {
+    const root: UndulateRoot = {
+      signal: [{
+        name: 'random supply',
+        wave: 'ss',
+        analogue: ['0.5*VDDA', 'rnd()*VDDA'],
+      }],
+      'x-waves-gui': {
+        analogueContext: { vssa: 0.2, vdda: 3.3 },
+        randomSeed: 1234,
+      },
+    };
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.config).toMatchObject({
+      analogueContext: { vssa: 0.2, vdda: 3.3 },
+      analogueRandomSeed: 1234,
+    });
+    const saved = toUndulateJSON(diagram);
+    expect(saved['x-waves-gui']).toEqual(root['x-waves-gui']);
+    expect(saved.signal[0]).toMatchObject({
+      name: 'random supply',
+      analogue: ['0.5*VDDA', 'rnd()*VDDA'],
+    });
+    expect((saved.signal[0] as { wave?: string }).wave?.startsWith('ss'))
+      .toBe(true);
+    const strict = toUndulateJSON(diagram, { includeAppMetadata: false });
+    expect(strict['x-waves-gui']).toBeUndefined();
+    expect((strict.signal[0] as { analogue?: unknown[] }).analogue)
+      .toEqual(expect.arrayContaining([1.65, expect.any(Number)]));
+  });
+
+  it('round-trips mixed analogue metastability and impulse states', () => {
+    const root: UndulateRoot = {
+      signal: [{
+        name: 'mixed',
+        wave: '0mMiIsc',
+        analogue: [0.75, 1.25],
+      }],
+    };
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(signal?.type === 'analogue' && signal.analogueCells?.map(
+      (cell) => cell.kind,
+    )).toEqual([
+      'hold',
+      'metastable-low',
+      'metastable-high',
+      'impulse-low',
+      'impulse-high',
+      'step',
+      'capacitive',
+    ]);
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject(root.signal[0]!);
   });
 
   it('imports Ludwig analogue tutorial JSON including the curve comprehension', () => {

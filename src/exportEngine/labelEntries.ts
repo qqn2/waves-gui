@@ -1,4 +1,8 @@
-import type { DiagramState, SignalOrGroup } from '../shared/types';
+import type {
+  DiagramState,
+  SignalOrGroup,
+  SignalStyle,
+} from '../shared/types';
 import { buildRowLayout } from '../renderer/rowLayout';
 
 export interface LabelEntry {
@@ -8,6 +12,7 @@ export interface LabelEntry {
   depth: number;
   isGroup: boolean;
   centerRatio: number;
+  style?: SignalStyle;
 }
 
 function overlayLabelRatio(order: number | undefined): number {
@@ -42,6 +47,7 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
           depth,
           isGroup: false,
           centerRatio: overlayLabelRatio(item.order),
+          ...(item.style ? { style: item.style } : {}),
         });
       }
     }
@@ -72,7 +78,11 @@ export function drawSignalLabels(
     const x = 8 + entry.depth * 12;
     const y = axisOffset + entry.y + entry.height * entry.centerRatio;
     const maxW = labelWidth - x - 4;
-    ctx.font = entry.isGroup ? '600 11px sans-serif' : '12px sans-serif';
+    ctx.font = entry.isGroup
+      ? '600 11px sans-serif'
+      : `${entry.style?.fontWeight ?? 400} `
+        + `${entry.style?.fontSize ?? 12}px `
+        + `${entry.style?.fontFamily ?? 'sans-serif'}`;
     ctx.fillText(entry.name, x, y, maxW);
   }
 }

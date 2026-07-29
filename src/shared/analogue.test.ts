@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeAnalogueSignal } from './analogue';
+import { applyAnalogueBrushRange, normalizeAnalogueSignal } from './analogue';
 import type { Signal } from './types';
 
 function analogueSignal(): Signal {
@@ -49,5 +49,25 @@ describe('analogue normalization', () => {
         { offset: 1, value: 4 },
       ],
     });
+  });
+
+  it('pins painted symbolic analogue states to their semantic rails', () => {
+    const signal = analogueSignal();
+    signal.analogueMin = 0.2;
+    signal.analogueMax = 3.3;
+    normalizeAnalogueSignal(signal, 4);
+
+    applyAnalogueBrushRange(signal, 0, 0, 'metastable-low', 99);
+    applyAnalogueBrushRange(signal, 1, 1, 'metastable-high', -99);
+    applyAnalogueBrushRange(signal, 2, 2, 'impulse-low', -99);
+    applyAnalogueBrushRange(signal, 3, 3, 'impulse-high', 99);
+
+    expect(signal.analogueCells?.map(({ kind, value }) => ({ kind, value })))
+      .toEqual([
+        { kind: 'metastable-low', value: 0.2 },
+        { kind: 'metastable-high', value: 3.3 },
+        { kind: 'impulse-low', value: 3.3 },
+        { kind: 'impulse-high', value: 0.2 },
+      ]);
   });
 });

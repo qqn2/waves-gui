@@ -40,6 +40,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
   const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
   const updateAnalogueContext = useStore((s) => s.updateAnalogueContext);
+  const refreshAnalogueRandomSeed = useStore(
+    (s) => s.refreshAnalogueRandomSeed,
+  );
   const extendAnalogueOverlayGroup = useStore(
     (s) => s.extendAnalogueOverlayGroup,
   );
@@ -244,7 +247,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               />
             </label>
             <label className={styles.inspectorField}>
-              <span>Value font</span>
+              <span>Font size</span>
               <input
                 type="number"
                 min={6}
@@ -252,7 +255,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 step="any"
                 value={signal.style?.fontSize ?? ''}
                 placeholder="Auto"
-                aria-label="Signal value font size"
+                aria-label="Signal font size"
                 onChange={(event) => {
                   const value = event.target.value;
                   const parsed = value === '' ? undefined : Number(value);
@@ -265,8 +268,47 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 }}
               />
             </label>
+            <label className={styles.inspectorField}>
+              <span>Font family</span>
+              <select
+                value={signal.style?.fontFamily ?? ''}
+                aria-label="Signal value font family"
+                onChange={(event) => updateSignalStyle(signal.id, {
+                  fontFamily: event.target.value === ''
+                    ? undefined
+                    : event.target.value as NonNullable<
+                      NonNullable<Signal['style']>['fontFamily']
+                    >,
+                })}
+              >
+                <option value="">Default</option>
+                <option value="sans-serif">Sans serif</option>
+                <option value="serif">Serif</option>
+                <option value="monospace">Monospace</option>
+              </select>
+            </label>
+            <label className={styles.inspectorField}>
+              <span>Font weight</span>
+              <select
+                value={signal.style?.fontWeight ?? ''}
+                aria-label="Signal value font weight"
+                onChange={(event) => updateSignalStyle(signal.id, {
+                  fontWeight: event.target.value === ''
+                    ? undefined
+                    : Number(event.target.value),
+                })}
+              >
+                <option value="">Default</option>
+                {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(
+                  (weight) => (
+                    <option key={weight} value={weight}>{weight}</option>
+                  ),
+                )}
+              </select>
+            </label>
             <p className={styles.inspectorFieldHint}>
-              Safe declarative styling only. Fill and value font apply to bus lanes.
+              Safe declarative styling only. Fill applies to bus lanes; font
+              settings apply to the signal label and bus values.
             </p>
           </section> : null}
 
@@ -341,10 +383,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                       analogueCellIndex,
                       {
                         kind: event.target.value as
-                          | 'hold'
-                          | 'step'
-                          | 'capacitive'
-                          | 'samples',
+                          NonNullable<typeof analogueCell>['kind'],
                       },
                     )}
                   >
@@ -352,6 +391,10 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     <option value="step">Step</option>
                     <option value="capacitive">Capacitive</option>
                     <option value="samples">Samples</option>
+                    <option value="metastable-low">Metastable to low (m)</option>
+                    <option value="metastable-high">Metastable to high (M)</option>
+                    <option value="impulse-low">Downward impulse (i)</option>
+                    <option value="impulse-high">Upward impulse (I)</option>
                   </select>
                 </label>
                 <p className={styles.inspectorFieldHint}>
@@ -475,6 +518,21 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 <p className={styles.inspectorFieldHint}>
                   Document-wide rails for Ludwig expressions. Changing either
                   value reevaluates every expression-backed analog cell.
+                </p>
+                <div className={styles.inspectorField}>
+                  <span>Random seed</span>
+                  <div className={styles.inspectorSeedControl}>
+                    <output>
+                      {diagram.config.analogueRandomSeed ?? 'Stable default'}
+                    </output>
+                    <button type="button" onClick={refreshAnalogueRandomSeed}>
+                      Refresh
+                    </button>
+                  </div>
+                </div>
+                <p className={styles.inspectorFieldHint}>
+                  rnd() remains stable while editing. Refresh changes its
+                  document seed once and reevaluates random expressions.
                 </p>
                 <label className={styles.inspectorField}>
                   <span>Vertical scale</span>

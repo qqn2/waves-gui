@@ -91,6 +91,19 @@ annotations: []
     expect(parseUndulateYAML(yaml)).toEqual(root);
   });
 
+  it('round-trips namespaced Waves GUI analogue context', () => {
+    const root = {
+      signal: [{ name: 'noise', wave: 's', analogue: ['rnd()*VDDA'] }],
+      'x-waves-gui': {
+        analogueContext: { vssa: 0.2, vdda: 3.3 },
+        randomSeed: 1234,
+      },
+    };
+    const yaml = stringifyUndulateYAML(root);
+    expect(yaml).toContain('x-waves-gui:');
+    expect(parseUndulateYAML(yaml)).toEqual(root);
+  });
+
   it('aliases ambiguous group keys while preserving visible names', () => {
     const root = {
       signal: [

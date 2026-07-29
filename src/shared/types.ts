@@ -76,7 +76,15 @@ export interface AnaloguePoint {
   value: number;
 }
 
-export type AnalogueTransition = 'hold' | 'step' | 'capacitive' | 'samples';
+export type AnalogueTransition =
+  | 'hold'
+  | 'step'
+  | 'capacitive'
+  | 'samples'
+  | 'metastable-low'
+  | 'metastable-high'
+  | 'impulse-low'
+  | 'impulse-high';
 
 export interface AnalogueCell {
   id: string;
@@ -117,6 +125,10 @@ export interface SignalStyle {
   strokeDasharray?: number[];
   /** Safe normalized pixel size, currently used by vector value labels. */
   fontSize?: number;
+  /** Safe local generic family; no remote font loading. */
+  fontFamily?: 'sans-serif' | 'serif' | 'monospace';
+  /** Numeric font weight, restricted to 100-step values. */
+  fontWeight?: number;
 }
 
 export interface Signal {
@@ -209,6 +221,8 @@ export interface DiagramConfig {
   ticksPerStep?: number;
   /** Document-wide Ludwig analogue evaluation rails. */
   analogueContext?: { vssa: number; vdda: number };
+  /** App-owned deterministic seed mixed into every supported rnd() expression. */
+  analogueRandomSeed?: number;
   /** WaveDrom config.skin (default, narrow, dark, …) */
   skin?: string;
   head?: { text?: string; tick?: number; every?: number };

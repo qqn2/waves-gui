@@ -180,6 +180,8 @@ export function ToolbarAnaloguePaintSection({
   const activeOption =
     ANALOGUE_BRUSH_OPTIONS.find((option) => option.kind === kind)
     ?? ANALOGUE_BRUSH_OPTIONS[0]!;
+  const usesTarget =
+    kind === 'step' || kind === 'capacitive' || kind === 'samples';
 
   return (
     <>
@@ -212,9 +214,9 @@ export function ToolbarAnaloguePaintSection({
       <label
         className={styles.hscaleWrap}
         title={
-          kind === 'hold'
-            ? 'Hold previous ignores the target value'
-            : 'Target analogue value painted into cells'
+          usesTarget
+            ? 'Target analogue value painted into cells'
+            : 'This analogue state derives its level from the voltage rails'
         }
       >
         <span className={styles.hscaleLabel}>Target</span>
@@ -223,7 +225,7 @@ export function ToolbarAnaloguePaintSection({
           step="any"
           className={styles.hscaleInput}
           value={value}
-          disabled={kind === 'hold'}
+          disabled={!usesTarget}
           aria-label="Analogue brush value"
           onChange={(event) => {
             const next = Number(event.target.value);
@@ -234,7 +236,9 @@ export function ToolbarAnaloguePaintSection({
       <span className={styles.contextHint}>
         {kind === 'hold'
           ? 'Paint . to continue the previous voltage'
-          : `Paint ${activeOption.symbol} toward ${value}`}
+          : usesTarget
+            ? `Paint ${activeOption.symbol} toward ${value}`
+            : `Paint ${activeOption.symbol}: ${activeOption.description}`}
         {' · '}Inspector edits exact cells and points
       </span>
     </>

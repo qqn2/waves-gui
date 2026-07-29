@@ -196,6 +196,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'paintAnalogueCellRange'
   | 'updateAnalogueSignal'
   | 'updateAnalogueContext'
+  | 'refreshAnalogueRandomSeed'
   | 'extendAnalogueOverlayGroup'
   | 'dissolveAnalogueOverlayGroup'
   | 'updateDigitalTimingCell'
@@ -497,7 +498,11 @@ export function createSignalActions(set: ImmerSet): Pick<
             for (const cell of signal.analogueCells ?? []) {
               if (!cell.expression) continue;
               if (cell.kind === 'samples') {
-                const samples = evaluateAnalogueCurve(cell.expression, next)
+                const samples = evaluateAnalogueCurve(
+                  cell.expression,
+                  next,
+                  s.diagram.config.analogueRandomSeed,
+                )
                   .map(([offset, value]) => ({ offset, value }));
                 resolved.set(cell.id, {
                   samples,
@@ -505,7 +510,12 @@ export function createSignalActions(set: ImmerSet): Pick<
                 });
               } else {
                 resolved.set(cell.id, {
-                  value: evaluateAnalogueScalar(cell.expression, next),
+                  value: evaluateAnalogueScalar(
+                    cell.expression,
+                    next,
+                    {},
+                    s.diagram.config.analogueRandomSeed,
+                  ),
                 });
               }
             }
@@ -519,6 +529,64 @@ export function createSignalActions(set: ImmerSet): Pick<
           if (signal.type !== 'analogue') return;
           signal.analogueMin = next.vssa;
           signal.analogueMax = next.vdda;
+          for (const cell of signal.analogueCells ?? []) {
+            const result = resolved.get(cell.id);
+            if (!result) continue;
+            cell.value = result.value;
+            if (result.samples) cell.samples = result.samples;
+          }
+          normalizeAnalogueSignal(signal, s.diagram.config.totalSteps);
+        });
+      });
+    },
+
+    refreshAnalogueRandomSeed() {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const current = s.diagram.config.analogueRandomSeed ?? 0;
+        const nextSeed = (current + 0x9e37_79b9) >>> 0;
+        const context =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
+        const resolved = new Map<
+          string,
+          { value: number; samples?: Array<{ offset: number; value: number }> }
+        >();
+        try {
+          walkSignals(s.diagram.signals, (signal) => {
+            if (signal.type !== 'analogue') return;
+            for (const cell of signal.analogueCells ?? []) {
+              if (!cell.expression || !/\brnd\s*\(\s*\)/.test(cell.expression)) {
+                continue;
+              }
+              if (cell.kind === 'samples') {
+                const samples = evaluateAnalogueCurve(
+                  cell.expression,
+                  context,
+                  nextSeed,
+                ).map(([offset, value]) => ({ offset, value }));
+                resolved.set(cell.id, {
+                  samples,
+                  value: samples.at(-1)?.value ?? cell.value,
+                });
+              } else {
+                resolved.set(cell.id, {
+                  value: evaluateAnalogueScalar(
+                    cell.expression,
+                    context,
+                    {},
+                    nextSeed,
+                  ),
+                });
+              }
+            }
+          });
+        } catch {
+          return;
+        }
+        pushHistory(s);
+        s.diagram.config.analogueRandomSeed = nextSeed;
+        walkSignals(s.diagram.signals, (signal) => {
+          if (signal.type !== 'analogue') return;
           for (const cell of signal.analogueCells ?? []) {
             const result = resolved.get(cell.id);
             if (!result) continue;

@@ -70,7 +70,8 @@ export function renderVectorSignal(
     ctx.stroke();
 
     ctx.fillStyle = segmentBusTextColor(seg);
-    ctx.font = `${fontPx}px sans-serif`;
+    ctx.font = `${signal.style?.fontWeight ?? 400} ${fontPx}px `
+      + `${signal.style?.fontFamily ?? 'sans-serif'}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     if (maxW > 4) {

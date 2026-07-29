@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **164 / 172 (95.3%)**
+Actionable implementation progress: **171 / 172 (99.4%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -27,6 +27,9 @@ contract live in
 - **Round-trip risk:** currently accepted without an error but not preserved.
   Treat this as unsupported until validation blocks it or the bridge preserves
   it.
+
+Documented resource and numeric bounds count as supported safety guarantees
+when over-limit input is rejected explicitly rather than silently changed.
 
 ## Support contract
 
@@ -279,13 +282,16 @@ Implementation design:
 
 - [X] Annotation creation exposes a Snap On/Off control before placement;
   snapping remains the default and can also be changed per annotation.
-- [ ] Partial: annotations are limited to 1000 objects and text is limited to
-  2000 characters.
+- [X] Intentional safety boundary: a document may contain at most 1000
+  annotations, and annotation text may contain at most 2000 characters.
+  Over-limit input is rejected explicitly rather than truncated.
 - [X] Colors accept local hex, bounded `rgb()`/`rgba()`, and a reviewed
   allowlist of CSS named colors. Remote resources, gradients, CSS variables,
   `currentColor`, and arbitrary CSS remain rejected.
-- [ ] Partial: stroke width is bounded to 0..32 and dash arrays to 1..16
-  finite values in the 0..1000 range.
+- [X] Intentional safety boundary: `stroke-width` (line thickness) is bounded
+  to 0..32. `stroke-dasharray` (alternating painted and gap lengths, such as
+  `[6, 3]`) accepts 1..16 finite values, each in the 0..1000 range. Over-limit
+  input is rejected explicitly.
 - [X] Annotation font sizes accept finite CSS absolute, font-relative, and
   percentage units that normalize deterministically into the safe 6px to 96px
   range; export uses canonical pixels.
@@ -352,14 +358,15 @@ Upstream references:
 - [X] Sampled `a` cells accept ascending finite time coordinates on any finite
   domain. An explicit affine timebase maps them to editable 0..1 offsets and
   reconstructs the original domain on export.
-- [ ] Partial: imported voltage context starts at Ludwig's 0..1.8 defaults
-  because `VDDA`/`VSSA` are renderer context rather than JSON fields. Custom
-  GUI rails are saved in the app document; Undulate export resolves expressions
-  to numeric values/points because upstream JSON cannot carry those custom
-  rails.
-- [ ] Partial: `rnd()` is deterministic in the browser so the diagram remains
-  stable across edits and exports; Ludwig's Python renderer generates fresh
-  random values.
+- [X] Imported and GUI-authored `VDDA`/`VSSA` rails are preserved in
+  namespaced app-owned document metadata. Waves GUI restores that context on
+  reopen; strict upstream Undulate export omits the app metadata and resolves
+  affected expressions to portable numeric values or points.
+- [X] The analogue inspector exposes app-owned stable/refresh `rnd()` seed
+  behavior. Results remain deterministic across renders; Refresh changes the
+  seed only on an explicit user action and reevaluates random expressions.
+  JSON, YAML, and TOML retain the seed in the namespaced app metadata, while
+  strict upstream export resolves random expressions to portable values.
 - [X] Imported analogue values outside ±1,000,000,000, negative slew, and
   `vscale` outside 0.25..16 are rejected before normalization; GUI-authored
   values may still use bounded controls.
@@ -377,8 +384,11 @@ Upstream references:
   comprehensions,
   attribute access, assignment, user-defined variables/functions, and code
   execution outside the safe documented subset.
-- [ ] Unsupported: mixed metastability/impulse symbols inside analogue wave
-  strings as true Undulate states. Do not rely on `m`, `M`, `i`, or `I`.
+- [X] Mixed metastability/impulse symbols inside analogue wave strings are
+  modeled as true cells: `m`/`M` oscillate and resolve to the lower/upper rail,
+  while `i`/`I` render downward/upward impulses and return to their base rail.
+  They are available in the analogue palette and inspector and share canvas
+  and SVG/export geometry.
 - The safe documented expression subset remains the supported alternative to
   executing imported Python.
 
@@ -390,11 +400,12 @@ Upstream references:
 
 ### Supported
 
-- [X] App-native themes, accent color, canvas color, and existing WaveDrom bus
-  palette choices affect browser rendering.
+- [X] App-native themes, accent color, and canvas color affect editor chrome
+  and browser presentation without becoming a third document style format.
+  WaveDrom fields plus Undulate extensions remain the document model.
 - [X] Typed annotations accept bounded local `fill`, `stroke`,
   `stroke-width`, `stroke-dasharray`, and pixel `font-size` overrides.
-- Digital, vector, and analogue signals accept the same bounded local style
+- [X] Digital, vector, and analogue signals accept the same bounded local style
   fields. Vector fill and value-label font size are rendered semantically;
   arbitrary CSS is never evaluated.
 - [X] Text and arrow-label backgrounds follow Undulate's default-on
@@ -407,14 +418,13 @@ Upstream references:
   shorthand. A GUI action promotes any valid shorthand edge to an equivalent
   structured arrow annotation, where the safe normalized style fields are
   inspector-editable and round-trip through Undulate.
-- [ ] Planned: expand normalized local style support, including a reviewed
-  allowlist for safe gradients, variables, and named colors where semantics
-  can be represented without CSS execution.
-- **Permanent exclusion:** remote resources, arbitrary CSS values, global CSS
-  files, and renderer style overloading that would execute or load unsafe
-  content.
-- [ ] Unsupported: lossless translation between app-native visual settings
-  and Undulate style fields.
+- [X] Normalized local signal styling includes the pinned safe color, fill,
+  width, dash, font-size, generic font-family, and numeric font-weight fields.
+  Font settings affect signal labels and vector values consistently in canvas
+  and SVG/image exports. This does not introduce raw CSS support.
+- **Permanent exclusion:** remote resources, raw style strings, selectors,
+  arbitrary CSS values, global CSS files, CSS variables, and renderer style
+  overloading that would execute or load unsafe content.
 
 ## 7. Rendering and exports
 

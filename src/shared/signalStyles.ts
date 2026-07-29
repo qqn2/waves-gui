@@ -3,7 +3,9 @@ import {
   isSafeAnnotationDasharray,
   isSafeAnnotationFontSize,
   isSafeAnnotationStrokeWidth,
+  parseAnnotationFontFamily,
   parseAnnotationFontSize,
+  parseAnnotationFontWeight,
 } from './annotations';
 import type { SignalStyle } from './types';
 
@@ -23,6 +25,10 @@ export function normalizeSignalStyle(
   if (isSafeAnnotationFontSize(value.fontSize)) {
     style.fontSize = value.fontSize;
   }
+  const fontFamily = parseAnnotationFontFamily(value.fontFamily);
+  if (fontFamily) style.fontFamily = fontFamily;
+  const fontWeight = parseAnnotationFontWeight(value.fontWeight);
+  if (fontWeight) style.fontWeight = fontWeight;
   return Object.keys(style).length > 0 ? style : undefined;
 }
 
@@ -39,6 +45,8 @@ export function signalStyleFromUndulate(
       ? value['stroke-dasharray'] as number[]
       : undefined,
     fontSize: parseAnnotationFontSize(value['font-size']),
+    fontFamily: parseAnnotationFontFamily(value.font),
+    fontWeight: parseAnnotationFontWeight(value['font-weight']),
   });
 }
 
@@ -58,6 +66,12 @@ export function signalStyleToUndulate(
       : {}),
     ...(normalized.fontSize !== undefined
       ? { 'font-size': `${normalized.fontSize}px` }
+      : {}),
+    ...(normalized.fontFamily !== undefined
+      ? { font: normalized.fontFamily }
+      : {}),
+    ...(normalized.fontWeight !== undefined
+      ? { 'font-weight': normalized.fontWeight }
       : {}),
   };
 }

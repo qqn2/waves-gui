@@ -202,6 +202,55 @@ test('round-trips and renders Undulate extended digital states', async ({ page }
   ).toBeVisible();
 });
 
+test('edits mixed analogue states, styles, rails, and stable random seeds', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [{
+      name: 'mixed analogue',
+      wave: 'mMiIss',
+      analogue: ['0.5*VDDA', 'rnd()*VDDA'],
+      font: 'monospace',
+      'font-weight': 700,
+    }],
+    'x-waves-gui': {
+      analogueContext: { vssa: 0.2, vdda: 3.3 },
+      randomSeed: 1234,
+    },
+  }, null, 2));
+
+  await signalRow(page, 'mixed analogue').click();
+  await expect(page.getByLabel('Analog cell transition'))
+    .toHaveValue('metastable-low');
+  await expect(page.getByLabel('Signal value font family'))
+    .toHaveValue('monospace');
+  await expect(page.getByLabel('Signal value font weight')).toHaveValue('700');
+  await expect(page.getByLabel('Analog context VSSA')).toHaveValue('0.2');
+  await expect(page.getByLabel('Analog context VDDA')).toHaveValue('3.3');
+  await expect(page.getByText('1234', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await expect(page.locator('.cm-content')).toContainText('"randomSeed"');
+  await expect(page.locator('.cm-content')).not.toContainText(
+    '"randomSeed": 1234',
+  );
+
+  await page.getByRole('button', { name: 'Analog paint', exact: true }).click();
+  await page.getByTitle(
+    'Choose an analogue cell shape with waveform previews',
+  ).click();
+  const palette = page.getByRole('dialog', {
+    name: 'Analogue cell shape palette',
+  });
+  for (const label of [
+    'Metastable to low (m)',
+    'Metastable to high (M)',
+    'Downward impulse (i)',
+    'Upward impulse (I)',
+  ]) {
+    await expect(palette.getByRole('button', { name: label })).toBeVisible();
+  }
+});
+
 test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {
   await page.getByLabel('Undulate extensions').check();
   await replaceJson(page, JSON.stringify({

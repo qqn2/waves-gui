@@ -194,6 +194,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...(d.config?.analogueContext !== undefined
       ? { analogueContext: normalizeAnalogueContext(d.config.analogueContext) }
       : {}),
+    ...(Number.isInteger(d.config?.analogueRandomSeed)
+      ? { analogueRandomSeed: d.config.analogueRandomSeed! >>> 0 }
+      : {}),
   };
   d.annotations = normalizeAnnotations(d.annotations, totalSteps);
 

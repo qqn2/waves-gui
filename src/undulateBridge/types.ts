@@ -63,8 +63,15 @@ export type UndulateAnalogueValue =
   | string
   | Array<[number, number]>;
 
+export interface WavesGuiUndulateMetadata {
+  analogueContext?: { vssa: number; vdda: number };
+  randomSeed?: number;
+}
+
 export interface UndulateRoot extends WdRoot {
   annotations?: UndulateAnnotation[];
   /** Undulate's canonical dependency-edge field (plural). */
   edges?: string[];
+  /** Namespaced editor context omitted by strict upstream export. */
+  'x-waves-gui'?: WavesGuiUndulateMetadata;
 }

@@ -47,6 +47,7 @@ export const UNDULATE_PROPERTY_MANIFEST = {
   root: {
     supported: [
       'signal', 'config', 'head', 'foot', 'edge', 'edges', 'annotations',
+      'x-waves-gui',
     ],
     wip: [],
     unsupportedByDesign: ['reg', 'register'],
@@ -56,11 +57,10 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'name', 'wave', 'data', 'node', 'period', 'phase',
       'repeat', 'periods', 'duty_cycle', 'duty_cycles', 'slewing',
       'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'font-size',
+      'font', 'font-weight',
     ],
     wip: [
       'skin',
-      'font',
-      'font-weight',
       'color',
     ],
   },
@@ -82,14 +82,14 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'stroke-width',
       'stroke-dasharray',
       'font-size',
+      'font',
+      'font-weight',
     ],
     wip: [
       'periods',
       'duty_cycle',
       'duty_cycles',
       'skin',
-      'font',
-      'font-weight',
       'color',
     ],
   },
@@ -140,6 +140,8 @@ const DIGITAL_EXTENSION_FIELDS = new Set([
   'stroke-width',
   'stroke-dasharray',
   'font-size',
+  'font',
+  'font-weight',
 ]);
 const ANALOGUE_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
@@ -569,6 +571,18 @@ function validateSignalStyle(signal: Record<string, unknown>): string | null {
   ) {
     return 'font-size must resolve to a safe size from 6px to 96px';
   }
+  if (
+    signal.font !== undefined
+    && parseAnnotationFontFamily(signal.font) === undefined
+  ) {
+    return 'font must be sans-serif, serif, or monospace';
+  }
+  if (
+    signal['font-weight'] !== undefined
+    && parseAnnotationFontWeight(signal['font-weight']) === undefined
+  ) {
+    return 'font-weight must be normal, bold, or 100 through 900';
+  }
   return null;
 }
 
@@ -842,6 +856,41 @@ function validateAnnotationStructure(value: unknown): string | null {
 }
 
 function structuralError(root: Record<string, unknown>): string | null {
+  const appMetadata = root['x-waves-gui'];
+  if (appMetadata !== undefined) {
+    if (!isRecord(appMetadata)) return 'x-waves-gui must be an object';
+    for (const field of Object.keys(appMetadata)) {
+      if (field !== 'analogueContext' && field !== 'randomSeed') {
+        return `x-waves-gui.${field} is not supported`;
+      }
+    }
+    if (appMetadata.analogueContext !== undefined) {
+      if (!isRecord(appMetadata.analogueContext)) {
+        return 'x-waves-gui.analogueContext must be an object';
+      }
+      const { vssa, vdda } = appMetadata.analogueContext;
+      if (
+        typeof vssa !== 'number'
+        || !Number.isFinite(vssa)
+        || typeof vdda !== 'number'
+        || !Number.isFinite(vdda)
+        || vdda <= vssa
+      ) {
+        return 'x-waves-gui analogue rails require finite vssa < vdda';
+      }
+    }
+    if (
+      appMetadata.randomSeed !== undefined
+      && (
+        typeof appMetadata.randomSeed !== 'number'
+        || !Number.isInteger(appMetadata.randomSeed)
+        || appMetadata.randomSeed < 0
+        || appMetadata.randomSeed > 0xffff_ffff
+      )
+    ) {
+      return 'x-waves-gui.randomSeed must be an integer from 0 to 4294967295';
+    }
+  }
   if (root.edge !== undefined && root.edges !== undefined) {
     return 'edge and edges cannot both be present';
   }
@@ -915,6 +964,7 @@ export function isUndulateJSON(value: unknown): value is UndulateRoot {
   if (
     Object.prototype.hasOwnProperty.call(value, 'annotations')
     || Object.prototype.hasOwnProperty.call(value, 'edges')
+    || Object.prototype.hasOwnProperty.call(value, 'x-waves-gui')
     || (
       Array.isArray(value.edge)
       && value.edge.some(

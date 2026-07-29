@@ -459,8 +459,10 @@ function svgVectorSignal(
     const maxW = span - d * 2 - 8;
     if (maxW > 4) {
       const fs = signal.style?.fontSize ?? Math.max(10, rowH * 0.35);
+      const family = esc(signal.style?.fontFamily ?? 'sans-serif');
+      const weight = signal.style?.fontWeight ?? 400;
       parts.push(
-        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${esc(segmentBusTextColor(seg))}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
+        `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${esc(segmentBusTextColor(seg))}" font-size="${fs}" font-family="${family}" font-weight="${weight}" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
       );
     }
   }
@@ -603,9 +605,16 @@ function svgLabels(
   for (const entry of entries) {
     const x = 8 + entry.depth * 12;
     const y = axisOffset + entry.y + entry.height * entry.centerRatio;
-    const weight = entry.isGroup ? ' font-weight="600" font-size="11"' : ' font-size="12"';
+    const fontFamily = entry.isGroup
+      ? 'sans-serif'
+      : entry.style?.fontFamily ?? 'sans-serif';
+    const fontWeight = entry.isGroup ? 600 : entry.style?.fontWeight ?? 400;
+    const fontSize = entry.isGroup ? 11 : entry.style?.fontSize ?? 12;
     parts.push(
-      `<text x="${x}" y="${y}" fill="${esc(textColor)}" font-family="sans-serif" dominant-baseline="middle"${weight}>${esc(entry.name)}</text>`,
+      `<text x="${x}" y="${y}" fill="${esc(textColor)}" `
+      + `font-family="${esc(fontFamily)}" font-weight="${fontWeight}" `
+      + `font-size="${fontSize}" dominant-baseline="middle">`
+      + `${esc(entry.name)}</text>`,
     );
   }
   return parts.join('\n');

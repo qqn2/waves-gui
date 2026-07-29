@@ -794,6 +794,25 @@
   min-height: 4.5rem;
 }
 
+.inspectorSeedControl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.inspectorSeedControl output {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inspectorSeedControl button {
+  min-height: 29px;
+}
+
 .inspectorDanger {
   display: inline-flex;
   align-items: center;

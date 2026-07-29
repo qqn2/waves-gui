@@ -52,6 +52,7 @@ export interface StoreActions {
     value: number,
   ): void;
   updateAnalogueContext(patch: { vssa?: number; vdda?: number }): void;
+  refreshAnalogueRandomSeed(): void;
   /** Create an overlay with the next analogue sibling, or extend its group. */
   extendAnalogueOverlayGroup(signalId: string): boolean;
   dissolveAnalogueOverlayGroup(groupId: string): void;

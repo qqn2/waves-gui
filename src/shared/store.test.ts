@@ -322,6 +322,49 @@ describe('useStore', () => {
       .toBeUndefined();
   });
 
+  it('refreshes rnd() with a stable app-owned document seed', () => {
+    const diagram = emptyDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.analogueContext = { vssa: 0, vdda: 1.8 };
+    diagram.signals = [{
+      id: 'analogue-random',
+      name: 'noise',
+      type: 'analogue',
+      states: [],
+      segments: [],
+      color: '#4A9EFF',
+      rowHeight: 40,
+      analogueMin: 0,
+      analogueMax: 1.8,
+      analogueCells: [{
+        id: 'random-cell',
+        kind: 'step',
+        value: 0,
+        expression: 'rnd()*VDDA',
+      }],
+    }];
+    useStore.getState().loadDiagram(diagram);
+
+    useStore.getState().refreshAnalogueRandomSeed();
+    const firstSeed = useStore.getState().diagram.config.analogueRandomSeed;
+    const firstSignal = useStore.getState().diagram.signals[0];
+    const firstValue =
+      firstSignal?.type === 'analogue'
+        ? firstSignal.analogueCells?.[0]?.value
+        : undefined;
+    useStore.getState().refreshAnalogueRandomSeed();
+    const secondSeed = useStore.getState().diagram.config.analogueRandomSeed;
+    const secondSignal = useStore.getState().diagram.signals[0];
+    const secondValue =
+      secondSignal?.type === 'analogue'
+        ? secondSignal.analogueCells?.[0]?.value
+        : undefined;
+
+    expect(firstSeed).toBe(0x9e37_79b9);
+    expect(secondSeed).toBe((0x9e37_79b9 * 2) >>> 0);
+    expect(secondValue).not.toBe(firstValue);
+  });
+
   it('keeps the corresponding signal selected across raw JSON edits', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('bit');

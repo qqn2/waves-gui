@@ -49,6 +49,24 @@ function analogueHoverShape(
       points: [],
     };
   }
+  if (kind === 'metastable-low') {
+    return {
+      path: 'M0 50C8 8 16 92 24 50S40 14 48 55S64 72 74 69S88 84 100 84',
+      points: [],
+    };
+  }
+  if (kind === 'metastable-high') {
+    return {
+      path: 'M0 50C8 92 16 8 24 50S40 86 48 45S64 28 74 31S88 16 100 16',
+      points: [],
+    };
+  }
+  if (kind === 'impulse-low') {
+    return { path: 'M0 8H50V92V8H100', points: [] };
+  }
+  if (kind === 'impulse-high') {
+    return { path: 'M0 92H50V8V92H100', points: [] };
+  }
   return {
     path: `M0 ${previousY}L100 ${targetY}`,
     points: [{ x: 0, y: previousY }, { x: 100, y: targetY }],
@@ -146,17 +164,25 @@ export function PointerMarker({
           ? ` → ${view.activeBitState}`
           : ` ${current}→${toggleBinaryBitState(current)}`
       : '';
+  const analogueKindHint =
+    view.activeAnalogueKind === 'hold'
+      ? '. hold previous'
+      : view.activeAnalogueKind === 'step'
+        ? `s step → ${view.activeAnalogueValue}`
+        : view.activeAnalogueKind === 'capacitive'
+          ? `c curve → ${view.activeAnalogueValue}`
+          : view.activeAnalogueKind === 'samples'
+            ? `a samples → ${view.activeAnalogueValue}`
+            : view.activeAnalogueKind === 'metastable-low'
+              ? 'm metastable to low'
+              : view.activeAnalogueKind === 'metastable-high'
+                ? 'M metastable to high'
+                : view.activeAnalogueKind === 'impulse-low'
+                  ? 'i downward impulse'
+                  : 'I upward impulse';
   const analoguePaintHint =
     tool === 'analogue-paint' && hit.signalType === 'analogue'
-      ? view.activeAnalogueKind === 'hold'
-        ? ' · . hold previous'
-        : ` · ${
-            view.activeAnalogueKind === 'step'
-              ? 's step'
-              : view.activeAnalogueKind === 'capacitive'
-                ? 'c curve'
-                : 'a samples'
-          } → ${view.activeAnalogueValue}`
+      ? ` · ${analogueKindHint}`
       : '';
   const analoguePreview =
     tool === 'analogue-paint' && targetSignal.type === 'analogue'

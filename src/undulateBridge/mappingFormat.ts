@@ -12,6 +12,7 @@ export const UNDULATE_MAPPING_ROOT_METADATA = new Set([
   'edge',
   'edges',
   'annotations',
+  'x-waves-gui',
   'reg',
   'register',
 ]);

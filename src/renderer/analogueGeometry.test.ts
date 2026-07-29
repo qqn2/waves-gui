@@ -38,4 +38,24 @@ describe('analogue geometry', () => {
     expect(points).toContainEqual({ step: 2.5, value: 1 });
     expect(points.at(-1)).toEqual({ step: 3, value: 0 });
   });
+
+  it('builds rail-resolving metastability and impulse geometry', () => {
+    const mixed: Signal = {
+      ...signal,
+      analogueCells: [
+        { id: 'm', kind: 'metastable-low', value: 0 },
+        { id: 'M', kind: 'metastable-high', value: 2 },
+        { id: 'i', kind: 'impulse-low', value: 2 },
+        { id: 'I', kind: 'impulse-high', value: 0 },
+      ],
+    };
+    const points = analoguePathPoints(mixed);
+    expect(points.some((point) => point.step > 0 && point.step < 0.75))
+      .toBe(true);
+    expect(points).toContainEqual({ step: 1, value: 0 });
+    expect(points).toContainEqual({ step: 2, value: 2 });
+    expect(points).toContainEqual({ step: 2.5, value: 0 });
+    expect(points).toContainEqual({ step: 3.5, value: 2 });
+    expect(points.at(-1)).toEqual({ step: 4, value: 0 });
+  });
 });
