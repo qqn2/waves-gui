@@ -188,6 +188,13 @@ export type DiagramSourceFormat =
   | 'undulate-yaml'
   | 'undulate-toml';
 
+export interface OpaqueUndulateData {
+  /** Safe, unknown top-level properties keyed by their original property name. */
+  root?: Record<string, unknown>;
+  /** Safe, unknown properties keyed by the stable internal signal id. */
+  signals?: Record<string, Record<string, unknown>>;
+}
+
 export interface DiagramCompatibility {
   extensionsEnabled: boolean;
   sourceFormat?: DiagramSourceFormat;
@@ -197,6 +204,8 @@ export interface DiagramCompatibility {
    * TOML keep it only as metadata and are rewritten canonically after edits.
    */
   sourceText?: string;
+  /** Safe declarative data retained verbatim until a future bridge models it. */
+  opaqueUndulate?: OpaqueUndulateData;
 }
 
 export interface AnnotationStyle {

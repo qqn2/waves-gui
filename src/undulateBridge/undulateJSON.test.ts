@@ -290,7 +290,7 @@ describe('Undulate JSON bridge', () => {
         phase: -0.25,
         slewing: 0.1,
       }],
-    } satisfies UndulateRoot;
+    } as unknown as UndulateRoot;
     expect(validateUndulateJSON(root)).toBeNull();
     const diagram = fromUndulateJSON(root);
     const signal = diagram.signals[0];
@@ -538,7 +538,7 @@ describe('Undulate JSON bridge', () => {
       .toEqual(expressions);
   });
 
-  it('accepts fine timing and plural edges while reporting unknown properties', () => {
+  it('preserves safe unknown root and signal properties without interpreting them', () => {
     const findings = validateUndulateFindings({
       signal: [{
         name: 'clk',
@@ -552,9 +552,26 @@ describe('Undulate JSON bridge', () => {
     });
 
     expect(findings.map((finding) => [finding.kind, finding.path])).toEqual([
-      ['unknown', 'signal[0].typo_style'],
-      ['unknown', 'future_root'],
+      ['opaque', 'signal[0].typo_style'],
+      ['opaque', 'future_root'],
     ]);
+    const root = {
+      signal: [{ name: 'clk', wave: '01', future_lane: { mode: 'vendor-a' } }],
+      future_root: { revision: 2, enabled: true },
+    } as unknown as UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(signal?.type).not.toBe('group');
+    if (!signal || signal.type === 'group') throw new Error('expected signal');
+    expect(diagram.compatibility?.opaqueUndulate).toEqual({
+      root: { future_root: { revision: 2, enabled: true } },
+      signals: { [signal.id]: { future_lane: { mode: 'vendor-a' } } },
+    });
+    expect(toUndulateJSON(diagram)).toMatchObject(root);
+    expect(validateUndulateJSON({
+      signal: [{ name: 'unsafe', wave: '0', future_lane: 'https://example.test/x' }],
+    })).toContain('Unknown Undulate property signal[0].future_lane');
   });
 
   it('classifies the pinned blocked-feature fixture in one pass', () => {
@@ -567,6 +584,7 @@ describe('Undulate JSON bridge', () => {
     expect(new Set(findings.map((finding) => finding.kind))).toEqual(new Set([
       'wip',
       'unsupported-by-design',
+      'opaque',
       'unknown',
     ]));
     expect(findings.map((finding) => finding.path)).toEqual(

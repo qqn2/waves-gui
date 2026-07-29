@@ -745,9 +745,7 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await expect(steps).toHaveValue(before);
 });
 
-test('unknown Undulate properties report without data loss', async ({ page }) => {
-  const steps = page.getByLabel('Diagram step count');
-  const before = await steps.inputValue();
+test('safe unknown Undulate properties are preserved without data loss', async ({ page }) => {
   await replaceJson(page, JSON.stringify({
     signal: [{
       name: 'blocked',
@@ -758,14 +756,10 @@ test('unknown Undulate properties report without data loss', async ({ page }) =>
     edges: ['a->b'],
   }, null, 2));
 
-  const report = page.locator('[role="alert"]').filter({
-    hasText: 'Unknown Undulate property signal[0].future_lane',
-  });
-  await expect(report).toContainText('Unknown Undulate property signal[0].future_lane');
-  await expect(signalRow(page, 'clk')).toBeVisible();
-  await expect(signalRow(page, 'blocked')).toHaveCount(0);
-  await expect(steps).toHaveValue(before);
-  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+  await expect(signalRow(page, 'blocked')).toBeVisible();
+  await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
+  await page.getByLabel('More steps').click();
+  await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
 });
 
 test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {

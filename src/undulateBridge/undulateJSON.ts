@@ -51,13 +51,47 @@ export {
   validateUndulateFindings,
   validateUndulateJSON,
 } from './validation';
-import { UNDULATE_TARGET_REVISION } from './validation';
+import {
+  UNDULATE_PROPERTY_MANIFEST,
+  UNDULATE_TARGET_REVISION,
+} from './validation';
 import { normalizeUndulateEdge } from './edges';
 import {
   nodeToUndulate,
   parseUndulateNodes,
   wavedromNodePattern,
 } from './nodes';
+
+const ROOT_FIELDS = new Set([
+  ...UNDULATE_PROPERTY_MANIFEST.root.supported,
+  ...UNDULATE_PROPERTY_MANIFEST.root.wip,
+  ...UNDULATE_PROPERTY_MANIFEST.root.unsupportedByDesign,
+]);
+const DIGITAL_FIELDS = new Set([
+  ...UNDULATE_PROPERTY_MANIFEST.digitalSignal.supported,
+  ...UNDULATE_PROPERTY_MANIFEST.digitalSignal.wip,
+]);
+const ANALOGUE_FIELDS = new Set([
+  ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
+  ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.wip,
+]);
+
+function opaqueFields(
+  value: Record<string, unknown>,
+  known: ReadonlySet<string>,
+): Record<string, unknown> | undefined {
+  const entries = Object.entries(value).filter(([field]) => !known.has(field));
+  if (entries.length === 0) return undefined;
+  return Object.fromEntries(entries);
+}
+
+function withOpaqueFields(
+  entry: WdSignal,
+  signal: Signal,
+  opaqueSignals: Record<string, Record<string, unknown>> | undefined,
+): WdSignal {
+  return { ...(opaqueSignals?.[signal.id] ?? {}), ...entry } as WdSignal;
+}
 
 function annotationRangeFromUndulate(
   value: UndulateAnnotationRange | undefined,
@@ -199,6 +233,7 @@ function mergeUndulateSignalEntries(
   signals: SignalOrGroup[],
   sharedEntries: WdSignalEntry[],
   context: AnalogueContext,
+  opaqueSignals?: Record<string, Record<string, unknown>>,
 ): WdSignalEntry[] {
   return signals.map((signal, index) => {
     const shared = sharedEntries[index] ?? {};
@@ -207,11 +242,20 @@ function mergeUndulateSignalEntries(
         Array.isArray(shared) ? shared.slice(1) as WdSignalEntry[] : [];
       return [
         signal.name,
-        ...mergeUndulateSignalEntries(signal.children, sharedChildren, context),
+        ...mergeUndulateSignalEntries(
+          signal.children,
+          sharedChildren,
+          context,
+          opaqueSignals,
+        ),
       ] as WdGroup;
     }
     if (signal.type === 'analogue') {
-      return analogueToUndulateEntry(signal, context);
+      return withOpaqueFields(
+        analogueToUndulateEntry(signal, context),
+        signal,
+        opaqueSignals,
+      );
     }
     if (signal.type === 'bit' && signal.digitalTiming) {
       const timing = signal.digitalTiming;
@@ -241,9 +285,13 @@ function mergeUndulateSignalEntries(
       entry.phase = timing.phaseTicks / timing.ticksPerStep;
       if (timing.slewing !== undefined) entry.slewing = timing.slewing;
       delete entry.repeat;
-      return withUndulateNode(entry, signal);
+      return withOpaqueFields(withUndulateNode(entry, signal), signal, opaqueSignals);
     }
-    return withUndulateNode({ ...(shared as WdSignal) }, signal);
+    return withOpaqueFields(
+      withUndulateNode({ ...(shared as WdSignal) }, signal),
+      signal,
+      opaqueSignals,
+    );
   });
 }
 
@@ -288,6 +336,7 @@ function withUndulateNode(entry: WdSignal, signal: Signal): WdSignal {
 
 export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const root: UndulateRoot = toWavedromJSON(diagram);
+  Object.assign(root, diagram.compatibility?.opaqueUndulate?.root ?? {});
   if (root.edge && root.edge.length > 0) {
     root.edges = root.edge.map((edge) => normalizeUndulateEdge(edge) ?? edge);
     delete root.edge;
@@ -296,6 +345,7 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
     diagram.signals,
     root.signal,
     diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT,
+    diagram.compatibility?.opaqueUndulate?.signals,
   );
   const rows = buildRowLayout(diagram.signals);
   const annotations: UndulateAnnotation[] = [];
@@ -560,6 +610,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   }
   const analogueContext = { ...DEFAULT_ANALOGUE_CONTEXT };
   let hasAnalogueExpression = false;
+  const opaqueSignals: Record<string, Record<string, unknown>> = {};
   rawSignals.forEach((raw, index) => {
     const parsed = parsedSignals[index];
     if (parsed) {
@@ -568,8 +619,14 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         || hasAnalogueExpression;
       importDigitalTiming(raw, parsed, ticksPerStep);
       importExpandedNodes(raw, parsed);
+      const opaque = opaqueFields(
+        raw as unknown as Record<string, unknown>,
+        Array.isArray(raw.analogue) ? ANALOGUE_FIELDS : DIGITAL_FIELDS,
+      );
+      if (opaque) opaqueSignals[parsed.id] = opaque;
     }
   });
+  const opaqueRoot = opaqueFields(root as unknown as Record<string, unknown>, ROOT_FIELDS);
   diagram.config.ticksPerStep = ticksPerStep;
   if (hasAnalogueExpression) {
     diagram.config.analogueContext = analogueContext;
@@ -667,6 +724,8 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     compatibility: {
       extensionsEnabled:
         annotations.length > 0
+        || opaqueRoot !== undefined
+        || Object.keys(opaqueSignals).length > 0
         || parsedSignals.some(
           (signal) =>
             signal.type === 'analogue'
@@ -675,6 +734,16 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         ),
       sourceFormat: 'undulate-json',
       sourceRevision: UNDULATE_TARGET_REVISION,
+      ...(
+        opaqueRoot || Object.keys(opaqueSignals).length > 0
+          ? {
+              opaqueUndulate: {
+                ...(opaqueRoot ? { root: opaqueRoot } : {}),
+                ...(Object.keys(opaqueSignals).length > 0 ? { signals: opaqueSignals } : {}),
+              },
+            }
+          : {}
+      ),
     },
     annotations,
   });

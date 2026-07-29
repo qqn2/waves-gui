@@ -29,6 +29,7 @@ export type UndulateFindingKind =
   | 'unsupported-by-design'
   | 'invalid'
   | 'unknown'
+  | 'opaque'
   | 'converted';
 
 export interface UndulateFinding {
@@ -213,6 +214,36 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+const OPAQUE_MAX_DEPTH = 16;
+const OPAQUE_MAX_NODES = 10_000;
+const OPAQUE_MAX_STRING_LENGTH = 16_384;
+const UNSAFE_OPAQUE_KEY = /^(?:__proto__|prototype|constructor|style|css|url|uri|href|src)$/i;
+const UNSAFE_OPAQUE_TEXT = /(?:^|[\s"'(])(?:javascript|data|https?|file):/i;
+
+/** Opaque data never reaches the renderer, but must remain bounded and declarative. */
+function isSafeOpaqueValue(
+  value: unknown,
+  depth = 0,
+  budget: { nodes: number } = { nodes: 0 },
+): boolean {
+  if (depth > OPAQUE_MAX_DEPTH || ++budget.nodes > OPAQUE_MAX_NODES) return false;
+  if (value === null || typeof value === 'boolean') return true;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value === 'string') {
+    return value.length <= OPAQUE_MAX_STRING_LENGTH && !UNSAFE_OPAQUE_TEXT.test(value);
+  }
+  if (Array.isArray(value)) {
+    return value.length <= OPAQUE_MAX_NODES
+      && value.every((item) => isSafeOpaqueValue(item, depth + 1, budget));
+  }
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([key, item]) => (
+    !UNSAFE_OPAQUE_KEY.test(key)
+    && key.length <= 256
+    && isSafeOpaqueValue(item, depth + 1, budget)
+  ));
+}
+
 function scanUnknownFields(
   record: Record<string, unknown>,
   path: string,
@@ -298,7 +329,7 @@ function scanSignal(
       continue;
     }
     if (!supported.has(field)) {
-      findings.push(unknown(fieldPath));
+      findings.push(isSafeOpaqueValue(signal[field]) ? opaque(fieldPath) : unknown(fieldPath));
       continue;
     }
     if (field === 'wave' && typeof signal.wave === 'string' && !analogue) {
@@ -390,7 +421,7 @@ function scanProperties(root: Record<string, unknown>): UndulateFinding[] {
         'The current diagram was not changed.',
       ));
     } else {
-      findings.push(unknown(field));
+      findings.push(isSafeOpaqueValue(root[field]) ? opaque(field) : unknown(field));
     }
   }
   return findings;
@@ -503,6 +534,16 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
     return 'order must be an integer from 0 to 4';
   }
   return null;
+}
+
+function opaque(path: string): UndulateFinding {
+  return finding(
+    'opaque',
+    'safe unknown property',
+    path,
+    `Preserving safe unknown Undulate property ${path} for target revision ${UNDULATE_TARGET_REVISION}.`,
+    'The property is retained verbatim but is not interpreted by the editor.',
+  );
 }
 
 function validateDigitalTiming(signal: Record<string, unknown>): string | null {
@@ -786,8 +827,9 @@ export function validateUndulateFindings(value: unknown): UndulateFinding[] {
 
 export function validateUndulateJSON(value: unknown): string | null {
   const findings = validateUndulateFindings(value);
-  return findings.length > 0
-    ? findings.map((item) => item.message).join('\n')
+  const blocking = findings.filter((item) => item.kind !== 'opaque');
+  return blocking.length > 0
+    ? blocking.map((item) => item.message).join('\n')
     : null;
 }
 

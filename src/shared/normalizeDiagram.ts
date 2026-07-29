@@ -162,6 +162,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...(typeof d.compatibility?.sourceText === 'string'
       ? { sourceText: d.compatibility.sourceText }
       : {}),
+    ...(d.compatibility?.opaqueUndulate
+      ? { opaqueUndulate: d.compatibility.opaqueUndulate }
+      : {}),
   };
 
   if (!Array.isArray(d.edges)) {

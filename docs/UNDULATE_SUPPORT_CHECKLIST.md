@@ -69,8 +69,8 @@ items; legend examples and permanent exclusions are not counted.
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Planned: styled signals, relaxed JSON/JSONML, and opaque
-  preservation. JSON, YAML, and TOML semantic interchange are supported for
+- [ ] Planned: styled signals and relaxed JSON/JSONML. Safe opaque
+  preservation is partial. JSON, YAML, and TOML semantic interchange are supported for
   the schema subset listed here.
 - **Permanent exclusions:** register diagrams and arbitrary code execution.
   Safe documented analogue expressions remain supported.
@@ -144,10 +144,11 @@ items; legend examples and permanent exclusions are not counted.
   deterministic canonical TOML.
 - [ ] Partial: changed or newly inserted values follow the retained document's
   detected style, but byte-for-byte source preservation is not promised.
-- [ ] Planned: opaque preservation of safe unknown Undulate fields.
-- [X] Unknown fields on ordinary digital signals and unknown top-level fields
-  route through the Undulate classifier and are rejected with revision-pinned
-  object paths.
+- [ ] Partial: safe unknown top-level and signal fields are preserved opaquely,
+  re-exported verbatim, and reported before export. Unknown config and
+  annotation fields remain rejected until equivalent retained storage exists.
+- [X] Unsafe, oversized, executable/resource-bearing, WIP, and
+  unsupported-by-design fields are rejected with revision-pinned object paths.
 
 Upstream references:
 [supported syntax](https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/supported_syntax.rst),
@@ -455,8 +456,8 @@ Upstream reference:
 ### Partial
 
 - [ ] Partial: the feature-loss summary counts supported annotations, analogue
-  lanes, and extended digital signals. It cannot count unknown fields because
-  opaque data is not preserved.
+  lanes, and extended digital signals. The export report covers preserved root
+  and signal opaque fields, including orphaned fields after a signal deletion.
 - [ ] Partial: the compatibility report covers typed extension objects, not
   every documented Undulate property.
 
@@ -484,8 +485,9 @@ Upstream reference:
 - [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths,
   dashes, bounded font sizes, and text backgrounds use strict allowlists.
   Signal and edge styles remain.
-- [ ] **P2 — Opaque preservation.** Retain safe unknown declarative data and
-  report when an edit invalidates it.
+- [ ] **P2 — Opaque preservation.** Safe root and signal fields are retained
+  and orphaned signal fields are reported; extend this to config and annotation
+  fields with edit-invalidation coverage.
 - [X] **P3 — Additional formats and outputs.** Safe semantic YAML and TOML
   import plus canonical export are implemented alongside JSON. Source-
   preserving mapping-format edits are explicitly deferred; evaluate PDF

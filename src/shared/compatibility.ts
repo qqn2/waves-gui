@@ -98,6 +98,35 @@ export function undulateCompatibilityFindings(
     }
   };
   appendAnalogue(diagram.signals);
+  const opaque = diagram.compatibility?.opaqueUndulate;
+  const opaqueSignalIds = Object.keys(opaque?.signals ?? {});
+  const liveSignalIds = new Set<string>();
+  const collectIds = (signals: DiagramState['signals']) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') collectIds(signal.children);
+      else liveSignalIds.add(signal.id);
+    }
+  };
+  collectIds(diagram.signals);
+  const preservedSignalCount = opaqueSignalIds.filter((id) => liveSignalIds.has(id)).length;
+  const preservedRootCount = Object.keys(opaque?.root ?? {}).length;
+  if (preservedRootCount + preservedSignalCount > 0) {
+    findings.push({
+      level: 'opaque',
+      feature: 'unknown-undulate-properties',
+      message: `${preservedRootCount + preservedSignalCount} safe unknown Undulate propert${preservedRootCount + preservedSignalCount === 1 ? 'y is' : 'ies are'} preserved without interpretation.`,
+      consequence: 'They are re-exported verbatim; GUI edits do not modify their values.',
+    });
+  }
+  const orphanedCount = opaqueSignalIds.length - preservedSignalCount;
+  if (orphanedCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'orphaned-unknown-undulate-properties',
+      message: `${orphanedCount} preserved unknown signal propert${orphanedCount === 1 ? 'y no longer has' : 'ies no longer have'} a live signal to attach to.`,
+      consequence: 'Delete or restore the affected signal before exporting to avoid omission.',
+    });
+  }
   return findings;
 }
 

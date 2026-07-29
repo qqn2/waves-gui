@@ -101,4 +101,30 @@ describe('source compatibility findings', () => {
       }),
     ]);
   });
+
+  it('reports preserved and orphaned opaque Undulate properties before export', () => {
+    const diagram = createDefaultDiagram();
+    const signal = diagram.signals[0];
+    if (!signal || signal.type === 'group') throw new Error('Expected signal');
+    diagram.compatibility = {
+      extensionsEnabled: true,
+      opaqueUndulate: {
+        root: { future_root: true },
+        signals: {
+          [signal.id]: { future_lane: true },
+          removed: { future_lane: true },
+        },
+      },
+    };
+    expect(undulateCompatibilityFindings(diagram)).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        level: 'opaque',
+        feature: 'unknown-undulate-properties',
+      }),
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'orphaned-unknown-undulate-properties',
+      }),
+    ]));
+  });
 });

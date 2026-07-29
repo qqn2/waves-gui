@@ -257,7 +257,7 @@ y = 0.5
     expect(result.diagram.compatibility?.extensionsEnabled).toBe(true);
   });
 
-  it('accepts plural edges while routing unknown fields through loss-safe validation', () => {
+  it('accepts plural edges while preserving safe unknown fields opaquely', () => {
     const code = JSON.stringify({
       signal: [{
         name: 'clk',
@@ -268,14 +268,15 @@ y = 0.5
       edges: ['a->b'],
     });
     expect(detectCodeFormat(code)).toBe('undulate');
-    const error = validateCodeString(code);
-    expect(error).not.toContain('[WIP] edges');
-    expect(error).not.toContain('[WIP] signal[0].repeat');
-    expect(error).toContain('Unknown Undulate property signal[0].unknown_lane_field');
-    expect(parseCodeToDiagram(code)).toEqual({
-      ok: false,
-      error,
-    });
+    expect(validateCodeString(code)).toBeNull();
+    const parsed = parseCodeToDiagram(code);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const signal = parsed.diagram.signals[0];
+    expect(signal?.type).not.toBe('group');
+    if (!signal || signal.type === 'group') return;
+    expect(parsed.diagram.compatibility?.opaqueUndulate?.signals?.[signal.id])
+      .toEqual({ unknown_lane_field: true });
     const configOnly = JSON.stringify({
       signal: [{ name: 'clk', wave: 'p' }],
       config: { hscale: 1, vscale: 2 },
