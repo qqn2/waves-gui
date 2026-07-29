@@ -106,6 +106,9 @@ describe('source compatibility findings', () => {
     const diagram = createDefaultDiagram();
     const signal = diagram.signals[0];
     if (!signal || signal.type === 'group') throw new Error('Expected signal');
+    diagram.annotations = [
+      { id: 'live-note', type: 'text', text: 'note', tick: 0 },
+    ];
     diagram.compatibility = {
       extensionsEnabled: true,
       opaqueUndulate: {
@@ -113,6 +116,10 @@ describe('source compatibility findings', () => {
         signals: {
           [signal.id]: { future_lane: true },
           removed: { future_lane: true },
+        },
+        annotations: {
+          'live-note': { future_annotation: true },
+          'removed-note': { future_annotation: true },
         },
       },
     };

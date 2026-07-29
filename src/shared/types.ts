@@ -191,8 +191,15 @@ export type DiagramSourceFormat =
 export interface OpaqueUndulateData {
   /** Safe, unknown top-level properties keyed by their original property name. */
   root?: Record<string, unknown>;
+  /** Safe unknown config fields, including nested head/foot fields. */
+  config?: Record<string, unknown>;
+  /** Safe unknown fields on top-level head/foot objects. */
+  head?: Record<string, unknown>;
+  foot?: Record<string, unknown>;
   /** Safe, unknown properties keyed by the stable internal signal id. */
   signals?: Record<string, Record<string, unknown>>;
+  /** Safe, unknown properties keyed by the stable internal annotation id. */
+  annotations?: Record<string, Record<string, unknown>>;
 }
 
 export interface DiagramCompatibility {

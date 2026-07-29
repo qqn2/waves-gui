@@ -109,22 +109,35 @@ export function undulateCompatibilityFindings(
   };
   collectIds(diagram.signals);
   const preservedSignalCount = opaqueSignalIds.filter((id) => liveSignalIds.has(id)).length;
-  const preservedRootCount = Object.keys(opaque?.root ?? {}).length;
-  if (preservedRootCount + preservedSignalCount > 0) {
+  const liveAnnotationIds = new Set((diagram.annotations ?? []).map(({ id }) => id));
+  const opaqueAnnotationIds = Object.keys(opaque?.annotations ?? {});
+  const preservedAnnotationCount =
+    opaqueAnnotationIds.filter((id) => liveAnnotationIds.has(id)).length;
+  const preservedDocumentCount = [
+    opaque?.root,
+    opaque?.config,
+    opaque?.head,
+    opaque?.foot,
+  ].reduce((count, record) => count + Object.keys(record ?? {}).length, 0);
+  const preservedCount =
+    preservedDocumentCount + preservedSignalCount + preservedAnnotationCount;
+  if (preservedCount > 0) {
     findings.push({
       level: 'opaque',
       feature: 'unknown-undulate-properties',
-      message: `${preservedRootCount + preservedSignalCount} safe unknown Undulate propert${preservedRootCount + preservedSignalCount === 1 ? 'y is' : 'ies are'} preserved without interpretation.`,
+      message: `${preservedCount} safe unknown Undulate propert${preservedCount === 1 ? 'y is' : 'ies are'} preserved without interpretation.`,
       consequence: 'They are re-exported verbatim; GUI edits do not modify their values.',
     });
   }
-  const orphanedCount = opaqueSignalIds.length - preservedSignalCount;
+  const orphanedCount =
+    opaqueSignalIds.length - preservedSignalCount
+    + opaqueAnnotationIds.length - preservedAnnotationCount;
   if (orphanedCount > 0) {
     findings.push({
       level: 'unsupported',
       feature: 'orphaned-unknown-undulate-properties',
-      message: `${orphanedCount} preserved unknown signal propert${orphanedCount === 1 ? 'y no longer has' : 'ies no longer have'} a live signal to attach to.`,
-      consequence: 'Delete or restore the affected signal before exporting to avoid omission.',
+      message: `${orphanedCount} preserved unknown object propert${orphanedCount === 1 ? 'y no longer has' : 'ies no longer have'} a live object to attach to.`,
+      consequence: 'Restore the affected signal or annotation before exporting to avoid omission.',
     });
   }
   return findings;

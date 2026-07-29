@@ -257,7 +257,7 @@ function scanUnknownFields(
     if (wipFields.has(field)) {
       findings.push(wip(fieldPath, field.replaceAll('_', ' ')));
     } else {
-      findings.push(unknown(fieldPath));
+      findings.push(isSafeOpaqueValue(record[field]) ? opaque(fieldPath) : unknown(fieldPath));
     }
   }
 }
@@ -274,7 +274,13 @@ function scanNamedObject(
     return;
   }
   for (const field of Object.keys(value)) {
-    if (!knownFields.has(field)) findings.push(unknown(`${path}.${field}`));
+    if (!knownFields.has(field)) {
+      findings.push(
+        isSafeOpaqueValue(value[field])
+          ? opaque(`${path}.${field}`)
+          : unknown(`${path}.${field}`),
+      );
+    }
   }
 }
 
@@ -377,7 +383,9 @@ function scanAnnotations(value: unknown, findings: UndulateFinding[]): void {
       if (ANNOTATION_WIP.has(field)) {
         findings.push(wip(fieldPath, field.replaceAll('_', ' ')));
       } else if (!ANNOTATION_SUPPORTED.has(field)) {
-        findings.push(unknown(fieldPath));
+        findings.push(
+          isSafeOpaqueValue(annotation[field]) ? opaque(fieldPath) : unknown(fieldPath),
+        );
       } else if (
         field === 'text'
         && typeof annotation.text === 'string'

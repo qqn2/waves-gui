@@ -558,20 +558,58 @@ describe('Undulate JSON bridge', () => {
     const root = {
       signal: [{ name: 'clk', wave: '01', future_lane: { mode: 'vendor-a' } }],
       future_root: { revision: 2, enabled: true },
+      config: {
+        hscale: 2,
+        future_config: { grid: 4 },
+        head: { future_nested_head: true },
+      },
+      head: { text: 'top', future_head: 3 },
+      foot: { text: 'bottom', future_foot: false },
+      annotations: [{
+        text: 'opaque note',
+        x: 1,
+        y: 1,
+        future_annotation: { alignment: 'future' },
+      }],
     } as unknown as UndulateRoot;
     expect(validateUndulateJSON(root)).toBeNull();
     const diagram = fromUndulateJSON(root);
     const signal = diagram.signals[0];
+    const annotation = diagram.annotations?.[0];
     expect(signal?.type).not.toBe('group');
-    if (!signal || signal.type === 'group') throw new Error('expected signal');
+    if (!signal || signal.type === 'group' || !annotation) {
+      throw new Error('expected signal and annotation');
+    }
     expect(diagram.compatibility?.opaqueUndulate).toEqual({
       root: { future_root: { revision: 2, enabled: true } },
+      config: {
+        future_config: { grid: 4 },
+        head: { future_nested_head: true },
+      },
+      head: { future_head: 3 },
+      foot: { future_foot: false },
       signals: { [signal.id]: { future_lane: { mode: 'vendor-a' } } },
+      annotations: {
+        [annotation.id]: { future_annotation: { alignment: 'future' } },
+      },
     });
     expect(toUndulateJSON(diagram)).toMatchObject(root);
     expect(validateUndulateJSON({
       signal: [{ name: 'unsafe', wave: '0', future_lane: 'https://example.test/x' }],
     })).toContain('Unknown Undulate property signal[0].future_lane');
+    expect(validateUndulateJSON({
+      signal: [],
+      config: { future_config: { src: 'local.svg' } },
+    })).toContain('Unknown Undulate property config.future_config');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{
+        text: 'unsafe',
+        x: 1,
+        y: 1,
+        future_annotation: 'javascript:alert(1)',
+      }],
+    })).toContain('Unknown Undulate property annotations[0].future_annotation');
   });
 
   it('classifies the pinned blocked-feature fixture in one pass', () => {
@@ -585,7 +623,6 @@ describe('Undulate JSON bridge', () => {
       'wip',
       'unsupported-by-design',
       'opaque',
-      'unknown',
     ]));
     expect(findings.map((finding) => finding.path)).toEqual(
       expect.arrayContaining([

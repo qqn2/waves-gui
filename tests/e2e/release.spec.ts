@@ -753,6 +753,16 @@ test('safe unknown Undulate properties are preserved without data loss', async (
       repeat: 8,
       future_lane: true,
     }],
+    config: {
+      hscale: 1,
+      future_config: { grid: 4 },
+    },
+    annotations: [{
+      text: 'future-safe',
+      x: 1,
+      y: 1,
+      future_annotation: true,
+    }],
     edges: ['a->b'],
   }, null, 2));
 
@@ -760,6 +770,8 @@ test('safe unknown Undulate properties are preserved without data loss', async (
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
   await page.getByLabel('More steps').click();
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
+  await expect(page.locator('.cm-content')).toContainText('"future_config"');
+  await expect(page.locator('.cm-content')).toContainText('"future_annotation": true');
 });
 
 test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {

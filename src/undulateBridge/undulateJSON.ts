@@ -75,6 +75,16 @@ const ANALOGUE_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
   ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.wip,
 ]);
+const CONFIG_FIELDS = new Set([
+  ...UNDULATE_PROPERTY_MANIFEST.config.supported,
+  ...UNDULATE_PROPERTY_MANIFEST.config.wip,
+]);
+const ANNOTATION_FIELDS = new Set([
+  ...UNDULATE_PROPERTY_MANIFEST.annotation.supported,
+  ...UNDULATE_PROPERTY_MANIFEST.annotation.wip,
+]);
+const HEAD_FIELDS = new Set(['text', 'tick', 'every']);
+const FOOT_FIELDS = new Set(['text', 'tock', 'every']);
 
 function opaqueFields(
   value: Record<string, unknown>,
@@ -91,6 +101,32 @@ function withOpaqueFields(
   opaqueSignals: Record<string, Record<string, unknown>> | undefined,
 ): WdSignal {
   return { ...(opaqueSignals?.[signal.id] ?? {}), ...entry } as WdSignal;
+}
+
+function opaqueNamedObject(
+  value: unknown,
+  known: ReadonlySet<string>,
+): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? opaqueFields(value as Record<string, unknown>, known)
+    : undefined;
+}
+
+function mergeOpaqueNamedObject(
+  opaque: unknown,
+  known: unknown,
+): Record<string, unknown> | undefined {
+  const opaqueRecord =
+    opaque && typeof opaque === 'object' && !Array.isArray(opaque)
+      ? opaque as Record<string, unknown>
+      : undefined;
+  const knownRecord =
+    known && typeof known === 'object' && !Array.isArray(known)
+      ? known as Record<string, unknown>
+      : undefined;
+  return opaqueRecord || knownRecord
+    ? { ...(opaqueRecord ?? {}), ...(knownRecord ?? {}) }
+    : undefined;
 }
 
 function annotationRangeFromUndulate(
@@ -336,7 +372,27 @@ function withUndulateNode(entry: WdSignal, signal: Signal): WdSignal {
 
 export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   const root: UndulateRoot = toWavedromJSON(diagram);
-  Object.assign(root, diagram.compatibility?.opaqueUndulate?.root ?? {});
+  const opaque = diagram.compatibility?.opaqueUndulate;
+  Object.assign(root, opaque?.root ?? {});
+  const mergedConfig = mergeOpaqueNamedObject(opaque?.config, root.config);
+  if (mergedConfig) {
+    const opaqueConfig = opaque?.config;
+    mergedConfig.head = mergeOpaqueNamedObject(
+      opaqueConfig?.head,
+      (root.config as Record<string, unknown> | undefined)?.head,
+    );
+    mergedConfig.foot = mergeOpaqueNamedObject(
+      opaqueConfig?.foot,
+      (root.config as Record<string, unknown> | undefined)?.foot,
+    );
+    if (mergedConfig.head === undefined) delete mergedConfig.head;
+    if (mergedConfig.foot === undefined) delete mergedConfig.foot;
+    root.config = mergedConfig;
+  }
+  const mergedHead = mergeOpaqueNamedObject(opaque?.head, root.head);
+  const mergedFoot = mergeOpaqueNamedObject(opaque?.foot, root.foot);
+  if (mergedHead) root.head = mergedHead;
+  if (mergedFoot) root.foot = mergedFoot;
   if (root.edge && root.edge.length > 0) {
     root.edges = root.edge.map((edge) => normalizeUndulateEdge(edge) ?? edge);
     delete root.edge;
@@ -349,10 +405,19 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   );
   const rows = buildRowLayout(diagram.signals);
   const annotations: UndulateAnnotation[] = [];
+  const addAnnotation = (
+    annotationId: string,
+    value: UndulateAnnotation,
+  ) => {
+    annotations.push({
+      ...(opaque?.annotations?.[annotationId] ?? {}),
+      ...value,
+    } as UndulateAnnotation);
+  };
 
   for (const annotation of diagram.annotations ?? []) {
     if (annotation.type === 'arrow') {
-      annotations.push({
+      addAnnotation(annotation.id, {
         shape: annotation.shape,
         from: anchorToUndulate(annotation.from),
         to: anchorToUndulate(annotation.to),
@@ -366,14 +431,14 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
       || annotation.type === 'global-compression'
     ) {
       if (annotation.type === 'vertical-line') {
-        annotations.push({
+        addAnnotation(annotation.id, {
           shape: '|',
           x: annotationXCells(annotation),
           ...annotationRangesToUndulate(annotation),
           ...annotationStyleToUndulate(annotation.style),
         });
       } else {
-        annotations.push({
+        addAnnotation(annotation.id, {
           shape: '||',
           x: annotationXCells(annotation),
           ...annotationRangesToUndulate(annotation),
@@ -384,14 +449,14 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
       const logicalY = annotationYLogical(annotation, rows);
       if (logicalY === null) continue;
       if (annotation.type === 'horizontal-line') {
-        annotations.push({
+        addAnnotation(annotation.id, {
           shape: '-',
           y: logicalY / ROW_HEIGHT,
           ...annotationRangesToUndulate(annotation),
           ...annotationStyleToUndulate(annotation.style),
         });
       } else {
-        annotations.push({
+        addAnnotation(annotation.id, {
           text: annotation.text,
           x: annotationXCells(annotation),
           y: logicalY / ROW_HEIGHT,
@@ -627,6 +692,25 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     }
   });
   const opaqueRoot = opaqueFields(root as unknown as Record<string, unknown>, ROOT_FIELDS);
+  const rawConfig =
+    root.config && typeof root.config === 'object'
+      ? root.config as Record<string, unknown>
+      : undefined;
+  const opaqueConfigFields = rawConfig
+    ? opaqueFields(rawConfig, CONFIG_FIELDS)
+    : undefined;
+  const opaqueConfigHead = opaqueNamedObject(rawConfig?.head, HEAD_FIELDS);
+  const opaqueConfigFoot = opaqueNamedObject(rawConfig?.foot, FOOT_FIELDS);
+  const opaqueConfig =
+    opaqueConfigFields || opaqueConfigHead || opaqueConfigFoot
+      ? {
+          ...(opaqueConfigFields ?? {}),
+          ...(opaqueConfigHead ? { head: opaqueConfigHead } : {}),
+          ...(opaqueConfigFoot ? { foot: opaqueConfigFoot } : {}),
+        }
+      : undefined;
+  const opaqueHead = opaqueNamedObject(root.head, HEAD_FIELDS);
+  const opaqueFoot = opaqueNamedObject(root.foot, FOOT_FIELDS);
   diagram.config.ticksPerStep = ticksPerStep;
   if (hasAnalogueExpression) {
     diagram.config.analogueContext = analogueContext;
@@ -717,6 +801,22 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     };
     return base;
   });
+  const opaqueAnnotations: Record<string, Record<string, unknown>> = {};
+  (root.annotations ?? []).forEach((raw, index) => {
+    const parsed = annotations[index];
+    const fields = opaqueFields(
+      raw as unknown as Record<string, unknown>,
+      ANNOTATION_FIELDS,
+    );
+    if (parsed && fields) opaqueAnnotations[parsed.id] = fields;
+  });
+  const hasOpaque =
+    opaqueRoot !== undefined
+    || opaqueConfig !== undefined
+    || opaqueHead !== undefined
+    || opaqueFoot !== undefined
+    || Object.keys(opaqueSignals).length > 0
+    || Object.keys(opaqueAnnotations).length > 0;
 
   return normalizeDiagram({
     ...diagram,
@@ -724,8 +824,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     compatibility: {
       extensionsEnabled:
         annotations.length > 0
-        || opaqueRoot !== undefined
-        || Object.keys(opaqueSignals).length > 0
+        || hasOpaque
         || parsedSignals.some(
           (signal) =>
             signal.type === 'analogue'
@@ -735,11 +834,17 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
       sourceFormat: 'undulate-json',
       sourceRevision: UNDULATE_TARGET_REVISION,
       ...(
-        opaqueRoot || Object.keys(opaqueSignals).length > 0
+        hasOpaque
           ? {
               opaqueUndulate: {
                 ...(opaqueRoot ? { root: opaqueRoot } : {}),
+                ...(opaqueConfig ? { config: opaqueConfig } : {}),
+                ...(opaqueHead ? { head: opaqueHead } : {}),
+                ...(opaqueFoot ? { foot: opaqueFoot } : {}),
                 ...(Object.keys(opaqueSignals).length > 0 ? { signals: opaqueSignals } : {}),
+                ...(Object.keys(opaqueAnnotations).length > 0
+                  ? { annotations: opaqueAnnotations }
+                  : {}),
               },
             }
           : {}
