@@ -19,7 +19,12 @@ describe('annotation image export', () => {
         text: '<setup & hold>',
         tick: 1,
         signalId: signal?.id,
-        style: { fontSize: 18, textBackground: false },
+        style: {
+          fontSize: 18,
+          fontFamily: 'monospace',
+          fontWeight: 700,
+          textBackground: false,
+        },
       },
     ];
 
@@ -27,6 +32,8 @@ describe('annotation image export', () => {
     expect(svg).toContain('&lt;setup &amp; hold&gt;');
     expect(svg).not.toContain('<setup & hold>');
     expect(svg).toContain('font-size="18"');
+    expect(svg).toContain('font-family="monospace"');
+    expect(svg).toContain('font-weight="700"');
   });
 
   it('omits annotation text while extensions are hidden', () => {

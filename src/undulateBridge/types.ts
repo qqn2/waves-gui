@@ -6,6 +6,8 @@ export interface UndulateAnnotationStyle {
   'stroke-width'?: number;
   'stroke-dasharray'?: number[];
   'font-size'?: number | string;
+  font?: 'sans-serif' | 'serif' | 'monospace';
+  'font-weight'?: number | string;
   text_background?: boolean;
 }
 

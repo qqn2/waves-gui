@@ -654,7 +654,9 @@ function svgAnnotations(
     const label = annotation.text
       ? `${labelBackground}<text x="${labelX}" y="${labelY}" `
         + `fill="${esc(annotation.style?.fill ?? textColor)}" text-anchor="middle" `
-        + `dominant-baseline="middle" font-family="sans-serif" `
+        + `dominant-baseline="middle" `
+        + `font-family="${esc(annotation.style?.fontFamily ?? 'sans-serif')}" `
+        + `font-weight="${annotation.style?.fontWeight ?? 400}" `
         + `font-size="${labelFontSize}">${esc(annotation.text)}</text>`
       : '';
     return `<defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="${stroke}"/></marker></defs>`
@@ -684,7 +686,9 @@ function svgAnnotations(
         + `fill="${esc(style?.fill ?? textColor)}" stroke="${esc(stroke)}" `
         + `stroke-width="${strokeWidth}"${dash} `
         + `paint-order="stroke" stroke-linejoin="round" text-anchor="middle" `
-        + `dominant-baseline="middle" font-family="sans-serif" font-size="${fontSize}">`
+        + `dominant-baseline="middle" `
+        + `font-family="${esc(style?.fontFamily ?? 'sans-serif')}" `
+        + `font-weight="${style?.fontWeight ?? 400}" font-size="${fontSize}">`
         + `${esc(annotation.text)}</text>`;
     })
     .join('\n');

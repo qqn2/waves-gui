@@ -59,6 +59,7 @@ export function defaultView(): ViewState {
     paintDraft: null,
     edgeAnchorPending: null,
     structuredArrowPending: null,
+    annotationSnapToGrid: true,
     edgeToolHover: null,
     activeEdgeConnector: '~>',
     showAnchorLetters: false,

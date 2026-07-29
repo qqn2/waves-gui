@@ -35,6 +35,17 @@ function pointerAnchor(event: PointerEvent): { x: number; y: number } {
   };
 }
 
+function creationAnchor(event: PointerEvent): { x: number; y: number } {
+  const anchor = pointerAnchor(event);
+  const totalSteps = useStore.getState().diagram.config.totalSteps;
+  return useStore.getState().view.annotationSnapToGrid !== false
+    ? {
+        x: Math.min(Math.max(0.5, totalSteps - 0.5), Math.floor(anchor.x) + 0.5),
+        y: Math.floor(anchor.y) + 0.5,
+      }
+    : anchor;
+}
+
 export function cancelStructuredArrow(): void {
   const state = useStore.getState();
   state.setStructuredArrowPending(null);
@@ -43,7 +54,7 @@ export function cancelStructuredArrow(): void {
 
 export function structuredArrowPointerDown(event: PointerEvent): void {
   if (event.button !== 0) return;
-  const anchor = pointerAnchor(event);
+  const anchor = creationAnchor(event);
   const state = useStore.getState();
   const pendingArrowStart = state.view.structuredArrowPending;
   if (!pendingArrowStart) {
@@ -70,11 +81,19 @@ export function annotationPointerDown(
 ): void {
   if (event.button !== 0 || hit.step === null || !hit.signalId) return;
   if (hit.signalType !== 'bit' && hit.signalType !== 'vector') return;
-  const { addTextAnnotation, setActiveAnnotationId } = useStore.getState();
+  const {
+    addTextAnnotation,
+    setActiveAnnotationId,
+    view,
+  } = useStore.getState();
+  const anchor = pointerAnchor(event);
+  const snapToGrid = view.annotationSnapToGrid !== false;
   const id = addTextAnnotation({
     text: 'Annotation',
     tick: hit.step,
     signalId: hit.signalId,
+    snapToGrid,
+    ...(!snapToGrid ? { x: anchor.x } : {}),
   });
   if (id) setActiveAnnotationId(id);
 }
@@ -84,9 +103,15 @@ export function verticalLinePointerDown(
   hit: HitTestResult,
 ): void {
   if (event.button !== 0 || hit.step === null) return;
-  const { addVerticalLineAnnotation, setActiveAnnotationId } = useStore.getState();
-  const id = addVerticalLineAnnotation({ tick: hit.step });
-  if (id) setActiveAnnotationId(id);
+  const state = useStore.getState();
+  const anchor = pointerAnchor(event);
+  const snapToGrid = state.view.annotationSnapToGrid !== false;
+  const id = state.addVerticalLineAnnotation({
+    tick: hit.step,
+    snapToGrid,
+    ...(!snapToGrid ? { x: anchor.x } : {}),
+  });
+  if (id) state.setActiveAnnotationId(id);
 }
 
 export function horizontalLinePointerDown(
@@ -107,8 +132,13 @@ export function globalCompressionPointerDown(
   hit: HitTestResult,
 ): void {
   if (event.button !== 0 || hit.step === null) return;
-  const { addGlobalCompressionAnnotation, setActiveAnnotationId } =
-    useStore.getState();
-  const id = addGlobalCompressionAnnotation({ tick: hit.step });
-  if (id) setActiveAnnotationId(id);
+  const state = useStore.getState();
+  const anchor = pointerAnchor(event);
+  const snapToGrid = state.view.annotationSnapToGrid !== false;
+  const id = state.addGlobalCompressionAnnotation({
+    tick: hit.step,
+    snapToGrid,
+    ...(!snapToGrid ? { x: anchor.x } : {}),
+  });
+  if (id) state.setActiveAnnotationId(id);
 }

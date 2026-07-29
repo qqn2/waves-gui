@@ -228,6 +228,7 @@ export interface StoreActions {
   setActiveTimespanLabel(label: string): void;
   setActiveEdgeLabel(label: string): void;
   setActiveBusColorIndex(index: WavedromColorIndex): void;
+  setAnnotationSnapToGrid(enabled: boolean): void;
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
   setStructuredArrowPending(pending: ViewState['structuredArrowPending']): void;
   setPaintMode(mode: PaintMode): void;

@@ -85,6 +85,8 @@ export interface AnalogueCell {
   value: number;
   /** Explicit points used by arbitrary sampled cells. */
   samples?: AnaloguePoint[];
+  /** Original finite sample-time domain mapped affinely onto offsets 0..1. */
+  sampleTimebase?: { start: number; end: number };
   /** Original safe Ludwig expression, retained for reevaluation and round-trip. */
   expression?: string;
 }
@@ -255,6 +257,10 @@ export interface AnnotationStyle {
   strokeDasharray?: number[];
   /** Safe normalized pixel size for annotation labels. */
   fontSize?: number;
+  /** Safe local generic family; no remote font loading. */
+  fontFamily?: 'sans-serif' | 'serif' | 'monospace';
+  /** CSS-compatible numeric weight, restricted to 100-step values. */
+  fontWeight?: number;
   /** Undulate defaults textual annotations to an opaque background. */
   textBackground?: boolean;
 }
@@ -437,6 +443,8 @@ export interface ViewState {
   edgeAnchorPending: EdgeAnchorPending | null;
   /** First coordinate selected while placing a structured Undulate arrow. */
   structuredArrowPending: { x: number; y: number } | null;
+  /** Default X snapping for newly created annotations. */
+  annotationSnapToGrid?: boolean;
   /** Pointer position + optional lane snap while arrow / timespan tool is active */
   edgeToolHover: {
     signalId: string | null;

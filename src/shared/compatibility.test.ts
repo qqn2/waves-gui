@@ -133,5 +133,34 @@ describe('source compatibility findings', () => {
         feature: 'orphaned-unknown-undulate-properties',
       }),
     ]));
+    expect(waveDromCompatibilityFindings(diagram)).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        level: 'unsupported',
+        feature: 'opaque-undulate-properties',
+      }),
+    ]));
+  });
+
+  it('reports every modeled extension category for target review', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    const signal = diagram.signals[0];
+    if (!signal || signal.type !== 'bit') throw new Error('Expected bit signal');
+    signal.digitalTiming = {
+      ticksPerStep: 2,
+      phaseTicks: 0,
+      cells: signal.states.map((state) => ({ state, durationTicks: 2 })),
+    };
+    signal.style = { stroke: '#336699' };
+    signal.nodeNames = { 0: 'clock.start' };
+    diagram.edges = ['a-#b'];
+
+    const findings = undulateCompatibilityFindings(diagram);
+    expect(findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ feature: 'integer-digital-timing', level: 'exact' }),
+      expect.objectContaining({ feature: 'signal-style', level: 'exact' }),
+      expect.objectContaining({ feature: 'expanded-node-identifiers', level: 'exact' }),
+      expect.objectContaining({ feature: 'extended-edge-markers', level: 'exact' }),
+    ]));
   });
 });

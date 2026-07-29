@@ -83,6 +83,7 @@ export function Toolbar({
   const diagramSkin = useStore((s) => s.diagram.config.skin);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
+  const setAnnotationSnapToGrid = useStore((s) => s.setAnnotationSnapToGrid);
 
   const [fileOpen, setFileOpen] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
@@ -169,6 +170,7 @@ export function Toolbar({
                   : tool === 'global-compression'
                     ? 'Compression'
                     : 'Span';
+  const annotationSnapToGrid = view.annotationSnapToGrid !== false;
 
 
   return (
@@ -345,6 +347,25 @@ export function Toolbar({
             onKindChange={setActiveAnalogueKind}
             onValueChange={setActiveAnalogueValue}
           />
+        ) : null}
+        {(
+          tool === 'annotation'
+          || tool === 'vertical-line'
+          || tool === 'global-compression'
+          || tool === 'structured-arrow'
+        ) ? (
+          <button
+            type="button"
+            className={`${styles.toolBtn} ${
+              annotationSnapToGrid ? styles.toolActive : ''
+            }`}
+            onClick={() => setAnnotationSnapToGrid(!annotationSnapToGrid)}
+            aria-label="Snap new annotations to grid"
+            aria-pressed={annotationSnapToGrid}
+            title="Snap newly created annotation coordinates to waveform cells"
+          >
+            Snap {annotationSnapToGrid ? 'On' : 'Off'}
+          </button>
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (
           <ToolbarBusSection

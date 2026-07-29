@@ -71,6 +71,14 @@ export function normalizeAnalogueCell(
     kind,
     value: normalizedValue,
     ...(samples && samples.length > 0 ? { samples } : {}),
+    ...(kind === 'samples'
+      && typeof value?.sampleTimebase?.start === 'number'
+      && Number.isFinite(value.sampleTimebase.start)
+      && typeof value.sampleTimebase.end === 'number'
+      && Number.isFinite(value.sampleTimebase.end)
+      && value.sampleTimebase.end >= value.sampleTimebase.start
+      ? { sampleTimebase: { ...value.sampleTimebase } }
+      : {}),
     ...(typeof value?.expression === 'string'
       && value.expression.length > 0
       && value.expression.length <= ANALOGUE_EXPRESSION_MAX_LENGTH
@@ -166,6 +174,7 @@ export function applyAnalogueBrushRange(
     cell.kind = kind;
     cell.value = kind === 'hold' ? previousValue : normalizedValue;
     delete cell.expression;
+    delete cell.sampleTimebase;
     if (kind === 'samples') {
       cell.samples = [
         { offset: 0, value: previousValue },

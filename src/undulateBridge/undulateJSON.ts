@@ -17,7 +17,11 @@ import {
   type AnalogueContext,
 } from '../shared/analogueExpressions';
 import { timingForStates, timingResolution } from '../shared/fineTiming';
-import { parseAnnotationFontSize } from '../shared/annotations';
+import {
+  parseAnnotationFontFamily,
+  parseAnnotationFontSize,
+  parseAnnotationFontWeight,
+} from '../shared/annotations';
 import {
   signalStyleFromUndulate,
   signalStyleToUndulate,
@@ -203,6 +207,10 @@ function annotationStyleToUndulate(
     ...(style.fontSize !== undefined
       ? { 'font-size': `${style.fontSize}px` }
       : {}),
+    ...(style.fontFamily !== undefined ? { font: style.fontFamily } : {}),
+    ...(style.fontWeight !== undefined
+      ? { 'font-weight': style.fontWeight }
+      : {}),
     ...(style.textBackground !== undefined
       ? { text_background: style.textBackground }
       : {}),
@@ -223,6 +231,10 @@ function annotationStyleFromUndulate(
   }
   const fontSize = parseAnnotationFontSize(annotation['font-size']);
   if (fontSize !== undefined) style.fontSize = fontSize;
+  const fontFamily = parseAnnotationFontFamily(annotation.font);
+  if (fontFamily !== undefined) style.fontFamily = fontFamily;
+  const fontWeight = parseAnnotationFontWeight(annotation['font-weight']);
+  if (fontWeight !== undefined) style.fontWeight = fontWeight;
   if (typeof annotation.text_background === 'boolean') {
     style.textBackground = annotation.text_background;
   }
@@ -241,6 +253,7 @@ function analogueCellsFingerprint(cells: AnalogueCell[]): string {
     ...(cell.samples ? {
       samples: cell.samples.map(({ offset, value }) => [offset, value]),
     } : {}),
+    ...(cell.sampleTimebase ? { sampleTimebase: cell.sampleTimebase } : {}),
     ...(cell.expression ? { expression: cell.expression } : {}),
   })));
 }
@@ -256,7 +269,13 @@ function analogueToUndulateEntry(
       values.push(
         cell.expression && isDefaultAnalogueContext(context)
           ? cell.expression
-          : (cell.samples ?? []).map((point) => [point.offset, point.value]),
+          : (cell.samples ?? []).map((point) => {
+              const timebase = cell.sampleTimebase;
+              const time = timebase
+                ? timebase.start + point.offset * (timebase.end - timebase.start)
+                : point.offset;
+              return [time, point.value];
+            }),
       );
       return 'a';
     }
@@ -573,6 +592,11 @@ function sampledCell(
     kind: 'samples',
     value: samples[samples.length - 1]?.value ?? previous,
     samples,
+    ...(
+      minTime !== 0 || maxTime !== 1
+        ? { sampleTimebase: { start: minTime, end: maxTime } }
+        : {}
+    ),
     ...(expression ? { expression } : {}),
   };
 }

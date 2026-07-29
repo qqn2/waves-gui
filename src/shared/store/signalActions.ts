@@ -159,6 +159,9 @@ function duplicateSignalInDraft(
           ...cell,
           id: nanoid(),
           samples: cell.samples?.map((point) => ({ ...point })),
+          sampleTimebase: cell.sampleTimebase
+            ? { ...cell.sampleTimebase }
+            : undefined,
         })),
         digitalTiming: item.digitalTiming
           ? {

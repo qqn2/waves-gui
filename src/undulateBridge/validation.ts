@@ -6,7 +6,9 @@ import { validateAnalogueExpression } from '../shared/analogueExpressions';
 import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
+  parseAnnotationFontFamily,
   parseAnnotationFontSize,
+  parseAnnotationFontWeight,
   isSafeAnnotationStrokeWidth,
   MAX_ANNOTATIONS,
   MAX_ANNOTATION_COORDINATE,
@@ -106,12 +108,11 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'dx',
       'dy',
       'font-size',
+      'font',
+      'font-weight',
       'text_background',
     ],
-    wip: [
-      'font-weight',
-      'color',
-    ],
+    wip: ['color'],
   },
   config: {
     supported: ['hscale', 'skin', 'head', 'foot'],
@@ -488,12 +489,11 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
       }
       if (
         value.length > 1
-        && (value[0]![0] !== 0 || value[value.length - 1]![0] !== 1)
+        && value.some((point, pointIndex) => (
+          pointIndex > 0 && point[0] < value[pointIndex - 1]![0]
+        ))
       ) {
-        return `analogue[${index}] sample times must already span 0 through 1; implicit time normalization is not lossless`;
-      }
-      if (value.length === 1 && value[0]![0] !== 0) {
-        return `analogue[${index}] single sample time must be 0`;
+        return `analogue[${index}] sample times must be in ascending order`;
       }
     } else if (typeof value === 'string') {
       const error = validateAnalogueExpression(value, 'scalar');
@@ -737,6 +737,18 @@ function validateAnnotationStructure(value: unknown): string | null {
       && parseAnnotationFontSize(annotation['font-size']) === undefined
     ) {
       return `annotations[${index}].font-size must be a pixel size from 6px to 96px`;
+    }
+    if (
+      annotation.font !== undefined
+      && parseAnnotationFontFamily(annotation.font) === undefined
+    ) {
+      return `annotations[${index}].font must be sans-serif, serif, or monospace`;
+    }
+    if (
+      annotation['font-weight'] !== undefined
+      && parseAnnotationFontWeight(annotation['font-weight']) === undefined
+    ) {
+      return `annotations[${index}].font-weight must be normal, bold, or 100 through 900`;
     }
     if (
       annotation.text_background !== undefined

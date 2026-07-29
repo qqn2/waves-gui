@@ -25,6 +25,53 @@ import { annotationXCells, annotationYLogical } from '../renderer/annotationLayo
 import { buildRowLayout } from '../renderer/rowLayout';
 import styles from './shell.module.css';
 
+function AnnotationTypographyFields({
+  style,
+  onChange,
+}: {
+  style: AnnotationStyle | undefined;
+  onChange: (style: AnnotationStyle) => void;
+}) {
+  return (
+    <>
+      <label className={styles.inspectorField}>
+        <span>Font family</span>
+        <select
+          value={style?.fontFamily ?? 'sans-serif'}
+          onChange={(event) => onChange({
+            ...style,
+            fontFamily: event.target.value as NonNullable<
+              AnnotationStyle['fontFamily']
+            >,
+          })}
+          aria-label="Annotation font family"
+        >
+          <option value="sans-serif">Sans serif</option>
+          <option value="serif">Serif</option>
+          <option value="monospace">Monospace</option>
+        </select>
+      </label>
+      <label className={styles.inspectorField}>
+        <span>Font weight</span>
+        <select
+          value={style?.fontWeight ?? 400}
+          onChange={(event) => onChange({
+            ...style,
+            fontWeight: Number(event.target.value),
+          })}
+          aria-label="Annotation font weight"
+        >
+          {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
+            <option key={weight} value={weight}>
+              {weight}{weight === 400 ? ' Regular' : weight === 700 ? ' Bold' : ''}
+            </option>
+          ))}
+        </select>
+      </label>
+    </>
+  );
+}
+
 function ArrowAnnotationInspector({
   annotation,
   onClose,
@@ -250,6 +297,10 @@ function ArrowAnnotationInspector({
               aria-label="Annotation font size"
             />
           </label>
+          <AnnotationTypographyFields
+            style={annotation.style}
+            onChange={(style) => updateArrowAnnotation(annotation.id, { style })}
+          />
           <label className={styles.inspectorField}>
             <span>Text background</span>
             <input
@@ -567,6 +618,10 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                     aria-label="Annotation range start"
                   />
                 </label>
+                <AnnotationTypographyFields
+                  style={annotation.style}
+                  onChange={updateStyle}
+                />
                 <label className={styles.inspectorField}>
                   <span>To</span>
                   <input

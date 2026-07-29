@@ -108,8 +108,8 @@ describe('annotation tool', () => {
     structuredArrowPointerDown(pointer(CELL_WIDTH, ROW_HEIGHT));
     expect(useStore.getState().diagram.annotations).toEqual([]);
     expect(useStore.getState().view.structuredArrowPending).toEqual({
-      x: 1,
-      y: 1,
+      x: 1.5,
+      y: 1.5,
     });
 
     structuredArrowPointerDown(pointer(CELL_WIDTH * 3, ROW_HEIGHT * 2));
@@ -117,11 +117,41 @@ describe('annotation tool', () => {
     expect(annotation).toMatchObject({
       type: 'arrow',
       shape: '->',
-      from: { kind: 'point', x: 1, y: 1 },
-      to: { kind: 'point', x: 3, y: 2 },
+      from: { kind: 'point', x: 1.5, y: 1.5 },
+      to: { kind: 'point', x: 3.5, y: 2.5 },
     });
     expect(useStore.getState().view.activeAnnotationId).toBe(annotation?.id);
     expect(useStore.getState().view.structuredArrowPending).toBeNull();
     expect(useStore.getState().view.selectedTool).toBe('cursor');
+  });
+
+  it('creates annotations at exact pointer coordinates when snapping is off', () => {
+    useStore.getState().setAnnotationSnapToGrid(false);
+    const signal = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit',
+    )!;
+    const { headHeight } = measureHeadFoot(useStore.getState().diagram.config);
+    const event = {
+      button: 0,
+      offsetX: CELL_WIDTH * 2.25,
+      offsetY: TIME_AXIS_HEIGHT + headHeight + ROW_HEIGHT,
+    } as PointerEvent;
+    annotationPointerDown(event, {
+      signalId: signal.id,
+      signalType: 'bit',
+      step: 2,
+      half: 'top',
+      isLabelArea: false,
+      isTimeAxis: false,
+      edgeIndex: null,
+      annotationId: null,
+    });
+
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      type: 'text',
+      tick: 2,
+      x: 2.25,
+      snapToGrid: false,
+    });
   });
 });

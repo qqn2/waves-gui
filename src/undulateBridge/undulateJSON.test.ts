@@ -435,12 +435,22 @@ describe('Undulate JSON bridge', () => {
         'stroke-width': 3,
         'stroke-dasharray': [5, 2],
         'font-size': '14px',
+        font: 'monospace',
+        'font-weight': 700,
       }],
     } satisfies UndulateRoot;
     expect(validateUndulateJSON(root)).toBeNull();
     expect(toUndulateJSON(fromUndulateJSON(root)).annotations).toEqual(
       root.annotations,
     );
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'unsafe font', x: 1, y: 1, font: 'url(remote)' }],
+    })).toContain('font must be');
+    expect(validateUndulateJSON({
+      signal: [],
+      annotations: [{ text: 'unsafe weight', x: 1, y: 1, 'font-weight': 950 }],
+    })).toContain('font-weight must be');
   });
 
   it('imports plural Undulate edges and exports their canonical field', () => {
@@ -829,14 +839,37 @@ describe('Undulate JSON bridge', () => {
     );
   });
 
-  it('rejects normalization and truncation losses before import', () => {
-    expect(validateUndulateJSON({
+  it('preserves arbitrary finite sampled timebases and rejects truncation losses', () => {
+    const timebaseRoot = {
       signal: [{
         name: 'curve',
         wave: 'a',
-        analogue: [[[0, 0], [2, 1]]],
+        analogue: [[[-2, 0], [1, 0.5], [4, 1]]],
       }],
-    })).toContain('implicit time normalization is not lossless');
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(timebaseRoot)).toBeNull();
+    const diagram = fromUndulateJSON(timebaseRoot);
+    const signal = diagram.signals[0];
+    expect(
+      signal?.type === 'analogue' && signal.analogueCells?.[0],
+    ).toMatchObject({
+      samples: [
+        { offset: 0, value: 0 },
+        { offset: 0.5, value: 0.5 },
+        { offset: 1, value: 1 },
+      ],
+      sampleTimebase: { start: -2, end: 4 },
+    });
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      analogue: [[[-2, 0], [1, 0.5], [4, 1]]],
+    });
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'backwards curve',
+        wave: 'a',
+        analogue: [[[1, 0], [0, 1]]],
+      }],
+    })).toContain('ascending order');
     expect(validateUndulateJSON({
       signal: [{
         name: 'curve',

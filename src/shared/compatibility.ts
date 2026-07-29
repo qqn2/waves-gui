@@ -21,6 +21,14 @@ export function waveDromCompatibilityFindings(
 ): CompatibilityFinding[] {
   const summary = scanExtensionContent(diagram);
   const findings: CompatibilityFinding[] = [];
+  let styledSignalCount = 0;
+  const countStyled = (signals: DiagramState['signals']) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') countStyled(signal.children);
+      else if (signal.style) styledSignalCount++;
+    }
+  };
+  countStyled(diagram.signals);
   if (summary.annotationCount > 0) {
     findings.push({
       level: 'unsupported',
@@ -63,6 +71,31 @@ export function waveDromCompatibilityFindings(
       consequence: 'WaveDrom does not support # or * edge endpoint markers.',
     });
   }
+  if (styledSignalCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'signal-styles',
+      message: `${styledSignalCount} signal style${styledSignalCount === 1 ? '' : 's'} use Undulate-only declarative styling.`,
+      consequence: 'Stroke, fill, dash, width, and font-size overrides will be omitted.',
+    });
+  }
+  const opaque = diagram.compatibility?.opaqueUndulate;
+  const opaqueCount = [
+    opaque?.root,
+    opaque?.config,
+    opaque?.head,
+    opaque?.foot,
+    ...Object.values(opaque?.signals ?? {}),
+    ...Object.values(opaque?.annotations ?? {}),
+  ].reduce((count, record) => count + Object.keys(record ?? {}).length, 0);
+  if (opaqueCount > 0) {
+    findings.push({
+      level: 'unsupported',
+      feature: 'opaque-undulate-properties',
+      message: `${opaqueCount} safe unknown Undulate propert${opaqueCount === 1 ? 'y is' : 'ies are'} attached to this document.`,
+      consequence: 'WaveDrom export cannot carry these preserved fields.',
+    });
+  }
   return findings;
 }
 
@@ -98,6 +131,54 @@ export function undulateCompatibilityFindings(
     }
   };
   appendAnalogue(diagram.signals);
+  const appendTypedExtensions = (signals: DiagramState['signals']) => {
+    for (const signal of signals) {
+      if (signal.type === 'group') {
+        appendTypedExtensions(signal.children);
+        continue;
+      }
+      if (signal.type === 'bit' && signal.digitalTiming) {
+        findings.push({
+          level: 'exact',
+          feature: 'integer-digital-timing',
+          objectId: signal.id,
+          message: 'Per-cell periods, duty boundaries, phase, and slew export exactly.',
+        });
+      }
+      if (signal.style) {
+        findings.push({
+          level: 'exact',
+          feature: 'signal-style',
+          objectId: signal.id,
+          message: 'Safe declarative signal styling exports exactly.',
+        });
+      }
+      if (Object.keys(signal.nodeNames ?? {}).length > 0) {
+        findings.push({
+          level: 'exact',
+          feature: 'expanded-node-identifiers',
+          objectId: signal.id,
+          message: 'Expanded Undulate node identifiers export exactly.',
+        });
+      }
+    }
+  };
+  appendTypedExtensions(diagram.signals);
+  if ((diagram.analogueOverlayGroups?.length ?? 0) > 0) {
+    findings.push({
+      level: 'exact',
+      feature: 'analogue-overlay-groups',
+      message: `${diagram.analogueOverlayGroups!.length} explicit analogue overlay group${diagram.analogueOverlayGroups!.length === 1 ? '' : 's'} export as consecutive Undulate overlay flags.`,
+    });
+  }
+  const extendedEdgeCount = scanExtensionContent(diagram).extendedEdgeCount;
+  if (extendedEdgeCount > 0) {
+    findings.push({
+      level: 'exact',
+      feature: 'extended-edge-markers',
+      message: `${extendedEdgeCount} edge${extendedEdgeCount === 1 ? '' : 's'} with square or circle endpoint markers export exactly.`,
+    });
+  }
   const opaque = diagram.compatibility?.opaqueUndulate;
   const opaqueSignalIds = Object.keys(opaque?.signals ?? {});
   const liveSignalIds = new Set<string>();

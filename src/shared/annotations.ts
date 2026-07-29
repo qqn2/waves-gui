@@ -157,6 +157,29 @@ export function parseAnnotationFontSize(value: unknown): number | undefined {
   return isSafeAnnotationFontSize(parsed) ? parsed : undefined;
 }
 
+export function parseAnnotationFontFamily(
+  value: unknown,
+): AnnotationStyle['fontFamily'] | undefined {
+  return value === 'sans-serif' || value === 'serif' || value === 'monospace'
+    ? value
+    : undefined;
+}
+
+export function parseAnnotationFontWeight(value: unknown): number | undefined {
+  if (value === 'normal') return 400;
+  if (value === 'bold') return 700;
+  const parsed = typeof value === 'string' && /^\d+$/.test(value.trim())
+    ? Number(value)
+    : value;
+  return typeof parsed === 'number'
+    && Number.isInteger(parsed)
+    && parsed >= 100
+    && parsed <= 900
+    && parsed % 100 === 0
+    ? parsed
+    : undefined;
+}
+
 export function isSafeAnnotationDasharray(value: unknown): value is number[] {
   return (
     Array.isArray(value)
@@ -187,6 +210,10 @@ export function normalizeAnnotationStyle(
   if (isSafeAnnotationFontSize(value.fontSize)) {
     style.fontSize = value.fontSize;
   }
+  const fontFamily = parseAnnotationFontFamily(value.fontFamily);
+  if (fontFamily) style.fontFamily = fontFamily;
+  const fontWeight = parseAnnotationFontWeight(value.fontWeight);
+  if (fontWeight) style.fontWeight = fontWeight;
   if (typeof value.textBackground === 'boolean') {
     style.textBackground = value.textBackground;
   }

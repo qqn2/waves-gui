@@ -126,7 +126,9 @@ export function renderTextAnnotations(
       const fontSize = annotation.style?.fontSize ?? 12;
       const labelX = (x1 + x2) / 2 + (annotation.dx ?? 0);
       const labelY = (y1 + y2) / 2 + (annotation.dy ?? 0);
-      ctx.font = `${Math.max(6, fontSize * transform.zoom)}px sans-serif`;
+      ctx.font = `${annotation.style?.fontWeight ?? 400} `
+        + `${Math.max(6, fontSize * transform.zoom)}px `
+        + `${annotation.style?.fontFamily ?? 'sans-serif'}`;
       if (annotation.style?.textBackground !== false) {
         const width = ctx.measureText(annotation.text).width;
         const height = Math.max(14, fontSize * 1.35 * transform.zoom);
@@ -154,7 +156,9 @@ export function renderTextAnnotations(
     const canvasX = logicalToCanvasX(x, transform);
     const canvasY = logicalToCanvasY(y, transform);
     const fontSize = annotation.style?.fontSize ?? 12;
-    ctx.font = `${Math.max(6, fontSize * transform.zoom)}px sans-serif`;
+    ctx.font = `${annotation.style?.fontWeight ?? 400} `
+      + `${Math.max(6, fontSize * transform.zoom)}px `
+      + `${annotation.style?.fontFamily ?? 'sans-serif'}`;
     const width = ctx.measureText(annotation.text).width;
     const paddingX = 4;
     const height = Math.max(14, fontSize * 1.35 * transform.zoom);
