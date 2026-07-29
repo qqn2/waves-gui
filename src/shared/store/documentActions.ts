@@ -1,4 +1,5 @@
 import { current } from 'immer';
+import { nanoid } from 'nanoid';
 import { cancelPendingCodeToDiagramDebounce } from '../../codePanel/flushRegistry';
 import {
   allocateNodeChars,
@@ -20,6 +21,10 @@ import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
 import { diagramsEqual, findSignal, pushHistory } from './helpers';
 import { parseUndulateEdge } from '../edgeSyntax';
+import {
+  MAX_ANNOTATIONS,
+  normalizeArrowAnnotation,
+} from '../annotations';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
@@ -204,6 +209,7 @@ export function createEdgeActions(set: ImmerSet): Pick<
   | 'addDiagramEdge'
   | 'addDiagramArrow'
   | 'updateDiagramEdge'
+  | 'promoteDiagramEdgeToAnnotation'
   | 'removeDiagramEdge'
   | 'setEdgeCurveControl'
   | 'setActiveEdgeConnector'
@@ -267,6 +273,50 @@ export function createEdgeActions(set: ImmerSet): Pick<
         s.diagram.edges[index] = edge;
         s.view.isDirty = true;
       });
+    },
+
+    promoteDiagramEdgeToAnnotation(index) {
+      let annotationId: string | null = null;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const source = s.diagram.edges?.[index];
+        if (!source) return;
+        const parsed = parseUndulateEdge(source);
+        if (!parsed) return;
+        const annotations = s.diagram.annotations ?? [];
+        if (annotations.length >= MAX_ANNOTATIONS) return;
+        const id = nanoid();
+        const annotation = normalizeArrowAnnotation({
+          id,
+          type: 'arrow',
+          shape: parsed.connector,
+          from: { kind: 'node', node: parsed.from },
+          to: { kind: 'node', node: parsed.to },
+          ...(parsed.label ? { text: parsed.label } : {}),
+        });
+        if (!annotation) return;
+
+        pushHistory(s);
+        s.diagram.annotations = annotations;
+        s.diagram.annotations.push(annotation);
+        s.diagram.edges.splice(index, 1);
+        if (s.diagram.edgeCurveControls) {
+          const next: Record<number, { c1x: number; c2x: number }> = {};
+          for (const [key, value] of Object.entries(s.diagram.edgeCurveControls)) {
+            const edgeIndex = Number(key);
+            if (edgeIndex < index) next[edgeIndex] = value;
+            else if (edgeIndex > index) next[edgeIndex - 1] = value;
+          }
+          s.diagram.edgeCurveControls = Object.keys(next).length > 0
+            ? next
+            : undefined;
+        }
+        s.view.activeSignalIds = [];
+        s.view.activeAnnotationId = id;
+        s.view.isDirty = true;
+        annotationId = id;
+      });
+      return annotationId;
     },
 
     removeDiagramEdge(index) {

@@ -387,6 +387,10 @@ describe('Undulate JSON bridge', () => {
         text: 'latency',
         dx: 3,
         dy: -2,
+        stroke: '#336699',
+        'stroke-width': 3,
+        'stroke-dasharray': [5, 2],
+        'font-size': '14px',
       }],
     } satisfies UndulateRoot;
     expect(validateUndulateJSON(root)).toBeNull();

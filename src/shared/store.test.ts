@@ -942,4 +942,38 @@ describe('useStore', () => {
       expect(group.children[2]?.id).toBe('nested-sig-2');
     }
   });
+
+  it('promotes an edge shorthand to an inspector-editable Undulate arrow', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true, sourceFormat: 'undulate-json' },
+      signals: [],
+      config: { totalSteps: DEFAULT_STEPS, hscale: 1 },
+      edges: ['request.ready <~> response.done latency'],
+      edgeCurveControls: { 0: { c1x: 0.25, c2x: 0.75 } },
+      annotations: [],
+    });
+
+    const id = useStore.getState().promoteDiagramEdgeToAnnotation(0);
+    expect(id).not.toBeNull();
+    expect(useStore.getState().diagram.edges).toEqual([]);
+    expect(useStore.getState().diagram.edgeCurveControls).toBeUndefined();
+    expect(useStore.getState().diagram.annotations).toEqual([
+      expect.objectContaining({
+        id,
+        type: 'arrow',
+        shape: '<~>',
+        from: { kind: 'node', node: 'request.ready' },
+        to: { kind: 'node', node: 'response.done' },
+        text: 'latency',
+      }),
+    ]);
+    expect(useStore.getState().view.activeAnnotationId).toBe(id);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.edges).toEqual([
+      'request.ready <~> response.done latency',
+    ]);
+    expect(useStore.getState().diagram.annotations).toEqual([]);
+  });
 });

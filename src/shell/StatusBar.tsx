@@ -46,6 +46,11 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   const edges = diagram.edges ?? [];
   const removeDiagramEdge = useStore((s) => s.removeDiagramEdge);
   const updateDiagramEdge = useStore((s) => s.updateDiagramEdge);
+  const promoteDiagramEdgeToAnnotation = useStore(
+    (s) => s.promoteDiagramEdgeToAnnotation,
+  );
+  const extensionsEnabled =
+    diagram.compatibility?.extensionsEnabled === true;
   const [editingEdge, setEditingEdge] = useState<number | null>(null);
   const [edgeDraft, setEdgeDraft] = useState('');
 
@@ -130,6 +135,17 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
                     {edge}
                   </button>
                 )}
+                {extensionsEnabled ? (
+                  <button
+                    type="button"
+                    className={`${styles.edgeChipDelete} ${styles.edgeChipPromote}`}
+                    aria-label={`Style edge ${edge}`}
+                    title="Convert to a styled Undulate arrow"
+                    onClick={() => promoteDiagramEdgeToAnnotation(i)}
+                  >
+                    ↗
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   className={styles.edgeChipDelete}

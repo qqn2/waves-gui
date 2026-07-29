@@ -148,6 +148,7 @@ export interface StoreActions {
     label?: string,
   ): void;
   updateDiagramEdge(index: number, edge: string): void;
+  promoteDiagramEdgeToAnnotation(index: number): string | null;
   removeDiagramEdge(index: number): void;
   setEdgeCurveControl(
     index: number,

@@ -394,7 +394,10 @@ Upstream references:
 
 ### Unsupported
 
-- [ ] Unsupported: Undulate per-object CSS-style fields on edges.
+- [X] WaveDrom-compatible `edges` remain the upstream fixed-style string
+  shorthand. A GUI action promotes any valid shorthand edge to an equivalent
+  structured arrow annotation, where the safe normalized style fields are
+  inspector-editable and round-trip through Undulate.
 - [ ] Planned: expand normalized local style support, including a reviewed
   allowlist for safe gradients, variables, and named colors where semantics
   can be represented without CSS execution.
@@ -487,9 +490,10 @@ Upstream reference:
   structured-arrow shapes, node/coordinate anchors, labels, offsets, and basic
   stroke styling. The dedicated Undulate Arrow tool supports direct two-point
   canvas creation, and selected arrows expose draggable endpoint handles.
-- [ ] **P2 — Extend safe normalized styling.** Annotation and signal colors,
+- [X] **P2 — Extend safe normalized styling.** Annotation and signal colors,
   widths, dashes, bounded font sizes, fills, and text backgrounds use strict
-  allowlists. Edge styles remain.
+  allowlists. Styled edge intent uses Undulate's structured arrow annotations;
+  shorthand `edges` can be promoted without rebuilding their anchors or label.
 - [X] **P2 — Opaque preservation.** Safe unknown declarative fields are retained
   on root, config, head/foot, signal, and annotation objects. Orphaned fields
   are reported when their attached signal or annotation is deleted.

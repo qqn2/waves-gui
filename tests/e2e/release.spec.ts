@@ -105,7 +105,7 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await expect(page.getByLabel('Signal stroke dash pattern')).toHaveValue('5, 2');
   await signalStroke.fill('#663399');
   await signalStroke.press('Tab');
-  await expect(editor).toContainText('\"stroke\": \"#663399\"');
+  await expect(editor).toContainText('"stroke": "#663399"');
   await analogValue.fill('0.9');
   await expect(editor).toContainText('0.9');
   await expect(preview.locator('svg')).toContainText('Settled');
@@ -782,6 +782,33 @@ test('safe unknown Undulate properties are preserved without data loss', async (
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
   await expect(page.locator('.cm-content')).toContainText('"future_config"');
   await expect(page.locator('.cm-content')).toContainText('"future_annotation": true');
+});
+
+test('promotes shorthand edges to styled Undulate arrows', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      { name: 'request', wave: '01', node: 'a.' },
+      { name: 'response', wave: '10', node: '.b' },
+    ],
+    edges: ['a -> b latency'],
+  }, null, 2));
+
+  const promote = page.getByRole('button', { name: 'Style edge a->b latency' });
+  await expect(promote).toBeVisible();
+  await promote.click();
+  const editor = page.locator('.cm-content');
+  await expect(editor).toContainText('"annotations"');
+  await expect(editor).toContainText('"from": "a"');
+  await expect(editor).toContainText('"to": "b"');
+  await expect(editor).toContainText('"text": "latency"');
+  await expect(promote).toHaveCount(0);
+
+  const annotationStroke = page.getByLabel('Annotation stroke', { exact: true });
+  await expect(annotationStroke).toBeVisible();
+  await annotationStroke.fill('#336699');
+  await annotationStroke.press('Tab');
+  await expect(editor).toContainText('"stroke": "#336699"');
 });
 
 test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {

@@ -1273,6 +1273,12 @@
   color: var(--accent);
 }
 
+.edgeChipPromote {
+  border-left: 1px solid var(--border-subtle, #333);
+  margin-left: 1px;
+  padding-left: 4px;
+}
+
 .toolGroupLabel {
   font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
