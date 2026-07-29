@@ -62,20 +62,37 @@ to = "node_b"
     expect((Object.prototype as { polluted?: boolean }).polluted).toBeUndefined();
   });
 
-  it('blocks ambiguous mapping exports', () => {
-    expect(() => stringifyUndulateTOML({
+  it('aliases ambiguous signal keys while preserving visible names', () => {
+    const root = {
       signal: [
-        { name: 'same', wave: '0' },
-        { name: 'same', wave: '1' },
+        { name: 'sig', wave: '0' },
+        { name: 'sig', wave: '1' },
+        { name: 'edges', wave: '0' },
+        { name: '__proto__', wave: '1' },
       ],
-    })).toThrow(/duplicate/);
-    expect(() => stringifyUndulateTOML({
-      signal: [{ name: 'edges', wave: '0' }],
-    })).toThrow(/reserved/);
-    for (const name of ['__proto__', 'prototype', 'constructor']) {
-      expect(() => stringifyUndulateTOML({
-        signal: [[name, { name: 'nested', wave: '0' }]],
-      })).toThrow(/unsafe/);
-    }
+    };
+    const toml = stringifyUndulateTOML(root);
+
+    expect(toml).toContain('[sig]');
+    expect(toml).toContain('[signal_0]');
+    expect(toml).toContain('name = "sig"');
+    expect(parseUndulateTOML(toml)).toEqual(root);
+  });
+
+  it('aliases ambiguous group keys while preserving visible names', () => {
+    const root = {
+      signal: [
+        ['same', { name: 'nested', wave: '0' }],
+        ['same', { name: 'nested', wave: '1' }],
+        ['edges', { name: 'nested', wave: '0' }],
+        ['__proto__', { name: 'nested', wave: '1' }],
+        ['', { name: 'nested', wave: '0' }],
+      ],
+    } as const;
+    const toml = stringifyUndulateTOML(root as never);
+
+    expect(toml).toContain('[group_0]');
+    expect(toml).toContain('[group_0.signal.nested]');
+    expect(parseUndulateTOML(toml)).toEqual(root);
   });
 });

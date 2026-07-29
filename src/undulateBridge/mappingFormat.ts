@@ -50,9 +50,22 @@ function mappingSignalEntry(
   if (!isMappingRecord(value)) {
     throw invalid(`signal or group ${JSON.stringify(name)} must be a mapping`);
   }
+  if (
+    typeof value.name === 'string'
+    && isMappingRecord(value.signal)
+  ) {
+    return [
+      value.name,
+      ...Object.entries(value.signal).map(([childName, child]) =>
+        mappingSignalEntry(childName, child, invalid)
+      ),
+    ] as WdGroup;
+  }
   if (Object.keys(value).length === 0) return {};
   if (Object.prototype.hasOwnProperty.call(value, 'wave')) {
-    return { ...value, name } as WdSignal;
+    const explicitName =
+      typeof value.name === 'string' ? value.name : name;
+    return { ...value, name: explicitName } as WdSignal;
   }
   return [
     name,
@@ -91,27 +104,38 @@ function signalMapping(
 ): Record<string, unknown> {
   const mapping: Record<string, unknown> = {};
   let spacerIndex = 0;
+  let signalIndex = 0;
+  let groupIndex = 0;
   for (const entry of entries) {
     if (Array.isArray(entry)) {
-      const name = String(entry[0] ?? '');
-      if (!name) throw invalid('groups require a non-empty name');
-      if (
-        UNSAFE_MAPPING_KEYS.has(name)
+      const rawName = String(entry[0] ?? '');
+      let name = rawName;
+      const needsAlias =
+        !name
+        || UNSAFE_MAPPING_KEYS.has(name)
         || reserved.has(name)
-        || Object.prototype.hasOwnProperty.call(mapping, name)
-      ) {
-        throw invalid(
-          `duplicate, unsafe, or reserved signal/group name ${JSON.stringify(name)}`,
+        || Object.prototype.hasOwnProperty.call(mapping, name);
+      if (needsAlias) {
+        do {
+          name = `group_${groupIndex++}`;
+        } while (
+          UNSAFE_MAPPING_KEYS.has(name)
+          || reserved.has(name)
+          || Object.prototype.hasOwnProperty.call(mapping, name)
         );
       }
-      mapping[name] = signalMapping(
+      const children = signalMapping(
         entry.slice(1) as WdSignalEntry[],
         invalid,
       );
+      mapping[name] = needsAlias
+        ? { name: rawName, signal: children }
+        : children;
       continue;
     }
     const signal = entry as WdSignal;
-    const rawName = typeof signal.name === 'string' ? signal.name : '';
+    const hasExplicitName = typeof signal.name === 'string';
+    const rawName = hasExplicitName ? signal.name! : '';
     let name = rawName;
     if (!name) {
       do {
@@ -121,21 +145,32 @@ function signalMapping(
         || Object.prototype.hasOwnProperty.call(mapping, name)
       );
     }
-    if (
+    const needsAlias =
       UNSAFE_MAPPING_KEYS.has(name)
       || reserved.has(name)
-      || Object.prototype.hasOwnProperty.call(mapping, name)
-    ) {
-      throw invalid(
-        `duplicate, unsafe, or reserved signal name ${JSON.stringify(name)}`,
+      || Object.prototype.hasOwnProperty.call(mapping, name);
+    if (needsAlias) {
+      do {
+        name = `signal_${signalIndex++}`;
+      } while (
+        UNSAFE_MAPPING_KEYS.has(name)
+        || reserved.has(name)
+        || Object.prototype.hasOwnProperty.call(mapping, name)
       );
     }
     const properties: Record<string, unknown> = { ...signal };
     delete properties.name;
-    mapping[name] =
-      !rawName
+    const spacerLike =
+      hasExplicitName
+      && rawName === ''
       && Object.keys(properties).length === 1
-      && properties.wave === ''
+      && properties.wave === '';
+    if (!spacerLike && hasExplicitName && name !== rawName) {
+      properties.name = rawName;
+    }
+    mapping[name] =
+      spacerLike
+      || (!hasExplicitName && Object.keys(properties).length === 0)
         ? {}
         : properties;
   }
@@ -146,10 +181,14 @@ export function undulateRootToMapping(
   root: UndulateRoot,
   invalid: (message: string) => Error,
 ): Record<string, unknown> {
+  const reserved = new Set(UNDULATE_MAPPING_ROOT_METADATA);
+  for (const key of Object.keys(root)) {
+    if (key !== 'signal') reserved.add(key);
+  }
   const result = signalMapping(
     root.signal,
     invalid,
-    UNDULATE_MAPPING_ROOT_METADATA,
+    reserved,
   );
   for (const [key, value] of Object.entries(root)) {
     if (key !== 'signal' && value !== undefined) result[key] = value;

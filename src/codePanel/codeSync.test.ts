@@ -81,6 +81,57 @@ annotations:
     expect(diagram.compatibility.sourceFormat).toBe('undulate-json');
   });
 
+  it('switches duplicate sig names from JSON to YAML to TOML safely', () => {
+    const diagram = sampleDiagram();
+    const first = diagram.signals[0];
+    expect(first?.type).toBe('bit');
+    if (!first || first.type !== 'bit') return;
+    first.name = 'sig';
+    diagram.signals.push({
+      ...first,
+      id: nanoid(),
+      name: 'sig',
+      states: [...first.states],
+      segments: [],
+    });
+    diagram.compatibility = {
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+    };
+
+    const yamlDiagram =
+      diagramWithUndulateCodeFormat(diagram, 'undulate-yaml');
+    const yamlCode = diagramToCodeString(yamlDiagram);
+    expect(validateCodeString(yamlCode, {
+      preferUndulate: true,
+      preferYAML: true,
+    })).toBeNull();
+    const parsedYaml = parseCodeToDiagram(yamlCode, {
+      preferUndulate: true,
+      preferYAML: true,
+    });
+    expect(parsedYaml.ok).toBe(true);
+    if (!parsedYaml.ok) return;
+    expect(parsedYaml.diagram.signals.map((signal) => signal.name))
+      .toEqual(['sig', 'sig']);
+
+    const tomlDiagram =
+      diagramWithUndulateCodeFormat(parsedYaml.diagram, 'undulate-toml');
+    const tomlCode = diagramToCodeString(tomlDiagram);
+    expect(validateCodeString(tomlCode, {
+      preferUndulate: true,
+      preferTOML: true,
+    })).toBeNull();
+    const parsedToml = parseCodeToDiagram(tomlCode, {
+      preferUndulate: true,
+      preferTOML: true,
+    });
+    expect(parsedToml.ok).toBe(true);
+    if (!parsedToml.ok) return;
+    expect(parsedToml.diagram.signals.map((signal) => signal.name))
+      .toEqual(['sig', 'sig']);
+  });
+
   it('edits an opened Undulate TOML document as TOML', () => {
     const result = parseCodeToDiagram(`
 clk.wave = "p..."

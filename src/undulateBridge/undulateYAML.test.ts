@@ -73,20 +73,37 @@ annotations: []
     expect(() => parseUndulateYAML(source)).toThrow(/Invalid Undulate YAML/);
   });
 
-  it('blocks ambiguous mapping exports', () => {
-    expect(() => stringifyUndulateYAML({
+  it('aliases ambiguous signal keys while preserving visible names', () => {
+    const root = {
       signal: [
-        { name: 'same', wave: '0' },
-        { name: 'same', wave: '1' },
+        { name: 'sig', wave: '0' },
+        { name: 'sig', wave: '1' },
+        { name: 'edges', wave: '0' },
+        { name: '__proto__', wave: '1' },
       ],
-    })).toThrow(/duplicate/);
-    expect(() => stringifyUndulateYAML({
-      signal: [{ name: 'edges', wave: '0' }],
-    })).toThrow(/reserved/);
-    for (const name of ['__proto__', 'prototype', 'constructor']) {
-      expect(() => stringifyUndulateYAML({
-        signal: [[name, { name: 'nested', wave: '0' }]],
-      })).toThrow(/unsafe/);
-    }
+    };
+    const yaml = stringifyUndulateYAML(root);
+
+    expect(yaml).toContain('sig:');
+    expect(yaml).toContain('signal_0:');
+    expect(yaml).toContain('name: sig');
+    expect(parseUndulateYAML(yaml)).toEqual(root);
+  });
+
+  it('aliases ambiguous group keys while preserving visible names', () => {
+    const root = {
+      signal: [
+        ['same', { name: 'nested', wave: '0' }],
+        ['same', { name: 'nested', wave: '1' }],
+        ['edges', { name: 'nested', wave: '0' }],
+        ['__proto__', { name: 'nested', wave: '1' }],
+        ['', { name: 'nested', wave: '0' }],
+      ],
+    } as const;
+    const yaml = stringifyUndulateYAML(root as never);
+
+    expect(yaml).toContain('group_0:');
+    expect(yaml).toContain('signal:');
+    expect(parseUndulateYAML(yaml)).toEqual(root);
   });
 });
