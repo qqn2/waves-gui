@@ -24,6 +24,20 @@ export const MAX_ANNOTATION_FONT_SIZE = 96;
 export const MAX_ANNOTATION_DASH_ITEMS = 16;
 export const MAX_ANNOTATION_DASH_VALUE = 1000;
 
+const SAFE_NAMED_COLORS = new Set([
+  'black', 'silver', 'gray', 'grey', 'white',
+  'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime',
+  'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua',
+  'orange', 'aliceblue', 'antiquewhite', 'beige', 'brown',
+  'coral', 'crimson', 'cyan', 'darkblue', 'darkgray', 'darkgrey',
+  'darkgreen', 'darkorange', 'darkred', 'deeppink', 'gold',
+  'goldenrod', 'indigo', 'ivory', 'khaki', 'lavender',
+  'lightblue', 'lightgray', 'lightgrey', 'lightgreen',
+  'magenta', 'orchid', 'pink', 'plum', 'salmon',
+  'skyblue', 'tan', 'tomato', 'turquoise', 'violet', 'wheat',
+  'transparent',
+]);
+
 export function normalizeAnnotationRangePosition(
   value: unknown,
 ): AnnotationRangePosition | undefined {
@@ -111,6 +125,7 @@ export function parseAnnotationAnchorInput(value: string): AnnotationAnchor | nu
 export function isSafeAnnotationColor(value: unknown): value is string {
   if (typeof value !== 'string') return false;
   const color = value.trim();
+  if (SAFE_NAMED_COLORS.has(color.toLowerCase())) return true;
   if (/^#[0-9a-f]{3,4}$/i.test(color) || /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(color)) {
     return true;
   }
@@ -151,9 +166,25 @@ export function isSafeAnnotationFontSize(value: unknown): value is number {
 export function parseAnnotationFontSize(value: unknown): number | undefined {
   if (isSafeAnnotationFontSize(value)) return value;
   if (typeof value !== 'string') return undefined;
-  const match = value.trim().match(/^(\d+(?:\.\d+)?)\s*px$/i);
+  const match = value.trim().match(
+    /^(\d+(?:\.\d+)?)\s*(px|pt|pc|in|cm|mm|q|em|rem|%)$/i,
+  );
   if (!match) return undefined;
-  const parsed = Number(match[1]);
+  const amount = Number(match[1]);
+  const unit = match[2]!.toLowerCase();
+  const factors: Record<string, number> = {
+    px: 1,
+    pt: 96 / 72,
+    pc: 16,
+    in: 96,
+    cm: 96 / 2.54,
+    mm: 96 / 25.4,
+    q: 96 / 101.6,
+    em: 16,
+    rem: 16,
+    '%': 0.16,
+  };
+  const parsed = amount * factors[unit]!;
   return isSafeAnnotationFontSize(parsed) ? parsed : undefined;
 }
 

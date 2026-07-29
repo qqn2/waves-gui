@@ -747,7 +747,7 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await page.waitForTimeout(500);
 
   await expect(page.locator('[role="alert"]').filter({
-    hasText: 'Invalid JSON/JSON5 syntax',
+    hasText: 'Invalid JSON/JSON5/JSONML syntax',
   })).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
@@ -845,7 +845,7 @@ test('waveform cells expose keyboard focus and position status', async ({ page }
   await expect(page.locator('.pointerMarkerLabel')).toContainText('reset_n');
 });
 
-for (const format of ['json', 'svg', 'png'] as const) {
+for (const format of ['json', 'svg', 'png', 'pdf', 'eps'] as const) {
   test(`downloads ${format.toUpperCase()} export`, async ({ page }) => {
     await page.getByRole('button', { name: /File/ }).click();
     await page.getByRole('button', { name: /Export/ }).click();

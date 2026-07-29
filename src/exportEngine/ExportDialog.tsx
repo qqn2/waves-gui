@@ -3,6 +3,7 @@ import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
 import { exportPDF } from './exportPDF';
+import { exportEPS } from './exportEPS';
 import { exportTerminal } from './exportTerminal';
 import {
   exportUndulateJSON,
@@ -32,6 +33,7 @@ export type ExportFormat =
   | 'svg'
   | 'jpg'
   | 'pdf'
+  | 'eps'
   | 'terminal'
   | 'json'
   | 'undulate-json'
@@ -107,6 +109,8 @@ export function ExportDialog({
         exportSVG(diagram, view);
       } else if (format === 'pdf') {
         await exportPDF(diagram, view, background);
+      } else if (format === 'eps') {
+        await exportEPS(diagram, view, background);
       } else if (format === 'terminal') {
         exportTerminal(diagram, view);
       } else if (format === 'json') {
@@ -230,6 +234,7 @@ export function ExportDialog({
             <option value="svg">SVG</option>
             <option value="jpg">JPG</option>
             <option value="pdf">PDF</option>
+            <option value="eps">EPS</option>
             <option value="terminal">Terminal text</option>
             <option value="json">WaveDrom JSON</option>
             <option value="undulate-json">Undulate JSON</option>

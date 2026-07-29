@@ -567,7 +567,7 @@ function validateSignalStyle(signal: Record<string, unknown>): string | null {
     signal['font-size'] !== undefined
     && parseAnnotationFontSize(signal['font-size']) === undefined
   ) {
-    return 'font-size must be a pixel size from 6px to 96px';
+    return 'font-size must resolve to a safe size from 6px to 96px';
   }
   return null;
 }
@@ -736,7 +736,7 @@ function validateAnnotationStructure(value: unknown): string | null {
       annotation['font-size'] !== undefined
       && parseAnnotationFontSize(annotation['font-size']) === undefined
     ) {
-      return `annotations[${index}].font-size must be a pixel size from 6px to 96px`;
+      return `annotations[${index}].font-size must resolve to a safe size from 6px to 96px`;
     }
     if (
       annotation.font !== undefined

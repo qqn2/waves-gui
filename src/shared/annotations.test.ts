@@ -3,6 +3,8 @@ import {
   formatAnnotationRangePosition,
   MAX_ANNOTATION_TEXT_LENGTH,
   normalizeAnnotations,
+  isSafeAnnotationColor,
+  parseAnnotationFontSize,
   parseAnnotationRangeInput,
   scanExtensionContent,
 } from './annotations';
@@ -80,6 +82,19 @@ describe('annotations', () => {
       }),
       expect.not.objectContaining({ style: expect.anything() }),
     ]);
+  });
+
+  it('accepts reviewed local named colors and normalizes safe CSS font units', () => {
+    expect(isSafeAnnotationColor('goldenrod')).toBe(true);
+    expect(isSafeAnnotationColor('transparent')).toBe(true);
+    expect(isSafeAnnotationColor('currentColor')).toBe(false);
+    expect(isSafeAnnotationColor('url(https://example.test/color)')).toBe(false);
+
+    expect(parseAnnotationFontSize('12pt')).toBe(16);
+    expect(parseAnnotationFontSize('1rem')).toBe(16);
+    expect(parseAnnotationFontSize('100%')).toBe(16);
+    expect(parseAnnotationFontSize('5px')).toBeUndefined();
+    expect(parseAnnotationFontSize('calc(10px + 1rem)')).toBeUndefined();
   });
 
   it('normalizes and formats numeric and percentage line ranges', () => {

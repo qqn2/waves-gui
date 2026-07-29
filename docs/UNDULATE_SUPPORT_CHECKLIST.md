@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **155 / 172 (90.1%)**
+Actionable implementation progress: **164 / 172 (95.3%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -69,9 +69,10 @@ items; legend examples and permanent exclusions are not counted.
   meaning, preview, and JSON symbol without expanding every state inline.
 - [X] Ordinary and mixed extended digital lanes include integer-tick repeat,
   per-cell periods, clock duty arrays, and digital slew.
-- [ ] Planned: styled signals and relaxed JSON/JSONML. Safe opaque
-  preservation is supported. JSON, YAML, and TOML semantic interchange are supported for
-  the schema subset listed here.
+- [X] Styled signals and relaxed JSON/JSONML, including `.jsonml` File Open,
+  retained-handle Save, comments, unquoted keys, single quotes, and trailing
+  commas. Safe opaque preservation and JSON, YAML, and TOML semantic
+  interchange are supported for the schema subset listed here.
 - **Permanent exclusions:** register diagrams and arbitrary code execution.
   Safe documented analogue expressions remain supported.
 
@@ -134,16 +135,19 @@ items; legend examples and permanent exclusions are not counted.
 
 - [ ] Partial: Undulate JSON is supported, but only the schema subset listed
   in this document. This is not full Undulate JSON compatibility.
-- [ ] Partial: YAML supports semantic import/edit/export for the same validated
-  Undulate subset as JSON. Comments, anchors, aliases, tags, original quoting,
-  and byte-level formatting are intentionally not preserved in this first
-  slice; Save writes deterministic canonical YAML.
-- [ ] Partial: TOML supports semantic import/edit/export for the same validated
-  Undulate subset as JSON. Comments, original dotted/table layout, quoting, and
-  byte-level formatting are intentionally not preserved; Save writes
-  deterministic canonical TOML.
-- [ ] Partial: changed or newly inserted values follow the retained document's
-  detected style, but byte-for-byte source preservation is not promised.
+- [X] YAML supports semantic import/edit/export for the same validated
+  Undulate subset as JSON. Syntax-tree updates retain comments, mapping and
+  sequence order, and existing scalar quoting during GUI edits. Anchors,
+  aliases, merge keys, and explicit tags remain rejected as unsafe syntax.
+- [X] TOML supports semantic import/edit/export for the same validated
+  Undulate subset as JSON. Existing scalar edits retain comments,
+  dotted/table layout, and compatible quote style. Structural changes use
+  deterministic canonical TOML and relocate source comments instead of
+  silently deleting them.
+- [X] Changed values follow the retained JSONML, YAML, or TOML document's
+  detected local style where representable; newly inserted or structurally
+  changed values use deterministic canonical syntax. Byte-for-byte source
+  identity is not promised.
 - [X] Safe unknown top-level, config, head/foot, signal, and annotation fields
   are preserved opaquely, re-exported verbatim, and reported before export.
   Deleting an attached signal or annotation produces an explicit orphan warning.
@@ -277,13 +281,14 @@ Implementation design:
   snapping remains the default and can also be changed per annotation.
 - [ ] Partial: annotations are limited to 1000 objects and text is limited to
   2000 characters.
-- [ ] Partial: colors are deliberately limited to local hex, `rgb()`, and
-  `rgba()` values; remote resources, gradients, CSS variables, and arbitrary
-  CSS are rejected.
+- [X] Colors accept local hex, bounded `rgb()`/`rgba()`, and a reviewed
+  allowlist of CSS named colors. Remote resources, gradients, CSS variables,
+  `currentColor`, and arbitrary CSS remain rejected.
 - [ ] Partial: stroke width is bounded to 0..32 and dash arrays to 1..16
   finite values in the 0..1000 range.
-- [ ] Partial: annotation font sizes accept only finite `px` values from
-  6px to 96px.
+- [X] Annotation font sizes accept finite CSS absolute, font-relative, and
+  percentage units that normalize deterministically into the safe 6px to 96px
+  range; export uses canonical pixels.
 
 ### Unsupported
 
@@ -435,8 +440,8 @@ Upstream references:
 
 - [X] PDF export embeds a high-resolution app-rendered diagram in a
   standards-compliant single-page PDF without invoking an external backend.
-- [ ] Planned: PostScript or EPS export where a safe client-side conversion
-  path is practical.
+- [X] EPS export uses a self-contained Level 2 PostScript document with an
+  ASCIIHex/DCT-encoded high-resolution app render and no external resources.
 - [X] Terminal-text export renders grouped digital, vector, and analogue lanes
   plus annotation notes as deterministic UTF-8 text.
 - **Permanent exclusion:** invoking or embedding Undulate's Python/Cairo
@@ -472,8 +477,11 @@ Upstream reference:
 - [X] The feature-loss summary covers annotations, analogue lanes, extended
   timing/states, expanded nodes, marked edges, signal styles, explicit overlay
   groups, and all preserved or orphaned opaque fields for the selected target.
-- [ ] Partial: the compatibility report covers typed extension objects, not
-  every documented Undulate property.
+- [X] The compatibility report covers every accepted typed extension category,
+  all safe opaque properties, and orphaned opaque data. The revision-pinned
+  property manifest classifies every documented property before import, so
+  rejected WIP, unsafe, and permanent-exclusion fields cannot become silent
+  export loss.
 
 ## 9. Intentionally out of scope
 
@@ -507,9 +515,9 @@ Upstream reference:
   import plus canonical export are implemented alongside JSON. Source-
   preserving mapping-format edits are explicitly deferred; evaluate PDF
   independently after the semantic model is stable.
-- [ ] **P4 — Source and secondary-output fidelity.** Preserve comments and
-  concrete syntax for YAML/TOML where practical, and add PDF, PostScript/EPS,
-  and terminal outputs using safe app-native implementations.
+- [X] **P4 — Source and secondary-output fidelity.** JSONML/YAML/TOML retain
+  comments and compatible concrete syntax where practical. PDF, EPS, and
+  terminal outputs use safe app-native implementations.
 
 ## 11. Audit evidence in this repository
 

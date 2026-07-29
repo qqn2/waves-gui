@@ -6,6 +6,7 @@ export {
 } from './exportImage';
 export { exportSVG } from './exportSVG';
 export { exportPDF, buildRasterPdf } from './exportPDF';
+export { exportEPS, buildRasterEPS } from './exportEPS';
 export { exportTerminal, buildTerminalDiagram } from './exportTerminal';
 export {
   exportUndulateJSON,
