@@ -1,6 +1,7 @@
 import type { Signal, VectorSegment } from '../shared/types';
 import { isWavedromBusFillHex } from '../wavedromBridge/wavedromColors';
 import { isVectorUnknownValue, vectorUnknownFill, vectorUnknownStroke, resolveSignalColor } from './stateColors';
+import { signalFill, signalStroke } from './signalStyle';
 
 const WAVEDROM_BUS_STROKE = '#000000';
 
@@ -13,7 +14,7 @@ export function segmentBusFill(seg: VectorSegment, signal: Signal): string {
   if (isVectorUnknownValue(seg.value)) return vectorUnknownFill();
   if (seg.color && isWavedromBusFillHex(seg.color)) return seg.color;
   const color = resolveSignalColor(signal.color);
-  return signal.fillColor ?? `${color}30`;
+  return signalFill(signal) ?? signal.fillColor ?? `${color}30`;
 }
 
 export function segmentBusStroke(seg: VectorSegment, signal: Signal): string {
@@ -21,7 +22,7 @@ export function segmentBusStroke(seg: VectorSegment, signal: Signal): string {
   if (seg.color && isWavedromBusFillHex(seg.color)) {
     return cssVar('--bus-color-stroke', WAVEDROM_BUS_STROKE);
   }
-  return resolveSignalColor(signal.color);
+  return signalStroke(signal);
 }
 
 /** Text ink chosen for the actual bus fill rather than the surrounding UI theme. */

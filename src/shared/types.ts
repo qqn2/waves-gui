@@ -106,6 +106,17 @@ export interface DigitalTiming {
   slewing?: number;
 }
 
+export interface SignalStyle {
+  /** Safe normalized waveform stroke color. */
+  stroke?: string;
+  /** Safe normalized fill color, currently used by vector lanes. */
+  fill?: string;
+  strokeWidth?: number;
+  strokeDasharray?: number[];
+  /** Safe normalized pixel size, currently used by vector value labels. */
+  fontSize?: number;
+}
+
 export interface Signal {
   id: string;
   name: string;
@@ -142,6 +153,8 @@ export interface Signal {
   overlay?: boolean;
   /** Label order within an Undulate overlay. */
   order?: number;
+  /** Safe declarative Undulate styling; arbitrary CSS is intentionally excluded. */
+  style?: SignalStyle;
   color: string; // stroke color, default '#4A9EFF'
   fillColor?: string; // vector fill, default semi-transparent stroke
   rowHeight: number; // px at zoom=1, default 40

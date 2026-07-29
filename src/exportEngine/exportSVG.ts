@@ -14,7 +14,12 @@ import {
   TRANSITION_WIDTH,
 } from '../shared/constants';
 import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
-import { X_STROKE, resolveSignalColor } from '../renderer/stateColors';
+import { X_STROKE } from '../renderer/stateColors';
+import {
+  signalStroke,
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from '../renderer/signalStyle';
 import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from '../renderer/vectorBusStyle';
 import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
@@ -113,6 +118,8 @@ function svgExtendedDataCell(
   yHigh: number,
   yLow: number,
   bevel: number,
+  fillOverride?: string,
+  strokeOverride?: string,
 ): string {
   const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
   const yMid = (yHigh + yLow) / 2;
@@ -120,10 +127,12 @@ function svgExtendedDataCell(
     `M${x},${yMid} L${x + d},${yHigh} L${nextX - d},${yHigh} `
     + `L${nextX},${yMid} L${nextX - d},${yLow} L${x + d},${yLow} Z`;
   const unknown = state === 'x' || state === 'X';
-  const fill = unknown
+  const fill = fillOverride ? esc(fillOverride) : unknown
     ? 'url(#hatch-x)'
     : esc(fillHexForWaveChar(state) ?? '#ffffff');
-  const stroke = unknown ? esc(X_STROKE) : '#6b7280';
+  const stroke = strokeOverride
+    ? esc(strokeOverride)
+    : unknown ? esc(X_STROKE) : '#6b7280';
   return `<path data-wave-state="${esc(state)}" d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
 }
 
@@ -220,7 +229,8 @@ function svgBitSignal(
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = false;
   let resumeAtCurrentState = false;
-  const color = esc(resolveSignalColor(signal.color));
+  const color = esc(signalStroke(signal));
+  const strokeWidth = signalStrokeWidth(signal);
   const extendedDigital = states.some(
     (state) => state === 'X' || state === '='
       || (state >= '2' && state <= '9')
@@ -237,7 +247,7 @@ function svgBitSignal(
   const flushPath = () => {
     if (pathOpen && pathD) {
       parts.push(
-        `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="2"/>`,
+        `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="${strokeWidth}"/>`,
       );
       pathD = '';
       pathOpen = false;
@@ -267,6 +277,8 @@ function svgBitSignal(
         yHigh,
         yLow,
         3 * hscale,
+        signal.style?.fill,
+        signal.style?.stroke,
       ));
       i = runEnd - 1;
       resumeAtCurrentState = true;
@@ -398,7 +410,14 @@ function svgBitSignal(
     parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
   }
 
-  return parts.join('\n');
+  const content = parts.join('\n').replaceAll(
+    'stroke-width="2"',
+    `stroke-width="${strokeWidth}"`,
+  );
+  const dash = signalStrokeDasharray(signal);
+  return dash.length > 0
+    ? `<g stroke-dasharray="${dash.join(' ')}">${content}</g>`
+    : content;
 }
 
 function svgVectorSignal(
@@ -413,6 +432,11 @@ function svgVectorSignal(
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
   const parts: string[] = [];
+  const strokeWidth = signalStrokeWidth(signal);
+  const dash = signalStrokeDasharray(signal);
+  const dashAttr = dash.length > 0
+    ? ` stroke-dasharray="${dash.join(' ')}"`
+    : '';
 
   for (const seg of signal.segments) {
     const x1 = stepLogicalX(signal, seg.startStep) * hscale;
@@ -423,18 +447,18 @@ function svgVectorSignal(
 
     if (span < d * 3) {
       parts.push(
-        `<path d="M${x1},${yHigh} L${x2},${yLow} M${x1},${yLow} L${x2},${yHigh}" fill="none" stroke="${stroke}" stroke-width="2"/>`,
+        `<path d="M${x1},${yHigh} L${x2},${yLow} M${x1},${yLow} L${x2},${yHigh}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}"${dashAttr}/>`,
       );
       continue;
     }
 
     const path = `M${x1},${yMid} L${x1 + d},${yHigh} L${x2 - d},${yHigh} L${x2},${yMid} L${x2 - d},${yLow} L${x1 + d},${yLow} Z`;
     parts.push(
-      `<path d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`,
+      `<path d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${dashAttr}/>`,
     );
     const maxW = span - d * 2 - 8;
     if (maxW > 4) {
-      const fs = Math.max(10, rowH * 0.35);
+      const fs = signal.style?.fontSize ?? Math.max(10, rowH * 0.35);
       parts.push(
         `<text x="${(x1 + x2) / 2}" y="${yMid}" fill="${esc(segmentBusTextColor(seg))}" font-size="${fs}" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">${esc(seg.value)}</text>`,
       );
@@ -709,8 +733,13 @@ function svgAnalogueSignal(
       + (1 - analogueValueRatio(signal, point.value)) * usableHeight;
     return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
   }).join(' ');
-  return `<path d="${path}" fill="none" stroke="${esc(signal.color)}" `
-    + 'stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  const dash = signalStrokeDasharray(signal);
+  const dashAttribute = dash.length > 0
+    ? ` stroke-dasharray="${dash.join(' ')}"`
+    : '';
+  return `<path d="${path}" fill="none" stroke="${esc(signalStroke(signal))}" `
+    + `stroke-width="${signalStrokeWidth(signal)}"${dashAttribute} `
+    + 'stroke-linejoin="round" stroke-linecap="round"/>';
 }
 
 function walkSignalSvg(

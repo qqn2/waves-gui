@@ -6,6 +6,11 @@ import {
   analoguePathPoints,
   analogueValueRatio,
 } from './analogueGeometry';
+import {
+  signalStroke,
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from './signalStyle';
 
 export function renderAnalogueSignal(
   ctx: CanvasRenderingContext2D,
@@ -27,11 +32,11 @@ export function renderAnalogueSignal(
     rowY + padding + (1 - analogueValueRatio(signal, value)) * usableHeight;
 
   ctx.save();
-  ctx.strokeStyle = signal.color;
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = signalStroke(signal);
+  ctx.lineWidth = signalStrokeWidth(signal);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
-  ctx.setLineDash([]);
+  ctx.setLineDash(signalStrokeDasharray(signal));
   ctx.beginPath();
   ctx.moveTo(x(points[0]!.step), y(points[0]!.value));
   for (const point of points.slice(1)) {

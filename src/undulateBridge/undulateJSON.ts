@@ -18,6 +18,10 @@ import {
 } from '../shared/analogueExpressions';
 import { timingForStates, timingResolution } from '../shared/fineTiming';
 import { parseAnnotationFontSize } from '../shared/annotations';
+import {
+  signalStyleFromUndulate,
+  signalStyleToUndulate,
+} from '../shared/signalStyles';
 import type {
   AnnotationStyle,
   AnnotationAnchor,
@@ -288,6 +292,7 @@ function analogueToUndulateEntry(
     ...(signal.vscale !== undefined ? { vscale: signal.vscale } : {}),
     ...(signal.overlay !== undefined ? { overlay: signal.overlay } : {}),
     ...(signal.order !== undefined ? { order: signal.order } : {}),
+    ...signalStyleToUndulate(signal.style),
   };
   const source = signal.undulateAnalogueRepeat;
   return source && source.fingerprint === analogueCellsFingerprint(cells)
@@ -357,14 +362,23 @@ function mergeUndulateSignalEntries(
       if (timing.slewing !== undefined) entry.slewing = timing.slewing;
       delete entry.repeat;
       return withOpaqueFields(
-        retainCompactDigitalRepeat(withUndulateNode(entry, signal), signal),
+        retainCompactDigitalRepeat(
+          {
+            ...withUndulateNode(entry, signal),
+            ...signalStyleToUndulate(signal.style),
+          },
+          signal,
+        ),
         signal,
         opaqueSignals,
       );
     }
     return withOpaqueFields(
       retainCompactDigitalRepeat(
-        withUndulateNode({ ...(shared as WdSignal) }, signal),
+        {
+          ...withUndulateNode({ ...(shared as WdSignal) }, signal),
+          ...signalStyleToUndulate(signal.style),
+        },
         signal,
       ),
       signal,
@@ -726,6 +740,9 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         || hasAnalogueExpression;
       importDigitalTiming(raw, parsed, ticksPerStep);
       importExpandedNodes(raw, parsed);
+      parsed.style = signalStyleFromUndulate(
+        raw as unknown as Record<string, unknown>,
+      );
       if (
         !Array.isArray(raw.analogue)
         && typeof raw.wave === 'string'

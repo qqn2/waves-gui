@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { findSignal, useStore } from '../shared/store';
 import type { Signal } from '../shared/types';
 import { DEFAULT_ANALOGUE_CONTEXT } from '../shared/analogueExpressions';
+import {
+  isSafeAnnotationColor,
+  isSafeAnnotationDasharray,
+} from '../shared/annotations';
 import { VectorSegmentEditor } from '../signalPanel/VectorSegmentEditor';
 import styles from './shell.module.css';
 
@@ -25,6 +29,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
   const setSignalPhase = useStore((s) => s.setSignalPhase);
   const setSignalPeriod = useStore((s) => s.setSignalPeriod);
+  const updateSignalStyle = useStore((s) => s.updateSignalStyle);
   const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
   const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
   const updateAnalogueContext = useStore((s) => s.updateAnalogueContext);
@@ -33,14 +38,31 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   );
   const updateDigitalTimingCell = useStore((s) => s.updateDigitalTimingCell);
   const updateDigitalTimingSignal = useStore((s) => s.updateDigitalTimingSignal);
+  const extensionsEnabled = useStore(
+    (s) => s.diagram.compatibility?.extensionsEnabled === true,
+  );
   const signal = useMemo(() => selectedSignal(signals, activeIds), [signals, activeIds]);
   const [nameDraft, setNameDraft] = useState('');
   const [analogueCellIndex, setAnalogueCellIndex] = useState(0);
   const [timingCellIndex, setTimingCellIndex] = useState(0);
+  const [strokeDraft, setStrokeDraft] = useState('');
+  const [fillDraft, setFillDraft] = useState('');
+  const [dashDraft, setDashDraft] = useState('');
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
   }, [signal?.id, signal?.name]);
+
+  useEffect(() => {
+    setStrokeDraft(signal?.style?.stroke ?? '');
+    setFillDraft(signal?.style?.fill ?? '');
+    setDashDraft(signal?.style?.strokeDasharray?.join(', ') ?? '');
+  }, [
+    signal?.id,
+    signal?.style?.stroke,
+    signal?.style?.fill,
+    signal?.style?.strokeDasharray,
+  ]);
 
   useEffect(() => {
     setAnalogueCellIndex((index) => Math.max(
@@ -108,6 +130,121 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               </span>
             </label>
           </section>
+
+          {extensionsEnabled ? <section className={styles.inspectorSection}>
+            <h2>Undulate style</h2>
+            <label className={styles.inspectorField}>
+              <span>Stroke</span>
+              <input
+                type="text"
+                value={strokeDraft}
+                placeholder="Default"
+                aria-label="Signal stroke color"
+                onChange={(event) => setStrokeDraft(event.target.value)}
+                onBlur={() => {
+                  const next = strokeDraft.trim();
+                  if (next === '' || isSafeAnnotationColor(next)) {
+                    updateSignalStyle(signal.id, {
+                      stroke: next === '' ? undefined : next,
+                    });
+                  } else {
+                    setStrokeDraft(signal.style?.stroke ?? '');
+                  }
+                }}
+                spellCheck={false}
+              />
+            </label>
+            <label className={styles.inspectorField}>
+              <span>Fill</span>
+              <input
+                type="text"
+                value={fillDraft}
+                placeholder="Default"
+                aria-label="Signal fill color"
+                onChange={(event) => setFillDraft(event.target.value)}
+                onBlur={() => {
+                  const next = fillDraft.trim();
+                  if (next === '' || isSafeAnnotationColor(next)) {
+                    updateSignalStyle(signal.id, {
+                      fill: next === '' ? undefined : next,
+                    });
+                  } else {
+                    setFillDraft(signal.style?.fill ?? '');
+                  }
+                }}
+                spellCheck={false}
+              />
+            </label>
+            <label className={styles.inspectorField}>
+              <span>Stroke width</span>
+              <input
+                type="number"
+                min={0}
+                max={32}
+                step="any"
+                value={signal.style?.strokeWidth ?? ''}
+                placeholder="2"
+                aria-label="Signal stroke width"
+                onChange={(event) => {
+                  const value = event.target.value;
+                  const parsed = value === '' ? undefined : Number(value);
+                  if (
+                    parsed === undefined
+                    || (Number.isFinite(parsed) && parsed >= 0 && parsed <= 32)
+                  ) {
+                    updateSignalStyle(signal.id, { strokeWidth: parsed });
+                  }
+                }}
+              />
+            </label>
+            <label className={styles.inspectorField}>
+              <span>Dash pattern</span>
+              <input
+                type="text"
+                value={dashDraft}
+                placeholder="4, 2"
+                aria-label="Signal stroke dash pattern"
+                onChange={(event) => setDashDraft(event.target.value)}
+                onBlur={() => {
+                  const text = dashDraft.trim();
+                  const values = text === ''
+                    ? undefined
+                    : text.split(',').map((part) => Number(part.trim()));
+                  if (values === undefined || isSafeAnnotationDasharray(values)) {
+                    updateSignalStyle(signal.id, { strokeDasharray: values });
+                  } else {
+                    setDashDraft(signal.style?.strokeDasharray?.join(', ') ?? '');
+                  }
+                }}
+                spellCheck={false}
+              />
+            </label>
+            <label className={styles.inspectorField}>
+              <span>Value font</span>
+              <input
+                type="number"
+                min={6}
+                max={96}
+                step="any"
+                value={signal.style?.fontSize ?? ''}
+                placeholder="Auto"
+                aria-label="Signal value font size"
+                onChange={(event) => {
+                  const value = event.target.value;
+                  const parsed = value === '' ? undefined : Number(value);
+                  if (
+                    parsed === undefined
+                    || (Number.isFinite(parsed) && parsed >= 6 && parsed <= 96)
+                  ) {
+                    updateSignalStyle(signal.id, { fontSize: parsed });
+                  }
+                }}
+              />
+            </label>
+            <p className={styles.inspectorFieldHint}>
+              Safe declarative styling only. Fill and value font apply to bus lanes.
+            </p>
+          </section> : null}
 
           {isBus ? (
             <>

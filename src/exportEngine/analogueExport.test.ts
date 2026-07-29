@@ -16,6 +16,11 @@ describe('analogue image export', () => {
       states: [],
       segments: [],
       color: '#12ab34',
+      style: {
+        stroke: '#336699',
+        strokeWidth: 3,
+        strokeDasharray: [5, 2],
+      },
       rowHeight: 40,
       analogueMin: 0,
       analogueMax: 1.8,
@@ -26,7 +31,9 @@ describe('analogue image export', () => {
     }];
 
     const svg = buildSVGString(diagram, defaultView());
-    expect(svg).toContain('stroke="#12ab34"');
+    expect(svg).toContain(
+      'stroke="#336699" stroke-width="3" stroke-dasharray="5 2"',
+    );
     expect(svg).toContain('<path d="M 0');
   });
 

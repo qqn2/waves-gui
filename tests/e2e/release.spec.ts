@@ -72,6 +72,9 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
         wave: 'sc.',
         analogue: [0.6, 1.2],
         slewing: 4,
+        stroke: '#336699',
+        'stroke-width': 3,
+        'stroke-dasharray': [5, 2],
       },
     ],
     annotations: [
@@ -96,6 +99,13 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   ).toHaveText('supply');
   const analogValue = page.getByLabel('Analog cell value');
   await expect(analogValue).toHaveValue('0.6');
+  const signalStroke = page.getByLabel('Signal stroke color');
+  await expect(signalStroke).toHaveValue('#336699');
+  await expect(page.getByLabel('Signal stroke width')).toHaveValue('3');
+  await expect(page.getByLabel('Signal stroke dash pattern')).toHaveValue('5, 2');
+  await signalStroke.fill('#663399');
+  await signalStroke.press('Tab');
+  await expect(editor).toContainText('\"stroke\": \"#663399\"');
   await analogValue.fill('0.9');
   await expect(editor).toContainText('0.9');
   await expect(preview.locator('svg')).toContainText('Settled');

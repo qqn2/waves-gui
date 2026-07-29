@@ -7,6 +7,10 @@ import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from './vectorB
 import { labelOverflowsInWidth } from '../shared/vectorLabelFit';
 import { drawBusOverflowIndicator } from './drawBusOverflowIndicator';
 import { drawStepGap } from './drawStepGap';
+import {
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from './signalStyle';
 
 export function renderVectorSignal(
   ctx: CanvasRenderingContext2D,
@@ -24,8 +28,8 @@ export function renderVectorSignal(
   const yHigh = rowY + TRACE_PADDING * transform.zoom;
   const yLow = rowY + rowH - TRACE_PADDING * transform.zoom;
 
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
+  ctx.lineWidth = signalStrokeWidth(signal);
+  ctx.setLineDash(signalStrokeDasharray(signal));
 
   for (const seg of signal.segments) {
     const fill = segmentBusFill(seg, signal);
@@ -37,7 +41,7 @@ export function renderVectorSignal(
     const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * scale - transform.scrollX;
     const span = x2 - x1;
     const spanTooNarrow = span < d * 3;
-    const fontPx = Math.max(10, rowH * 0.35);
+    const fontPx = signal.style?.fontSize ?? Math.max(10, rowH * 0.35);
     const maxW = span - d * 2 - 8;
     const overflows = labelOverflowsInWidth(seg.value, maxW, fontPx, spanTooNarrow);
 

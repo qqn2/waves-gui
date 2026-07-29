@@ -410,7 +410,7 @@ y = 0.5
           wave: 'p',
           repeat: 8,
           duty_cycles: Array(8).fill(0.5),
-          stroke: '#f00',
+          'font-weight': 'bold',
         }],
       }),
     ], 'blocked.json', { type: 'application/json' });
@@ -429,7 +429,9 @@ y = 0.5
 
     await openDiagramFile();
 
-    expect(alert).toHaveBeenCalledWith(expect.stringContaining('[WIP] signal[0].stroke'));
+    expect(alert).toHaveBeenCalledWith(
+      expect.stringContaining('[WIP] signal[0].font-weight'),
+    );
     expect(useStore.getState().diagram).toBe(before);
     expect(useStore.getState().view.fileName).toBe('kept.json');
   });

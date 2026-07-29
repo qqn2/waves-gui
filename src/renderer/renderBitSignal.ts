@@ -12,11 +12,15 @@ import {
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import {
   stateLineDash,
-  stateStrokeColor,
+  stateStrokeColorResolved,
   X_FILL,
   X_STROKE,
-  resolveSignalColor,
 } from './stateColors';
+import {
+  signalStroke,
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from './signalStyle';
 import {
   clockCycleEndY,
   clockLevelEndY,
@@ -44,6 +48,8 @@ function drawDataCell(
   yLow: number,
   hatch: CanvasPattern | null,
   bevel: number,
+  fillOverride?: string,
+  strokeOverride?: string,
 ): void {
   const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
   ctx.beginPath();
@@ -55,11 +61,11 @@ function drawDataCell(
   ctx.lineTo(x + d, yLow);
   ctx.closePath();
   if (state === 'x' || state === 'X') {
-    ctx.fillStyle = hatch ?? X_FILL;
-    ctx.strokeStyle = X_STROKE;
+    ctx.fillStyle = fillOverride ?? hatch ?? X_FILL;
+    ctx.strokeStyle = strokeOverride ?? X_STROKE;
   } else {
-    ctx.fillStyle = fillHexForWaveChar(state) ?? '#ffffff';
-    ctx.strokeStyle = '#6b7280';
+    ctx.fillStyle = fillOverride ?? fillHexForWaveChar(state) ?? '#ffffff';
+    ctx.strokeStyle = strokeOverride ?? '#6b7280';
   }
   ctx.fill();
   ctx.stroke();
@@ -77,6 +83,7 @@ function drawRelaxedDigitalCell(
   slewPx: number,
   scale: number,
   color: string,
+  dash: number[],
 ): number {
   const targetY = state === 'z' ? yMid : state === 'u' ? yHigh : yLow;
   const span = Math.max(1, yLow - yHigh);
@@ -84,7 +91,7 @@ function drawRelaxedDigitalCell(
   const settleX = Math.min(nextX, x + 20 * scale);
   ctx.save();
   ctx.strokeStyle = color;
-  ctx.setLineDash([]);
+  ctx.setLineDash(dash);
   ctx.beginPath();
   ctx.moveTo(x, previousY);
   if (state === 'z') {
@@ -109,12 +116,14 @@ function drawTransientCell(
   color: string,
   slewPx: number,
   dutyCycle: number,
+  dash: number[],
+  strokeWidth: number,
 ): number {
   const width = nextX - x;
   ctx.save();
   ctx.strokeStyle = color;
-  ctx.setLineDash([]);
-  ctx.lineWidth = 2;
+  ctx.setLineDash(dash);
+  ctx.lineWidth = strokeWidth;
   ctx.beginPath();
   ctx.moveTo(x, previousY);
 
@@ -217,6 +226,7 @@ export function renderBitSignal(
   draftStates?: BitState[] | null,
   options?: { highlightGlitchBoundaries?: boolean },
 ): void {
+  ctx.save();
   const states = draftStates ?? signal.states;
   const glitches = signal.stepGlitches ?? [];
   const scale = transform.zoom * transform.hscale;
@@ -246,9 +256,11 @@ export function renderBitSignal(
   const yMid = rowY + rowH / 2;
 
   const hatch = createXHatchPattern(ctx);
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
-  ctx.strokeStyle = stateStrokeColor('1', signal.color);
+  const baseStroke = signalStroke(signal);
+  const baseDash = signalStrokeDasharray(signal);
+  ctx.lineWidth = signalStrokeWidth(signal);
+  ctx.setLineDash(baseDash);
+  ctx.strokeStyle = stateStrokeColorResolved('1', baseStroke);
   ctx.beginPath();
 
   let prevY = stateToY(states[0] ?? '0', yHigh, yLow, yMid);
@@ -276,7 +288,18 @@ export function renderBitSignal(
       }
       const dataNextX =
         stepLogicalXEnd(signal, runEnd - 1) * scale - transform.scrollX;
-      drawDataCell(ctx, st, x, dataNextX, yHigh, yLow, hatch, 3 * scale);
+      drawDataCell(
+        ctx,
+        st,
+        x,
+        dataNextX,
+        yHigh,
+        yLow,
+        hatch,
+        3 * scale,
+        signal.style?.fill,
+        signal.style?.stroke,
+      );
       i = runEnd - 1;
       resumeAtCurrentState = true;
       continue;
@@ -295,12 +318,14 @@ export function renderBitSignal(
         yHigh,
         yLow,
         resumeAtCurrentState ? yMid : prevY,
-        resolveSignalColor(signal.color),
+        baseStroke,
         clockSlewLogical * scale,
         signal.digitalTiming?.cells[i]?.dutyTicks === undefined
           ? 0.5
           : signal.digitalTiming.cells[i]!.dutyTicks!
             / signal.digitalTiming.cells[i]!.durationTicks,
+        baseDash,
+        signalStrokeWidth(signal),
       );
       resumeAtCurrentState = false;
       continue;
@@ -311,7 +336,8 @@ export function renderBitSignal(
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.strokeStyle = resolveSignalColor(signal.color);
+      ctx.strokeStyle = baseStroke;
+      ctx.setLineDash(baseDash);
       const targetY = clockLevelEndY(st, yHigh, yLow);
       strokeClockLevel(
         ctx,
@@ -335,7 +361,8 @@ export function renderBitSignal(
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.strokeStyle = resolveSignalColor(signal.color);
+      ctx.strokeStyle = baseStroke;
+      ctx.setLineDash(baseDash);
       const timingCell = signal.digitalTiming?.cells[i];
       strokeClockCycle(
         ctx,
@@ -379,7 +406,8 @@ export function renderBitSignal(
         yMid,
         slewLogical * scale,
         scale,
-        resolveSignalColor(signal.color),
+        baseStroke,
+        baseDash,
       );
       resumeAtCurrentState = false;
       continue;
@@ -392,9 +420,9 @@ export function renderBitSignal(
       ctx.moveTo(x, prevY);
       pathOpen = true;
       resumeAtCurrentState = false;
-      ctx.strokeStyle = stateStrokeColor(st, signal.color);
+      ctx.strokeStyle = stateStrokeColorResolved(st, baseStroke);
       const dash = stateLineDash(st);
-      ctx.setLineDash(dash ?? []);
+      ctx.setLineDash(dash ?? baseDash);
     }
 
     const y = stateToY(st, yHigh, yLow, yMid);
@@ -451,4 +479,5 @@ export function renderBitSignal(
     const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
     drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke, gapFill);
   }
+  ctx.restore();
 }

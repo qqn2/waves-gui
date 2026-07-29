@@ -13,6 +13,7 @@ import type {
   PaintMode,
   PaintStyle,
   Signal,
+  SignalStyle,
   Theme,
   Tool,
   ViewState,
@@ -27,6 +28,7 @@ export interface StoreActions {
   addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;
+  updateSignalStyle(signalId: string, patch: Partial<SignalStyle>): void;
   updateAnalogueCell(
     signalId: string,
     index: number,

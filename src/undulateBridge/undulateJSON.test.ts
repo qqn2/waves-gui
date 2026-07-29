@@ -522,14 +522,47 @@ describe('Undulate JSON bridge', () => {
         analogue: ['globalThis.process'],
       }],
     })).toContain('unsupported character');
-    expect(validateUndulateJSON({
+  });
+
+  it('normalizes safe signal styles and round-trips them losslessly', () => {
+    const root = {
       signal: [{
         name: 'styled',
-        wave: 's',
-        analogue: [0.5],
-        stroke: '#f00',
+        wave: '01',
+        stroke: '#336699',
+        fill: 'rgba(51, 102, 153, 0.2)',
+        'stroke-width': 3,
+        'stroke-dasharray': [5, 2],
+        'font-size': '14px',
       }],
-    })).toContain('[WIP] signal[0].stroke');
+    } as unknown as UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    expect(isUndulateJSON(root)).toBe(true);
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(signal?.type).not.toBe('group');
+    if (!signal || signal.type === 'group') throw new Error('expected signal');
+    expect(signal.style).toEqual({
+      stroke: '#336699',
+      fill: 'rgba(51, 102, 153, 0.2)',
+      strokeWidth: 3,
+      strokeDasharray: [5, 2],
+      fontSize: 14,
+    });
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      stroke: '#336699',
+      fill: 'rgba(51, 102, 153, 0.2)',
+      'stroke-width': 3,
+      'stroke-dasharray': [5, 2],
+      'font-size': '14px',
+    });
+    expect(validateUndulateJSON({
+      signal: [{ name: 'unsafe', wave: '0', stroke: 'url(remote.svg)' }],
+    })).toContain('stroke must be a safe');
+    expect(validateUndulateJSON({
+      signal: [{ name: 'wide', wave: '0', 'stroke-width': 33 }],
+    })).toContain('stroke-width must be');
   });
 
   it('imports Ludwig analogue tutorial JSON including the curve comprehension', () => {
@@ -649,7 +682,6 @@ describe('Undulate JSON bridge', () => {
       expect.arrayContaining([
         'reg',
         'future_root',
-        'signal[0].stroke',
         'signal[0].future_lane',
         'config.vscale',
         'config.future_config',

@@ -332,6 +332,9 @@ Upstream references:
   and JPEG.
 - [X] Explicit validation errors for non-finite values, malformed samples,
   value-count mismatches, and unsupported analogue fields.
+- [X] Safe normalized per-signal `stroke`, `fill`, `stroke-width`,
+  `stroke-dasharray`, and pixel `font-size` import, inspector editing,
+  rendering, image export, and semantic round-trip.
 
 ### Partial
 
@@ -365,8 +368,6 @@ Upstream references:
   comprehensions,
   attribute access, assignment, user-defined variables/functions, and code
   execution outside the safe documented subset.
-- [ ] Unsupported: per-signal `stroke`, `fill`, `stroke-width`,
-  `stroke-dasharray`, and `font-size`.
 - [ ] Unsupported: mixed metastability/impulse symbols inside analogue wave
   strings as true Undulate states. Do not rely on `m`, `M`, `i`, or `I`.
 - The safe documented expression subset remains the supported alternative to
@@ -384,13 +385,16 @@ Upstream references:
   palette choices affect browser rendering.
 - [X] Typed annotations accept bounded local `fill`, `stroke`,
   `stroke-width`, `stroke-dasharray`, and pixel `font-size` overrides.
+- Digital, vector, and analogue signals accept the same bounded local style
+  fields. Vector fill and value-label font size are rendered semantically;
+  arbitrary CSS is never evaluated.
 - [X] Text and arrow-label backgrounds follow Undulate's default-on
   `text_background` behavior and can be disabled per annotation.
 - [X] Generated SVG text is escaped and output is sanitized.
 
 ### Unsupported
 
-- [ ] Unsupported: Undulate per-object CSS-style fields on signals and edges.
+- [ ] Unsupported: Undulate per-object CSS-style fields on edges.
 - [ ] Planned: expand normalized local style support, including a reviewed
   allowlist for safe gradients, variables, and named colors where semantics
   can be represented without CSS execution.
@@ -483,9 +487,9 @@ Upstream reference:
   structured-arrow shapes, node/coordinate anchors, labels, offsets, and basic
   stroke styling. The dedicated Undulate Arrow tool supports direct two-point
   canvas creation, and selected arrows expose draggable endpoint handles.
-- [ ] **P2 — Extend safe normalized styling.** Annotation colors, widths,
-  dashes, bounded font sizes, and text backgrounds use strict allowlists.
-  Signal and edge styles remain.
+- [ ] **P2 — Extend safe normalized styling.** Annotation and signal colors,
+  widths, dashes, bounded font sizes, fills, and text backgrounds use strict
+  allowlists. Edge styles remain.
 - [X] **P2 — Opaque preservation.** Safe unknown declarative fields are retained
   on root, config, head/foot, signal, and annotation objects. Orphaned fields
   are reported when their attached signal or annotation is deleted.

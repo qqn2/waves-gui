@@ -53,14 +53,10 @@ export const UNDULATE_PROPERTY_MANIFEST = {
     supported: [
       'name', 'wave', 'data', 'node', 'period', 'phase',
       'repeat', 'periods', 'duty_cycle', 'duty_cycles', 'slewing',
+      'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'font-size',
     ],
     wip: [
       'skin',
-      'fill',
-      'stroke',
-      'stroke-width',
-      'stroke-dasharray',
-      'font-size',
       'font',
       'font-weight',
       'color',
@@ -79,17 +75,17 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'phase',
       'node',
       'repeat',
+      'fill',
+      'stroke',
+      'stroke-width',
+      'stroke-dasharray',
+      'font-size',
     ],
     wip: [
       'periods',
       'duty_cycle',
       'duty_cycles',
       'skin',
-      'fill',
-      'stroke',
-      'stroke-width',
-      'stroke-dasharray',
-      'font-size',
       'font',
       'font-weight',
       'color',
@@ -138,6 +134,11 @@ const DIGITAL_EXTENSION_FIELDS = new Set([
   'duty_cycle',
   'duty_cycles',
   'slewing',
+  'fill',
+  'stroke',
+  'stroke-width',
+  'stroke-dasharray',
+  'font-size',
 ]);
 const ANALOGUE_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
@@ -544,6 +545,33 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
   return null;
 }
 
+function validateSignalStyle(signal: Record<string, unknown>): string | null {
+  for (const field of ['fill', 'stroke']) {
+    if (signal[field] !== undefined && !isSafeAnnotationColor(signal[field])) {
+      return `${field} must be a safe hex, rgb(), or rgba() color`;
+    }
+  }
+  if (
+    signal['stroke-width'] !== undefined
+    && !isSafeAnnotationStrokeWidth(signal['stroke-width'])
+  ) {
+    return 'stroke-width must be a finite number from 0 to 32';
+  }
+  if (
+    signal['stroke-dasharray'] !== undefined
+    && !isSafeAnnotationDasharray(signal['stroke-dasharray'])
+  ) {
+    return 'stroke-dasharray must contain 1 to 16 finite values from 0 to 1000';
+  }
+  if (
+    signal['font-size'] !== undefined
+    && parseAnnotationFontSize(signal['font-size']) === undefined
+  ) {
+    return 'font-size must be a pixel size from 6px to 96px';
+  }
+  return null;
+}
+
 function opaque(path: string): UndulateFinding {
   return finding(
     'opaque',
@@ -810,12 +838,12 @@ function structuralError(root: Record<string, unknown>): string | null {
   if (waveError) return waveError;
   const analogueError = visitSignals(
     Array.isArray(root.signal) ? root.signal : [],
-    validateAnalogueSignal,
+    (signal) => validateAnalogueSignal(signal) ?? validateSignalStyle(signal),
   );
   if (analogueError) return analogueError;
   const timingError = visitSignals(
     Array.isArray(root.signal) ? root.signal : [],
-    validateDigitalTiming,
+    (signal) => validateDigitalTiming(signal) ?? validateSignalStyle(signal),
   );
   if (timingError) return timingError;
   return validateAnnotationStructure(root.annotations);

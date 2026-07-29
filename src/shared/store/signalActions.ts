@@ -33,6 +33,7 @@ import {
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
+import { normalizeSignalStyle } from '../signalStyles';
 import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
 import {
   DEFAULT_ANALOGUE_CONTEXT,
@@ -181,6 +182,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
+  | 'updateSignalStyle'
   | 'updateAnalogueCell'
   | 'paintAnalogueCellRange'
   | 'updateAnalogueSignal'
@@ -304,6 +306,18 @@ export function createSignalActions(set: ImmerSet): Pick<
         findSignal(s.diagram.signals, id, (sig) => {
           sig.name = name;
         });
+      });
+    },
+
+    updateSignalStyle(signalId, patch) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          const next = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
+          if (next) sig.style = next;
+          else delete sig.style;
+        });
+        s.view.isDirty = true;
       });
     },
 
