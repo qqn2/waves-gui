@@ -9,8 +9,10 @@ import {
   setNodeCharAt,
   visibleNodeCharAt,
 } from '../../wavedromBridge/nodeString';
+import { demoteToStatesMode } from '../../wavedromBridge/laneWaveOps';
 import type {
   AppState,
+  BitState,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -76,6 +78,51 @@ function removeAnalogueSignals(signals: SignalOrGroup[]): SignalOrGroup[] {
     if (children.length > 0) remaining.push({ ...signal, children });
   }
   return remaining;
+}
+
+const WAVEDROM_BIT_STATE_APPROXIMATIONS: Partial<Record<BitState, BitState>> = {
+  X: 'x',
+  '=': 'x',
+  '2': 'x',
+  '3': 'x',
+  '4': 'x',
+  '5': 'x',
+  '6': 'x',
+  '7': 'x',
+  '8': 'x',
+  '9': 'x',
+  i: '0',
+  I: '1',
+  m: '0',
+  M: '1',
+  h: '1',
+  H: '1',
+  l: '0',
+  L: '0',
+};
+
+function wavedromBitState(state: BitState): BitState {
+  return WAVEDROM_BIT_STATE_APPROXIMATIONS[state] ?? state;
+}
+
+function removeExtendedDigitalStates(signals: SignalOrGroup[]): void {
+  for (const signal of signals) {
+    if (signal.type === 'group') {
+      removeExtendedDigitalStates(signal.children);
+      continue;
+    }
+    if (signal.type !== 'bit') continue;
+    if (signal.states.some((state) => wavedromBitState(state) !== state)) {
+      demoteToStatesMode(signal, signal.states.length);
+      signal.states = signal.states.map(wavedromBitState);
+    }
+    if (signal.digitalTiming) {
+      for (const cell of signal.digitalTiming.cells) {
+        cell.state = wavedromBitState(cell.state);
+      }
+    }
+    delete signal.undulateRepeat;
+  }
 }
 
 function removeDigitalTiming(signals: SignalOrGroup[]): void {
@@ -480,6 +527,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.diagram.annotations = [];
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
         delete s.diagram.analogueOverlayGroups;
+        removeExtendedDigitalStates(s.diagram.signals);
         removeDigitalTiming(s.diagram.signals);
         const removedNodeNames = removeExpandedNodes(s.diagram.signals);
         s.diagram.edges = s.diagram.edges.filter((edge) => {
@@ -491,6 +539,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
               && !removedNodeNames.has(parsed.to));
         });
         delete s.diagram.config.ticksPerStep;
+        delete s.diagram.config.analogueContext;
         s.diagram.version = 2;
         s.diagram.compatibility = {
           ...s.diagram.compatibility,
@@ -498,6 +547,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
           sourceFormat: 'wavedrom-json',
         };
         delete s.diagram.compatibility.sourceRevision;
+        delete s.diagram.compatibility.opaqueUndulate;
         disableExtensionView(s);
       });
     },

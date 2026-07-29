@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
+import {
+  fromWavedromJSON,
+  validateWavedromJSON,
+  type WdRoot,
+} from '../wavedromBridge';
 import type { UndulateRoot } from './types';
 import {
   fromUndulateJSON,
@@ -465,6 +470,97 @@ describe('Undulate JSON bridge', () => {
     const exported = toUndulateJSON(diagram);
     expect(exported.edge).toBeUndefined();
     expect(exported.edges).toEqual(diagram.edges);
+  });
+
+  it('converts a feature-rich WaveDrom document with every edge path to valid Undulate', () => {
+    const edgeVariants = [
+      'A-B straight',
+      'A~B curved',
+      'A-~B curved late',
+      'A~-B curved early',
+      'A-|B horizontal then vertical',
+      'A|-B vertical then horizontal',
+      'A-|-B bracket',
+      'A->B arrow',
+      'A~>B curved arrow',
+      'A-~>B curved late arrow',
+      'A~->B curved early arrow',
+      'A-|>B elbow arrow',
+      'A|->B return arrow',
+      'A-|->B bracket arrow',
+      'A<->B bidirectional',
+      'A<~>B curved bidirectional',
+      'A<-~>B curved late bidirectional',
+      'A<-|>B elbow bidirectional',
+      'A<-|->B bracket bidirectional',
+      'A+B 5 ms',
+      'A/B diagonal',
+      'A-#B positioned label',
+    ];
+    const wavedrom = {
+      signal: [
+        [
+          'clocks',
+          {
+            name: 'clk',
+            wave: 'pP.nN.....',
+            node: 'A.........',
+            period: 2,
+            phase: 0.5,
+          },
+          {},
+        ],
+        [
+          'data',
+          {
+            name: 'bus',
+            wave: '=23456789.',
+            data: ['zero', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
+            node: '.....B....',
+          },
+          [
+            'nested',
+            {
+              name: 'logic',
+              wave: '01xXzZuUdD',
+            },
+          ],
+        ],
+      ],
+      edge: edgeVariants,
+      config: {
+        hscale: 2,
+        skin: 'lowkey',
+      },
+      head: {
+        text: 'Feature-rich WaveDrom conversion',
+        tick: 0,
+        every: 2,
+      },
+      foot: {
+        text: 'All edge paths',
+        tock: 1,
+        every: 2,
+      },
+    } satisfies WdRoot;
+
+    expect(validateWavedromJSON(wavedrom)).toBeNull();
+    const exported = toUndulateJSON(fromWavedromJSON(wavedrom));
+
+    expect(exported.edge).toBeUndefined();
+    expect(exported.edges).toEqual([
+      ...edgeVariants.slice(0, 19),
+      'A-B 5 ms',
+      'A-B diagonal',
+      'A-B positioned label',
+    ]);
+    expect(exported).toMatchObject({
+      config: { hscale: 2, skin: 'lowkey' },
+      head: wavedrom.head,
+      foot: wavedrom.foot,
+    });
+    expect(validateUndulateJSON(exported)).toBeNull();
+    expect(toUndulateJSON(fromUndulateJSON(exported))).toEqual(exported);
   });
 
   it('round-trips expanded long node identifiers and their edges', () => {

@@ -59,7 +59,10 @@ import {
   UNDULATE_PROPERTY_MANIFEST,
   UNDULATE_TARGET_REVISION,
 } from './validation';
-import { normalizeUndulateEdge } from './edges';
+import {
+  normalizeUndulateEdge,
+  wavedromEdgeToUndulate,
+} from './edges';
 import {
   nodeToUndulate,
   parseUndulateNodes,
@@ -450,7 +453,11 @@ export function toUndulateJSON(diagram: DiagramState): UndulateRoot {
   if (mergedHead) root.head = mergedHead;
   if (mergedFoot) root.foot = mergedFoot;
   if (root.edge && root.edge.length > 0) {
-    root.edges = root.edge.map((edge) => normalizeUndulateEdge(edge) ?? edge);
+    const fromWavedrom =
+      diagram.compatibility?.sourceFormat === 'wavedrom-json';
+    root.edges = root.edge.map(
+      (edge) => wavedromEdgeToUndulate(edge, fromWavedrom) ?? edge,
+    );
     delete root.edge;
   }
   root.signal = mergeUndulateSignalEntries(

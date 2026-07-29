@@ -1,5 +1,15 @@
 const UNDULATE_EDGE_PATTERN =
   /^\s*([\p{L}\p{N}_.#]+)\s*([<>#*]?)\s*(-\|-|-\||\|-|-~|~-|[-~])\s*([<>#*]?)\s*([\p{L}\p{N}_.#]+)(?:\s+(.*?))?\s*$/u;
+const UNDULATE_EDGE_NODE_PATTERN = /^[\p{L}\p{N}_.#]+$/u;
+const UNDULATE_EDGE_MIDDLES = new Set([
+  '-',
+  '~',
+  '-~',
+  '~-',
+  '-|',
+  '|-',
+  '-|-',
+]);
 
 export interface ParsedUndulateEdge {
   from: string;
@@ -80,6 +90,51 @@ export function normalizeUndulateEdge(value: string): string | null {
     ? `${parsed.from} ${parsed.connector} ${parsed.to}`
     : `${parsed.from}${parsed.connector}${parsed.to}`;
   return parsed.label ? `${path} ${parsed.label}` : path;
+}
+
+/**
+ * Convert WaveDrom's compact edge notation to Undulate's stricter grammar.
+ *
+ * Undulate has no equivalent for WaveDrom's `+` tee-ended line or `/`
+ * spelling. Both are straight connections, so degrade those decorations to
+ * `-` while preserving endpoints, arrowheads, and label text.
+ */
+export function wavedromEdgeToUndulate(
+  value: string,
+  interpretWavedromLabelMarker = false,
+): string | null {
+  if (!interpretWavedromLabelMarker) {
+    const normalized = normalizeUndulateEdge(value);
+    if (normalized) return normalized;
+  }
+
+  const trimmed = value.trim();
+  const gap = trimmed.search(/\s/u);
+  const path = gap === -1 ? trimmed : trimmed.slice(0, gap);
+  const label = gap === -1 ? '' : trimmed.slice(gap + 1).trim();
+  if (path.length < 2) return null;
+
+  const from = path[0]!;
+  const to = path[path.length - 1]!;
+  if (
+    !UNDULATE_EDGE_NODE_PATTERN.test(from)
+    || !UNDULATE_EDGE_NODE_PATTERN.test(to)
+  ) {
+    return null;
+  }
+
+  let connector = path.slice(1, -1);
+  const startArrow = connector.startsWith('<');
+  const endArrow = connector.endsWith('>');
+  if (startArrow) connector = connector.slice(1);
+  if (endArrow) connector = connector.slice(0, -1);
+
+  // WaveDrom uses `#` to adjust label placement. Undulate does not carry that
+  // path hint, so retain the dependency and its label with the closest path.
+  connector = connector.replaceAll('#', '');
+  const middle = UNDULATE_EDGE_MIDDLES.has(connector) ? connector : '-';
+  const converted = `${from}${startArrow ? '<' : ''}${middle}${endArrow ? '>' : ''}${to}`;
+  return label ? `${converted} ${label}` : converted;
 }
 
 export function hasUndulateOnlyEdgeMarker(value: string): boolean {
