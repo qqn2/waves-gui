@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useStore } from '../shared/store';
 import type { DiagramConfig } from '../shared/types';
 import { DiagramStepsControl } from './DiagramStepsControl';
+import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import styles from './shell.module.css';
 
 type HeadSlice = NonNullable<DiagramConfig['head']>;
@@ -64,6 +65,9 @@ function patchFoot(patch: Partial<FootSlice>): void {
 export function HeadFootFields() {
   const head = useStore((s) => s.diagram.config.head);
   const foot = useStore((s) => s.diagram.config.foot);
+  const extensionsEnabled = useStore(
+    (s) => s.diagram.compatibility?.extensionsEnabled === true,
+  );
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [scaleOpen, setScaleOpen] = useState(false);
 
@@ -93,6 +97,7 @@ export function HeadFootFields() {
       title="Diagram steps; Labels: head.text / foot.text; Scale: column number ticks"
     >
       <DiagramStepsControl />
+      {extensionsEnabled ? <DiagramSubStepsControl /> : null}
       <button
         type="button"
         className={styles.headFootAdvancedBtn}

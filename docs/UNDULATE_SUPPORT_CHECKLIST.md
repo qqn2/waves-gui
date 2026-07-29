@@ -228,8 +228,9 @@ Upstream references:
 - [X] Compact digital `repeat` spelling is retained while the expanded cell
   states remain unchanged; edits that invalidate it export the canonical
   expanded sequence without semantic loss.
-- [ ] Partial: there is no global Sub-Steps toolbar control; the inspector
-  exposes the document resolution and exact per-cell values.
+- [X] A global Sub-Steps toolbar control exposes the integer document
+  resolution and rescales all periods, duty boundaries, and phase exactly;
+  lossy resolutions are rejected instead of rounded.
 - [X] Timing-only JSON is automatically detected from `repeat`, `periods`,
   duty-cycle, or digital `slewing` fields.
 - [X] Values that cannot fit within the 1024-tick ceiling are rejected before

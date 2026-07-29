@@ -1,4 +1,10 @@
-import type { BitState, DigitalTiming, Signal } from './types';
+import type {
+  BitState,
+  DiagramState,
+  DigitalTiming,
+  Signal,
+  SignalOrGroup,
+} from './types';
 
 export const MAX_TICKS_PER_STEP = 1024;
 const EPSILON = 1e-9;
@@ -77,4 +83,72 @@ export function timingForStates(
 
 export function signalTicksPerStep(signal: Signal, documentTicks = 1): number {
   return signal.digitalTiming ? Math.max(1, documentTicks) : 1;
+}
+
+function walkTimedSignals(
+  signals: SignalOrGroup[],
+  visit: (timing: DigitalTiming) => void,
+): void {
+  for (const item of signals) {
+    if (item.type === 'group') {
+      walkTimedSignals(item.children, visit);
+    } else if (item.type === 'bit' && item.digitalTiming) {
+      visit(item.digitalTiming);
+    }
+  }
+}
+
+function canScaleTick(value: number, from: number, to: number): boolean {
+  return Number.isInteger(value) && (value * to) % from === 0;
+}
+
+/** Whether a document timebase can change without rounding any stored boundary. */
+export function canRescaleDiagramTiming(
+  diagram: DiagramState,
+  ticksPerStep: number,
+): boolean {
+  if (
+    !Number.isInteger(ticksPerStep)
+    || ticksPerStep < 1
+    || ticksPerStep > MAX_TICKS_PER_STEP
+  ) return false;
+
+  let exact = true;
+  walkTimedSignals(diagram.signals, (timing) => {
+    if (!exact) return;
+    const from = Math.max(1, Math.floor(timing.ticksPerStep));
+    exact = canScaleTick(timing.phaseTicks, from, ticksPerStep)
+      && timing.cells.every((cell) => (
+        canScaleTick(cell.durationTicks, from, ticksPerStep)
+        && (
+          cell.dutyTicks === undefined
+          || canScaleTick(cell.dutyTicks, from, ticksPerStep)
+        )
+      ));
+  });
+  return exact;
+}
+
+/**
+ * Change the document timebase while preserving every represented instant.
+ * Callers must provide a mutable diagram (for example an Immer draft).
+ */
+export function rescaleDiagramTiming(
+  diagram: DiagramState,
+  ticksPerStep: number,
+): boolean {
+  if (!canRescaleDiagramTiming(diagram, ticksPerStep)) return false;
+  walkTimedSignals(diagram.signals, (timing) => {
+    const from = Math.max(1, Math.floor(timing.ticksPerStep));
+    timing.phaseTicks = (timing.phaseTicks * ticksPerStep) / from;
+    for (const cell of timing.cells) {
+      cell.durationTicks = (cell.durationTicks * ticksPerStep) / from;
+      if (cell.dutyTicks !== undefined) {
+        cell.dutyTicks = (cell.dutyTicks * ticksPerStep) / from;
+      }
+    }
+    timing.ticksPerStep = ticksPerStep;
+  });
+  diagram.config.ticksPerStep = ticksPerStep;
+  return true;
 }

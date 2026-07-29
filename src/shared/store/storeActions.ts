@@ -165,6 +165,8 @@ export interface StoreActions {
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
   setExtensionsEnabled(enabled: boolean): void;
+  /** Change the integer timing timebase; returns false if rescaling would round. */
+  setTicksPerStep(ticksPerStep: number): boolean;
   removeUndulateFeatures(): void;
   addTextAnnotation(
     annotation: Omit<TextAnnotation, 'id' | 'type'>,

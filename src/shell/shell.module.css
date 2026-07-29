@@ -1747,6 +1747,16 @@
   text-align: center;
 }
 
+.stepsNumRejected {
+  border-color: #c45b4c;
+}
+
+.subStepsError {
+  color: #c45b4c;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  white-space: nowrap;
+}
+
 .stepsBtn {
   width: 1.5rem;
   height: 1.5rem;

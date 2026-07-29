@@ -25,6 +25,7 @@ import {
   MAX_ANNOTATIONS,
   normalizeArrowAnnotation,
 } from '../annotations';
+import { canRescaleDiagramTiming, rescaleDiagramTiming } from '../fineTiming';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
@@ -383,6 +384,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
   | 'applyDiagramEdit'
   | 'clearAll'
   | 'setExtensionsEnabled'
+  | 'setTicksPerStep'
   | 'removeUndulateFeatures'
   | 'markClean'
   | 'undo'
@@ -453,6 +455,23 @@ export function createDocumentActions(set: ImmerSet): Pick<
         };
         if (!enabled) disableExtensionView(s);
       });
+    },
+
+    setTicksPerStep(ticksPerStep) {
+      let changed = false;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const next = Math.floor(ticksPerStep);
+        if (s.diagram.config.ticksPerStep === next) {
+          changed = true;
+          return;
+        }
+        if (!canRescaleDiagramTiming(s.diagram, next)) return;
+        pushHistory(s);
+        rescaleDiagramTiming(s.diagram, next);
+        changed = true;
+      });
+      return changed;
     },
 
     removeUndulateFeatures() {

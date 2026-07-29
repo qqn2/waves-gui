@@ -453,6 +453,61 @@ describe('useStore', () => {
       .toMatchObject({ ticksPerStep: 4, phaseTicks: 1, slewing: 0.1 });
   });
 
+  it('rescales the document timebase without changing represented timing', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((item) => item.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.digitalTiming = {
+      ticksPerStep: 4,
+      phaseTicks: 1,
+      cells: bit.states.map((state, index) => ({
+        state,
+        durationTicks: index === 0 ? 2 : 4,
+        dutyTicks: index === 0 ? 1 : 2,
+      })),
+    };
+    useStore.getState().loadDiagram(diagram);
+
+    expect(useStore.getState().setTicksPerStep(8)).toBe(true);
+    const scaled = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    const timing = scaled?.type === 'bit' ? scaled.digitalTiming : undefined;
+    expect(timing).toMatchObject({ ticksPerStep: 8, phaseTicks: 2 });
+    expect(timing?.cells[0]).toMatchObject({ durationTicks: 4, dutyTicks: 2 });
+    expect(timing?.cells[1]).toMatchObject({ durationTicks: 8, dutyTicks: 4 });
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.config.ticksPerStep).toBe(4);
+  });
+
+  it('rejects a sub-step resolution that would round a timing boundary', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((item) => item.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.digitalTiming = {
+      ticksPerStep: 4,
+      phaseTicks: 1,
+      cells: bit.states.map((state) => ({
+        state,
+        durationTicks: 4,
+        dutyTicks: 2,
+      })),
+    };
+    useStore.getState().loadDiagram(diagram);
+    const before = structuredClone(useStore.getState().diagram);
+
+    expect(useStore.getState().setTicksPerStep(2)).toBe(false);
+    expect(useStore.getState().diagram).toEqual(before);
+    expect(useStore.getState().history).toHaveLength(0);
+  });
+
   it('returns clean when undo reaches the saved snapshot', () => {
     useStore.getState().addSignal('bit');
     useStore.getState().markClean('saved.json');
