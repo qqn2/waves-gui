@@ -57,8 +57,8 @@ export function switchCurrentDiagramFileFormat(
     const name = state.view.fileName;
     if (!name) return;
     const base = name
-      .replace(/\.undulate\.(?:json|ya?ml|toml)$/i, '')
-      .replace(/\.(?:json|wp|ya?ml|toml)$/i, '');
+      .replace(/\.undulate\.(?:json(?:ml)?|ya?ml|toml)$/i, '')
+      .replace(/\.(?:json(?:ml)?|wp|ya?ml|toml)$/i, '');
     state.view.fileName =
       format === 'undulate-yaml'
         ? `${base}.undulate.yaml`
@@ -176,7 +176,7 @@ function parseDiagramFile(
     return parseDiagramJSON(
       parseJSON5Source(text),
       text,
-      /\.undulate\.json$/i.test(file.name),
+      /\.undulate\.json(?:ml)?$/i.test(file.name),
     );
   } catch (error) {
     return { error: json5SyntaxError(error) };
@@ -251,7 +251,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
           } : {
             description: 'Waveform files',
             accept: {
-              'application/json': ['.json', '.wp'],
+              'application/json': ['.json', '.jsonml', '.wp'],
               'application/yaml': ['.yaml', '.yml'],
               'application/toml': ['.toml'],
             },
@@ -281,7 +281,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
     input.type = 'file';
     input.accept = kind === 'vcd'
       ? '.vcd,text/plain'
-      : '.json,.wp,.yaml,.yml,.toml,application/json,application/yaml,application/toml';
+      : '.json,.jsonml,.wp,.yaml,.yml,.toml,application/json,application/yaml,application/toml';
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) {
@@ -348,7 +348,7 @@ export async function saveDiagramFile(
           {
             description: 'Waveform document',
             accept: {
-              'application/json': ['.json'],
+              'application/json': ['.json', '.jsonml'],
               'application/yaml': ['.yaml', '.yml'],
               'application/toml': ['.toml'],
             },

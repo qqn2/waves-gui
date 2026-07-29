@@ -2,9 +2,15 @@ import {
   isAlias,
   isMap,
   isScalar,
+  isSeq,
   parseDocument,
   stringify,
   visit,
+  type Document,
+  type Node,
+  type Pair,
+  type YAMLMap,
+  type YAMLSeq,
 } from 'yaml';
 import type { UndulateRoot } from './types';
 import {
@@ -50,7 +56,7 @@ export function parseUndulateYAML(source: string): UndulateRoot {
   if (new TextEncoder().encode(source).length > MAX_UNDULATE_YAML_BYTES) {
     throw yamlError(`file exceeds ${MAX_UNDULATE_YAML_BYTES} bytes`);
   }
-  const document = parseDocument(source, {
+  const document: Document = parseDocument(source, {
     version: '1.2',
     schema: 'core',
     strict: true,
@@ -106,4 +112,85 @@ export function stringifyUndulateYAML(root: UndulateRoot): string {
     lineWidth: 0,
     sortMapEntries: false,
   });
+}
+
+function syncYamlScalar(
+  document: Document,
+  node: Node | null | undefined,
+  value: unknown,
+): Node {
+  if (!isScalar(node)) return document.createNode(value) as Node;
+  const previousType = typeof node.value;
+  node.value = value;
+  node.source = undefined;
+  node.format = undefined;
+  if (typeof value !== 'string' || previousType !== 'string') {
+    node.type = undefined;
+  }
+  return node;
+}
+
+function syncYamlNode(
+  document: Document,
+  node: Node | null | undefined,
+  value: unknown,
+): Node {
+  if (Array.isArray(value)) {
+    if (!isSeq(node)) return document.createNode(value) as Node;
+    const sequence = node as YAMLSeq<Node>;
+    sequence.items = value.map((item, index) =>
+      syncYamlNode(document, sequence.items[index], item)
+    );
+    return sequence;
+  }
+  if (isMappingRecord(value)) {
+    if (!isMap(node)) return document.createNode(value) as Node;
+    const mapping = node as YAMLMap<Node, Node>;
+    const existing = new Map<string, Pair<Node, Node>>();
+    for (const pair of mapping.items) {
+      if (isScalar(pair.key)) existing.set(String(pair.key.value), pair);
+    }
+    const nextPairs: Array<Pair<Node, Node>> = [];
+    for (const [key, item] of Object.entries(value)) {
+      const pair = existing.get(key);
+      if (pair) {
+        pair.value = syncYamlNode(document, pair.value, item);
+        nextPairs.push(pair);
+      } else {
+        nextPairs.push(document.createPair(key, item) as Pair<Node, Node>);
+      }
+    }
+    mapping.items = nextPairs;
+    return mapping;
+  }
+  return syncYamlScalar(document, node, value);
+}
+
+/**
+ * Update a retained safe YAML document through its syntax tree. Existing
+ * mappings, sequences, scalar quoting, and comments survive ordinary edits;
+ * newly introduced structures use the canonical YAML style.
+ */
+export function updateUndulateYAMLSource(
+  source: string | undefined,
+  root: UndulateRoot,
+): string {
+  if (!source) return stringifyUndulateYAML(root);
+  // Apply the same security and resource checks used by import before
+  // retaining any syntax tree from the source.
+  parseUndulateYAML(source);
+  const document: Document = parseDocument(source, {
+    version: '1.2',
+    schema: 'core',
+    strict: true,
+    stringKeys: true,
+    uniqueKeys: true,
+    prettyErrors: true,
+  });
+  document.contents = syncYamlNode(
+    document,
+    document.contents,
+    undulateRootToYAMLObject(root),
+  );
+  return document.toString({ lineWidth: 0 });
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parseUndulateYAML,
   stringifyUndulateYAML,
+  updateUndulateYAMLSource,
 } from './undulateYAML';
 
 describe('Undulate YAML adapter', () => {
@@ -105,5 +106,27 @@ annotations: []
     expect(yaml).toContain('group_0:');
     expect(yaml).toContain('signal:');
     expect(parseUndulateYAML(yaml)).toEqual(root);
+  });
+
+  it('preserves comments, key order, and scalar quote style while updating values', () => {
+    const source = `# timing diagram
+clk:
+  # keep the clock note
+  wave: "p..."
+  period: 2
+annotations: []
+`;
+    const root = parseUndulateYAML(source);
+    const clock = root.signal[0];
+    if (!clock || Array.isArray(clock)) throw new Error('expected clock signal');
+    clock.wave = 'n...';
+
+    const updated = updateUndulateYAMLSource(source, root);
+
+    expect(updated).toContain('# timing diagram');
+    expect(updated).toContain('# keep the clock note');
+    expect(updated).toContain('wave: "n..."');
+    expect(updated.indexOf('clk:')).toBeLessThan(updated.indexOf('annotations:'));
+    expect(parseUndulateYAML(updated)).toEqual(root);
   });
 });

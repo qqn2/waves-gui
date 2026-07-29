@@ -39,7 +39,7 @@ export function json5SyntaxError(error: unknown): string {
     error instanceof Error
       ? error.message.split('\n', 1)[0]
       : 'Unknown syntax error';
-  return `Invalid JSON/JSON5 syntax: ${detail}`;
+  return `Invalid JSON/JSON5/JSONML syntax: ${detail}`;
 }
 
 interface OrphanedComment {

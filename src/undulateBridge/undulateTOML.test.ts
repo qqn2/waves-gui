@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   parseUndulateTOML,
   stringifyUndulateTOML,
+  updateUndulateTOMLSource,
 } from './undulateTOML';
 
 describe('Undulate TOML adapter', () => {
@@ -94,5 +95,42 @@ to = "node_b"
     expect(toml).toContain('[group_0]');
     expect(toml).toContain('[group_0.signal.nested]');
     expect(parseUndulateTOML(toml)).toEqual(root);
+  });
+
+  it('preserves comments, table layout, and quote style for scalar edits', () => {
+    const source = `# timing diagram
+[clk]
+wave = 'p...' # keep the clock note
+period = 2
+`;
+    const root = parseUndulateTOML(source);
+    const clock = root.signal[0];
+    if (!clock || Array.isArray(clock)) throw new Error('expected clock signal');
+    clock.wave = 'n...';
+
+    const updated = updateUndulateTOMLSource(source, root);
+
+    expect(updated).toContain('# timing diagram');
+    expect(updated).toContain("wave = 'n...' # keep the clock note");
+    expect(updated).toContain('[clk]');
+    expect(parseUndulateTOML(updated)).toEqual(root);
+  });
+
+  it('relocates comments when a structural edit requires canonical TOML', () => {
+    const source = `# timing diagram
+[clk]
+wave = "0" # lane comment
+`;
+    const root = parseUndulateTOML(source);
+    const clock = root.signal[0];
+    if (!clock || Array.isArray(clock)) throw new Error('expected clock signal');
+    clock.name = 'renamed';
+
+    const updated = updateUndulateTOMLSource(source, root);
+
+    expect(updated).toContain('# timing diagram');
+    expect(updated).toContain('# lane comment');
+    expect(updated).toContain('[renamed]');
+    expect(parseUndulateTOML(updated)).toEqual(root);
   });
 });

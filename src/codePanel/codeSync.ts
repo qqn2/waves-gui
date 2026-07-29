@@ -20,8 +20,8 @@ import {
   isUndulateJSON,
   parseUndulateTOML,
   parseUndulateYAML,
-  stringifyUndulateTOML,
-  stringifyUndulateYAML,
+  updateUndulateTOMLSource,
+  updateUndulateYAMLSource,
   toUndulateJSON,
   validateUndulateJSON,
 } from '../undulateBridge';
@@ -61,10 +61,20 @@ export function diagramToCodeStringForFormat(
   format: DiagramCodeFormat,
 ): string {
   if (format === 'undulate-yaml') {
-    return stringifyUndulateYAML(toUndulateJSON(diagram));
+    return updateUndulateYAMLSource(
+      diagram.compatibility?.sourceFormat === 'undulate-yaml'
+        ? diagram.compatibility.sourceText
+        : undefined,
+      toUndulateJSON(diagram),
+    );
   }
   if (format === 'undulate-toml') {
-    return stringifyUndulateTOML(toUndulateJSON(diagram));
+    return updateUndulateTOMLSource(
+      diagram.compatibility?.sourceFormat === 'undulate-toml'
+        ? diagram.compatibility.sourceText
+        : undefined,
+      toUndulateJSON(diagram),
+    );
   }
   const root =
     format === 'undulate'

@@ -16,6 +16,7 @@ export {
   parseUndulateYAML,
   stringifyUndulateYAML,
   undulateRootToYAMLObject,
+  updateUndulateYAMLSource,
 } from './undulateYAML';
 export {
   MAX_UNDULATE_TOML_BYTES,
@@ -24,6 +25,7 @@ export {
   parseUndulateTOML,
   stringifyUndulateTOML,
   undulateRootToTOMLObject,
+  updateUndulateTOMLSource,
 } from './undulateTOML';
 export type {
   UndulateRoot,

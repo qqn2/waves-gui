@@ -107,6 +107,46 @@ describe('FileOperations', () => {
     expect(saved).toContain('signal: [');
   });
 
+  it('opens upstream-style JSONML and preserves its comments and extension on Save', async () => {
+    const source = `{
+  signal: [
+    // clock signal
+    { name: 'clk', wave: 'p...' },
+  ],
+  annotations: [{ text: 'Setup', x: 1, y: 0 }],
+}`;
+    const write = vi.fn().mockResolvedValue(undefined);
+    const file = new File([source], 'timing.undulate.jsonml', {
+      type: 'application/json',
+    });
+    const handle = {
+      name: 'timing.undulate.jsonml',
+      getFile: vi.fn().mockResolvedValue(file),
+      createWritable: vi.fn().mockResolvedValue({
+        write,
+        close: vi.fn().mockResolvedValue(undefined),
+      }),
+    } as unknown as FileSystemFileHandle;
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([
+      handle,
+    ]);
+
+    await openDiagramFile();
+    expect(useStore.getState().diagram.compatibility).toMatchObject({
+      extensionsEnabled: true,
+      sourceFormat: 'undulate-json',
+    });
+    const clock = useStore.getState().diagram.signals[0];
+    if (!clock || clock.type === 'group') return;
+    useStore.getState().renameSignal(clock.id, 'system clock');
+    await saveCurrentDiagramFile();
+
+    const saved = await (write.mock.calls[0]![0] as Blob).text();
+    expect(saved).toContain('// clock signal');
+    expect(saved).toContain("name: 'system clock'");
+    expect(handle.name).toBe('timing.undulate.jsonml');
+  });
+
   it('opens Undulate annotations and preserves them when saving', async () => {
     const write = vi.fn().mockResolvedValue(undefined);
     const close = vi.fn().mockResolvedValue(undefined);
@@ -242,6 +282,7 @@ describe('FileOperations', () => {
 
     const documentTypes = documentPicker.mock.calls[0]![0].types[0].accept;
     expect(documentTypes['application/json']).toContain('.json');
+    expect(documentTypes['application/json']).toContain('.jsonml');
     expect(Object.values(documentTypes).flat()).not.toContain('.vcd');
 
     const vcdFile = new File([`
