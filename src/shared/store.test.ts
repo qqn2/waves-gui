@@ -111,6 +111,43 @@ describe('useStore', () => {
     ).toBe(1.2);
   });
 
+  it('creates, extends, and dissolves explicit analogue overlay groups', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    for (let index = 0; index < 5; index++) {
+      useStore.getState().addSignal('analogue');
+    }
+    const analogues = useStore.getState().diagram.signals.filter(
+      (item) => item.type === 'analogue',
+    );
+    expect(analogues).toHaveLength(5);
+
+    expect(useStore.getState().extendAnalogueOverlayGroup(analogues[0]!.id)).toBe(true);
+    expect(useStore.getState().extendAnalogueOverlayGroup(analogues[0]!.id)).toBe(true);
+    expect(useStore.getState().extendAnalogueOverlayGroup(analogues[1]!.id)).toBe(true);
+    expect(useStore.getState().extendAnalogueOverlayGroup(analogues[0]!.id)).toBe(false);
+
+    const grouped = useStore.getState().diagram;
+    expect(grouped.analogueOverlayGroups).toHaveLength(1);
+    expect(grouped.analogueOverlayGroups?.[0]?.signalIds).toEqual(
+      analogues.slice(0, 4).map((signal) => signal.id),
+    );
+    expect(analogues.slice(0, 4).map((signal) => {
+      const current = grouped.signals.find((item) => item.id === signal.id);
+      return current?.type === 'analogue' ? current.overlay === true : null;
+    })).toEqual([true, true, true, false]);
+
+    const groupId = grouped.analogueOverlayGroups![0]!.id;
+    useStore.getState().dissolveAnalogueOverlayGroup(groupId);
+    expect(useStore.getState().diagram.analogueOverlayGroups).toEqual([]);
+    expect(useStore.getState().diagram.signals).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ overlay: true })]),
+    );
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.analogueOverlayGroups?.[0]?.signalIds)
+      .toHaveLength(4);
+  });
+
   it('paints an analogue cell range as one undoable brush stroke', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('analogue');

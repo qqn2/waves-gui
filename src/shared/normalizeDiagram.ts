@@ -15,6 +15,7 @@ import {
   DEFAULT_ANALOGUE_CONTEXT,
   type AnalogueContext,
 } from './analogueExpressions';
+import { reconcileAnalogueOverlayGroups } from './analogueOverlayGroups';
 
 function normalizeAnalogueContext(value: unknown): AnalogueContext | undefined {
   if (!value || typeof value !== 'object') return undefined;
@@ -197,5 +198,6 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
   d.annotations = normalizeAnnotations(d.annotations, totalSteps);
 
   walkSignals(d.signals, totalSteps);
+  reconcileAnalogueOverlayGroups(d);
   return d;
 }

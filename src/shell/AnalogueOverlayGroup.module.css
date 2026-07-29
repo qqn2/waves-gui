@@ -1,0 +1,38 @@
+.readout {
+  display: flex;
+  min-height: 29px;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+}
+
+.actionRow {
+  display: flex;
+  gap: 6px;
+  margin: 9px 0 0 72px;
+}
+
+.action {
+  min-height: 28px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--bg-control-top, white), var(--bg-app));
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  cursor: pointer;
+}
+
+.action:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

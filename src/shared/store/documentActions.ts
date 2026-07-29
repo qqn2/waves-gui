@@ -479,6 +479,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.annotations = [];
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
+        delete s.diagram.analogueOverlayGroups;
         removeDigitalTiming(s.diagram.signals);
         const removedNodeNames = removeExpandedNodes(s.diagram.signals);
         s.diagram.edges = s.diagram.edges.filter((edge) => {

@@ -7,8 +7,14 @@ import {
   isSafeAnnotationColor,
   isSafeAnnotationDasharray,
 } from '../shared/annotations';
+import {
+  MAX_ANALOGUE_OVERLAY_MEMBERS,
+  nextAnalogueOverlayCandidate,
+  overlayGroupForSignal,
+} from '../shared/analogueOverlayGroups';
 import { VectorSegmentEditor } from '../signalPanel/VectorSegmentEditor';
 import styles from './shell.module.css';
+import overlayStyles from './AnalogueOverlayGroup.module.css';
 
 function selectedSignal(signals: ReturnType<typeof useStore.getState>['diagram']['signals'], ids: string[]) {
   if (ids.length !== 1) return null;
@@ -22,7 +28,8 @@ function selectedSignal(signals: ReturnType<typeof useStore.getState>['diagram']
 }
 
 export function SignalInspector({ onClose }: { onClose: () => void }) {
-  const signals = useStore((s) => s.diagram.signals);
+  const diagram = useStore((s) => s.diagram);
+  const signals = diagram.signals;
   const activeIds = useStore((s) => s.view.activeSignalIds);
   const renameSignal = useStore((s) => s.renameSignal);
   const activeBusLabel = useStore((s) => s.view.activeBusLabel);
@@ -33,6 +40,12 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const updateAnalogueCell = useStore((s) => s.updateAnalogueCell);
   const updateAnalogueSignal = useStore((s) => s.updateAnalogueSignal);
   const updateAnalogueContext = useStore((s) => s.updateAnalogueContext);
+  const extendAnalogueOverlayGroup = useStore(
+    (s) => s.extendAnalogueOverlayGroup,
+  );
+  const dissolveAnalogueOverlayGroup = useStore(
+    (s) => s.dissolveAnalogueOverlayGroup,
+  );
   const analogueContext = useStore(
     (s) => s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT,
   );
@@ -75,6 +88,17 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const isAnalogue = signal?.type === 'analogue';
   const analogueCell =
     isAnalogue ? signal.analogueCells?.[analogueCellIndex] : undefined;
+  const overlayGroup = isAnalogue
+    ? overlayGroupForSignal(diagram, signal.id)
+    : undefined;
+  const overlayCandidate = isAnalogue
+    ? nextAnalogueOverlayCandidate(diagram, signal.id)
+    : undefined;
+  const overlayMemberNames = overlayGroup?.signalIds.map((id) => {
+    let name = id;
+    findSignal(signals, id, (member) => { name = member.name; });
+    return name;
+  }) ?? [];
   const timingCell = signal?.digitalTiming?.cells[timingCellIndex];
 
   return (
@@ -485,16 +509,45 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     }}
                   />
                 </label>
-                <label className={styles.inspectorField}>
-                  <span>Overlay next lane</span>
-                  <input
-                    type="checkbox"
-                    checked={signal.overlay === true}
-                    onChange={(event) => updateAnalogueSignal(signal.id, {
-                      overlay: event.target.checked,
-                    })}
-                  />
-                </label>
+                <div className={styles.inspectorField}>
+                  <span>Overlay group</span>
+                  <output className={overlayStyles.readout}>
+                    {overlayGroup?.name ?? 'None'}
+                  </output>
+                </div>
+                {overlayGroup ? (
+                  <p className={styles.inspectorFieldHint}>
+                    {overlayMemberNames.join(' + ')} ({overlayGroup.signalIds.length}/
+                    {MAX_ANALOGUE_OVERLAY_MEMBERS})
+                  </p>
+                ) : (
+                  <p className={styles.inspectorFieldHint}>
+                    Groups share one plotted row and export as consecutive
+                    Undulate overlay lanes.
+                  </p>
+                )}
+                <div className={overlayStyles.actionRow}>
+                  <button
+                    type="button"
+                    className={overlayStyles.action}
+                    disabled={!overlayCandidate}
+                    onClick={() => extendAnalogueOverlayGroup(signal.id)}
+                    title={overlayCandidate
+                      ? `Add ${overlayCandidate.name} to the shared plot`
+                      : 'Place another ungrouped analogue lane immediately after this group'}
+                  >
+                    {overlayGroup ? 'Add next lane' : 'Group with next lane'}
+                  </button>
+                  {overlayGroup ? (
+                    <button
+                      type="button"
+                      className={overlayStyles.action}
+                      onClick={() => dissolveAnalogueOverlayGroup(overlayGroup.id)}
+                    >
+                      Dissolve group
+                    </button>
+                  ) : null}
+                </div>
                 <label className={styles.inspectorField}>
                   <span>Overlay label order</span>
                   <input

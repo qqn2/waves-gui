@@ -668,6 +668,31 @@ function visitSignals(
   return null;
 }
 
+function validateAnalogueOverlayLimits(entries: unknown[]): string | null {
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
+    if (Array.isArray(entry) && typeof entry[0] === 'string') {
+      const nested = validateAnalogueOverlayLimits(entry.slice(1));
+      if (nested) return nested;
+      continue;
+    }
+    if (!isRecord(entry) || !Array.isArray(entry.analogue)) continue;
+    let signal = entry;
+    let members = 1;
+    while (signal.overlay === true) {
+      const next = entries[index + 1];
+      if (!isRecord(next) || !Array.isArray(next.analogue)) break;
+      members++;
+      if (members > 4) {
+        return 'analogue overlays support at most four consecutive waves';
+      }
+      index++;
+      signal = next;
+    }
+  }
+  return null;
+}
+
 function waveDromValidationView(root: Record<string, unknown>): UndulateRoot {
   const clone = JSON.parse(JSON.stringify(root)) as UndulateRoot;
   if (Array.isArray(clone.signal)) {
@@ -841,6 +866,10 @@ function structuralError(root: Record<string, unknown>): string | null {
     (signal) => validateAnalogueSignal(signal) ?? validateSignalStyle(signal),
   );
   if (analogueError) return analogueError;
+  const overlayError = validateAnalogueOverlayLimits(
+    Array.isArray(root.signal) ? root.signal : [],
+  );
+  if (overlayError) return overlayError;
   const timingError = visitSignals(
     Array.isArray(root.signal) ? root.signal : [],
     (signal) => validateDigitalTiming(signal) ?? validateSignalStyle(signal),

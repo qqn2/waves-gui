@@ -41,7 +41,6 @@ export interface StoreActions {
       analogueMax?: number;
       slewing?: number;
       vscale?: number;
-      overlay?: boolean;
       order?: number;
     },
   ): void;
@@ -53,6 +52,9 @@ export interface StoreActions {
     value: number,
   ): void;
   updateAnalogueContext(patch: { vssa?: number; vdda?: number }): void;
+  /** Create an overlay with the next analogue sibling, or extend its group. */
+  extendAnalogueOverlayGroup(signalId: string): boolean;
+  dissolveAnalogueOverlayGroup(groupId: string): void;
   updateDigitalTimingCell(
     signalId: string,
     index: number,

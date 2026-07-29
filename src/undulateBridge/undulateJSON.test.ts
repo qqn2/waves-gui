@@ -377,6 +377,45 @@ describe('Undulate JSON bridge', () => {
     })).toContain('analogue repeat');
   });
 
+  it('models consecutive analogue overlays explicitly and enforces four lanes', () => {
+    const analogue = (name: string, overlay?: boolean) => ({
+      name,
+      wave: 's',
+      analogue: [0.5],
+      ...(overlay !== undefined ? { overlay } : {}),
+    });
+    const root = {
+      signal: [
+        analogue('a', true),
+        analogue('b', true),
+        analogue('c'),
+        analogue('separate'),
+      ],
+    } satisfies UndulateRoot;
+
+    const diagram = fromUndulateJSON(root);
+    expect(diagram.analogueOverlayGroups).toHaveLength(1);
+    expect(diagram.analogueOverlayGroups?.[0]?.signalIds).toEqual(
+      diagram.signals.slice(0, 3).map((signal) => signal.id),
+    );
+    expect(toUndulateJSON(diagram).signal).toMatchObject([
+      { name: 'a', overlay: true },
+      { name: 'b', overlay: true },
+      { name: 'c' },
+      { name: 'separate' },
+    ]);
+
+    expect(validateUndulateJSON({
+      signal: [
+        analogue('one', true),
+        analogue('two', true),
+        analogue('three', true),
+        analogue('four', true),
+        analogue('five'),
+      ],
+    })).toContain('at most four consecutive waves');
+  });
+
   it('round-trips structured arrow anchors and label offsets', () => {
     const root = {
       signal: [{ name: 'clk', wave: '01', node: 'ab' }],

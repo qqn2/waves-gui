@@ -43,6 +43,12 @@ import {
 } from '../analogueExpressions';
 import type { ImmerSet, StoreActions } from './storeActions';
 import {
+  MAX_ANALOGUE_OVERLAY_MEMBERS,
+  nextAnalogueOverlayCandidate,
+  overlayGroupForSignal,
+  reconcileAnalogueOverlayGroups,
+} from '../analogueOverlayGroups';
+import {
   clearNodesAndEdges,
   deleteStepInSignal,
   insertStepInSignal,
@@ -187,6 +193,8 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'paintAnalogueCellRange'
   | 'updateAnalogueSignal'
   | 'updateAnalogueContext'
+  | 'extendAnalogueOverlayGroup'
+  | 'dissolveAnalogueOverlayGroup'
   | 'updateDigitalTimingCell'
   | 'updateDigitalTimingSignal'
   | 'setSignalState'
@@ -265,6 +273,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           0,
           signal,
         );
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -272,6 +281,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         duplicateSignalInDraft(s.diagram.signals, id);
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -290,6 +300,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           0,
           group,
         );
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -297,6 +308,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = removeFromTree(s.diagram.signals, id);
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -512,6 +524,44 @@ export function createSignalActions(set: ImmerSet): Pick<
           }
           normalizeAnalogueSignal(signal, s.diagram.config.totalSteps);
         });
+      });
+    },
+
+    extendAnalogueOverlayGroup(signalId) {
+      let changed = false;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const next = nextAnalogueOverlayCandidate(s.diagram, signalId);
+        if (!next) return;
+        const group = overlayGroupForSignal(s.diagram, signalId);
+        if (group && group.signalIds.length >= MAX_ANALOGUE_OVERLAY_MEMBERS) return;
+        pushHistory(s);
+        if (group) {
+          group.signalIds.push(next.id);
+        } else {
+          const groups = s.diagram.analogueOverlayGroups ?? [];
+          s.diagram.analogueOverlayGroups = groups;
+          groups.push({
+            id: nanoid(),
+            name: `Overlay ${groups.length + 1}`,
+            signalIds: [signalId, next.id],
+          });
+        }
+        reconcileAnalogueOverlayGroups(s.diagram);
+        changed = true;
+      });
+      return changed;
+    },
+
+    dissolveAnalogueOverlayGroup(groupId) {
+      set((s) => {
+        const groups = s.diagram.analogueOverlayGroups ?? [];
+        if (!groups.some((group) => group.id === groupId)) return;
+        pushHistory(s);
+        s.diagram.analogueOverlayGroups = groups.filter(
+          (group) => group.id !== groupId,
+        );
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -875,6 +925,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             group.children = reorderSiblingLevel(group.children, orderedIds);
           });
         }
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -933,6 +984,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (!insertAt(s.diagram.signals, parentId)) {
           s.diagram.signals.push(removed);
         }
+        reconcileAnalogueOverlayGroups(s.diagram);
         s.view.isDirty = true;
       });
     },

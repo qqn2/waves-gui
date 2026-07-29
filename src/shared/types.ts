@@ -191,6 +191,13 @@ export interface SignalGroup {
 
 export type SignalOrGroup = Signal | SignalGroup;
 
+export interface AnalogueOverlayGroup {
+  id: string;
+  name: string;
+  /** Two to four consecutive analogue siblings, in visual order. */
+  signalIds: string[];
+}
+
 // ─── Diagram config ───────────────────────────────────────────────────────────
 
 export interface DiagramConfig {
@@ -348,6 +355,8 @@ export interface DiagramState {
   version: 1 | 2;
   compatibility?: DiagramCompatibility;
   signals: SignalOrGroup[];
+  /** Explicit analogue overlay membership; Undulate overlay flags are derived. */
+  analogueOverlayGroups?: AnalogueOverlayGroup[];
   config: DiagramConfig;
   annotations?: DiagramAnnotation[];
   /** WaveDrom edge[] dependency arrow strings */

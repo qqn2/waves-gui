@@ -4,7 +4,7 @@ Status: implementation audit
 
 Last audited: 2026-07-29
 
-Actionable implementation progress: **142 / 172 (82.6%)**
+Actionable implementation progress: **148 / 172 (86.0%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -356,10 +356,11 @@ Upstream references:
 - [X] Imported analogue values outside ±1,000,000,000, negative slew, and
   `vscale` outside 0.25..16 are rejected before normalization; GUI-authored
   values may still use bounded controls.
-- [ ] Partial: overlays are inferred from consecutive analogue lanes; there is
-  no explicit overlay-group object or polished ambiguous-curve picker.
-- [ ] Partial: the upstream four-wave overlay limit is not enforced as an
-  interoperability constraint.
+- [X] Consecutive imported overlays become explicit named overlay-group
+  objects; the inspector creates, extends, reports, and dissolves group
+  membership while export derives Undulate's consecutive flags.
+- [X] The upstream four-wave overlay limit is enforced in the GUI and during
+  validation as an interoperability constraint.
 - [X] Sample points can be edited through Undulate JSON and the dedicated
   inspector point editor.
 
