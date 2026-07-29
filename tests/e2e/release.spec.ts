@@ -123,8 +123,34 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
     .toHaveAttribute('aria-pressed', 'true');
   await renderScale.getByRole('button', { name: '100%', exact: true }).click();
   await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
+  const naturalRenderBox = await preview.locator('svg').boundingBox();
   await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
-  await expect(preview.locator('svg')).toHaveCSS('max-width', '100%');
+  await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
+    .toHaveAttribute('aria-pressed', 'true');
+  const fitted = await preview.locator('svg').evaluate((svg) => {
+    const viewport = svg.parentElement!;
+    const svgBox = svg.getBoundingClientRect();
+    const style = getComputedStyle(viewport);
+    return {
+      width: svgBox.width,
+      height: svgBox.height,
+      availableWidth:
+        viewport.clientWidth
+        - Number.parseFloat(style.paddingLeft)
+        - Number.parseFloat(style.paddingRight),
+      availableHeight:
+        viewport.clientHeight
+        - Number.parseFloat(style.paddingTop)
+        - Number.parseFloat(style.paddingBottom),
+    };
+  });
+  expect(naturalRenderBox).not.toBeNull();
+  expect(fitted.width).toBeLessThanOrEqual(fitted.availableWidth + 1);
+  expect(fitted.height).toBeLessThanOrEqual(fitted.availableHeight + 1);
+  expect(
+    Math.abs(fitted.width - naturalRenderBox!.width)
+    + Math.abs(fitted.height - naturalRenderBox!.height),
+  ).toBeGreaterThan(1);
 });
 
 test('round-trips and renders Undulate extended digital states', async ({ page }) => {

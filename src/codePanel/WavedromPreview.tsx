@@ -128,6 +128,16 @@ export function WavedromPreview({
     if (el) sizePreviewSvg(el, previewZoom);
   }, [previewZoom]);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (previewZoomRef.current === 'fit') sizePreviewSvg(el, 'fit');
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const changeZoom = (factor: number) => {
     setPreviewZoom((current) => {
       const base = current === 'fit' ? 1 : current;
@@ -194,14 +204,40 @@ function sizePreviewSvg(
   const svg = container.querySelector('svg');
   if (!svg) return;
   svg.style.height = 'auto';
+  const viewBoxWidth = svg.viewBox.baseVal.width;
+  const viewBoxHeight = svg.viewBox.baseVal.height;
+  const attributeWidth = Number.parseFloat(svg.getAttribute('width') ?? '');
+  const attributeHeight = Number.parseFloat(svg.getAttribute('height') ?? '');
+  const naturalWidth = viewBoxWidth || attributeWidth;
+  const naturalHeight = viewBoxHeight || attributeHeight;
   if (zoom === 'fit') {
     svg.style.width = '';
-    svg.style.maxWidth = '100%';
+    const computed = getComputedStyle(container);
+    const horizontalPadding =
+      Number.parseFloat(computed.paddingLeft)
+      + Number.parseFloat(computed.paddingRight);
+    const verticalPadding =
+      Number.parseFloat(computed.paddingTop)
+      + Number.parseFloat(computed.paddingBottom);
+    const availableWidth = Math.max(1, container.clientWidth - horizontalPadding);
+    const availableHeight = Math.max(1, container.clientHeight - verticalPadding);
+    const fitScale = Math.min(
+      availableWidth / naturalWidth,
+      availableHeight / naturalHeight,
+    );
+    svg.style.maxWidth = 'none';
+    if (
+      Number.isFinite(fitScale)
+      && fitScale > 0
+      && Number.isFinite(naturalWidth)
+      && naturalWidth > 0
+      && Number.isFinite(naturalHeight)
+      && naturalHeight > 0
+    ) {
+      svg.style.width = `${naturalWidth * fitScale}px`;
+    }
     return;
   }
-  const viewBoxWidth = svg.viewBox.baseVal.width;
-  const attributeWidth = Number.parseFloat(svg.getAttribute('width') ?? '');
-  const naturalWidth = viewBoxWidth || attributeWidth;
   svg.style.maxWidth = 'none';
   if (Number.isFinite(naturalWidth) && naturalWidth > 0) {
     svg.style.width = `${naturalWidth * zoom}px`;
