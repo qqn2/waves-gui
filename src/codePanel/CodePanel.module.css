@@ -41,6 +41,41 @@
   justify-content: flex-end;
 }
 
+.formatToggle {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border, #333);
+  border-radius: 4px;
+}
+
+.formatToggleButton {
+  padding: 3px 7px;
+  border: 0;
+  border-right: 1px solid var(--border, #333);
+  background: var(--bg-app, #1a1a1a);
+  color: var(--text-secondary, #999);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  cursor: pointer;
+}
+
+.formatToggleButton:last-child {
+  border-right: 0;
+}
+
+.formatToggleButton:hover:not(:disabled) {
+  color: var(--accent, #4a9eff);
+}
+
+.formatToggleButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.formatToggleButtonActive {
+  background: var(--selection-fill);
+  color: var(--accent, #4a9eff);
+}
+
 .iconBtn {
   display: inline-flex;
   align-items: center;
@@ -132,8 +167,11 @@
 .statusBar {
   flex-shrink: 0;
   padding: 4px 8px;
+  max-height: 8lh;
+  overflow: auto;
   font-size: calc(11px * var(--ui-font-scale, 1));
   border-top: 1px solid var(--border, #333);
+  white-space: pre-wrap;
 }
 
 .statusOk {
@@ -145,6 +183,7 @@
 }
 
 .previewWrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -159,6 +198,35 @@
   font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary, #999);
   border-bottom: 1px solid var(--border, #333);
+  min-height: 28px;
+  padding-right: 176px;
+}
+
+.previewControls {
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  right: 6px;
+  display: flex;
+  gap: 3px;
+}
+
+.previewControls button {
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--border, #333);
+  border-radius: 3px;
+  background: var(--bg-app, #1a1a1a);
+  color: var(--text-secondary, #999);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  cursor: pointer;
+}
+
+.previewControls button:hover,
+.previewControls .previewControlActive {
+  border-color: var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
 }
 
 .preview {

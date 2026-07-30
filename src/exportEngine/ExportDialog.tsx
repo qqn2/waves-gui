@@ -2,7 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
-import { exportWavedromJSON } from './exportJSON';
+import { exportPDF } from './exportPDF';
+import { exportEPS } from './exportEPS';
+import { exportTerminal } from './exportTerminal';
+import {
+  exportUndulateJSON,
+  exportUndulateTOML,
+  exportUndulateYAML,
+  exportWavedromJSON,
+} from './exportJSON';
+import {
+  undulateCompatibilityFindings,
+  waveDromCompatibilityFindings,
+} from '../shared/compatibility';
 import { computeExportDimensions } from './exportDimensions';
 import { drawSignalLabels } from './labelEntries';
 import { CanvasRenderer } from '../renderer/CanvasRenderer';
@@ -12,9 +24,22 @@ import {
   exportCanvasToBlob,
 } from './exportCanvas';
 import { drawEdgesOnCanvas } from './exportEdges';
+import { toWavedromJSON } from '../wavedromBridge';
+import { confirmAndOpenInWavedrom } from '../codePanel/openInWavedrom';
 import styles from './ExportDialog.module.css';
 
-export type ExportFormat = 'png' | 'svg' | 'jpg' | 'json';
+export type ExportFormat =
+  | 'png'
+  | 'svg'
+  | 'jpg'
+  | 'pdf'
+  | 'eps'
+  | 'terminal'
+  | 'json'
+  | 'undulate-json'
+  | 'undulate-yaml'
+  | 'undulate-toml'
+  | 'wavedrom-editor';
 
 export interface ExportDialogProps {
   open: boolean;
@@ -67,6 +92,14 @@ export function ExportDialog({
   }, [open]);
 
   const isImage = format === 'png' || format === 'jpg';
+  const compatibilityFindings =
+    format === 'json' || format === 'wavedrom-editor'
+      ? waveDromCompatibilityFindings(diagram)
+      : format === 'undulate-json'
+        || format === 'undulate-yaml'
+        || format === 'undulate-toml'
+        ? undulateCompatibilityFindings(diagram)
+        : [];
 
   const handleExport = useCallback(async () => {
     setBusy(true);
@@ -74,8 +107,23 @@ export function ExportDialog({
     try {
       if (format === 'svg') {
         exportSVG(diagram, view);
+      } else if (format === 'pdf') {
+        await exportPDF(diagram, view, background);
+      } else if (format === 'eps') {
+        await exportEPS(diagram, view, background);
+      } else if (format === 'terminal') {
+        exportTerminal(diagram, view);
       } else if (format === 'json') {
         exportWavedromJSON(diagram, view);
+      } else if (format === 'undulate-json') {
+        exportUndulateJSON(diagram, view);
+      } else if (format === 'undulate-yaml') {
+        exportUndulateYAML(diagram, view);
+      } else if (format === 'undulate-toml') {
+        exportUndulateTOML(diagram, view);
+      } else if (format === 'wavedrom-editor') {
+        const code = JSON.stringify(toWavedromJSON(diagram), null, 2);
+        if (!confirmAndOpenInWavedrom(code)) return;
       } else {
         await exportImage(diagram, view, {
           format,
@@ -185,9 +233,30 @@ export function ExportDialog({
             <option value="png">PNG</option>
             <option value="svg">SVG</option>
             <option value="jpg">JPG</option>
+            <option value="pdf">PDF</option>
+            <option value="eps">EPS</option>
+            <option value="terminal">Terminal text</option>
             <option value="json">WaveDrom JSON</option>
+            <option value="undulate-json">Undulate JSON</option>
+            <option value="undulate-yaml">Undulate YAML</option>
+            <option value="undulate-toml">Undulate TOML</option>
+            <option value="wavedrom-editor">Open in WaveDrom Editor (online)</option>
           </select>
         </div>
+
+        {compatibilityFindings.length > 0 && (
+          <div className={styles.compatibility} role="status">
+            <strong>Compatibility report</strong>
+            <ul>
+              {compatibilityFindings.map((finding, index) => (
+                <li key={`${finding.objectId ?? finding.feature}-${index}`}>
+                  {finding.message}
+                  {finding.consequence ? ` ${finding.consequence}` : ''}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {isImage && (
           <>
@@ -259,7 +328,13 @@ export function ExportDialog({
             disabled={busy}
             onClick={() => void handleExport()}
           >
-            {busy ? 'Exporting…' : 'Export'}
+            {busy
+              ? 'Exporting…'
+              : format === 'wavedrom-editor'
+                ? 'Review warning & open'
+                : format === 'json' && compatibilityFindings.length > 0
+                  ? 'Export compatible subset'
+                  : 'Export'}
           </button>
         </div>
       </div>

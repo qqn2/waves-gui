@@ -1,11 +1,19 @@
 import type {
   BitState,
+  AnalogueCell,
+  AnalogueTransition,
+  TextAnnotation,
+  VerticalLineAnnotation,
+  HorizontalLineAnnotation,
+  GlobalCompressionAnnotation,
+  ArrowAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
   PaintMode,
   PaintStyle,
   Signal,
+  SignalStyle,
   Theme,
   Tool,
   ViewState,
@@ -20,6 +28,45 @@ export interface StoreActions {
   addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;
+  updateSignalStyle(signalId: string, patch: Partial<SignalStyle>): void;
+  updateAnalogueCell(
+    signalId: string,
+    index: number,
+    patch: Partial<Omit<AnalogueCell, 'id'>>,
+  ): void;
+  updateAnalogueSignal(
+    signalId: string,
+    patch: {
+      analogueMin?: number;
+      analogueMax?: number;
+      slewing?: number;
+      vscale?: number;
+      order?: number;
+    },
+  ): void;
+  paintAnalogueCellRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    kind: AnalogueTransition,
+    value: number,
+  ): void;
+  updateAnalogueContext(patch: { vssa?: number; vdda?: number }): void;
+  refreshAnalogueRandomSeed(): void;
+  /** Create an overlay with the next analogue sibling, or extend its group. */
+  extendAnalogueOverlayGroup(signalId: string): boolean;
+  dissolveAnalogueOverlayGroup(groupId: string): void;
+  updateDigitalTimingCell(
+    signalId: string,
+    index: number,
+    patch: { durationTicks?: number; dutyTicks?: number | null },
+  ): void;
+  /** Promote a bit/clock lane to editable per-cell Undulate timing. */
+  enableDigitalTiming(signalId: string): boolean;
+  updateDigitalTimingSignal(
+    signalId: string,
+    patch: { phaseTicks?: number; slewing?: number | null },
+  ): void;
   setSignalState(signalId: string, step: number, bitState: BitState): void;
   setSignalStateRange(
     signalId: string,
@@ -88,6 +135,8 @@ export interface StoreActions {
   setSignalPhase(signalId: string, phase: number | undefined): void;
   setSignalPeriod(signalId: string, period: number | undefined): void;
   setActiveSignalIds(ids: string[]): void;
+  setActiveTimingCellIndex(index: number | null): void;
+  setActiveAnnotationId(id: string | null): void;
   setTotalSteps(steps: number): void;
   setHscale(hscale: number): void;
   insertStepAt(index: number): void;
@@ -105,6 +154,7 @@ export interface StoreActions {
     label?: string,
   ): void;
   updateDiagramEdge(index: number, edge: string): void;
+  promoteDiagramEdgeToAnnotation(index: number): string | null;
   removeDiagramEdge(index: number): void;
   setEdgeCurveControl(
     index: number,
@@ -120,6 +170,51 @@ export interface StoreActions {
   restoreDraft(diagram: DiagramState): void;
   applyDiagramEdit(diagram: DiagramState): void;
   clearAll(): void;
+  setExtensionsEnabled(enabled: boolean): void;
+  /** Change the integer timing timebase; returns false if rescaling would round. */
+  setTicksPerStep(ticksPerStep: number): boolean;
+  removeUndulateFeatures(): void;
+  addTextAnnotation(
+    annotation: Omit<TextAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addVerticalLineAnnotation(
+    annotation: Omit<VerticalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addHorizontalLineAnnotation(
+    annotation: Omit<HorizontalLineAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addGlobalCompressionAnnotation(
+    annotation: Omit<GlobalCompressionAnnotation, 'id' | 'type'>,
+  ): string | null;
+  addArrowAnnotation(
+    annotation: Omit<ArrowAnnotation, 'id' | 'type'>,
+  ): string | null;
+  updateVerticalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<VerticalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateHorizontalLineAnnotation(
+    id: string,
+    patch: Partial<Omit<HorizontalLineAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateGlobalCompressionAnnotation(
+    id: string,
+    patch: Partial<Omit<GlobalCompressionAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateTextAnnotation(
+    id: string,
+    patch: Partial<Omit<TextAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  updateArrowAnnotation(
+    id: string,
+    patch: Partial<Omit<ArrowAnnotation, 'id' | 'type'>>,
+    options?: { recordHistory?: boolean },
+  ): void;
+  removeAnnotation(id: string): void;
   markClean(fileName: string): void;
   undo(): void;
   redo(): void;
@@ -131,11 +226,15 @@ export interface StoreActions {
   setScroll(x: number, y: number): void;
   setTool(tool: Tool): void;
   setActiveBitState(state: BitState): void;
+  setActiveAnalogueKind(kind: AnalogueTransition): void;
+  setActiveAnalogueValue(value: number): void;
   setActiveBusLabel(label: string): void;
   setActiveTimespanLabel(label: string): void;
   setActiveEdgeLabel(label: string): void;
   setActiveBusColorIndex(index: WavedromColorIndex): void;
+  setAnnotationSnapToGrid(enabled: boolean): void;
   setEdgeToolHover(hover: ViewState['edgeToolHover']): void;
+  setStructuredArrowPending(pending: ViewState['structuredArrowPending']): void;
   setPaintMode(mode: PaintMode): void;
   setPaintStyle(style: PaintStyle): void;
   toggleCodePanel(): void;

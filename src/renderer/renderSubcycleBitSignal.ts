@@ -6,12 +6,16 @@ import { drawStepGap } from './drawStepGap';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import {
   stateLineDash,
-  stateStrokeColor,
+  stateStrokeColorResolved,
   X_FILL,
   X_STROKE,
-  zStrokeColor,
-  resolveSignalColor,
+  zStrokeColorResolved,
 } from './stateColors';
+import {
+  signalStroke,
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from './signalStyle';
 import { strokeClockStep, clockStepEndY } from './drawClock';
 import {
   expandWaveToColumns,
@@ -72,10 +76,13 @@ function drawColumnLevels(
 ): void {
   const levels = column.levels;
   if (levels.length === 0) return;
+  const baseStroke = signalStroke(signal);
+  const baseDash = signalStrokeDasharray(signal);
 
   const span = nextX - x;
   if (levels.length === 1 && isClockLevel(levels[0]!)) {
-    ctx.strokeStyle = resolveSignalColor(signal.color);
+    ctx.strokeStyle = baseStroke;
+    ctx.setLineDash(baseDash);
     strokeClockStep(ctx, levels[0]!, x, nextX, yHigh, yLow, ctx.lineWidth);
     return;
   }
@@ -83,7 +90,7 @@ function drawColumnLevels(
   if (levels.length === 1 && levels[0] === 'x') return;
   if (levels.length === 1 && levels[0] === 'z') {
     ctx.save();
-    ctx.strokeStyle = zStrokeColor(signal.color);
+    ctx.strokeStyle = zStrokeColorResolved(baseStroke);
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(x, yMid);
@@ -95,8 +102,8 @@ function drawColumnLevels(
 
   const subW = span / levels.length;
   let prevY = levelToY(levels[0]!, yHigh, yLow, yMid);
-  ctx.strokeStyle = stateStrokeColor(levels[0]!, signal.color);
-  ctx.setLineDash(stateLineDash(levels[0]!) ?? []);
+  ctx.strokeStyle = stateStrokeColorResolved(levels[0]!, baseStroke);
+  ctx.setLineDash(stateLineDash(levels[0]!) ?? baseDash);
   ctx.beginPath();
   ctx.moveTo(x, prevY);
 
@@ -108,8 +115,8 @@ function drawColumnLevels(
 
     if (isClockLevel(level)) {
       ctx.stroke();
-      ctx.strokeStyle = resolveSignalColor(signal.color);
-      ctx.setLineDash([]);
+      ctx.strokeStyle = baseStroke;
+      ctx.setLineDash(baseDash);
       strokeClockStep(ctx, level, sx, sxEnd, yHigh, yLow, ctx.lineWidth);
       prevY = clockStepEndY(level, yHigh, yLow);
       ctx.beginPath();
@@ -127,7 +134,7 @@ function drawColumnLevels(
     if (level === 'z') {
       ctx.stroke();
       ctx.save();
-      ctx.strokeStyle = zStrokeColor(signal.color);
+      ctx.strokeStyle = zStrokeColorResolved(baseStroke);
       ctx.setLineDash([4, 4]);
       ctx.beginPath();
       ctx.moveTo(sx, yMid);
@@ -137,7 +144,7 @@ function drawColumnLevels(
       prevY = yMid;
       ctx.beginPath();
       ctx.moveTo(sxEnd, prevY);
-      ctx.strokeStyle = stateStrokeColor(level, signal.color);
+      ctx.strokeStyle = stateStrokeColorResolved(level, baseStroke);
       continue;
     }
 
@@ -163,6 +170,7 @@ export function renderSubcycleBitSignal(
   totalSteps: number,
   hscale: number,
 ): void {
+  ctx.save();
   const scale = transform.zoom * transform.hscale;
   const tw = TRANSITION_WIDTH * scale;
   const gapStroke =
@@ -184,7 +192,8 @@ export function renderSubcycleBitSignal(
   );
 
   const hatch = createXHatchPattern(ctx);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = signalStrokeWidth(signal);
+  ctx.setLineDash(signalStrokeDasharray(signal));
 
   for (let i = 0; i < columns.length; i++) {
     const col = columns[i]!;
@@ -210,4 +219,5 @@ export function renderSubcycleBitSignal(
       drawStepGap(ctx, nextX, nextX, yHigh, yLow, gapStroke, gapFill);
     }
   }
+  ctx.restore();
 }

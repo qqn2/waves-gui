@@ -1,0 +1,414 @@
+{
+  "revision": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+  "wavedromRevision": "da34dd29435ae1b8bc35d305e844e8766d522af5",
+  "cases": [
+    {
+      "id": "dig-step5-timing",
+      "kind": "round-trip",
+      "formats": ["json", "yaml", "toml"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_dig_step5.rst",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["repeat", "period", "phase", "duty_cycles", "periods"],
+      "document": {
+        "signal": [
+          { "name": "clk", "wave": "P", "repeat": 4, "period": 2 },
+          {
+            "name": "data",
+            "wave": "x.3x=x",
+            "data": ["RST", "NOP"],
+            "phase": 0.5
+          },
+          {
+            "name": "Q",
+            "wave": "pppp",
+            "period": 2,
+            "duty_cycles": [0.5, 0.25, 0.35, 0.35]
+          },
+          {
+            "name": "var",
+            "wave": "01..",
+            "periods": [0.5, 1, 1.5, 2]
+          }
+        ],
+        "config": { "hscale": 1 }
+      }
+    },
+    {
+      "id": "ann-step1-edges",
+      "kind": "round-trip",
+      "formats": ["json", "yaml", "toml"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_ann_step1.rst",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["nodes", "edges", "edge-markers"],
+      "document": {
+        "signal": [
+          { "name": "pulses", "wave": "lhl...hl.", "node": ".a....b.." },
+          { "name": "toggle", "wave": "l.h....l.", "node": "..c....d." }
+        ],
+        "edges": ["a -> c", "a <-> b 100 us", "b ~> d", "a #~* d"]
+      }
+    },
+    {
+      "id": "ann-step2-arrows",
+      "kind": "round-trip",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_ann_step2.rst",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["structured-arrows", "text_background", "dx", "dy"],
+      "document": {
+        "signal": [
+          { "name": "pulses", "wave": "lhl...hl.", "node": ".a....b.." },
+          { "name": "toggle", "wave": "l.h....l.", "node": "..c....d." }
+        ],
+        "annotations": [
+          {
+            "shape": "->",
+            "from": "a",
+            "to": "c",
+            "text": "ready",
+            "dx": 0.1,
+            "dy": -0.2,
+            "text_background": false
+          },
+          {
+            "shape": "#~>",
+            "from": "a",
+            "to": "b",
+            "fill": "#FFA500",
+            "stroke": "#FFA500"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ann-rgba-255-alpha",
+      "kind": "round-trip",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_ann_step2.rst",
+        "section": "Text / Stylish annotation",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["rgba-0-255-alpha"],
+      "document": {
+        "signal": [{ "name": "bus", "wave": "x.=" }],
+        "annotations": [
+          {
+            "text": "There is no transition between these data",
+            "fill": "rgba(255, 255, 0, 255)",
+            "x": 1,
+            "y": 0.5
+          }
+        ]
+      },
+      "expectedFill": "rgba(255, 255, 0, 1)"
+    },
+    {
+      "id": "ana-step2-list-colors",
+      "kind": "round-trip",
+      "formats": ["json", "yaml", "toml"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_ana_step2.rst",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["rgba-list-colors", "overlay-style"],
+      "document": {
+        "signal": [
+          {
+            "name": "dac",
+            "wave": "cc",
+            "slewing": 8,
+            "vscale": 2,
+            "overlay": true,
+            "stroke": [0, 0, 255, 255],
+            "stroke-dasharray": [1, 3],
+            "fill": [0, 0, 255, 255],
+            "font-size": "9pt",
+            "order": 2,
+            "analogue": ["VDDA*512/1024", "VDDA*256/1024"]
+          },
+          {
+            "name": "vin",
+            "wave": "0a.",
+            "vscale": 2,
+            "stroke": "#F00",
+            "stroke-width": 1.5,
+            "fill": "rgb(255, 0, 0)",
+            "order": 3,
+            "analogue": [[[0, 0.2], [1, 0.6]]]
+          },
+          {
+            "name": "dac_ref",
+            "wave": "ss",
+            "slewing": 8,
+            "vscale": 2,
+            "stroke": "#0000FFAA",
+            "order": 2,
+            "analogue": ["VDDA*512/1024", "VDDA*256/1024"]
+          }
+        ],
+        "config": { "hscale": 1 }
+      }
+    },
+    {
+      "id": "format-comparison",
+      "kind": "cross-format",
+      "formats": ["json", "yaml", "toml"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/supported_syntax.rst",
+        "license": "MIT",
+        "adaptation": "verbatim-semantics"
+      },
+      "features": ["json-yaml-toml-equivalence"],
+      "document": {
+        "signal": [
+          { "name": "clk", "wave": "p......" },
+          { "name": "bus", "wave": "x.34.5x", "data": ["head", "body", "tail"] },
+          { "name": "wire", "wave": "0.1..0." }
+        ]
+      },
+      "yaml": "clk:\n  wave: p......\nbus:\n  wave: x.34.5x\n  data: head body tail\nwire:\n  wave: 0.1..0.\n",
+      "toml": "clk.wave = \"p......\"\nbus.wave = \"x.34.5x\"\nwire.wave = \"0.1..0.\"\nbus.data = \"head body tail\"\n"
+    },
+    {
+      "id": "wavedrom-signal-step4",
+      "kind": "round-trip",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/wavedrom/wavedrom",
+        "commit": "da34dd29435ae1b8bc35d305e844e8766d522af5",
+        "path": "test/signal-step4.json5",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["phase", "period", "gaps", "groups", "head", "foot"],
+      "document": {
+        "signal": [
+          { "name": "clk", "wave": "P......" },
+          { "name": "bus", "wave": "x.=======.", "data": ["head", "body", "tail", "data"] },
+          { "name": "wire", "wave": "0.1..0." }
+        ],
+        "config": { "hscale": 1 },
+        "head": { "text": "WaveDrom example", "tick": 0 },
+        "foot": { "text": "Figure", "tock": 0 }
+      }
+    },
+    {
+      "id": "wavedrom-signal-arcs",
+      "kind": "round-trip",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/wavedrom/wavedrom",
+        "commit": "da34dd29435ae1b8bc35d305e844e8766d522af5",
+        "path": "test/signal-arcs.json5",
+        "license": "MIT",
+        "adaptation": "minimally-adapted"
+      },
+      "features": ["nodes", "edges", "labels"],
+      "document": {
+        "signal": [
+          { "name": "A", "wave": "01........0.", "node": ".a........b." },
+          { "name": "B", "wave": "0.1.......0.", "node": "..c.......d." }
+        ],
+        "edge": ["a~>c label", "b-~>d"]
+      }
+    },
+    {
+      "id": "opaque-config-layout",
+      "kind": "opaque",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "src/undulate/renderers/renderer.py",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["config.vscale", "config.separation", "config.no_ticks", "config.gap-offset", "config.ticks_phase"],
+      "document": {
+        "signal": [{ "name": "clk", "wave": "p..." }],
+        "config": {
+          "hscale": 1,
+          "vscale": 2,
+          "separation": 0.5,
+          "no_ticks": true,
+          "gap-offset": 12,
+          "ticks_phase": 0.25
+        }
+      },
+      "opaquePaths": [
+        "config.vscale",
+        "config.separation",
+        "config.no_ticks",
+        "config.gap-offset",
+        "config.ticks_phase"
+      ]
+    },
+    {
+      "id": "opaque-signal-skin",
+      "kind": "opaque",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_digital.rst",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["signal.skin"],
+      "document": {
+        "signal": [{ "name": "clk", "wave": "p...", "skin": "custom-skin" }]
+      },
+      "opaquePaths": ["signal[0].skin"]
+    },
+    {
+      "id": "opaque-analogue-timing",
+      "kind": "opaque",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_dig_step5.rst",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["analogue.periods", "analogue.duty_cycles"],
+      "document": {
+        "signal": [{
+          "name": "ana",
+          "wave": "ss",
+          "analogue": [0.5, 1.0],
+          "periods": [1, 2],
+          "duty_cycles": [0.5, 0.25]
+        }]
+      },
+      "opaquePaths": ["signal[0].periods", "signal[0].duty_cycles"]
+    },
+    {
+      "id": "signal-color-alias",
+      "kind": "round-trip",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "src/undulate/skin.py",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["color-alias"],
+      "document": {
+        "signal": [{ "name": "styled", "wave": "01", "color": "#336699" }],
+        "annotations": [{ "text": "note", "x": 1, "y": 0.5, "color": "#FFA500" }]
+      },
+      "expectedStroke": "#336699",
+      "expectedAnnotationStroke": "#FFA500"
+    },
+    {
+      "id": "reject-register",
+      "kind": "reject",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_register.rst",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["register-diagrams"],
+      "document": { "reg": [{ "bits": 8, "name": "DATA" }] },
+      "expectedKind": "unsupported-by-design",
+      "expectedPath": "reg"
+    },
+    {
+      "id": "reject-remote-css",
+      "kind": "reject",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "docs-srcs/tutorial_ann_step2.rst",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["unsafe-remote-css"],
+      "document": {
+        "signal": [],
+        "annotations": [{
+          "shape": "|",
+          "x": 1,
+          "stroke": "url(https://example.test/evil.svg)"
+        }]
+      },
+      "expectedKind": "invalid",
+      "expectedPath": "annotations[0]"
+    },
+    {
+      "id": "reject-executable",
+      "kind": "reject",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/LudwigCRON/undulate",
+        "commit": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+        "path": "src/undulate/bricks/generic.py",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["arbitrary-code-execution"],
+      "document": {
+        "signal": [{
+          "name": "evil",
+          "wave": "s",
+          "analogue": ["__import__('os').system('id')"]
+        }]
+      },
+      "expectedKind": "invalid",
+      "expectedPath": "signal[0].analogue[0]"
+    },
+    {
+      "id": "reject-oversized",
+      "kind": "reject",
+      "formats": ["json"],
+      "source": {
+        "repository": "https://github.com/qqn2/waves-gui",
+        "commit": "local",
+        "path": "src/undulateBridge/validation.ts",
+        "license": "MIT",
+        "adaptation": "synthetic"
+      },
+      "features": ["oversized-annotation-text"],
+      "document": {
+        "signal": [],
+        "annotations": [{
+          "text": { "$repeat": "x", "count": 2001 },
+          "x": 0,
+          "y": 0
+        }]
+      },
+      "expectedKind": "invalid",
+      "expectedPath": "annotations[0].text"
+    }
+  ]
+}

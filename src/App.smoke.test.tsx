@@ -19,7 +19,7 @@ describe('App smoke', () => {
     expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
 
     const inspectorToggle = host.querySelector<HTMLButtonElement>(
-      'button[title="Select one signal to inspect its properties"]',
+      'button[title="Select a signal or annotation to inspect its properties"]',
     );
     expect(inspectorToggle).not.toBeNull();
     expect(inspectorToggle!.disabled).toBe(true);
@@ -63,6 +63,23 @@ describe('App smoke', () => {
       'input[aria-label="WaveDrom horizontal scale"]',
     );
     expect(hscaleInput).not.toBeNull();
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
+
+    const diagramControlsToggle = host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Diagram controls"]',
+    );
+    expect(diagramControlsToggle).not.toBeNull();
+    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('true');
+    await act(async () => {
+      diagramControlsToggle!.click();
+    });
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).toBeNull();
+    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('false');
+    await act(async () => {
+      diagramControlsToggle!.click();
+    });
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
+
     await act(async () => {
       const valueSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
@@ -73,6 +90,73 @@ describe('App smoke', () => {
       hscaleInput!.dispatchEvent(new Event('change', { bubbles: true }));
     });
     expect(useStore.getState().diagram.config.hscale).toBe(2);
+
+    const extensionsToggle = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Undulate extensions"]',
+    );
+    expect(extensionsToggle).not.toBeNull();
+    expect(extensionsToggle!.checked).toBe(false);
+    await act(async () => {
+      extensionsToggle!.click();
+    });
+    expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+
+    await act(async () => {
+      useStore.getState().setTicksPerStep(4);
+      useStore.getState().setActiveSignalIds([bitSignal!.id]);
+    });
+    const fineTimingButton = Array.from(
+      host.querySelectorAll<HTMLButtonElement>('button'),
+    ).find(
+      (button) => button.textContent?.includes('Enable fine timing for selected signal'),
+    );
+    expect(fineTimingButton).toBeDefined();
+    await act(async () => {
+      fineTimingButton!.click();
+    });
+    const timedBit = useStore.getState().diagram.signals.find(
+      (signal) => signal.id === bitSignal!.id,
+    );
+    expect(timedBit?.type === 'bit' ? timedBit.digitalTiming : undefined)
+      .toMatchObject({ ticksPerStep: 4 });
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Timing grid: 4 divisions per step.');
+    expect(
+      host.querySelectorAll('input[aria-label="Fine timing phase"]'),
+    ).toHaveLength(1);
+    expect(
+      host.querySelectorAll('input[aria-label="Signal phase"]'),
+    ).toHaveLength(0);
+
+    await act(async () => {
+      useStore.getState().addSignal('analogue');
+      const analogueSignal = useStore.getState().diagram.signals.find(
+        (signal) => signal.type === 'analogue',
+      );
+      expect(analogueSignal).toBeDefined();
+      useStore.getState().setActiveSignalIds([analogueSignal!.id]);
+    });
+    expect(inspectorToggle!.disabled).toBe(false);
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Analog inspector');
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Static context');
+
+    await act(async () => {
+      const annotationId = useStore.getState().addTextAnnotation({
+        text: 'Setup note',
+        tick: 1,
+        signalId: bitSignal!.id,
+      });
+      useStore.getState().setActiveAnnotationId(annotationId);
+    });
+    expect(host.querySelector('aside[aria-label="Annotation inspector"]')).not.toBeNull();
+    expect(
+      host.querySelector<HTMLTextAreaElement>('textarea[aria-label="Annotation text"]')?.value,
+    ).toBe('Setup note');
 
     root.unmount();
     host.remove();

@@ -18,6 +18,8 @@ describe('codePanelLayout', () => {
     expect(layout.render.placement).toBe('bottom');
     expect(layout.render.dockSize).toBe(CODE_PANEL_DOCK_DEFAULT_RENDER_BOTTOM);
     expect(layout.panelOrder).toEqual(DEFAULT_PANEL_ORDER);
+    expect(layout.bottomArrangement).toBe('stacked');
+    expect(layout.bottomSplit).toBe(0.5);
   });
 
   it('normalizes independent panel placements', () => {
@@ -65,6 +67,29 @@ describe('codePanelLayout', () => {
     expect(layout.json.floatRect.w).toBeGreaterThanOrEqual(320);
     expect(layout.render.placement).toBe('float');
     expect(layout.render.floatRect.w).toBeGreaterThanOrEqual(320);
+  });
+
+  it('normalizes the shared bottom side-by-side layout', () => {
+    const layout = normalizeSidePanelsLayout({
+      json: { placement: 'bottom' },
+      render: { placement: 'bottom' },
+      bottomArrangement: 'side-by-side',
+      bottomDockSize: 320,
+      bottomSplit: 0.62,
+    });
+    expect(layout.bottomArrangement).toBe('side-by-side');
+    expect(layout.bottomDockSize).toBe(320);
+    expect(layout.bottomSplit).toBe(0.62);
+  });
+
+  it('clamps an invalid shared bottom split', () => {
+    const layout = normalizeSidePanelsLayout({
+      json: { placement: 'bottom' },
+      render: { placement: 'bottom' },
+      bottomArrangement: 'side-by-side',
+      bottomSplit: 0.95,
+    });
+    expect(layout.bottomSplit).toBe(0.75);
   });
 
   it('ignores legacy previewSplit field', () => {

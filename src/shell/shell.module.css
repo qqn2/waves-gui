@@ -36,6 +36,22 @@
   flex-direction: column;
 }
 
+.bottomDockSideBySide {
+  flex: 0 0 auto;
+  min-height: 160px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  min-width: 0;
+}
+
+.bottomDockPane {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /** When one panel is right and one bottom, core column + full-height side column. */
 .workspaceRow {
   display: flex;
@@ -257,6 +273,15 @@
   margin-left: auto;
 }
 
+.codePanelArrangementGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 4px;
+  padding-right: 6px;
+  border-right: 1px solid var(--border);
+}
+
 .codePanelOrderGroup {
   display: inline-flex;
   align-items: center;
@@ -411,6 +436,33 @@
 
 .viewControls > * {
   flex: 0 0 auto;
+}
+
+.extensionsMode {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: var(--toolbar-control-height, 28px);
+  padding: 0 7px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-size: calc(11px * var(--ui-font-scale, 1));
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.extensionsMode input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.extensionsModeActive {
+  border-color: var(--accent);
+  background: var(--selection-fill);
+  color: var(--text-primary);
 }
 
 .toolbarSpacer {
@@ -709,7 +761,9 @@
   font-size: calc(11px * var(--ui-font-scale, 1));
 }
 
-.inspectorField input {
+.inspectorField input,
+.inspectorField textarea,
+.inspectorField select {
   width: 100%;
   height: 29px;
   min-width: 0;
@@ -722,9 +776,55 @@
   font: inherit;
 }
 
-.inspectorField input:focus {
+.inspectorField input:focus,
+.inspectorField textarea:focus,
+.inspectorField select:focus {
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.inspectorField input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+}
+
+.inspectorField textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.inspectorSeedControl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.inspectorSeedControl output {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inspectorSeedControl button {
+  min-height: 29px;
+}
+
+.inspectorDanger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid color-mix(in srgb, #d84a4a 55%, var(--border));
+  border-radius: 3px;
+  background: color-mix(in srgb, #d84a4a 10%, var(--bg-panel));
+  color: #b72f2f;
+  cursor: pointer;
 }
 
 .inspectorField input[readonly] {
@@ -736,6 +836,45 @@
   color: var(--text-muted);
   font-size: calc(10px * var(--ui-font-scale, 1));
   line-height: 1.4;
+}
+
+.inspectorTimingSetup {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-panel));
+}
+
+.inspectorTimingSetup p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.4;
+}
+
+.inspectorTimingSetup button {
+  min-height: 31px;
+  padding: 5px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 13%, var(--bg-panel));
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  font-weight: 700;
+}
+
+.inspectorTimingSetup button:hover {
+  background: color-mix(in srgb, var(--accent) 21%, var(--bg-panel));
+}
+
+.inspectorTimingError {
+  color: #c45b4c;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.35;
 }
 
 .colorReadout {
@@ -832,15 +971,13 @@
   font: 700 9px var(--font-mono);
 }
 
-@media (max-width: 1100px) {
-  .inspector {
-    flex-basis: 220px;
-  }
-
+@media (max-width: 1280px) {
   .appName {
     display: none;
   }
+}
 
+@media (max-width: 1400px) {
   .toolbarPrimary {
     flex-wrap: wrap;
   }
@@ -854,6 +991,12 @@
     overflow-y: hidden;
     border-top: 1px solid var(--border-subtle);
     scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 1100px) {
+  .inspector {
+    flex-basis: 220px;
   }
 }
 
@@ -1217,6 +1360,12 @@
   color: var(--accent);
 }
 
+.edgeChipPromote {
+  border-left: 1px solid var(--border-subtle, #333);
+  margin-left: 1px;
+  padding-left: 4px;
+}
+
 .toolGroupLabel {
   font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;
@@ -1234,6 +1383,195 @@
   padding-left: 2px;
   border-left: 1px solid var(--border-subtle, #333);
   margin-left: 2px;
+}
+
+.valuePalette {
+  position: fixed;
+  z-index: 1200;
+  width: min(560px, calc(100vw - 16px));
+  max-height: min(620px, calc(100vh - 16px));
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+  border-radius: 5px;
+  background: var(--bg-panel);
+  box-shadow:
+    0 14px 38px rgb(0 0 0 / 24%),
+    0 2px 7px rgb(0 0 0 / 16%);
+}
+
+.valuePaletteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg-panel) 92%, white),
+    var(--bg-panel)
+  );
+}
+
+.valuePaletteHeader > div {
+  display: grid;
+  gap: 3px;
+}
+
+.valuePaletteHeader strong {
+  color: var(--text-primary);
+  font-size: calc(13px * var(--ui-font-scale, 1));
+}
+
+.valuePaletteHeader span {
+  color: var(--text-muted);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+}
+
+.valuePaletteHeader button {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.valuePaletteHeader button:hover {
+  border-color: var(--border);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.valuePaletteSection {
+  padding: 9px 11px 11px;
+}
+
+.valuePaletteSection + .valuePaletteSection {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.valuePaletteSection h3 {
+  margin: 0 0 7px;
+  color: var(--text-muted);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.valuePaletteGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.valuePaletteTile {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) 24px;
+  min-width: 0;
+  min-height: 50px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--bg-canvas) 65%, var(--bg-panel));
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.valuePaletteTile:hover {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  background: var(--bg-hover);
+}
+
+.valuePaletteTileActive {
+  border-color: var(--accent);
+  background: var(--selection-fill);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.valuePalettePreview {
+  width: 68px;
+  height: 24px;
+  color: var(--accent-ink);
+}
+
+.valuePalettePreview path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.valuePalettePreview circle {
+  fill: var(--bg-panel);
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.analogueBrushButtonPreview {
+  width: 34px;
+  height: 18px;
+  color: currentColor;
+}
+
+.analogueBrushButtonPreview path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.valuePaletteTileText {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.valuePaletteTileText strong {
+  overflow: hidden;
+  font-size: calc(11px * var(--ui-font-scale, 1));
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.valuePaletteTileText small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.valuePaletteTile code {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font: 700 12px var(--font-mono);
+}
+
+@media (max-width: 620px) {
+  .valuePaletteGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .toolHint {
@@ -1336,15 +1674,38 @@
   padding-right: 1.5rem;
 }
 
-.headFootRow {
-  display: flex;
-  flex-wrap: wrap;
+.headFootToolbarControls {
+  display: inline-flex;
+  min-width: 0;
+  flex: 0 1 auto;
   align-items: center;
-  gap: 6px 10px;
-  padding: 2px 6px 4px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 78%, var(--bg-app)));
-  flex-shrink: 0;
+  gap: 5px;
+  padding: 0 2px;
+}
+
+.headFootMenuWrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.headFootPopover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 7px);
+  left: 0;
+  display: grid;
+  min-width: 260px;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 18%);
+}
+
+.headFootScalePopover {
+  grid-template-columns: auto auto;
+  min-width: 230px;
 }
 
 .headFootField {
@@ -1389,9 +1750,12 @@
 }
 
 .headFootAdvancedBtn {
+  display: inline-flex;
+  height: 26px;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
-  margin-left: 2px;
-  padding: 2px 8px;
+  padding: 0 7px;
   font-size: calc(11px * var(--ui-font-scale, 1));
   color: var(--text-secondary);
   background: linear-gradient(to bottom, var(--bg-panel), color-mix(in srgb, var(--bg-panel) 72%, var(--bg-app)));
@@ -1494,6 +1858,21 @@
   background: var(--bg-app);
   color: var(--text-primary);
   text-align: center;
+}
+
+.headFootAdvancedBtn[data-has-value='true'] {
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.stepsNumRejected {
+  border-color: #c45b4c;
+}
+
+.subStepsError {
+  color: #c45b4c;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  white-space: nowrap;
 }
 
 .stepsBtn {

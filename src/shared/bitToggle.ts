@@ -43,6 +43,10 @@ export function invertClockBitState(st: BitState): BitState {
 export function toggleBinaryBitState(st: BitState): BitState {
   if (st === '1') return '0';
   if (st === '0') return '1';
+  if (st === 'h') return 'l';
+  if (st === 'H') return 'L';
+  if (st === 'l') return 'h';
+  if (st === 'L') return 'H';
   if (isClockBitState(st)) return invertClockBitState(st);
   if (TOGGLE_IMMUTABLE.has(st)) return st;
   return st;

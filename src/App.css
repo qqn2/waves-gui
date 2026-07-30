@@ -101,24 +101,43 @@
   z-index: 4;
 }
 
-.pointerMarkerCol {
+.pointerPrecisionLine {
   position: absolute;
   pointer-events: none;
   z-index: 3;
   bottom: 0;
-  background: var(--pointer-marker);
-  border-left: 2px solid var(--selection-stroke);
-  border-right: 2px solid var(--selection-stroke);
-  box-sizing: border-box;
+  width: 1px;
+  background: color-mix(in srgb, var(--selection-stroke) 58%, transparent);
 }
 
-.pointerMarkerRow {
+.pointerPrecisionTarget {
   position: absolute;
   pointer-events: none;
-  z-index: 2;
-  background: var(--pointer-marker-row);
-  outline: 1px solid var(--selection-stroke);
-  outline-offset: -1px;
+  z-index: 4;
+  width: 7px;
+  height: 7px;
+  transform: translate(-3px, -3px);
+  border: 1px solid var(--selection-stroke);
+  border-radius: 50%;
+  background: var(--bg-canvas);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bg-canvas) 72%, transparent);
+}
+
+.pointerTickBadge {
+  position: absolute;
+  z-index: 4;
+  min-width: 12px;
+  padding: 1px 3px;
+  transform: translate(-50%, 0);
+  border-radius: 0 0 2px 2px;
+  background: var(--selection-stroke);
+  color: var(--bg-canvas);
+  font-family: var(--font-mono);
+  font-size: calc(9px * var(--ui-font-scale, 1));
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .pointerMarkerLabel {
@@ -135,4 +154,95 @@
   border-radius: 3px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   white-space: nowrap;
+}
+
+.pointerMarkerLabelCompact {
+  padding: 1px 4px;
+  border-color: color-mix(in srgb, var(--selection-stroke) 55%, var(--border));
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.analogueBrushGhost {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+  color: var(--selection-stroke);
+  filter: drop-shadow(0 0 2px var(--bg-canvas));
+}
+
+.analogueBrushGhost path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.analogueBrushGhost circle {
+  fill: var(--bg-canvas);
+  stroke: currentColor;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.structuredArrowPreview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.structuredArrowPreview line {
+  stroke: var(--selection-stroke);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.structuredArrowCursor,
+.structuredArrowStart {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--selection-stroke);
+  border-radius: 50%;
+  background: var(--bg-canvas);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.structuredArrowCursor::before,
+.structuredArrowCursor::after {
+  position: absolute;
+  content: '';
+  background: var(--selection-stroke);
+}
+
+.structuredArrowCursor::before {
+  top: 3px;
+  left: -5px;
+  width: 16px;
+  height: 1px;
+}
+
+.structuredArrowCursor::after {
+  top: -5px;
+  left: 3px;
+  width: 1px;
+  height: 16px;
+}
+
+.structuredArrowStart {
+  width: 8px;
+  height: 8px;
+  background: var(--selection-stroke);
 }

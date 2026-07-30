@@ -12,13 +12,162 @@ import {
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
 import {
   stateLineDash,
-  stateStrokeColor,
+  stateStrokeColorResolved,
   X_FILL,
   X_STROKE,
-  zStrokeColor,
-  resolveSignalColor,
 } from './stateColors';
-import { clockCycleEndY, strokeClockCycle } from './drawClock';
+import {
+  signalStroke,
+  signalStrokeDasharray,
+  signalStrokeWidth,
+} from './signalStyle';
+import {
+  clockCycleEndY,
+  clockLevelEndY,
+  isClockLevelState,
+  strokeClockCycle,
+  strokeClockLevel,
+} from './drawClock';
+import { fillHexForWaveChar } from '../shared/vectorSegments';
+
+function isExtendedDataState(state: BitState): boolean {
+  return state === 'x' || state === 'X' || state === '='
+    || (state >= '2' && state <= '9');
+}
+
+function isExtendedTransientState(state: BitState): boolean {
+  return state === 'i' || state === 'I' || state === 'm' || state === 'M';
+}
+
+function drawDataCell(
+  ctx: CanvasRenderingContext2D,
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+  hatch: CanvasPattern | null,
+  bevel: number,
+  fillOverride?: string,
+  strokeOverride?: string,
+): void {
+  const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
+  ctx.beginPath();
+  ctx.moveTo(x, (yHigh + yLow) / 2);
+  ctx.lineTo(x + d, yHigh);
+  ctx.lineTo(nextX - d, yHigh);
+  ctx.lineTo(nextX, (yHigh + yLow) / 2);
+  ctx.lineTo(nextX - d, yLow);
+  ctx.lineTo(x + d, yLow);
+  ctx.closePath();
+  if (state === 'x' || state === 'X') {
+    ctx.fillStyle = fillOverride ?? hatch ?? X_FILL;
+    ctx.strokeStyle = strokeOverride ?? X_STROKE;
+  } else {
+    ctx.fillStyle = fillOverride ?? fillHexForWaveChar(state) ?? '#ffffff';
+    ctx.strokeStyle = strokeOverride ?? '#6b7280';
+  }
+  ctx.fill();
+  ctx.stroke();
+}
+
+function drawRelaxedDigitalCell(
+  ctx: CanvasRenderingContext2D,
+  state: 'z' | 'u' | 'd',
+  x: number,
+  nextX: number,
+  previousY: number,
+  yHigh: number,
+  yLow: number,
+  yMid: number,
+  slewPx: number,
+  scale: number,
+  color: string,
+  dash: number[],
+): number {
+  const targetY = state === 'z' ? yMid : state === 'u' ? yHigh : yLow;
+  const span = Math.max(1, yLow - yHigh);
+  const dt = Math.abs(targetY - previousY) * slewPx / span;
+  const settleX = Math.min(nextX, x + 20 * scale);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.setLineDash(dash);
+  ctx.beginPath();
+  ctx.moveTo(x, previousY);
+  if (state === 'z') {
+    ctx.bezierCurveTo(x + dt, targetY, x + dt, targetY, settleX, targetY);
+  } else {
+    ctx.bezierCurveTo(x, previousY, x + dt, targetY, settleX, targetY);
+  }
+  ctx.lineTo(nextX, targetY);
+  ctx.stroke();
+  ctx.restore();
+  return targetY;
+}
+
+function drawTransientCell(
+  ctx: CanvasRenderingContext2D,
+  state: BitState,
+  x: number,
+  nextX: number,
+  yHigh: number,
+  yLow: number,
+  previousY: number,
+  color: string,
+  slewPx: number,
+  dutyCycle: number,
+  dash: number[],
+  strokeWidth: number,
+): number {
+  const width = nextX - x;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.setLineDash(dash);
+  ctx.lineWidth = strokeWidth;
+  ctx.beginPath();
+  ctx.moveTo(x, previousY);
+
+  if (state === 'i' || state === 'I') {
+    const baseY = state === 'i' ? yHigh : yLow;
+    const pulseY = state === 'i' ? yLow : yHigh;
+    const pulseX = x + width * Math.max(0, Math.min(1, dutyCycle));
+    const span = Math.max(1, yLow - yHigh);
+    const settleX = Math.min(
+      pulseX,
+      x + Math.abs(baseY - previousY) * slewPx / span,
+    );
+    ctx.lineTo(settleX, baseY);
+    ctx.lineTo(pulseX, baseY);
+    ctx.lineTo(pulseX, pulseY);
+    ctx.lineTo(pulseX, baseY);
+    ctx.lineTo(nextX, baseY);
+    ctx.stroke();
+    ctx.restore();
+    return baseY;
+  }
+
+  const resolvesHigh = state === 'M';
+  const samples = 28;
+  for (let sample = 0; sample <= samples; sample++) {
+    const t = (sample / samples) * 0.75;
+    const amplitude = Math.exp(2 * (t - 1));
+    const phase = resolvesHigh ? Math.PI : 0;
+    const normalized = (1 + amplitude * Math.sin(phase + 8 * Math.PI * t)) / 2;
+    ctx.lineTo(x + t * width, yHigh + normalized * (yLow - yHigh));
+  }
+  const targetY = resolvesHigh ? yHigh : yLow;
+  ctx.bezierCurveTo(
+    x + width * 0.85,
+    targetY,
+    x + width * 0.9,
+    targetY,
+    nextX,
+    targetY,
+  );
+  ctx.stroke();
+  ctx.restore();
+  return targetY;
+}
 
 function stateToY(
   bitState: BitState,
@@ -28,15 +177,19 @@ function stateToY(
 ): number {
   switch (bitState) {
     case '1':
+    case 'h':
+    case 'H':
       return yHigh;
     case '0':
+    case 'l':
+    case 'L':
       return yLow;
     case 'z':
       return yMid;
     case 'u':
-      return yHigh + 4;
+      return yHigh;
     case 'd':
-      return yLow - 4;
+      return yLow;
     case 'p':
     case 'P':
       return yHigh;
@@ -73,10 +226,22 @@ export function renderBitSignal(
   draftStates?: BitState[] | null,
   options?: { highlightGlitchBoundaries?: boolean },
 ): void {
+  ctx.save();
   const states = draftStates ?? signal.states;
   const glitches = signal.stepGlitches ?? [];
   const scale = transform.zoom * transform.hscale;
-  const tw = TRANSITION_WIDTH * scale;
+  const extendedDigital = states.some(
+    (state) => state === 'X' || state === '='
+      || (state >= '2' && state <= '9')
+      || state === 'u' || state === 'd'
+      || isClockLevelState(state)
+      || isExtendedTransientState(state),
+  );
+  const slewLogical = signal.digitalTiming?.slewing !== undefined
+    ? Math.max(0, signal.digitalTiming.slewing)
+    : extendedDigital ? 0 : TRANSITION_WIDTH;
+  const clockSlewLogical = Math.max(0, signal.digitalTiming?.slewing ?? 0);
+  const tw = slewLogical * scale;
   const gapStroke =
     getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() ||
     '#e8e8e8';
@@ -91,14 +256,16 @@ export function renderBitSignal(
   const yMid = rowY + rowH / 2;
 
   const hatch = createXHatchPattern(ctx);
-
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
-  ctx.strokeStyle = stateStrokeColor('1', signal.color);
+  const baseStroke = signalStroke(signal);
+  const baseDash = signalStrokeDasharray(signal);
+  ctx.lineWidth = signalStrokeWidth(signal);
+  ctx.setLineDash(baseDash);
+  ctx.strokeStyle = stateStrokeColorResolved('1', baseStroke);
   ctx.beginPath();
 
   let prevY = stateToY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = true;
+  let resumeAtCurrentState = false;
   ctx.moveTo(stepLogicalX(signal, 0) * scale - transform.scrollX, prevY);
 
   for (let i = 0; i < totalSteps; i++) {
@@ -106,12 +273,86 @@ export function renderBitSignal(
     const x = stepLogicalX(signal, i) * scale - transform.scrollX;
     const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
 
-    if (signal.stepGaps?.[i]) {
+    if (extendedDigital && isExtendedDataState(st)) {
       if (pathOpen) {
         ctx.stroke();
         pathOpen = false;
       }
-      drawStepGap(ctx, x, nextX, yHigh, yLow, gapStroke, gapFill);
+      let runEnd = i + 1;
+      while (
+        runEnd < totalSteps
+        && states[runEnd] === st
+        && !signal.stepGaps?.[runEnd]
+      ) {
+        runEnd++;
+      }
+      const dataNextX =
+        stepLogicalXEnd(signal, runEnd - 1) * scale - transform.scrollX;
+      drawDataCell(
+        ctx,
+        st,
+        x,
+        dataNextX,
+        yHigh,
+        yLow,
+        hatch,
+        3 * scale,
+        signal.style?.fill,
+        signal.style?.stroke,
+      );
+      i = runEnd - 1;
+      resumeAtCurrentState = true;
+      continue;
+    }
+
+    if (isExtendedTransientState(st)) {
+      if (pathOpen) {
+        ctx.stroke();
+        pathOpen = false;
+      }
+      prevY = drawTransientCell(
+        ctx,
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        resumeAtCurrentState ? yMid : prevY,
+        baseStroke,
+        clockSlewLogical * scale,
+        signal.digitalTiming?.cells[i]?.dutyTicks === undefined
+          ? 0.5
+          : signal.digitalTiming.cells[i]!.dutyTicks!
+            / signal.digitalTiming.cells[i]!.durationTicks,
+        baseDash,
+        signalStrokeWidth(signal),
+      );
+      resumeAtCurrentState = false;
+      continue;
+    }
+
+    if (isClockLevelState(st)) {
+      if (pathOpen) {
+        ctx.stroke();
+        pathOpen = false;
+      }
+      ctx.strokeStyle = baseStroke;
+      ctx.setLineDash(baseDash);
+      const targetY = clockLevelEndY(st, yHigh, yLow);
+      strokeClockLevel(
+        ctx,
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? targetY : prevY,
+        yHigh,
+        yLow,
+        ctx.lineWidth,
+        i > 0,
+        clockSlewLogical * scale,
+      );
+      prevY = targetY;
+      resumeAtCurrentState = false;
       continue;
     }
 
@@ -120,8 +361,22 @@ export function renderBitSignal(
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.strokeStyle = resolveSignalColor(signal.color);
-      strokeClockCycle(ctx, st, x, nextX, yHigh, yLow, ctx.lineWidth);
+      ctx.strokeStyle = baseStroke;
+      ctx.setLineDash(baseDash);
+      const timingCell = signal.digitalTiming?.cells[i];
+      strokeClockCycle(
+        ctx,
+        st,
+        x,
+        nextX,
+        yHigh,
+        yLow,
+        ctx.lineWidth,
+        timingCell?.dutyTicks === undefined
+          ? 0.5
+          : timingCell.dutyTicks / timingCell.durationTicks,
+        clockSlewLogical * scale,
+      );
       prevY = clockCycleEndY(st, yHigh, yLow);
       continue;
     }
@@ -135,35 +390,39 @@ export function renderBitSignal(
       continue;
     }
 
-    if (st === 'z') {
+    if (st === 'z' || st === 'u' || st === 'd') {
       if (pathOpen) {
         ctx.stroke();
         pathOpen = false;
       }
-      ctx.save();
-      ctx.strokeStyle = zStrokeColor(signal.color);
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(x, yMid);
-      ctx.lineTo(nextX, yMid);
-      ctx.stroke();
-      ctx.restore();
-      prevY = yMid;
+      prevY = drawRelaxedDigitalCell(
+        ctx,
+        st,
+        x,
+        nextX,
+        resumeAtCurrentState ? yMid : prevY,
+        yHigh,
+        yLow,
+        yMid,
+        slewLogical * scale,
+        scale,
+        baseStroke,
+        baseDash,
+      );
+      resumeAtCurrentState = false;
       continue;
     }
 
     if (!pathOpen) {
       ctx.beginPath();
-      const resumeY =
-        i > 0 && (signal.stepGaps?.[i - 1] ?? false)
-          ? stateToY(st, yHigh, yLow, yMid)
-          : prevY;
-      ctx.moveTo(x, resumeY);
+      const y = stateToY(st, yHigh, yLow, yMid);
+      if (resumeAtCurrentState) prevY = y;
+      ctx.moveTo(x, prevY);
       pathOpen = true;
-      prevY = resumeY;
-      ctx.strokeStyle = stateStrokeColor(st, signal.color);
+      resumeAtCurrentState = false;
+      ctx.strokeStyle = stateStrokeColorResolved(st, baseStroke);
       const dash = stateLineDash(st);
-      ctx.setLineDash(dash ?? []);
+      ctx.setLineDash(dash ?? baseDash);
     }
 
     const y = stateToY(st, yHigh, yLow, yMid);
@@ -196,6 +455,7 @@ export function renderBitSignal(
   }
 
   for (let i = 0; i < totalSteps; i++) {
+    if (extendedDigital) break;
     if ((states[i] ?? '0') !== 'x') continue;
     const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
     const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
@@ -210,4 +470,14 @@ export function renderBitSignal(
     ctx.lineTo(x2, yLow);
     ctx.stroke();
   }
+
+  // WaveDrom's `|` is a held column with a gap symbol overlaid on the trace.
+  // Draw it last so the narrow mask breaks the line without erasing the cycle.
+  for (let i = 0; i < totalSteps; i++) {
+    if (!signal.stepGaps?.[i]) continue;
+    const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
+    const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke, gapFill);
+  }
+  ctx.restore();
 }

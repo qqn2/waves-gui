@@ -1,0 +1,194 @@
+/** @vitest-environment happy-dom */
+import { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { createDefaultDiagram } from '../shared/defaultDiagram';
+import { useStore } from '../shared/store';
+import { AnnotationInspector } from './AnnotationInspector';
+
+describe('AnnotationInspector coordinates', () => {
+  beforeEach(() => {
+    useStore.getState().loadDiagram(createDefaultDiagram());
+    useStore.getState().setExtensionsEnabled(true);
+  });
+
+  it('edits exact X/Y values and coordinate mode', async () => {
+    const id = useStore.getState().addTextAnnotation({
+      text: 'positioned',
+      tick: 0,
+      x: 0.625,
+      y: 1.375,
+      coordinateMode: 'diagram',
+      snapToGrid: false,
+    })!;
+    useStore.getState().setActiveAnnotationId(id);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    await act(async () => {
+      root.render(<AnnotationInspector onClose={() => undefined} />);
+    });
+
+    const xInput = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation X coordinate"]',
+    );
+    const yInput = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation Y coordinate"]',
+    );
+    const mode = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Annotation Y coordinate mode"]',
+    );
+    expect(xInput?.value).toBe('0.625');
+    expect(yInput?.value).toBe('1.375');
+    expect(mode?.value).toBe('diagram');
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      setter?.call(xInput, '1.125');
+      xInput!.dispatchEvent(new Event('input', { bubbles: true }));
+      xInput!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      x: 1.125,
+      y: 1.375,
+    });
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
+  it('edits ranged line bounds as indices or percentages', async () => {
+    const id = useStore.getState().addVerticalLineAnnotation({
+      tick: 1,
+      rangeFrom: { unit: 'index', value: 0.5 },
+      rangeTo: { unit: 'percent', value: 75 },
+    })!;
+    useStore.getState().setActiveAnnotationId(id);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    await act(async () => {
+      root.render(<AnnotationInspector onClose={() => undefined} />);
+    });
+
+    const from = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation range start"]',
+    );
+    const to = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation range end"]',
+    );
+    expect(from?.value).toBe('0.5');
+    expect(to?.value).toBe('75%');
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      setter?.call(from, '25%');
+      from!.dispatchEvent(new Event('input', { bubbles: true }));
+      from!.dispatchEvent(new Event('change', { bubbles: true }));
+      from!.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    });
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      rangeFrom: { unit: 'percent', value: 25 },
+      rangeTo: { unit: 'percent', value: 75 },
+    });
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
+  it('edits structured arrow anchors and offsets', async () => {
+    const id = useStore.getState().addArrowAnnotation({
+      shape: '->',
+      from: { kind: 'node', node: 'a' },
+      to: { kind: 'point', x: 80, y: 50, percent: true },
+      text: 'latency',
+    })!;
+    useStore.getState().setActiveAnnotationId(id);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    await act(async () => {
+      root.render(<AnnotationInspector onClose={() => undefined} />);
+    });
+
+    const from = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Arrow from anchor"]',
+    );
+    const dy = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Arrow label Y offset"]',
+    );
+    const fontSize = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation font size"]',
+    );
+    const textBackground = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Annotation text background"]',
+    );
+    const startEndpoint = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow start endpoint"]',
+    );
+    const endEndpoint = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow end endpoint"]',
+    );
+    expect(from?.value).toBe('a');
+    expect(dy?.value).toBe('0');
+    expect(fontSize?.value).toBe('');
+    expect(textBackground?.checked).toBe(true);
+    expect(startEndpoint?.value).toBe('none');
+    expect(endEndpoint?.value).toBe('arrow');
+
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      setter?.call(from, 'b(2, -1)');
+      from!.dispatchEvent(new Event('input', { bubbles: true }));
+      from!.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+      setter?.call(dy, '-6');
+      dy!.dispatchEvent(new Event('input', { bubbles: true }));
+      dy!.dispatchEvent(new Event('change', { bubbles: true }));
+      setter?.call(fontSize, '20');
+      fontSize!.dispatchEvent(new Event('input', { bubbles: true }));
+      fontSize!.dispatchEvent(new Event('change', { bubbles: true }));
+      textBackground!.click();
+      const selectSetter = Object.getOwnPropertyDescriptor(
+        HTMLSelectElement.prototype,
+        'value',
+      )?.set;
+      selectSetter?.call(startEndpoint, 'square');
+      startEndpoint!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    const refreshedEnd = host.querySelector<HTMLSelectElement>(
+      'select[aria-label="Arrow end endpoint"]',
+    );
+    await act(async () => {
+      const selectSetter = Object.getOwnPropertyDescriptor(
+        HTMLSelectElement.prototype,
+        'value',
+      )?.set;
+      selectSetter?.call(refreshedEnd, 'circle');
+      refreshedEnd!.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      type: 'arrow',
+      from: { kind: 'node', node: 'b', dx: 2, dy: -1 },
+      dy: -6,
+      style: { fontSize: 20, textBackground: false },
+      shape: '#-*',
+    });
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+});

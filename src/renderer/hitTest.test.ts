@@ -33,6 +33,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     paintMode: 'set',
     paintStyle: 'replace',
     activeBitState: '1',
+    activeAnalogueKind: 'step',
+    activeAnalogueValue: 0.9,
     activeBusLabel: 'data',
     activeBusColorIndex: 2,
     activeSignalIds: [],
@@ -47,6 +49,7 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
+    structuredArrowPending: null,
     edgeToolHover: null,
     activeTimespanLabel: '5 ms',
     activeEdgeConnector: '~>',
@@ -74,6 +77,54 @@ describe('hitTest', () => {
     expect(hit.step).toBe(5);
     expect(hit.half).toBe('top');
     expect(hit.signalType).toBe('bit');
+  });
+
+  it('selects a visible annotation before the underlying lane', () => {
+    const diagram = bitDiagram();
+    diagram.version = 2;
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.annotations = [
+      {
+        id: 'note-1',
+        type: 'text',
+        text: 'Setup',
+        tick: 2,
+        signalId: 'sig1',
+      },
+    ];
+
+    const hit = hitTest(
+      CELL_WIDTH * 2.5,
+      TIME_AXIS_HEIGHT + ROW_HEIGHT / 2,
+      diagram,
+      defaultView(),
+    );
+    expect(hit.annotationId).toBe('note-1');
+    expect(hit.signalId).toBeNull();
+  });
+
+  it('keeps lane hit testing active while placing an annotation', () => {
+    const diagram = bitDiagram();
+    diagram.version = 2;
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.annotations = [
+      {
+        id: 'note-1',
+        type: 'text',
+        text: 'Setup',
+        tick: 2,
+        signalId: 'sig1',
+      },
+    ];
+
+    const hit = hitTest(
+      CELL_WIDTH * 2.5,
+      TIME_AXIS_HEIGHT + ROW_HEIGHT / 2,
+      diagram,
+      defaultView({ selectedTool: 'annotation' }),
+    );
+    expect(hit.annotationId).toBeNull();
+    expect(hit.signalId).toBe('sig1');
   });
 
   it('maps bottom half of row', () => {

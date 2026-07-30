@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '../shared/store';
 import type { DiagramConfig } from '../shared/types';
 import { DiagramStepsControl } from './DiagramStepsControl';
+import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import styles from './shell.module.css';
 
 type HeadSlice = NonNullable<DiagramConfig['head']>;
@@ -64,20 +65,33 @@ function patchFoot(patch: Partial<FootSlice>): void {
 export function HeadFootFields() {
   const head = useStore((s) => s.diagram.config.head);
   const foot = useStore((s) => s.diagram.config.foot);
+  const extensionsEnabled = useStore(
+    (s) => s.diagram.compatibility?.extensionsEnabled === true,
+  );
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [scaleOpen, setScaleOpen] = useState(false);
+  const controlsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (hasLabelFields(head, foot)) {
-      setLabelsOpen(true);
-    }
-  }, [head?.text, foot?.text]);
-
-  useEffect(() => {
-    if (hasScaleFields(head, foot)) {
-      setScaleOpen(true);
-    }
-  }, [head?.tick, head?.every, foot?.tock, foot?.every]);
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!controlsRef.current?.contains(event.target as Node)) {
+        setLabelsOpen(false);
+        setScaleOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLabelsOpen(false);
+        setScaleOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
 
   const onHeadText = useCallback((text: string) => {
     patchHead({ text: text || undefined });
@@ -89,59 +103,73 @@ export function HeadFootFields() {
 
   return (
     <div
-      className={styles.headFootRow}
+      ref={controlsRef}
+      className={styles.headFootToolbarControls}
       title="Diagram steps; Labels: head.text / foot.text; Scale: column number ticks"
     >
       <DiagramStepsControl />
-      <button
-        type="button"
-        className={styles.headFootAdvancedBtn}
-        aria-expanded={labelsOpen}
-        onClick={() => setLabelsOpen((o) => !o)}
-        title="WaveDrom title and caption (head.text / foot.text)"
-      >
-        Labels {labelsOpen ? '▾' : '▸'}
-      </button>
-      {labelsOpen ? (
-        <>
-          <span className={styles.headFootSep} aria-hidden />
-          <label className={styles.headFootField}>
-            <span className={styles.headFootLabel}>Title</span>
-            <input
-              type="text"
-              className={styles.headFootInput}
-              value={head?.text ?? ''}
-              onChange={(e) => onHeadText(e.target.value)}
-              placeholder="head.text"
-              spellCheck={false}
-            />
-          </label>
-          <span className={styles.headFootSep} />
-          <label className={styles.headFootField}>
-            <span className={styles.headFootLabel}>Caption</span>
-            <input
-              type="text"
-              className={styles.headFootInput}
-              value={foot?.text ?? ''}
-              onChange={(e) => onFootText(e.target.value)}
-              placeholder="foot.text"
-              spellCheck={false}
-            />
-          </label>
-        </>
-      ) : null}
-      <button
-        type="button"
-        className={styles.headFootAdvancedBtn}
-        aria-expanded={scaleOpen}
-        onClick={() => setScaleOpen((o) => !o)}
-        title="WaveDrom column numbers: head.tick / head.every, foot.tock / foot.every"
-      >
-        Scale {scaleOpen ? '▾' : '▸'}
-      </button>
-      {scaleOpen ? (
-        <>
-          <span className={styles.headFootSep} aria-hidden />
+      {extensionsEnabled ? <DiagramSubStepsControl /> : null}
+      <div className={styles.headFootMenuWrap}>
+        <button
+          type="button"
+          className={styles.headFootAdvancedBtn}
+          data-has-value={hasLabelFields(head, foot) || undefined}
+          aria-expanded={labelsOpen}
+          onClick={() => {
+            setLabelsOpen((open) => !open);
+            setScaleOpen(false);
+          }}
+          title="WaveDrom title and caption (head.text / foot.text)"
+        >
+          Labels <span aria-hidden>{labelsOpen ? '▾' : '▸'}</span>
+        </button>
+        {labelsOpen ? (
+          <div className={styles.headFootPopover} role="group" aria-label="Diagram labels">
+            <label className={styles.headFootField}>
+              <span className={styles.headFootLabel}>Title</span>
+              <input
+                type="text"
+                className={styles.headFootInput}
+                value={head?.text ?? ''}
+                onChange={(e) => onHeadText(e.target.value)}
+                placeholder="head.text"
+                spellCheck={false}
+              />
+            </label>
+            <label className={styles.headFootField}>
+              <span className={styles.headFootLabel}>Caption</span>
+              <input
+                type="text"
+                className={styles.headFootInput}
+                value={foot?.text ?? ''}
+                onChange={(e) => onFootText(e.target.value)}
+                placeholder="foot.text"
+                spellCheck={false}
+              />
+            </label>
+          </div>
+        ) : null}
+      </div>
+      <div className={styles.headFootMenuWrap}>
+        <button
+          type="button"
+          className={styles.headFootAdvancedBtn}
+          data-has-value={hasScaleFields(head, foot) || undefined}
+          aria-expanded={scaleOpen}
+          onClick={() => {
+            setScaleOpen((open) => !open);
+            setLabelsOpen(false);
+          }}
+          title="WaveDrom column numbers: head.tick / head.every, foot.tock / foot.every"
+        >
+          Scale <span aria-hidden>{scaleOpen ? '▾' : '▸'}</span>
+        </button>
+        {scaleOpen ? (
+          <div
+            className={`${styles.headFootPopover} ${styles.headFootScalePopover}`}
+            role="group"
+            aria-label="Diagram scale"
+          >
           <label className={styles.headFootField} title="head.tick — first number on top time scale">
             <span className={styles.headFootLabel}>tick</span>
             <input
@@ -192,8 +220,9 @@ export function HeadFootFields() {
               inputMode="numeric"
             />
           </label>
-        </>
-      ) : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

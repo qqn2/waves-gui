@@ -8,18 +8,25 @@ Local copies and links for WaveJSON / WaveDrom behavior. Refresh manually when u
 |----------|-----|------------|
 | WaveJSON schema notes | https://github.com/wavedrom/schema/blob/master/WaveJSON.md | `WaveJSON.md` |
 | WaveDrom engine README | https://github.com/wavedrom/wavedrom | `README-wavedrom.md` |
-| Hitchhiker's tutorial | http://wavedrom.com/tutorial.html | (online only; see checklist) |
+| Hitchhiker's tutorial | http://wavedrom.com/tutorial.html | (online only; see [format compatibility](../FORMAT_COMPATIBILITY.md)) |
 | Online editor | http://wavedrom.com/editor.html | — |
 | JSON schema repo | https://github.com/wavedrom/schema | — |
 
 ## Upstream test fixtures (timing + other)
 
-Downloaded from [wavedrom/wavedrom `test/`](https://github.com/wavedrom/wavedrom/tree/trunk/test) (trunk):
+Pinned WaveDrom revision for certification adaptations:
+[`da34dd29435ae1b8bc35d305e844e8766d522af5`](https://github.com/wavedrom/wavedrom/tree/da34dd29435ae1b8bc35d305e844e8766d522af5/test).
+
+Local copies below were originally downloaded from trunk and are retained as
+compact reference material. Certification corpus cases in
+`tests/fixtures/undulate/certification-corpus.json` adapt timing, arcs, nodes,
+edges, head/foot, and JSONML-compatible semantics from that pinned revision
+without copying the entire upstream test directory.
 
 | File | Diagram kind | Use in this project |
 |------|----------------|---------------------|
-| `signal-step4.json5` | Timing (`signal`) | Future golden import (period/phase) |
-| `signal-arcs.json5` | Timing + `edge` + `node` | Future edge/node golden |
+| `signal-step4.json5` | Timing (`signal`) | Period/phase/gap reference; corpus adapts semantics |
+| `signal-arcs.json5` | Timing + `edge` + `node` | Edge/node reference; corpus adapts semantics |
 | `signal-arcs1.json5` | Timing + arcs variant | Same |
 | `reg-vl.json5` | Register (`reg`) | Out of scope for GUI editor |
 | `assign.json5` | Logic (`assign`) | Out of scope for GUI editor |

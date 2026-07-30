@@ -1,0 +1,33 @@
+{
+  "signal": [
+    {
+      "name": "clk",
+      "wave": "01"
+    }
+  ],
+  "config": {
+    "hscale": 1
+  },
+  "annotations": [
+    {
+      "text": "Styled",
+      "x": 1.5,
+      "y": 0.5,
+      "fill": "#123456",
+      "stroke": "rgba(1, 2, 3, 0.5)",
+      "stroke-width": 1,
+      "stroke-dasharray": [3, 2],
+      "font-size": "18px",
+      "text_background": false
+    },
+    {
+      "shape": "||",
+      "x": 0.5,
+      "from": "25%",
+      "to": "75%",
+      "stroke": "#ff0000",
+      "stroke-width": 2,
+      "stroke-dasharray": [4, 2]
+    }
+  ]
+}

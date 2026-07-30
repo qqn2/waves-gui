@@ -14,4 +14,4 @@ export {
   decodeWaveString,
   normalizeWaveString,
 } from './waveStringCodec';
-export type { WdRoot, WdSignal, WdGroup } from './wdTypes';
+export type { WdRoot, WdSignal, WdSignalEntry, WdGroup } from './wdTypes';

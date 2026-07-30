@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import {
   AppLayout,
   EditToolbar,
+  AnnotationInspector,
   SignalInspector,
   StatusBar,
   Toolbar,
@@ -23,7 +24,6 @@ import { findSignal, useStore } from './shared/store';
 import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
-import { HeadFootFields } from './shell/HeadFootFields';
 import './App.css';
 
 function IntegratedCanvas({
@@ -47,7 +47,9 @@ function IntegratedCanvas({
 
   const onPointerEvent = useCallback(
     (phase: 'down' | 'move' | 'up', e: PointerEvent, hit: HitTestResult) => {
-      if (phase === 'move') onHoverHit(hit.signalId ? hit : null);
+      if (phase === 'move') {
+        onHoverHit(hit.signalId ? { ...hit, canvasX: e.offsetX } : null);
+      }
       if (phase === 'down') onPointerDown(e, hit);
       else if (phase === 'move') onPointerMove(e, hit);
       else onPointerUp(e, hit);
@@ -169,20 +171,36 @@ function App() {
     if (activeSignalIds.length !== 1) return null;
     let selected: import('./shared/types').Signal | null = null;
     findSignal(diagram.signals, activeSignalIds[0]!, (signal) => {
-      if (signal.type === 'bit' || signal.type === 'vector') selected = signal;
+      if (
+        signal.type === 'bit'
+        || signal.type === 'vector'
+        || signal.type === 'analogue'
+      ) {
+        selected = signal;
+      }
     });
     return selected;
   }, [activeSignalIds, diagram.signals]);
   const selectedSignalId = selectedSignal?.id ?? null;
   const selectedSignalType = selectedSignal?.type ?? null;
+  const activeAnnotationId = view.activeAnnotationId ?? null;
+  const selectedAnnotation = useMemo(
+    () => diagram.annotations?.find((annotation) => annotation.id === activeAnnotationId) ?? null,
+    [activeAnnotationId, diagram.annotations],
+  );
 
   useEffect(() => {
-    if (!selectedSignalId) {
+    if (selectedAnnotation) {
+      setInspectorVisible(true);
+    } else if (!selectedSignalId) {
       setInspectorVisible(false);
-    } else if (selectedSignalType === 'vector') {
+    } else if (
+      selectedSignalType === 'vector'
+      || selectedSignalType === 'analogue'
+    ) {
       setInspectorVisible(true);
     }
-  }, [selectedSignalId, selectedSignalType]);
+  }, [selectedAnnotation, selectedSignalId, selectedSignalType]);
 
   useLayoutEffect(() => {
     applyThemeSettings(
@@ -197,10 +215,9 @@ function App() {
           <Toolbar
             onExport={() => setExportOpen(true)}
             inspectorVisible={inspectorVisible}
-            inspectorAvailable={selectedSignal !== null}
+            inspectorAvailable={selectedSignal !== null || selectedAnnotation !== null}
             onToggleInspector={() => setInspectorVisible((visible) => !visible)}
           />
-          <HeadFootFields />
         </header>
         <div className="mainArea">
           <div className="editorShell">
@@ -220,7 +237,9 @@ function App() {
                 )}
               />
             </div>
-            {inspectorVisible && selectedSignal ? (
+            {inspectorVisible && selectedAnnotation ? (
+              <AnnotationInspector onClose={() => setInspectorVisible(false)} />
+            ) : inspectorVisible && selectedSignal ? (
               <SignalInspector onClose={() => setInspectorVisible(false)} />
             ) : null}
           </div>

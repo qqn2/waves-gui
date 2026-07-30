@@ -18,7 +18,10 @@ export function hitTestEdgeCurveHandle(
   const { diagram, view } = useStore.getState();
   const edges = diagram.edges ?? [];
   const controls = diagram.edgeCurveControls ?? {};
-  const nodeIndex = buildNodeIndex(diagram.signals);
+  const nodeIndex = buildNodeIndex(
+    diagram.signals,
+    diagram.compatibility?.extensionsEnabled === true,
+  );
 
   for (let i = edges.length - 1; i >= 0; i--) {
     const parsed = parseEdge(edges[i]!);
@@ -85,7 +88,10 @@ export function useEdgeCurveDrag(canvasRef: React.RefObject<HTMLCanvasElement | 
     const { diagram, view, setEdgeCurveControl } = useStore.getState();
     const parsed = parseEdge(diagram.edges[i]!);
     if (!parsed) return;
-    const nodeIndex = buildNodeIndex(diagram.signals);
+    const nodeIndex = buildNodeIndex(
+      diagram.signals,
+      diagram.compatibility?.extensionsEnabled === true,
+    );
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) return;
     const control = controlFromPointer(

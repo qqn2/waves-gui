@@ -29,3 +29,10 @@
   stroke-width: 1.5;
   pointer-events: none;
 }
+
+.edgeEndpointMarker {
+  fill: var(--edge-stroke, #d4a84b);
+  stroke: var(--bg-canvas, #111);
+  stroke-width: 1;
+  pointer-events: none;
+}

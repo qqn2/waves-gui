@@ -57,7 +57,10 @@ export function vectorUnknownStroke(): string {
 }
 
 export function stateStrokeColor(bitState: BitState, signalColor: string): string {
-  const color = resolveSignalColor(signalColor);
+  return stateStrokeColorResolved(bitState, resolveSignalColor(signalColor));
+}
+
+export function stateStrokeColorResolved(bitState: BitState, color: string): string {
   if (bitState === 'z') return cssVar('--signal-z-stroke', Z_STROKE);
   if (bitState === 'u' || bitState === 'd') {
     return cssVar('--weak-drive-stroke', `${color}99`);
@@ -72,4 +75,8 @@ export function stateLineDash(bitState: BitState): number[] | null {
 
 export function zStrokeColor(signalColor: string): string {
   return `${resolveSignalColor(signalColor)}80`;
+}
+
+export function zStrokeColorResolved(color: string): string {
+  return `${color}80`;
 }

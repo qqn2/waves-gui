@@ -51,6 +51,371 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
+test('round-trips Undulate canvas edits through JSON and the local render', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await page.getByRole('button', { name: 'Add analog', exact: true }).click();
+  await signalRow(page, 'analog').click();
+  await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
+
+  const editor = page.locator('.cm-content');
+  await expect(page.getByText('Undulate JSON', { exact: true })).toBeVisible();
+  await expect(editor).toContainText('"analogue"');
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(preview.locator('svg')).toBeVisible();
+  await expect(preview.locator('svg')).toContainText('analog');
+
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      {
+        name: 'supply',
+        wave: 'sc.',
+        analogue: [0.6, 1.2],
+        slewing: 4,
+        stroke: '#336699',
+        'stroke-width': 3,
+        'stroke-dasharray': [5, 2],
+      },
+    ],
+    annotations: [
+      { text: 'Settled', x: 1.125, y: 0.375, fill: '#123456' },
+      { shape: '|', x: 2.5 },
+      {
+        shape: '||',
+        x: 0.5,
+        from: '25%',
+        to: '75%',
+        stroke: '#ff0000',
+        'stroke-width': 2,
+        'stroke-dasharray': [3, 2],
+      },
+    ],
+  }, null, 2));
+
+  await expect(signalRow(page, 'supply')).toBeVisible();
+  await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
+  await expect(
+    page.getByLabel('Properties inspector').locator('strong'),
+  ).toHaveText('supply');
+  const analogValue = page.getByLabel('Analog cell value');
+  await expect(analogValue).toHaveValue('0.6');
+  const signalStroke = page.getByLabel('Signal stroke color');
+  await expect(signalStroke).toHaveValue('#336699');
+  await expect(page.getByLabel('Signal stroke width')).toHaveValue('3');
+  await expect(page.getByLabel('Signal stroke dash pattern')).toHaveValue('5, 2');
+  await signalStroke.fill('#663399');
+  await signalStroke.press('Tab');
+  await expect(editor).toContainText('"stroke": "#663399"');
+  await analogValue.fill('0.9');
+  await expect(editor).toContainText('0.9');
+  await expect(preview.locator('svg')).toContainText('Settled');
+  await expect(editor).toContainText('"slewing": 4');
+  await expect(editor).toContainText('"shape": "||"');
+  await expect(editor).toContainText('"from": "25%"');
+  await expect(editor).toContainText('"to": "75%"');
+  await expect(editor).toContainText('"x": 1.125');
+  await expect(editor).toContainText('"y": 0.375');
+  await expect(preview.locator('text[fill="#123456"]')).toContainText('Settled');
+  await expect(preview.locator('line[stroke="#ff0000"]')).toHaveCount(2);
+
+  const renderScale = page.getByLabel('Local render scale controls');
+  await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
+    .toHaveAttribute('aria-pressed', 'true');
+  await renderScale.getByRole('button', { name: '100%', exact: true }).click();
+  await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
+  const naturalRenderBox = await preview.locator('svg').boundingBox();
+  await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
+  await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
+    .toHaveAttribute('aria-pressed', 'true');
+  const fitted = await preview.locator('svg').evaluate((svg) => {
+    const viewport = svg.parentElement!;
+    const svgBox = svg.getBoundingClientRect();
+    const style = getComputedStyle(viewport);
+    return {
+      width: svgBox.width,
+      height: svgBox.height,
+      availableWidth:
+        viewport.clientWidth
+        - Number.parseFloat(style.paddingLeft)
+        - Number.parseFloat(style.paddingRight),
+      availableHeight:
+        viewport.clientHeight
+        - Number.parseFloat(style.paddingTop)
+        - Number.parseFloat(style.paddingBottom),
+    };
+  });
+  expect(naturalRenderBox).not.toBeNull();
+  expect(fitted.width).toBeLessThanOrEqual(fitted.availableWidth + 1);
+  expect(fitted.height).toBeLessThanOrEqual(fitted.availableHeight + 1);
+  expect(
+    Math.abs(fitted.width - naturalRenderBox!.width)
+    + Math.abs(fitted.height - naturalRenderBox!.height),
+  ).toBeGreaterThan(1);
+});
+
+test('round-trips and renders Undulate extended digital states', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  const wave = '01.zx=ud.2.3.45XziIzmzMphnlPHNL';
+  await replaceJson(page, `{signal: [
+    {name: "digital", wave: "${wave}"}
+  ]}`);
+
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(signalRow(page, 'digital')).toBeVisible();
+  await expect(page.locator('.cm-content')).toContainText(wave);
+  await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
+  await expect(page.locator('.cm-lintRange-error')).toHaveCount(0);
+  await expect(preview.locator('path[data-wave-state="i"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="I"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="m"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="M"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="2"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="3"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="X"]')).toHaveCount(1);
+  for (const state of ['z', 'u', 'd']) {
+    const path = preview.locator(`path[data-wave-state="${state}"]`).first();
+    await expect(path).toHaveAttribute('d', /C/);
+    await expect(path).not.toHaveAttribute('stroke-dasharray', /.+/);
+  }
+  await expect(preview.locator('path[data-wave-state="h"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="H"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="l"]')).toHaveCount(1);
+  await expect(preview.locator('path[data-wave-state="L"]')).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'Draw', exact: true }).click();
+  await page.getByRole('button', { name: 'More ▾', exact: true }).click();
+  const valuePalette = page.getByRole('dialog', { name: 'Waveform value palette' });
+  await expect(valuePalette).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Low-going impulse (i)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'High-going impulse (I)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Resolves low (m)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Resolves high (M)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Rise and hold (h)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Rise, arrow, hold (H)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Fall and hold (l)' })).toBeVisible();
+  await expect(valuePalette.getByRole('button', { name: 'Fall, arrow, hold (L)' })).toBeVisible();
+  await valuePalette.getByRole('button', { name: 'Resolves high (M)' }).click();
+  await expect(valuePalette).not.toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Resolves high (M) ▾', exact: true }),
+  ).toBeVisible();
+});
+
+test('edits mixed analogue states, styles, rails, and stable random seeds', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [{
+      name: 'mixed analogue',
+      wave: 'mMiIss',
+      analogue: ['0.5*VDDA', 'rnd()*VDDA'],
+      font: 'monospace',
+      'font-weight': 700,
+    }],
+    'x-waves-gui': {
+      analogueContext: { vssa: 0.2, vdda: 3.3 },
+      randomSeed: 1234,
+    },
+  }, null, 2));
+
+  await signalRow(page, 'mixed analogue').click();
+  await expect(page.getByLabel('Analog cell transition'))
+    .toHaveValue('metastable-low');
+  await expect(page.getByLabel('Signal value font family'))
+    .toHaveValue('monospace');
+  await expect(page.getByLabel('Signal value font weight')).toHaveValue('700');
+  await expect(page.getByLabel('Analog context VSSA')).toHaveValue('0.2');
+  await expect(page.getByLabel('Analog context VDDA')).toHaveValue('3.3');
+  await expect(page.getByText('1234', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await expect(page.locator('.cm-content')).toContainText('"randomSeed"');
+  await expect(page.locator('.cm-content')).not.toContainText(
+    '"randomSeed": 1234',
+  );
+
+  await page.getByRole('button', { name: 'Analog paint', exact: true }).click();
+  await page.getByTitle(
+    'Choose an analogue cell shape with waveform previews',
+  ).click();
+  const palette = page.getByRole('dialog', {
+    name: 'Analogue cell shape palette',
+  });
+  for (const label of [
+    'Metastable to low (m)',
+    'Metastable to high (M)',
+    'Downward impulse (i)',
+    'Upward impulse (I)',
+  ]) {
+    await expect(palette.getByRole('button', { name: label })).toBeVisible();
+  }
+});
+
+test('renders held bit and vector pipe gaps in the local Undulate preview', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      {
+        name: 'enable',
+        wave: '0..1|.0',
+      },
+      {
+        name: 'bus',
+        wave: 'x.3|.5x',
+        data: 'head body tail',
+      },
+    ],
+  }, null, 2));
+
+  const preview = page.getByText('Undulate render (local)', { exact: true })
+    .locator('..');
+  await expect(signalRow(page, 'enable')).toBeVisible();
+  await expect(signalRow(page, 'bus')).toBeVisible();
+  await expect(preview.locator('svg')).toBeVisible();
+  await expect(preview.locator('path[d^="M-3.5,-2"]')).toHaveCount(2);
+  const heldBitTrace = preview.locator('path[stroke-width="2"]').filter({
+    hasNot: page.locator('[fill]'),
+  }).first();
+  await expect(heldBitTrace).toHaveAttribute('d', /L200,/);
+});
+
+test('offers preserve, cancel, and remove choices when hiding Undulate', async ({ page }) => {
+  const toggle = page.getByLabel('Undulate extensions');
+  const editor = page.locator('.cm-content');
+  await toggle.check();
+  await page.getByRole('button', { name: 'Add analog', exact: true }).click();
+  await expect(editor).toContainText('"analogue"');
+
+  await toggle.click();
+  let dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await expect(dialog).toContainText('1 analogue signal');
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(toggle).toBeChecked();
+  await expect(editor).toContainText('"analogue"');
+
+  await toggle.click();
+  dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await dialog.getByRole('button', {
+    name: 'Hide features and preserve JSON',
+    exact: true,
+  }).click();
+  await expect(toggle).not.toBeChecked();
+  await expect(editor).toContainText('"analogue"');
+  await expect(
+    page.getByText('WaveDrom compatibility render (local)', { exact: true }),
+  ).toBeVisible();
+
+  await toggle.check();
+  await toggle.click();
+  dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await dialog.getByRole('button', {
+    name: 'Remove Undulate features',
+    exact: true,
+  }).click();
+  await expect(toggle).not.toBeChecked();
+  await expect(editor).not.toContainText('"analogue"');
+  await expect(page.getByText('WaveDrom JSON', { exact: true })).toBeVisible();
+});
+
+test('prompts before hiding Undulate wave characters', async ({ page }) => {
+  const toggle = page.getByLabel('Undulate extensions');
+
+  await toggle.check();
+  await toggle.click();
+  await expect(page.getByRole('dialog', { name: 'Turn off Undulate?' })).toHaveCount(0);
+  await expect(toggle).not.toBeChecked();
+
+  await toggle.check();
+  await replaceJson(page, JSON.stringify({
+    signal: [{ name: 'extended', wave: '0hL1' }],
+  }, null, 2));
+  await expect(signalRow(page, 'extended')).toBeVisible();
+
+  await toggle.click();
+  const dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText(
+    '1 digital signal with Undulate wave characters',
+  );
+  await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(toggle).toBeChecked();
+});
+
+test('appends an Undulate section after the core toolbar sections', async ({ page }) => {
+  const toolbar = page.getByLabel('Waveform editing tools');
+  const coreTools = toolbar.getByRole('group', { name: 'Tools', exact: true });
+  const insertTools = toolbar.getByRole('group', { name: 'Insert', exact: true });
+  const titlesIn = (group: typeof coreTools) => group
+    .locator('button[title]')
+    .evaluateAll((buttons) => buttons.map((button) => button.getAttribute('title')));
+
+  await expect(toolbar.locator(':scope > [role="group"] > span:first-child')).toHaveText([
+    'Tools',
+    'Insert',
+  ]);
+  await expect.poll(() => titlesIn(coreTools)).toEqual([
+    'Select (V)',
+    'Draw (D)',
+    'Erase (E)',
+    'Edge (A)',
+    'Span (T)',
+  ]);
+  await expect(
+    toolbar.getByRole('group', { name: 'Undulate', exact: true }),
+  ).toHaveCount(0);
+
+  await page.getByLabel('Undulate extensions').check();
+  const undulateTools = toolbar.getByRole('group', {
+    name: 'Undulate',
+    exact: true,
+  });
+  await expect(toolbar.locator(':scope > [role="group"] > span:first-child')).toHaveText([
+    'Tools',
+    'Insert',
+    'Undulate',
+  ]);
+  await expect.poll(() => titlesIn(undulateTools)).toEqual([
+    'Add an analogue signal and open it in the Inspector',
+    'Analog paint (Shift+D)',
+    'Text (I)',
+    'Arrow (Shift+A)',
+    'V line (L)',
+    'H line (Shift+L)',
+    'Compress (Shift+C)',
+  ]);
+
+  await expect(insertTools.locator('button span')).toHaveText([
+    'Signal',
+    'Bus',
+    'Group',
+  ]);
+  await expect(undulateTools.locator('button span')).toHaveText([
+    'Add analog',
+    'Analog paint',
+    'Text',
+    'Arrow',
+    'V line',
+    'H line',
+    'Compress',
+  ]);
+});
+
+test('deletes a section from its actions menu and restores it with undo', async ({ page }) => {
+  await page.getByRole('button', { name: '+ Add signal', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Section (group)', exact: true }).click();
+
+  const section = page.locator('[data-group-row="true"]').filter({
+    hasText: 'Section',
+  });
+  await expect(section).toBeVisible();
+  await section.getByRole('button', { name: 'Section actions' }).click();
+  await page.getByRole('menuitem', { name: 'Delete section', exact: true }).click();
+  await expect(section).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(section).toBeVisible();
+});
+
 test('keeps signal names aligned with their waveform rows', async ({ page }) => {
   const canvasBox = await page.getByRole('grid', { name: /Waveform editor/ }).boundingBox();
   const firstSignalBox = await signalRow(page, 'clk').boundingBox();
@@ -181,7 +546,9 @@ test('applies visible text scaling and a real dark theme', async ({ page }) => {
 test('keeps bus segment editing exclusively in the selected signal inspector', async ({ page }) => {
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
   await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
-  await expect(page.getByTitle('Select one signal to inspect its properties')).toBeDisabled();
+  await expect(
+    page.getByTitle('Select a signal or annotation to inspect its properties'),
+  ).toBeDisabled();
 
   await replaceJson(page, JSON.stringify({
     signal: [
@@ -201,7 +568,7 @@ test('keeps bus segment editing exclusively in the selected signal inspector', a
   expect(widths[0]).not.toBeNull();
   expect(widths[1]!.width).toBeGreaterThan(widths[0]!.width * 0.9);
   await expect(inspector.getByLabel('Signal inspector details')).toHaveCSS('overflow-y', 'auto');
-  await expect(page.getByTitle('Show or hide signal properties inspector')).toBeEnabled();
+  await expect(page.getByTitle('Show or hide properties inspector')).toBeEnabled();
   await expect(segments.getByLabel('Label for steps 0 to 2')).toHaveValue('A5');
   await expect(segments.getByLabel('Label for steps 2 to 4')).toHaveValue('5A');
   await expect(segments.getByLabel('Label for steps 4 to 6')).toHaveValue('FF');
@@ -252,14 +619,15 @@ test('keeps narrow view controls separated instead of shrinking labels together'
   }
 });
 
-test('separates document controls from tool options at desktop width', async ({ page }) => {
+test('wraps document controls without overlapping tool options at desktop width', async ({ page }) => {
   await page.setViewportSize({ width: 1222, height: 912 });
 
   const primary = await page.locator('[data-toolbar="primary"]').boundingBox();
   const context = await page.locator('[data-toolbar="context"]').boundingBox();
   expect(primary).not.toBeNull();
   expect(context).not.toBeNull();
-  expect(primary!.height).toBeLessThanOrEqual(48);
+  expect(primary!.height).toBeGreaterThan(48);
+  expect(primary!.height).toBeLessThanOrEqual(96);
   expect(context!.y).toBeGreaterThanOrEqual(primary!.y + primary!.height - 1);
 
   const viewControls = [
@@ -274,6 +642,7 @@ test('separates document controls from tool options at desktop width', async ({ 
     expect(box!.y).toBeGreaterThanOrEqual(primary!.y);
     expect(box!.y + box!.height).toBeLessThanOrEqual(primary!.y + primary!.height + 1);
   }
+  expect(boxes[0]!.y).toBeGreaterThan(primary!.y + 32);
   expect(boxes[0]!.width).toBeGreaterThanOrEqual(54);
   expect(boxes[1]!.width).toBeGreaterThanOrEqual(64);
   expect(boxes[2]!.width).toBeGreaterThanOrEqual(78);
@@ -324,6 +693,36 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   await page.reload();
   await expect(signalRow(page, 'safe_bus')).toBeVisible();
   expect(recoveryDialogs).toEqual([]);
+});
+
+test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page }) => {
+  const commentedSource = `{ signal : [
+  // clock signal
+  { name: "clk", wave: "p......" },
+  // bus data
+  { name: "bus", wave: "x.34.5x", data: "head body tail" },
+  // request signal
+  { name: "wire", wave: "0.1..0." },
+] }`;
+  const editor = page.locator('.cm-content');
+
+  await replaceJson(page, commentedSource);
+  await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
+  await expect(signalRow(page, 'bus')).toBeVisible();
+
+  await page.getByLabel('More steps').click();
+  await expect(editor).toContainText('// clock signal');
+  await expect(editor).toContainText('// bus data');
+  await expect(editor).toContainText('// request signal');
+  await expect(editor).toContainText('p.......');
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(editor).toContainText('// clock signal');
+  await expect(editor).toContainText('p......');
+
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(editor).toContainText('// request signal');
+  await expect(editor).toContainText('p.......');
 });
 
 test('raw JSON edits are dirty and participate in unified undo/redo', async ({ page }) => {
@@ -398,7 +797,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   });
 
   await page.getByRole('button', { name: /File/ }).click();
-  await page.getByRole('button', { name: 'Open JSON/VCD…', exact: true }).click();
+  await page.getByRole('button', { name: 'Open document…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
@@ -422,13 +821,71 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await page.keyboard.insertText('{"signal": [');
   await page.waitForTimeout(500);
 
-  await expect(page.getByText('Invalid JSON syntax', { exact: true })).toBeVisible();
+  await expect(page.locator('[role="alert"]').filter({
+    hasText: 'Invalid JSON/JSON5/JSONML syntax',
+  })).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
+});
+
+test('safe unknown Undulate properties are preserved without data loss', async ({ page }) => {
+  await replaceJson(page, JSON.stringify({
+    signal: [{
+      name: 'blocked',
+      wave: 'p',
+      repeat: 8,
+      future_lane: true,
+    }],
+    config: {
+      hscale: 1,
+      future_config: { grid: 4 },
+    },
+    annotations: [{
+      text: 'future-safe',
+      x: 1,
+      y: 1,
+      future_annotation: true,
+    }],
+    edges: ['a->b'],
+  }, null, 2));
+
+  await expect(signalRow(page, 'blocked')).toBeVisible();
+  await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
+  await page.getByLabel('More steps').click();
+  await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
+  await expect(page.locator('.cm-content')).toContainText('"future_config"');
+  await expect(page.locator('.cm-content')).toContainText('"future_annotation": true');
+});
+
+test('promotes shorthand edges to styled Undulate arrows', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      { name: 'request', wave: '01', node: 'a.' },
+      { name: 'response', wave: '10', node: '.b' },
+    ],
+    edges: ['a -> b latency'],
+  }, null, 2));
+
+  const promote = page.getByRole('button', { name: 'Style edge a->b latency' });
+  await expect(promote).toBeVisible();
+  await promote.click();
+  const editor = page.locator('.cm-content');
+  await expect(editor).toContainText('"annotations"');
+  await expect(editor).toContainText('"from": "a"');
+  await expect(editor).toContainText('"to": "b"');
+  await expect(editor).toContainText('"text": "latency"');
+  await expect(promote).toHaveCount(0);
+
+  const annotationStroke = page.getByLabel('Annotation stroke', { exact: true });
+  await expect(annotationStroke).toBeVisible();
+  await annotationStroke.fill('#336699');
+  await annotationStroke.press('Tab');
+  await expect(editor).toContainText('"stroke": "#336699"');
 });
 
 test('fallback Save download preserves recovery data and dirty state', async ({ page }) => {
@@ -463,7 +920,7 @@ test('waveform cells expose keyboard focus and position status', async ({ page }
   await expect(page.locator('.pointerMarkerLabel')).toContainText('reset_n');
 });
 
-for (const format of ['json', 'svg', 'png'] as const) {
+for (const format of ['json', 'svg', 'png', 'pdf', 'eps'] as const) {
   test(`downloads ${format.toUpperCase()} export`, async ({ page }) => {
     await page.getByRole('button', { name: /File/ }).click();
     await page.getByRole('button', { name: /Export/ }).click();
@@ -474,6 +931,27 @@ for (const format of ['json', 'svg', 'png'] as const) {
     await expect(download.suggestedFilename()).toMatch(new RegExp(`\\.${format}$`, 'i'));
   });
 }
+
+test('opens the online WaveDrom editor only after the data warning', async ({ page }) => {
+  await page.evaluate(() => {
+    const target = window as typeof window & { openedWaveDromUrl?: string };
+    target.open = ((url?: string | URL) => {
+      target.openedWaveDromUrl = String(url);
+      return null;
+    }) as typeof window.open;
+  });
+
+  await page.getByRole('button', { name: /File/ }).click();
+  await page.getByRole('button', { name: /Export/ }).click();
+  await page.locator('#export-format').selectOption('wavedrom-editor');
+  await page.getByRole('button', { name: 'Review warning & open' }).click();
+
+  const openedUrl = await page.evaluate(
+    () => (window as typeof window & { openedWaveDromUrl?: string }).openedWaveDromUrl,
+  );
+  expect(openedUrl).toMatch(/^https:\/\/wavedrom\.com\/editor\.html\?/);
+  expect(decodeURIComponent(openedUrl!.split('?')[1]!)).toContain('"signal"');
+});
 
 test('Help/About exposes privacy and project routes', async ({ page }) => {
   await page.getByTitle('Help and keyboard shortcuts').click();

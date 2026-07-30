@@ -7,15 +7,19 @@ import { stepAtLogicalXForSignal } from './laneTiming';
 import { hitTestDiagramEdge } from './edgeLayout';
 import { hitTestStepGlitchBoundary } from './glitchHitTest';
 import { hitTestStepGapBoundary } from './stepGapHitTest';
+import { hitTestAnnotation } from './annotationLayout';
 
 export interface HitTestResult {
   signalId: string | null;
-  signalType: 'bit' | 'vector' | 'group' | null;
+  signalType: 'bit' | 'vector' | 'analogue' | 'group' | null;
   step: number | null;
   half: 'top' | 'bottom' | null;
   isLabelArea: boolean;
   isTimeAxis: boolean;
   edgeIndex: number | null;
+  annotationId: string | null;
+  /** Canvas-space pointer X, attached by the interactive canvas on hover. */
+  canvasX?: number;
 }
 
 const MISS: HitTestResult = {
@@ -26,6 +30,7 @@ const MISS: HitTestResult = {
   isLabelArea: false,
   isTimeAxis: false,
   edgeIndex: null,
+  annotationId: null,
 };
 
 function buildSignalById(signals: SignalOrGroup[]): Map<string, Signal> {
@@ -67,6 +72,19 @@ export function hitTest(
 
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
+  const rows = buildRowLayout(diagram.signals);
+
+  if (view.selectedTool === 'cursor' || view.selectedTool === 'select') {
+    const annotationId = hitTestAnnotation(
+      canvasX,
+      canvasY,
+      diagram,
+      rows,
+      transform,
+      waveformTop,
+    );
+    if (annotationId) return { ...MISS, annotationId };
+  }
 
   const edgeToolActive =
     view.selectedTool === 'arrow' || view.selectedTool === 'timespan';
@@ -77,7 +95,6 @@ export function hitTest(
     }
   }
 
-  const rows = buildRowLayout(diagram.signals);
   const signalById = buildSignalById(diagram.signals);
   const totalSteps = diagram.config.totalSteps;
 
@@ -136,6 +153,7 @@ export function hitTest(
       isLabelArea: false,
       isTimeAxis: false,
       edgeIndex: null,
+      annotationId: null,
     };
   }
 

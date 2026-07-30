@@ -10,6 +10,7 @@ import { getSafeStorage } from './soloDesk/safeStorage';
 
 export type CodePanelPlacement = 'bottom' | 'right' | 'float';
 export type SidePanelId = 'json' | 'render';
+export type BottomDockArrangement = 'stacked' | 'side-by-side';
 
 export interface DockPanelLayout {
   placement: CodePanelPlacement;
@@ -23,6 +24,12 @@ export interface SidePanelsLayoutState {
   render: DockPanelLayout;
   /** Stacking order toward canvas first (right dock: leftmost; bottom dock: topmost). */
   panelOrder: SidePanelId[];
+  /** How JSON and Render share the bottom dock when both are visible there. */
+  bottomArrangement: BottomDockArrangement;
+  /** Shared bottom-dock height used by the side-by-side arrangement. */
+  bottomDockSize: number;
+  /** Fraction of the shared bottom dock occupied by the first ordered panel. */
+  bottomSplit: number;
 }
 
 /** Default: Render beside/above JSON when both share a dock edge. */
@@ -38,6 +45,9 @@ export const CODE_PANEL_DOCK_MAX_RATIO = 0.72;
 export const CODE_PANEL_DOCK_DEFAULT_BOTTOM = 280;
 export const CODE_PANEL_DOCK_DEFAULT_RIGHT = 440;
 export const CODE_PANEL_DOCK_DEFAULT_RENDER_BOTTOM = 240;
+export const CODE_PANEL_BOTTOM_SPLIT_DEFAULT = 0.5;
+export const CODE_PANEL_BOTTOM_SPLIT_MIN = 0.25;
+export const CODE_PANEL_BOTTOM_SPLIT_MAX = 0.75;
 
 export const CODE_PANEL_FLOAT_MIN_W = 320;
 export const CODE_PANEL_FLOAT_MIN_H = 200;
@@ -104,6 +114,9 @@ export function defaultSidePanelsLayout(): SidePanelsLayoutState {
     json: defaultDockPanelLayout('json'),
     render: defaultDockPanelLayout('render'),
     panelOrder: [...DEFAULT_PANEL_ORDER],
+    bottomArrangement: 'stacked',
+    bottomDockSize: CODE_PANEL_DOCK_DEFAULT_BOTTOM,
+    bottomSplit: CODE_PANEL_BOTTOM_SPLIT_DEFAULT,
   };
 }
 
@@ -194,6 +207,9 @@ export type SidePanelsLayoutInput =
       json?: Partial<DockPanelLayout>;
       render?: Partial<DockPanelLayout>;
       panelOrder?: unknown;
+      bottomArrangement?: unknown;
+      bottomDockSize?: unknown;
+      bottomSplit?: unknown;
     } & LegacyLayoutRaw)
   | null
   | undefined;
@@ -220,6 +236,19 @@ export function normalizeSidePanelsLayout(
       json: normalizeDockPanelLayout(raw.json, 'json'),
       render: normalizeDockPanelLayout(raw.render, 'render'),
       panelOrder: normalizePanelOrder(raw.panelOrder),
+      bottomArrangement:
+        raw.bottomArrangement === 'side-by-side' ? 'side-by-side' : 'stacked',
+      bottomDockSize:
+        typeof raw.bottomDockSize === 'number' && Number.isFinite(raw.bottomDockSize)
+          ? clampDockSize(raw.bottomDockSize, 'y')
+          : base.bottomDockSize,
+      bottomSplit:
+        typeof raw.bottomSplit === 'number' && Number.isFinite(raw.bottomSplit)
+          ? Math.max(
+              CODE_PANEL_BOTTOM_SPLIT_MIN,
+              Math.min(CODE_PANEL_BOTTOM_SPLIT_MAX, raw.bottomSplit),
+            )
+          : base.bottomSplit,
     };
   }
 
@@ -227,6 +256,9 @@ export function normalizeSidePanelsLayout(
     json: normalizeLegacySingleLayout(raw),
     render: base.render,
     panelOrder: normalizePanelOrder(raw.panelOrder),
+    bottomArrangement: base.bottomArrangement,
+    bottomDockSize: base.bottomDockSize,
+    bottomSplit: base.bottomSplit,
   };
 }
 
@@ -269,6 +301,14 @@ export function useSidePanelsLayout(): [
   SidePanelsLayoutState,
   (panelId: SidePanelId, patch: Partial<DockPanelLayout>) => void,
   (panelId: SidePanelId, direction: -1 | 1) => void,
+  (
+    patch: Partial<
+      Pick<
+        SidePanelsLayoutState,
+        'bottomArrangement' | 'bottomDockSize' | 'bottomSplit'
+      >
+    >,
+  ) => void,
 ] {
   const [layout, setLayout] = useState(loadSidePanelsLayout);
 
@@ -311,7 +351,30 @@ export function useSidePanelsLayout(): [
     [],
   );
 
-  return [layout, updatePanelLayout, movePanelInOrderAction];
+  const updateBottomDockLayout = useCallback(
+    (
+      patch: Partial<
+        Pick<
+          SidePanelsLayoutState,
+          'bottomArrangement' | 'bottomDockSize' | 'bottomSplit'
+        >
+      >,
+    ) => {
+      setLayout((prev) => {
+        const next = normalizeSidePanelsLayout({ ...prev, ...patch });
+        saveSidePanelsLayout(next);
+        return next;
+      });
+    },
+    [],
+  );
+
+  return [
+    layout,
+    updatePanelLayout,
+    movePanelInOrderAction,
+    updateBottomDockLayout,
+  ];
 }
 
 type SidePanelsLayoutContextValue = ReturnType<typeof useSidePanelsLayout>;

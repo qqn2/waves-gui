@@ -9,6 +9,26 @@ import {
 } from './constants';
 import { isWaveModeLane, padWaveLaneToLength } from '../wavedromBridge/laneWaveOps';
 import { padBitStatesToLength } from '../wavedromBridge/waveStringCodec';
+import { normalizeAnnotations } from './annotations';
+import { normalizeAnalogueSignal } from './analogue';
+import {
+  DEFAULT_ANALOGUE_CONTEXT,
+  type AnalogueContext,
+} from './analogueExpressions';
+import { reconcileAnalogueOverlayGroups } from './analogueOverlayGroups';
+
+function normalizeAnalogueContext(value: unknown): AnalogueContext | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const context = value as Partial<AnalogueContext>;
+  if (
+    typeof context.vssa !== 'number'
+    || !Number.isFinite(context.vssa)
+    || typeof context.vdda !== 'number'
+    || !Number.isFinite(context.vdda)
+    || context.vdda <= context.vssa
+  ) return { ...DEFAULT_ANALOGUE_CONTEXT };
+  return { vssa: context.vssa, vdda: context.vdda };
+}
 
 function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
@@ -20,6 +40,28 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
   }
   if (!signal.color) {
     signal.color = DEFAULT_SIGNAL_COLOR;
+  }
+  if (signal.nodeNames && typeof signal.nodeNames === 'object') {
+    const normalized: Record<number, string> = {};
+    for (const [rawStep, name] of Object.entries(signal.nodeNames)) {
+      const step = Number(rawStep);
+      if (
+        Number.isInteger(step)
+        && step >= 0
+        && step < totalSteps
+        && typeof name === 'string'
+        && name.length > 0
+      ) {
+        normalized[step] = name;
+      }
+    }
+    if (Object.keys(normalized).length > 0) signal.nodeNames = normalized;
+    else delete signal.nodeNames;
+  }
+
+  if (signal.type === 'analogue') {
+    normalizeAnalogueSignal(signal, totalSteps);
+    return;
   }
 
   if (signal.type === 'vector') {
@@ -54,6 +96,35 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.segments)) {
       signal.segments = [];
     }
+    if (signal.type === 'bit' && signal.digitalTiming) {
+      const ticksPerStep = Math.max(
+        1,
+        Math.min(1024, Math.floor(signal.digitalTiming.ticksPerStep || 1)),
+      );
+      signal.digitalTiming.ticksPerStep = ticksPerStep;
+      signal.digitalTiming.phaseTicks = Math.round(
+        signal.digitalTiming.phaseTicks || 0,
+      );
+      signal.digitalTiming.cells = signal.states.map((state, index) => {
+        const source = signal.digitalTiming!.cells?.[index];
+        const durationTicks = Math.max(
+          1,
+          Math.round(source?.durationTicks || ticksPerStep),
+        );
+        return {
+          state,
+          durationTicks,
+          ...(source?.dutyTicks !== undefined
+            ? {
+                dutyTicks: Math.max(
+                  0,
+                  Math.min(durationTicks, Math.round(source.dutyTicks)),
+                ),
+              }
+            : {}),
+        };
+      });
+    }
   }
 }
 
@@ -80,6 +151,23 @@ function walkSignals(signals: SignalOrGroup[], totalSteps: number): void {
 export function normalizeDiagram(diagram: DiagramState): DiagramState {
   const d = cloneDiagram(diagram);
 
+  d.version = 2;
+  d.compatibility = {
+    extensionsEnabled: d.compatibility?.extensionsEnabled === true,
+    ...(d.compatibility?.sourceFormat
+      ? { sourceFormat: d.compatibility.sourceFormat }
+      : {}),
+    ...(d.compatibility?.sourceRevision
+      ? { sourceRevision: d.compatibility.sourceRevision }
+      : {}),
+    ...(typeof d.compatibility?.sourceText === 'string'
+      ? { sourceText: d.compatibility.sourceText }
+      : {}),
+    ...(d.compatibility?.opaqueUndulate
+      ? { opaqueUndulate: d.compatibility.opaqueUndulate }
+      : {}),
+  };
+
   if (!Array.isArray(d.edges)) {
     d.edges = [];
   }
@@ -95,8 +183,24 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...d.config,
     totalSteps,
     hscale: clampHscale(d.config?.hscale ?? DEFAULT_HSCALE),
+    ...(d.config?.ticksPerStep !== undefined
+      ? {
+          ticksPerStep: Math.max(
+            1,
+            Math.min(1024, Math.floor(d.config.ticksPerStep)),
+          ),
+        }
+      : {}),
+    ...(d.config?.analogueContext !== undefined
+      ? { analogueContext: normalizeAnalogueContext(d.config.analogueContext) }
+      : {}),
+    ...(Number.isInteger(d.config?.analogueRandomSeed)
+      ? { analogueRandomSeed: d.config.analogueRandomSeed! >>> 0 }
+      : {}),
   };
+  d.annotations = normalizeAnnotations(d.annotations, totalSteps);
 
   walkSignals(d.signals, totalSteps);
+  reconcileAnalogueOverlayGroups(d);
   return d;
 }

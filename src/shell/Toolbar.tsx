@@ -9,6 +9,7 @@ import {
   Maximize,
   PanelRight,
   Redo2,
+  SlidersHorizontal,
   Undo2,
 } from 'lucide-react';
 import { useStore } from '../shared/store';
@@ -25,9 +26,12 @@ import { buildRowLayout, totalContentHeight } from '../renderer/rowLayout';
 import { measureHeadFoot } from '../renderer/renderHeadFoot';
 import { diagramLogicalWidth } from '../renderer/laneTiming';
 import { ThemeMenu } from './ThemeMenu';
+import { ExtensionsModeToggle } from './ExtensionsModeToggle';
+import { HeadFootFields } from './HeadFootFields';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import {
   ToolbarBusSection,
+  ToolbarAnaloguePaintSection,
   ToolbarEdgeSection,
   ToolbarPaintSection,
 } from './toolbar/ToolbarPaintSection';
@@ -50,6 +54,8 @@ export function Toolbar({
   const paintMode = useStore((s) => s.view.paintMode);
   const paintStyle = useStore((s) => s.view.paintStyle);
   const activeBit = useStore((s) => s.view.activeBitState);
+  const activeAnalogueKind = useStore((s) => s.view.activeAnalogueKind);
+  const activeAnalogueValue = useStore((s) => s.view.activeAnalogueValue);
   const activeTimespanLabel = useStore((s) => s.view.activeTimespanLabel);
   const setActiveTimespanLabel = useStore((s) => s.setActiveTimespanLabel);
   const activeEdgeConnector = useStore((s) => s.view.activeEdgeConnector);
@@ -65,6 +71,8 @@ export function Toolbar({
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
+  const setActiveAnalogueKind = useStore((s) => s.setActiveAnalogueKind);
+  const setActiveAnalogueValue = useStore((s) => s.setActiveAnalogueValue);
   const setPaintMode = useStore((s) => s.setPaintMode);
   const setPaintStyle = useStore((s) => s.setPaintStyle);
   const setZoom = useStore((s) => s.setZoom);
@@ -75,10 +83,13 @@ export function Toolbar({
   const diagramSkin = useStore((s) => s.diagram.config.skin);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
+  const setAnnotationSnapToGrid = useStore((s) => s.setAnnotationSnapToGrid);
 
   const [fileOpen, setFileOpen] = useState(false);
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
+  const [recentBits, setRecentBits] = useState<BitState[]>([]);
+  const [diagramControlsVisible, setDiagramControlsVisible] = useState(true);
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -142,11 +153,24 @@ export function Toolbar({
       ? 'Select'
       : tool === 'paint'
         ? 'Draw'
+        : tool === 'analogue-paint'
+          ? 'Analog paint'
         : tool === 'erase'
           ? 'Erase'
           : tool === 'arrow'
             ? 'Edge'
-            : 'Span';
+            : tool === 'annotation'
+              ? 'Text'
+              : tool === 'structured-arrow'
+                ? 'Annotation arrow'
+              : tool === 'vertical-line'
+                ? 'Vertical line'
+                : tool === 'horizontal-line'
+                  ? 'Horizontal line'
+                  : tool === 'global-compression'
+                    ? 'Compression'
+                    : 'Span';
+  const annotationSnapToGrid = view.annotationSnapToGrid !== false;
 
 
   return (
@@ -169,6 +193,19 @@ export function Toolbar({
         <button type="button" className={styles.toolBtn} onClick={() => redo()} title="Redo (Ctrl+Shift+Z)">
           <Redo2 size={16} aria-hidden /><span>Redo</span>
         </button>
+
+        <span className={styles.divider} />
+        <button
+          type="button"
+          className={`${styles.toolBtn} ${diagramControlsVisible ? styles.toolActive : ''}`}
+          onClick={() => setDiagramControlsVisible((visible) => !visible)}
+          title="Show or hide Steps, Labels, and Scale controls"
+          aria-label="Diagram controls"
+          aria-pressed={diagramControlsVisible}
+        >
+          <SlidersHorizontal size={16} aria-hidden />
+        </button>
+        {diagramControlsVisible ? <HeadFootFields /> : null}
 
         <span className={styles.toolbarSpacer} />
 
@@ -207,6 +244,7 @@ export function Toolbar({
         </div>
 
         <div className={styles.viewControls}>
+        <ExtensionsModeToggle />
         <button
           type="button"
           className={`${styles.toolBtn} ${view.showCodePanel ? styles.toolActive : ''}`}
@@ -229,7 +267,7 @@ export function Toolbar({
           className={`${styles.toolBtn} ${inspectorVisible ? styles.toolActive : ''}`}
           onClick={onToggleInspector}
           disabled={!inspectorAvailable}
-          title={inspectorAvailable ? 'Show or hide signal properties inspector' : 'Select one signal to inspect its properties'}
+          title={inspectorAvailable ? 'Show or hide properties inspector' : 'Select a signal or annotation to inspect its properties'}
           aria-pressed={inspectorVisible}
         >
           <PanelRight size={16} aria-hidden /> Inspector
@@ -286,12 +324,48 @@ export function Toolbar({
             paintMode={paintMode}
             paintStyle={paintStyle}
             activeBit={activeBit}
+            extensionsEnabled={
+              diagram.compatibility?.extensionsEnabled === true
+            }
             moreBitsOpen={moreBitsOpen}
+            recentBits={recentBits}
             onSetPaintMode={setPaintMode}
             onSetPaintStyle={setPaintStyle}
             onSelectBit={selectBitValue}
             onToggleMoreBits={() => setMoreBitsOpen((o) => !o)}
+            onCloseMoreBits={() => setMoreBitsOpen(false)}
+            onRememberBit={(state) => setRecentBits((recent) => [
+              state,
+              ...recent.filter((item) => item !== state),
+            ].slice(0, 3))}
           />
+        ) : null}
+        {tool === 'analogue-paint' ? (
+          <ToolbarAnaloguePaintSection
+            kind={activeAnalogueKind}
+            value={activeAnalogueValue}
+            onKindChange={setActiveAnalogueKind}
+            onValueChange={setActiveAnalogueValue}
+          />
+        ) : null}
+        {(
+          tool === 'annotation'
+          || tool === 'vertical-line'
+          || tool === 'global-compression'
+          || tool === 'structured-arrow'
+        ) ? (
+          <button
+            type="button"
+            className={`${styles.toolBtn} ${
+              annotationSnapToGrid ? styles.toolActive : ''
+            }`}
+            onClick={() => setAnnotationSnapToGrid(!annotationSnapToGrid)}
+            aria-label="Snap new annotations to grid"
+            aria-pressed={annotationSnapToGrid}
+            title="Snap newly created annotation coordinates to waveform cells"
+          >
+            Snap {annotationSnapToGrid ? 'On' : 'Off'}
+          </button>
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (
           <ToolbarBusSection

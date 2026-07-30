@@ -49,6 +49,8 @@ export function visibleNodeCharAt(
   totalSteps: number,
 ): string | null {
   if (step < 0 || step >= totalSteps) return null;
+  const expanded = signal.nodeNames?.[step];
+  if (expanded) return expanded;
   const padded = padNodeString(signal.node, totalSteps);
   if (!padded) return null;
   const ch = padded[step]!;
@@ -61,7 +63,9 @@ export function collectUsedNodeChars(signals: SignalOrGroup[]): Set<string> {
   const walk = (list: SignalOrGroup[]) => {
     for (const item of list) {
       if (item.type === 'group') walk(item.children);
-      else if (item.node) {
+      else {
+        for (const name of Object.values(item.nodeNames ?? {})) used.add(name);
+        if (!item.node) continue;
         for (const ch of item.node) {
           if (ch !== NODE_PAD_CHAR && ch !== ' ') used.add(ch);
         }
@@ -97,6 +101,10 @@ export function setNodeCharAt(
   const arr = node.split('');
   arr[step] = fill;
   signal.node = arr.join('');
+  if (signal.nodeNames?.[step] !== undefined) {
+    delete signal.nodeNames[step];
+    if (Object.keys(signal.nodeNames).length === 0) delete signal.nodeNames;
+  }
   const allPad = signal.node.split('').every((c) => c === NODE_PAD_CHAR || c === ' ');
   if (allPad) delete signal.node;
 }
@@ -110,7 +118,15 @@ export function clearNodeCharFromDiagram(
   const walk = (list: SignalOrGroup[]) => {
     for (const item of list) {
       if (item.type === 'group') walk(item.children);
-      else if (item.node?.includes(char)) {
+      else {
+        for (const [rawStep, name] of Object.entries(item.nodeNames ?? {})) {
+          if (name !== char) continue;
+          delete item.nodeNames![Number(rawStep)];
+        }
+        if (item.nodeNames && Object.keys(item.nodeNames).length === 0) {
+          delete item.nodeNames;
+        }
+        if (!item.node?.includes(char)) continue;
         for (let step = 0; step < totalSteps; step++) {
           if (!item.node) break;
           if (item.node[step] === char) {

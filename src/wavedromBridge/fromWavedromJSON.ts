@@ -7,7 +7,11 @@ import type {
   VectorSegment,
 } from '../shared/types';
 import { DEFAULT_HSCALE, DEFAULT_SIGNAL_COLOR, ROW_HEIGHT } from '../shared/constants';
-import { decodeWaveDetail, padDecodedWaveToLength } from './waveStringCodec';
+import {
+  decodeWaveDetail,
+  isUndulateExtendedDigitalWave,
+  padDecodedWaveToLength,
+} from './waveStringCodec';
 import { fillHexForWaveChar } from '../shared/vectorSegments';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 import {
@@ -33,7 +37,10 @@ function isBlank(entry: WdSignalEntry): boolean {
 }
 
 function isVectorWave(wave: string): boolean {
-  return /[=2-9]/.test(wave);
+  // Undulate permits data, impulse, metastability, and scalar logic cells in
+  // one digital lane. Keep such lanes wave-canonical instead of coercing the
+  // entire row to a WaveDrom vector bus.
+  return /[=2-9]/.test(wave) && !isUndulateExtendedDigitalWave(wave);
 }
 
 function normalizeDataLabel(entry: string | string[]): string {
@@ -138,7 +145,11 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
   const sig = entry as WdSignal;
   const wave = sig.wave ?? '0';
   if (isVectorWave(wave)) {
-    const rawData = (sig.data ?? []).map((d) =>
+    const sourceData =
+      typeof sig.data === 'string'
+        ? sig.data.trim().split(/\s+/).filter(Boolean)
+        : (sig.data ?? []);
+    const rawData = sourceData.map((d) =>
       Array.isArray(d) ? d.map(String) : String(d),
     );
     const totalSteps = wave.length;
@@ -273,9 +284,14 @@ export function fromWavedromJSON(wd: WdRoot): DiagramState {
     foot: wd.foot ?? wd.config?.foot,
   };
   return {
-    version: 1,
+    version: 2,
+    compatibility: {
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+    },
     signals,
     config,
+    annotations: [],
     edges: wd.edge ? [...wd.edge] : [],
   };
 }

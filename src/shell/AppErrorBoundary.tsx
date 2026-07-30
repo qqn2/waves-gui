@@ -31,6 +31,18 @@ function formatError(error: unknown): string {
   }
 }
 
+export function isReactDispatcherError(error: unknown): boolean {
+  const message = formatError(error).toLowerCase();
+  return (
+    message.includes('resolvedispatcher')
+    || message.includes('invalid hook call')
+    || (
+      message.includes('dispatcher')
+      && message.includes('usestate')
+    )
+  );
+}
+
 export class AppErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
@@ -52,31 +64,45 @@ export class AppErrorBoundary extends Component<Props, State> {
       return this.props.children;
     }
 
-    const storageHint = isBrowserStoragePersistent()
-      ? 'An outdated autosave in local storage can also cause this.'
-      : 'Firefox reported storage errors (IndexedDB/SQLite busy). Draft autosave may be disabled in this session.';
+    const dispatcherError = isReactDispatcherError(this.state.error);
+    const storageHint = dispatcherError
+      ? 'React runtime modules are out of sync. Your autosave is not the likely cause. Reload the editor first; during local development, restart the development server if the error returns.'
+      : isBrowserStoragePersistent()
+        ? 'An outdated autosave in local storage can also cause this.'
+        : 'Firefox reported storage errors (IndexedDB/SQLite busy). Draft autosave may be disabled in this session.';
 
     return (
       <div className={styles.errorFallback}>
         <h1 className={styles.errorTitle}>Editor failed to load</h1>
         <p className={styles.errorMessage}>{formatError(this.state.error)}</p>
         <p className={styles.errorHint}>
-          {storageHint} Try <strong>Clear draft &amp; reload</strong>, or delete{' '}
-          <code>wavedrom-gui-draft</code> in DevTools → Application → Local Storage.
-          If Firefox logs many <code>NS_ERROR_STORAGE_BUSY</code> errors, restart the browser
-          or use a private window.
+          {storageHint}{' '}
+          {!dispatcherError ? (
+            <>
+              Try <strong>Clear draft &amp; reload</strong>, or delete{' '}
+              <code>wavedrom-gui-draft</code> in DevTools → Application → Local Storage.
+              If Firefox logs many <code>NS_ERROR_STORAGE_BUSY</code> errors, restart the
+              browser or use a private window.
+            </>
+          ) : null}
         </p>
         <div className={styles.errorActions}>
-          <button type="button" className={styles.errorBtn} onClick={this.handleClearDraft}>
-            Clear draft &amp; reload
-          </button>
           <button
             type="button"
-            className={styles.errorBtnSecondary}
+            className={styles.errorBtn}
             onClick={() => window.location.reload()}
           >
-            Reload only
+            Reload editor
           </button>
+          {!dispatcherError ? (
+            <button
+              type="button"
+              className={styles.errorBtnSecondary}
+              onClick={this.handleClearDraft}
+            >
+              Clear draft &amp; reload
+            </button>
+          ) : null}
         </div>
       </div>
     );

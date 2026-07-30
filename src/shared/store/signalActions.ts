@@ -33,7 +33,21 @@ import {
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
 import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
+import { normalizeSignalStyle } from '../signalStyles';
+import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
+import {
+  DEFAULT_ANALOGUE_CONTEXT,
+  evaluateAnalogueCurve,
+  evaluateAnalogueScalar,
+  type AnalogueContext,
+} from '../analogueExpressions';
 import type { ImmerSet, StoreActions } from './storeActions';
+import {
+  MAX_ANALOGUE_OVERLAY_MEMBERS,
+  nextAnalogueOverlayCandidate,
+  overlayGroupForSignal,
+  reconcileAnalogueOverlayGroups,
+} from '../analogueOverlayGroups';
 import {
   clearNodesAndEdges,
   deleteStepInSignal,
@@ -50,6 +64,7 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
+import { rescaleDiagramTiming, timingResolution } from '../fineTiming';
 
 function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   if (isSubcycleWaveLane(sig)) {
@@ -141,6 +156,20 @@ function duplicateSignalInDraft(
         })),
         stepGaps: item.stepGaps ? [...item.stepGaps] : undefined,
         stepGlitches: item.stepGlitches ? [...item.stepGlitches] : undefined,
+        analogueCells: item.analogueCells?.map((cell) => ({
+          ...cell,
+          id: nanoid(),
+          samples: cell.samples?.map((point) => ({ ...point })),
+          sampleTimebase: cell.sampleTimebase
+            ? { ...cell.sampleTimebase }
+            : undefined,
+        })),
+        digitalTiming: item.digitalTiming
+          ? {
+              ...item.digitalTiming,
+              cells: item.digitalTiming.cells.map((cell) => ({ ...cell })),
+            }
+          : undefined,
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
@@ -163,6 +192,17 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
+  | 'updateSignalStyle'
+  | 'updateAnalogueCell'
+  | 'paintAnalogueCellRange'
+  | 'updateAnalogueSignal'
+  | 'updateAnalogueContext'
+  | 'refreshAnalogueRandomSeed'
+  | 'extendAnalogueOverlayGroup'
+  | 'dissolveAnalogueOverlayGroup'
+  | 'enableDigitalTiming'
+  | 'updateDigitalTimingCell'
+  | 'updateDigitalTimingSignal'
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
@@ -184,6 +224,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setSignalPhase'
   | 'setSignalPeriod'
   | 'setActiveSignalIds'
+  | 'setActiveAnnotationId'
   | 'setTotalSteps'
   | 'setHscale'
   | 'insertStepAt'
@@ -195,12 +236,19 @@ export function createSignalActions(set: ImmerSet): Pick<
     addSignal(type, afterId) {
       set((s) => {
         pushHistory(s);
+        const analogueContext =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
         const states = new Array<BitState>(s.diagram.config.totalSteps).fill('0');
         const signal: Signal = {
           id: nanoid(),
-          name: type === 'vector' ? 'bus' : 'sig',
+          name:
+            type === 'vector'
+              ? 'bus'
+              : type === 'analogue'
+                ? 'analog'
+                : 'sig',
           type,
-          states,
+          states: type === 'analogue' ? [] : states,
           segments:
             type === 'vector'
               ? [
@@ -212,6 +260,17 @@ export function createSignalActions(set: ImmerSet): Pick<
                   },
                 ]
               : [],
+          ...(type === 'analogue'
+            ? {
+                analogueMin: analogueContext.vssa,
+                analogueMax: analogueContext.vdda,
+                analogueCells: states.map(() => ({
+                  id: nanoid(),
+                  kind: 'step' as const,
+                  value: analogueContext.vssa,
+                })),
+              }
+            : {}),
           color: DEFAULT_SIGNAL_COLOR,
           rowHeight: ROW_HEIGHT,
         };
@@ -220,6 +279,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           0,
           signal,
         );
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -227,6 +287,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         duplicateSignalInDraft(s.diagram.signals, id);
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -245,6 +306,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           0,
           group,
         );
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -252,6 +314,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = removeFromTree(s.diagram.signals, id);
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -261,6 +324,18 @@ export function createSignalActions(set: ImmerSet): Pick<
         findSignal(s.diagram.signals, id, (sig) => {
           sig.name = name;
         });
+      });
+    },
+
+    updateSignalStyle(signalId, patch) {
+      set((s) => {
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          const next = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
+          if (next) sig.style = next;
+          else delete sig.style;
+        });
+        s.view.isDirty = true;
       });
     },
 
@@ -344,6 +419,332 @@ export function createSignalActions(set: ImmerSet): Pick<
     setActiveSignalIds(ids) {
       set((s) => {
         s.view.activeSignalIds = ids;
+        if (ids.length > 0) s.view.activeAnnotationId = null;
+      });
+    },
+
+    updateAnalogueCell(signalId, index, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        const cell = target.analogueCells?.[index];
+        if (!cell) return;
+        pushHistory(s);
+        if (
+          patch.expression === undefined
+          && (
+            patch.value !== undefined
+            || patch.samples !== undefined
+            || patch.kind !== undefined
+          )
+        ) delete cell.expression;
+        Object.assign(cell, patch);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+      });
+    },
+
+    paintAnalogueCellRange(signalId, startStep, endStep, kind, value) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        pushHistory(s);
+        applyAnalogueBrushRange(target, startStep, endStep, kind, value);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+      });
+    },
+
+    updateAnalogueSignal(signalId, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let target: Signal | null = null;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          target = signal;
+        });
+        if (!target || target.type !== 'analogue') return;
+        pushHistory(s);
+        Object.assign(target, patch);
+        normalizeAnalogueSignal(target, s.diagram.config.totalSteps);
+        target.rowHeight = ROW_HEIGHT * (target.vscale ?? 1);
+      });
+    },
+
+    updateAnalogueContext(patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const currentContext =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
+        const next: AnalogueContext = {
+          vssa: patch.vssa ?? currentContext.vssa,
+          vdda: patch.vdda ?? currentContext.vdda,
+        };
+        if (
+          !Number.isFinite(next.vssa)
+          || !Number.isFinite(next.vdda)
+          || next.vdda <= next.vssa
+        ) return;
+        const resolved = new Map<
+          string,
+          { value: number; samples?: Array<{ offset: number; value: number }> }
+        >();
+        try {
+          walkSignals(s.diagram.signals, (signal) => {
+            if (signal.type !== 'analogue') return;
+            for (const cell of signal.analogueCells ?? []) {
+              if (!cell.expression) continue;
+              if (cell.kind === 'samples') {
+                const samples = evaluateAnalogueCurve(
+                  cell.expression,
+                  next,
+                  s.diagram.config.analogueRandomSeed,
+                )
+                  .map(([offset, value]) => ({ offset, value }));
+                resolved.set(cell.id, {
+                  samples,
+                  value: samples.at(-1)?.value ?? cell.value,
+                });
+              } else {
+                resolved.set(cell.id, {
+                  value: evaluateAnalogueScalar(
+                    cell.expression,
+                    next,
+                    {},
+                    s.diagram.config.analogueRandomSeed,
+                  ),
+                });
+              }
+            }
+          });
+        } catch {
+          return;
+        }
+        pushHistory(s);
+        s.diagram.config.analogueContext = next;
+        walkSignals(s.diagram.signals, (signal) => {
+          if (signal.type !== 'analogue') return;
+          signal.analogueMin = next.vssa;
+          signal.analogueMax = next.vdda;
+          for (const cell of signal.analogueCells ?? []) {
+            const result = resolved.get(cell.id);
+            if (!result) continue;
+            cell.value = result.value;
+            if (result.samples) cell.samples = result.samples;
+          }
+          normalizeAnalogueSignal(signal, s.diagram.config.totalSteps);
+        });
+      });
+    },
+
+    refreshAnalogueRandomSeed() {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const current = s.diagram.config.analogueRandomSeed ?? 0;
+        const nextSeed = (current + 0x9e37_79b9) >>> 0;
+        const context =
+          s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
+        const resolved = new Map<
+          string,
+          { value: number; samples?: Array<{ offset: number; value: number }> }
+        >();
+        try {
+          walkSignals(s.diagram.signals, (signal) => {
+            if (signal.type !== 'analogue') return;
+            for (const cell of signal.analogueCells ?? []) {
+              if (!cell.expression || !/\brnd\s*\(\s*\)/.test(cell.expression)) {
+                continue;
+              }
+              if (cell.kind === 'samples') {
+                const samples = evaluateAnalogueCurve(
+                  cell.expression,
+                  context,
+                  nextSeed,
+                ).map(([offset, value]) => ({ offset, value }));
+                resolved.set(cell.id, {
+                  samples,
+                  value: samples.at(-1)?.value ?? cell.value,
+                });
+              } else {
+                resolved.set(cell.id, {
+                  value: evaluateAnalogueScalar(
+                    cell.expression,
+                    context,
+                    {},
+                    nextSeed,
+                  ),
+                });
+              }
+            }
+          });
+        } catch {
+          return;
+        }
+        pushHistory(s);
+        s.diagram.config.analogueRandomSeed = nextSeed;
+        walkSignals(s.diagram.signals, (signal) => {
+          if (signal.type !== 'analogue') return;
+          for (const cell of signal.analogueCells ?? []) {
+            const result = resolved.get(cell.id);
+            if (!result) continue;
+            cell.value = result.value;
+            if (result.samples) cell.samples = result.samples;
+          }
+          normalizeAnalogueSignal(signal, s.diagram.config.totalSteps);
+        });
+      });
+    },
+
+    extendAnalogueOverlayGroup(signalId) {
+      let changed = false;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        const next = nextAnalogueOverlayCandidate(s.diagram, signalId);
+        if (!next) return;
+        const group = overlayGroupForSignal(s.diagram, signalId);
+        if (group && group.signalIds.length >= MAX_ANALOGUE_OVERLAY_MEMBERS) return;
+        pushHistory(s);
+        if (group) {
+          group.signalIds.push(next.id);
+        } else {
+          const groups = s.diagram.analogueOverlayGroups ?? [];
+          s.diagram.analogueOverlayGroups = groups;
+          groups.push({
+            id: nanoid(),
+            name: `Overlay ${groups.length + 1}`,
+            signalIds: [signalId, next.id],
+          });
+        }
+        reconcileAnalogueOverlayGroups(s.diagram);
+        changed = true;
+      });
+      return changed;
+    },
+
+    dissolveAnalogueOverlayGroup(groupId) {
+      set((s) => {
+        const groups = s.diagram.analogueOverlayGroups ?? [];
+        if (!groups.some((group) => group.id === groupId)) return;
+        pushHistory(s);
+        s.diagram.analogueOverlayGroups = groups.filter(
+          (group) => group.id !== groupId,
+        );
+        reconcileAnalogueOverlayGroups(s.diagram);
+      });
+    },
+
+    enableDigitalTiming(signalId) {
+      let enabled = false;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (signal.digitalTiming) {
+            enabled = true;
+            return;
+          }
+          const configuredTicks = s.diagram.config.ticksPerStep ?? 1;
+          const ticksPerStep = timingResolution([
+            1 / configuredTicks,
+            signal.phase ?? 0,
+            signal.period ?? 1,
+          ]);
+          if (ticksPerStep === null) return;
+          pushHistory(s);
+          if (!rescaleDiagramTiming(s.diagram, ticksPerStep)) return;
+          signal.digitalTiming = {
+            ticksPerStep,
+            phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+            cells: signal.states.map((state) => ({
+              state,
+              durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+            })),
+          };
+          delete signal.phase;
+          delete signal.period;
+          enabled = true;
+        });
+      });
+      return enabled;
+    },
+
+    updateDigitalTimingCell(signalId, index, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (!signal.digitalTiming) {
+            const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
+            signal.digitalTiming = {
+              ticksPerStep,
+              phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+              cells: signal.states.map((state) => ({
+                state,
+                durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+              })),
+            };
+            delete signal.phase;
+            delete signal.period;
+          }
+          const cell = signal.digitalTiming.cells[index];
+          if (!cell) return;
+          if (patch.durationTicks !== undefined) {
+            cell.durationTicks = Math.max(1, Math.round(patch.durationTicks));
+            if (cell.dutyTicks !== undefined) {
+              cell.dutyTicks = Math.min(cell.dutyTicks, cell.durationTicks);
+            }
+          }
+          if (patch.dutyTicks === null) delete cell.dutyTicks;
+          else if (patch.dutyTicks !== undefined) {
+            cell.dutyTicks = Math.max(
+              0,
+              Math.min(cell.durationTicks, Math.round(patch.dutyTicks)),
+            );
+          }
+        });
+      });
+    },
+
+    updateDigitalTimingSignal(signalId, patch) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (!signal.digitalTiming) {
+            const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
+            signal.digitalTiming = {
+              ticksPerStep,
+              phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+              cells: signal.states.map((state) => ({
+                state,
+                durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+              })),
+            };
+            delete signal.phase;
+            delete signal.period;
+          }
+          if (patch.phaseTicks !== undefined) {
+            signal.digitalTiming.phaseTicks = Math.round(patch.phaseTicks);
+          }
+          if (patch.slewing === null) delete signal.digitalTiming.slewing;
+          else if (patch.slewing !== undefined) {
+            signal.digitalTiming.slewing = Math.max(0, patch.slewing);
+          }
+        });
+      });
+    },
+
+    setActiveAnnotationId(id) {
+      set((s) => {
+        s.view.activeAnnotationId = id;
+        if (id !== null) s.view.activeSignalIds = [];
       });
     },
 
@@ -632,6 +1033,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             group.children = reorderSiblingLevel(group.children, orderedIds);
           });
         }
+        reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
@@ -690,6 +1092,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (!insertAt(s.diagram.signals, parentId)) {
           s.diagram.signals.push(removed);
         }
+        reconcileAnalogueOverlayGroups(s.diagram);
         s.view.isDirty = true;
       });
     },

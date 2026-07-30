@@ -1,6 +1,5 @@
-import type { WdRoot } from '../wavedromBridge/wdTypes';
-import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import { useStore } from '../shared/store';
+import { parseCodeToDiagram } from '../codePanel/codeSync';
 import { forgetCurrentFileHandle } from './FileOperations';
 
 export interface SampleLeaf {
@@ -136,6 +135,40 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
       },
     ],
   },
+  {
+    kind: 'folder',
+    label: 'Undulate tasks',
+    children: [
+      {
+        kind: 'sample',
+        id: 'undulate/fine-timing',
+        title: 'Fine digital timing',
+        description: 'Sub-steps, per-cell periods, duty cycles, phase, and slew',
+        file: 'undulate-fine-timing.json',
+      },
+      {
+        kind: 'sample',
+        id: 'undulate/analogue',
+        title: 'Paint and overlay analogue',
+        description: 'Step, capacitive, sampled curves, expressions, and overlay groups',
+        file: 'undulate-analogue.json',
+      },
+      {
+        kind: 'sample',
+        id: 'undulate/annotations',
+        title: 'Place annotations',
+        description: 'Text, bounded lines, compression, and structured arrows',
+        file: 'undulate-annotations.json',
+      },
+      {
+        kind: 'sample',
+        id: 'undulate/states-and-style',
+        title: 'Extended states and style',
+        description: 'Impulse, metastability, expanded nodes, marked edges, and safe styles',
+        file: 'undulate-states-style.json',
+      },
+    ],
+  },
 ];
 
 /** Flat leaf list — useful for validation tests and bulk operations */
@@ -184,13 +217,13 @@ export async function loadSampleDiagram(sampleId: string): Promise<void> {
       window.alert(`Could not load sample (${res.status})`);
       return;
     }
-    const json = (await res.json()) as unknown;
-    const err = validateWavedromJSON(json);
-    if (err) {
-      window.alert(err);
+    const source = await res.text();
+    const parsed = parseCodeToDiagram(source);
+    if (parsed.ok === false) {
+      window.alert(parsed.error);
       return;
     }
-    useStore.getState().loadDiagram(fromWavedromJSON(json as WdRoot));
+    useStore.getState().loadDiagram(parsed.diagram);
     useStore.getState().markClean(sample.file);
     forgetCurrentFileHandle();
   } catch {

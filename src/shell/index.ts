@@ -5,11 +5,18 @@ export type { ScrollSyncHandles } from './scrollSync';
 export { Toolbar } from './Toolbar';
 export { EditToolbar } from './EditToolbar';
 export { SignalInspector } from './SignalInspector';
+export { AnnotationInspector } from './AnnotationInspector';
 export { HeadFootFields } from './HeadFootFields';
 export { DiagramStepsControl } from './DiagramStepsControl';
 export { SignalTimingBar } from './SignalTimingBar';
 export { StatusBar } from './StatusBar';
-export { openDiagramFile, saveDiagramFile, saveCurrentDiagramFile, newDiagramFile } from './FileOperations';
+export {
+  openDiagramFile,
+  openVCDFile,
+  saveDiagramFile,
+  saveCurrentDiagramFile,
+  newDiagramFile,
+} from './FileOperations';
 export {
   loadSampleDiagram,
   SAMPLE_DIAGRAMS,

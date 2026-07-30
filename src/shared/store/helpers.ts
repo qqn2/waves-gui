@@ -1,18 +1,24 @@
 import { current } from 'immer';
 import { resizeBitSignalToLength } from '../bitStepResize';
+import { resizeAnalogueCells } from '../analogue';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import { MAX_HISTORY } from '../constants';
 import { createDefaultDiagram } from '../defaultDiagram';
 import { loadLabelColumnWidth } from '../../shell/labelColumnLayout';
 import type { ViewState } from '../types';
 
+/** Notify derived views after a diagram mutation without creating undo history. */
+export function markDiagramChanged(state: AppState): void {
+  state.view.isDirty = true;
+  state.view.diagramRevision += 1;
+}
+
 /** Snapshot diagram for undo. Use immer `current()` — do NOT structuredClone. */
 export function pushHistory(state: AppState): void {
   state.history.push(current(state.diagram));
   if (state.history.length > MAX_HISTORY) state.history.shift();
   state.future = [];
-  state.view.isDirty = true;
-  state.view.diagramRevision += 1;
+  markDiagramChanged(state);
 }
 
 export function diagramsEqual(a: DiagramState, b: DiagramState): boolean {
@@ -38,11 +44,15 @@ export function defaultView(): ViewState {
     paintMode: 'set',
     paintStyle: 'replace',
     activeBitState: '1',
+    activeAnalogueKind: 'step',
+    activeAnalogueValue: 0.9,
     activeBusLabel: 'data',
     activeTimespanLabel: '5 ms',
     activeEdgeLabel: '',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    activeTimingCellIndex: null,
+    activeAnnotationId: null,
     showCodePanel: true,
     showRenderPanel: true,
     labelWidth: loadLabelColumnWidth(),
@@ -54,6 +64,8 @@ export function defaultView(): ViewState {
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
+    structuredArrowPending: null,
+    annotationSnapToGrid: true,
     edgeToolHover: null,
     activeEdgeConnector: '~>',
     showAnchorLetters: false,
@@ -144,6 +156,8 @@ export function resizeAllStates(
       }
       const last = sg.segments[sg.segments.length - 1];
       if (last && last.endStep < newLen) last.endStep = newLen;
+    } else if (sg.type === 'analogue') {
+      resizeAnalogueCells(sg, newLen);
     }
   }
 }

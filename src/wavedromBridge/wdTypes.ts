@@ -1,10 +1,15 @@
 export interface WdSignal {
   name?: string;
   wave?: string;
-  data?: Array<string | string[]>;
+  data?: string | Array<string | string[]>;
   node?: string;
   period?: number;
   phase?: number;
+  repeat?: number;
+  periods?: number[];
+  duty_cycle?: number;
+  duty_cycles?: number[];
+  slewing?: number;
   skin?: string;
   [key: string]: unknown;
 }

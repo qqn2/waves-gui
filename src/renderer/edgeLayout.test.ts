@@ -55,6 +55,35 @@ describe('parseEdgeString', () => {
       shape: '~',
     });
   });
+
+  it('parses expanded Undulate node identifiers', () => {
+    expect(parseEdge('request.ready -> response.done accepted')).toEqual({
+      fromNode: 'request.ready',
+      toNode: 'response.done',
+      hasStartArrow: false,
+      hasArrow: true,
+      shape: '-',
+      label: 'accepted',
+    });
+  });
+
+  it('parses Undulate square and circle endpoint markers', () => {
+    expect(parseEdge('a #-* b marked')).toEqual({
+      fromNode: 'a',
+      toNode: 'b',
+      hasStartArrow: false,
+      hasArrow: false,
+      startMarker: 'square',
+      endMarker: 'circle',
+      shape: '-',
+      label: 'marked',
+    });
+    expect(parseEdge('a *~# b')).toMatchObject({
+      startMarker: 'circle',
+      endMarker: 'square',
+      shape: '~',
+    });
+  });
 });
 
 describe('buildNodeIndex', () => {
@@ -86,6 +115,27 @@ describe('buildNodeIndex', () => {
     const idx = buildNodeIndex(diagram.signals);
     expect(idx.get('a')).toMatchObject({ signalId: 'a', step: 1, char: 'a' });
     expect(idx.get('b')).toMatchObject({ signalId: 'b', step: 2, char: 'b' });
+  });
+
+  it('indexes expanded node identifiers by step', () => {
+    const diagram = minimalDiagram({
+      signals: [{
+        id: 'long',
+        name: 'Long',
+        type: 'bit',
+        states: Array(4).fill('0'),
+        segments: [],
+        color: '#4af',
+        rowHeight: 40,
+        node: '....',
+        nodeNames: { 2: 'request.ready' },
+      }],
+    });
+    expect(buildNodeIndex(diagram.signals).get('request.ready')).toMatchObject({
+      signalId: 'long',
+      step: 2,
+      char: 'request.ready',
+    });
   });
 });
 

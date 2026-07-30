@@ -3,38 +3,66 @@ import {
   WAVEDROM_COLOR_INDEXES,
   type WavedromColorIndex,
 } from '../../wavedromBridge/wavedromColors';
-import type { BitState, PaintMode, PaintStyle } from '../../shared/types';
+import type {
+  AnalogueTransition,
+  BitState,
+  PaintMode,
+  PaintStyle,
+} from '../../shared/types';
 import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { BitStateButton } from './BitStateButton';
 import {
+  BIT_STATE_LABELS,
   EDGE_CONNECTOR_GROUPS,
   MORE_BIT_STATES,
   PRIMARY_BIT_STATES,
+  UNDULATE_BIT_STATES,
 } from './bitStateConstants';
+import { BitValuePalette } from './BitValuePalette';
+import {
+  AnalogueBrushPalette,
+} from './AnalogueBrushPalette';
+import {
+  ANALOGUE_BRUSH_OPTIONS,
+  analogueBrushPreviewPath,
+} from './analogueBrushOptions';
 import styles from '../shell.module.css';
 
 export interface ToolbarPaintSectionProps {
   paintMode: PaintMode;
   paintStyle: PaintStyle;
   activeBit: BitState;
+  extensionsEnabled: boolean;
   moreBitsOpen: boolean;
+  recentBits: BitState[];
   onSetPaintMode: (mode: PaintMode) => void;
   onSetPaintStyle: (style: PaintStyle) => void;
   onSelectBit: (st: BitState) => void;
   onToggleMoreBits: () => void;
+  onCloseMoreBits: () => void;
+  onRememberBit: (state: BitState) => void;
 }
 
 export function ToolbarPaintSection({
   paintMode,
   paintStyle,
   activeBit,
+  extensionsEnabled,
   moreBitsOpen,
+  recentBits,
   onSetPaintMode,
   onSetPaintStyle,
   onSelectBit,
   onToggleMoreBits,
+  onCloseMoreBits,
+  onRememberBit,
 }: ToolbarPaintSectionProps) {
-  const moreBitsActive = MORE_BIT_STATES.includes(activeBit);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const moreBitStates = extensionsEnabled
+    ? [...MORE_BIT_STATES, ...UNDULATE_BIT_STATES]
+    : MORE_BIT_STATES;
+  const moreBitsActive = moreBitStates.includes(activeBit);
 
   return (
     <>
@@ -59,6 +87,7 @@ export function ToolbarPaintSection({
       </button>
       <span className={styles.toolGroupLabel}>Value</span>
       <button
+        ref={moreButtonRef}
         type="button"
         title="Glitch — add a spurious transition (G)"
         className={`${styles.toolBtn} ${paintMode === 'glitch' ? styles.toolActive : ''}`}
@@ -95,7 +124,11 @@ export function ToolbarPaintSection({
       ))}
       <button
         type="button"
-        title="More values — p, n, weak pull-up/down (u, d), Set mode"
+        title={
+          extensionsEnabled
+            ? 'More values — clocks, weak pull-up/down, impulse, metastability, held edges'
+            : 'More values — p, n, weak pull-up/down (u, d), Set mode'
+        }
         className={`${styles.toolBtn} ${
           moreBitsOpen || moreBitsActive ? styles.toolActive : ''
         }`}
@@ -103,28 +136,22 @@ export function ToolbarPaintSection({
         aria-pressed={moreBitsOpen}
         aria-expanded={moreBitsOpen}
       >
-        More{moreBitsActive && !moreBitsOpen ? ` (${activeBit})` : ''} ▾
+        {moreBitsActive
+          ? `${BIT_STATE_LABELS[activeBit] ?? 'More'} (${activeBit})`
+          : 'More'} ▾
       </button>
       {moreBitsOpen ? (
-        <span className={styles.paintMoreGroup}>
-          {MORE_BIT_STATES.map((st) => (
-            <BitStateButton
-              key={st}
-              st={st}
-              active={paintMode === 'set' && activeBit === st}
-              onSelect={onSelectBit}
-            />
-          ))}
-          <button
-            type="button"
-            title="Set — apply the selected value"
-            className={`${styles.toolBtn} ${paintMode === 'set' ? styles.toolActive : ''}`}
-            onClick={() => onSetPaintMode('set')}
-            aria-pressed={paintMode === 'set'}
-          >
-            Set
-          </button>
-        </span>
+        <BitValuePalette
+          anchorRef={moreButtonRef}
+          activeBit={activeBit}
+          extensionsEnabled={extensionsEnabled}
+          recentBits={recentBits}
+          onSelect={(state) => {
+            onSelectBit(state);
+            onRememberBit(state);
+          }}
+          onClose={onCloseMoreBits}
+        />
       ) : null}
     </>
   );
@@ -133,6 +160,89 @@ export function ToolbarPaintSection({
 export interface ToolbarBusSectionProps {
   activeBusColorIndex: WavedromColorIndex;
   onBusColorIndex: (index: WavedromColorIndex) => void;
+}
+
+export interface ToolbarAnaloguePaintSectionProps {
+  kind: AnalogueTransition;
+  value: number;
+  onKindChange: (kind: AnalogueTransition) => void;
+  onValueChange: (value: number) => void;
+}
+
+export function ToolbarAnaloguePaintSection({
+  kind,
+  value,
+  onKindChange,
+  onValueChange,
+}: ToolbarAnaloguePaintSectionProps) {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const paletteButtonRef = useRef<HTMLButtonElement>(null);
+  const activeOption =
+    ANALOGUE_BRUSH_OPTIONS.find((option) => option.kind === kind)
+    ?? ANALOGUE_BRUSH_OPTIONS[0]!;
+  const usesTarget =
+    kind === 'step' || kind === 'capacitive' || kind === 'samples';
+
+  return (
+    <>
+      <span className={styles.toolGroupLabel}>Shape</span>
+      <button
+        ref={paletteButtonRef}
+        type="button"
+        title="Choose an analogue cell shape with waveform previews"
+        className={`${styles.toolBtn} ${styles.toolActive}`}
+        aria-expanded={paletteOpen}
+        onClick={() => setPaletteOpen((open) => !open)}
+      >
+        <svg
+          className={styles.analogueBrushButtonPreview}
+          viewBox="0 0 64 22"
+          aria-hidden
+        >
+          <path d={analogueBrushPreviewPath(kind)} />
+        </svg>
+        {activeOption.label} ▾
+      </button>
+      {paletteOpen ? (
+        <AnalogueBrushPalette
+          anchorRef={paletteButtonRef}
+          activeKind={kind}
+          onSelect={onKindChange}
+          onClose={() => setPaletteOpen(false)}
+        />
+      ) : null}
+      <label
+        className={styles.hscaleWrap}
+        title={
+          usesTarget
+            ? 'Target analogue value painted into cells'
+            : 'This analogue state derives its level from the voltage rails'
+        }
+      >
+        <span className={styles.hscaleLabel}>Target</span>
+        <input
+          type="number"
+          step="any"
+          className={styles.hscaleInput}
+          value={value}
+          disabled={!usesTarget}
+          aria-label="Analogue brush value"
+          onChange={(event) => {
+            const next = Number(event.target.value);
+            if (Number.isFinite(next)) onValueChange(next);
+          }}
+        />
+      </label>
+      <span className={styles.contextHint}>
+        {kind === 'hold'
+          ? 'Paint . to continue the previous voltage'
+          : usesTarget
+            ? `Paint ${activeOption.symbol} toward ${value}`
+            : `Paint ${activeOption.symbol}: ${activeOption.description}`}
+        {' · '}Inspector edits exact cells and points
+      </span>
+    </>
+  );
 }
 
 export function ToolbarBusSection({

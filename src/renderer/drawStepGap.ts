@@ -1,8 +1,8 @@
 /** WaveDrom `#gap` symbol paths (24px tall, centered on the column boundary). */
 const GAP_MASK_PATH =
-  'M7,-2 L3,-2 C-2,-2 -2,22 -7,22 L-3,22 C2,22 2,-2 7,-2 Z';
-const GAP_STROKE_LEFT = 'M-7,22 C-2,22 -2,-2 3,-2';
-const GAP_STROKE_RIGHT = 'M-3,22 C2,22 2,-2 7,-2';
+  'M-3.5,-2 L-4.5,-2 C-5.75,-2 -5.75,22 -7,22 L-6,22 C-4.75,22 -4.75,-2 -3.5,-2 Z';
+const GAP_STROKE_LEFT = 'M-7,22 C-5.75,22 -5.75,-2 -4.5,-2';
+const GAP_STROKE_RIGHT = 'M-6,22 C-4.75,22 -4.75,-2 -3.5,-2';
 const GAP_SYMBOL_HEIGHT = 24;
 
 function canvasBackgroundFill(): string {

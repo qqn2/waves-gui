@@ -75,7 +75,30 @@ describe('localDraft', () => {
   it('round-trips diagram through save/load', () => {
     const diagram = sampleDiagram();
     saveDraft(diagram, storage);
-    expect(loadDraft(storage)).toEqual(diagram);
+    expect(loadDraft(storage)).toEqual({
+      ...diagram,
+      version: 2,
+      compatibility: { extensionsEnabled: false },
+      annotations: [],
+    });
+  });
+
+  it('retains JSON5 source text in recovery drafts', () => {
+    const diagram = sampleDiagram();
+    diagram.compatibility = {
+      extensionsEnabled: false,
+      sourceFormat: 'wavedrom-json',
+      sourceText: `{
+  // retained draft comment
+  signal: [{ name: 'clk', wave: '0.1' }],
+}`,
+    };
+
+    saveDraft(diagram, storage);
+
+    expect(loadDraft(storage)?.compatibility?.sourceText).toContain(
+      '// retained draft comment',
+    );
   });
 
   it('serializeDraftEnvelope includes envelope and diagram version fields', () => {
@@ -90,7 +113,7 @@ describe('localDraft', () => {
       diagram: DiagramState;
     };
     expect(parsed.version).toBe(DRAFT_ENVELOPE_VERSION);
-    expect(parsed.diagram.version).toBe(1);
+    expect(parsed.diagram.version).toBe(2);
     expect(typeof parsed.savedAt).toBe('number');
 
     expect(JSON.parse(serializeDraftEnvelope(diagram, 123))).toEqual({

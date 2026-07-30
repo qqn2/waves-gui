@@ -2,11 +2,12 @@
  * WaveDrom `wave` string codec — converts between JSON `wave` and internal arrays.
  *
  * Wave character cheat sheet (normal bit lanes):
- *   0 1 x z u d  — logic levels (unknown, high-Z, pull-up/down)
+ *   0 1 x X z u d — logic levels and Undulate unknown/garbage data
  *   p n P N      — complete positive/negative-edge clock cycles
- *   =            — start/end of a bus span (pairs with data[] label)
+ *   h H l L      — Undulate rising/falling edge followed by a held level
+ *   = 2–9        — Undulate/WaveDrom data cells and palette variants
+ *   i I m M      — Undulate impulses and metastability resolution
  *   |            — gap column (hold previous level) → stepGaps[] on that column
- *   2–9          — bus fill color index (WaveDrom palette)
  *   repeated char — same level held; duplicate at boundary → stepGlitches[] (spurious transition)
  *
  * Decode order: pure clock string, expanded clock import, then mixed clock+binary scan.
@@ -25,6 +26,11 @@ export interface DecodedWave {
   stepGlitches: boolean[];
 }
 
+export function isUndulateExtendedDigitalWave(wave: string): boolean {
+  return /[iImMhHlL]/.test(wave)
+    || (/[=2-9]/.test(wave) && /[01zZuUdD]/.test(wave));
+}
+
 function waveCharToBitState(char: string): BitState | null {
   switch (char) {
     case '0':
@@ -32,8 +38,9 @@ function waveCharToBitState(char: string): BitState | null {
     case '1':
       return '1';
     case 'x':
-    case 'X':
       return 'x';
+    case 'X':
+      return 'X';
     case 'z':
     case 'Z':
       return 'z';
@@ -43,6 +50,24 @@ function waveCharToBitState(char: string): BitState | null {
     case 'd':
     case 'D':
       return 'd';
+    case '=':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    case 'i':
+    case 'I':
+    case 'm':
+    case 'M':
+    case 'h':
+    case 'H':
+    case 'l':
+    case 'L':
+      return char;
     default:
       return null;
   }
@@ -126,6 +151,7 @@ function readMixedClockChunk(wave: string, start: number): {
 /** Decode lanes that mix clock (`P...`) with binary (`0`, `1`, …). */
 function decodeMixedWaveDetail(wave: string): DecodedWave {
   const result: DecodedWave = { states: [], stepGaps: [], stepGlitches: [] };
+  const extendedDigital = isUndulateExtendedDigitalWave(wave);
   let prev: BitState = '0';
   let lastWaveChar = '';
   let i = 0;
@@ -162,8 +188,26 @@ function decodeMixedWaveDetail(wave: string): DecodedWave {
       case 'u':
       case 'U':
       case 'd':
-      case 'D': {
-        const next = waveCharToBitState(char)!;
+      case 'D':
+      case '=':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case 'i':
+      case 'I':
+      case 'm':
+      case 'M':
+      case 'h':
+      case 'H':
+      case 'l':
+      case 'L': {
+        const next =
+          char === 'X' && !extendedDigital ? 'x' : waveCharToBitState(char)!;
         if (result.states.length === 0) {
           result.states.push(next);
           prev = next;
@@ -181,19 +225,6 @@ function decodeMixedWaveDetail(wave: string): DecodedWave {
         lastWaveChar = char;
         break;
       }
-      case '=':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        result.states.push('0');
-        prev = '0';
-        lastWaveChar = char;
-        break;
       default:
         break;
     }

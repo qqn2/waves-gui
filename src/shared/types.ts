@@ -18,14 +18,21 @@
 
 // ─── Signal states ────────────────────────────────────────────────────────────
 
-/** All possible states for a single bit signal at one time step */
-export type BitState = '0' | '1' | 'x' | 'z' | 'u' | 'd' | 'p' | 'n' | 'P' | 'N' | '.';
+/** All supported states for a scalar or mixed Undulate digital lane cell. */
+export type BitState =
+  | '0' | '1' | 'x' | 'X' | 'z' | 'u' | 'd'
+  | 'p' | 'n' | 'P' | 'N'
+  | 'h' | 'H' | 'l' | 'L'
+  | '=' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+  | 'i' | 'I' | 'm' | 'M'
+  | '.';
 
 /** Map to WaveDrom wave characters (`.` is paint-only — resolved before storing in states[]) */
 export const BIT_STATE_CHARS: Record<BitState, string> = {
   '0': '0',
   '1': '1',
   'x': 'x',
+  'X': 'X',
   'z': 'z',
   'u': 'u',
   'd': 'd',
@@ -33,6 +40,23 @@ export const BIT_STATE_CHARS: Record<BitState, string> = {
   'n': 'n',
   'P': 'P',
   'N': 'N',
+  'h': 'h',
+  'H': 'H',
+  'l': 'l',
+  'L': 'L',
+  '=': '=',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '7': '7',
+  '8': '8',
+  '9': '9',
+  'i': 'i',
+  'I': 'I',
+  'm': 'm',
+  'M': 'M',
   '.': '.',
 };
 
@@ -46,14 +70,105 @@ export interface VectorSegment {
   color?: string; // optional per-segment fill override
 }
 
+export interface AnaloguePoint {
+  /** Position within the cell, normalized to the inclusive 0..1 range. */
+  offset: number;
+  value: number;
+}
+
+export type AnalogueTransition =
+  | 'hold'
+  | 'step'
+  | 'capacitive'
+  | 'samples'
+  | 'metastable-low'
+  | 'metastable-high'
+  | 'impulse-low'
+  | 'impulse-high';
+
+export interface AnalogueCell {
+  id: string;
+  kind: AnalogueTransition;
+  /** Settled value at the end of this cell. */
+  value: number;
+  /** Explicit points used by arbitrary sampled cells. */
+  samples?: AnaloguePoint[];
+  /** Original finite sample-time domain mapped affinely onto offsets 0..1. */
+  sampleTimebase?: { start: number; end: number };
+  /** Original safe Ludwig expression, retained for reevaluation and round-trip. */
+  expression?: string;
+}
+
+export interface DigitalTimingCell {
+  state: BitState;
+  /** Positive duration in document ticks. */
+  durationTicks: number;
+  /** Clock high/low boundary measured from the cell start. */
+  dutyTicks?: number;
+}
+
+export interface DigitalTiming {
+  ticksPerStep: number;
+  /** Horizontal shift in document ticks. */
+  phaseTicks: number;
+  cells: DigitalTimingCell[];
+  /** Digital transition width in document steps. */
+  slewing?: number;
+}
+
+export interface SignalStyle {
+  /** Safe normalized waveform stroke color. */
+  stroke?: string;
+  /** Safe normalized fill color, currently used by vector lanes. */
+  fill?: string;
+  strokeWidth?: number;
+  strokeDasharray?: number[];
+  /** Safe normalized pixel size, currently used by vector value labels. */
+  fontSize?: number;
+  /** Safe local generic family; no remote font loading. */
+  fontFamily?: 'sans-serif' | 'serif' | 'monospace';
+  /** Numeric font weight, restricted to 100-step values. */
+  fontWeight?: number;
+}
+
 export interface Signal {
   id: string;
   name: string;
-  type: 'bit' | 'vector' | 'spacer';
+  type: 'bit' | 'vector' | 'analogue' | 'spacer';
   /** Bit signals: one entry per time step. Clock entries represent a complete WaveDrom cycle. */
   states: BitState[];
   /** Vector signals: non-overlapping segments covering all steps */
   segments: VectorSegment[];
+  /** Analogue lanes: one finite, normalized cell per document step. */
+  analogueCells?: AnalogueCell[];
+  /** Integer-tick timing for Undulate digital lanes. */
+  digitalTiming?: DigitalTiming;
+  /** Original compact Undulate repeat spelling, retained while cell states stay unchanged. */
+  undulateRepeat?: {
+    repeat: number;
+    wave: string;
+    states: BitState[];
+  };
+  /** Original compact analogue repeat spelling, retained until a cell changes. */
+  undulateAnalogueRepeat?: {
+    repeat: number;
+    wave: string;
+    analogue: unknown[];
+    fingerprint: string;
+  };
+  /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
+  analogueMin?: number;
+  analogueMax?: number;
+  /** Undulate-compatible transition slew coefficient. */
+  slewing?: number;
+  /** Undulate-compatible vertical scale. */
+  vscale?: number;
+  /** Undulate overlay hint; layout support is introduced separately. */
+  overlay?: boolean;
+  /** Label order within an Undulate overlay. */
+  order?: number;
+  /** Safe declarative Undulate styling; arbitrary CSS is intentionally excluded. */
+  style?: SignalStyle;
   color: string; // stroke color, default '#4A9EFF'
   fillColor?: string; // vector fill, default semi-transparent stroke
   rowHeight: number; // px at zoom=1, default 40
@@ -62,6 +177,8 @@ export interface Signal {
   period?: number;
   /** WaveDrom node string — one character per step; anchors for edge[] */
   node?: string;
+  /** Undulate expanded node identifiers keyed by their waveform step. */
+  nodeNames?: Record<number, string>;
   /** Column i is a WaveDrom `|` gap column (holds previous level; consecutive `||` = multiple columns) */
   stepGaps?: boolean[];
   /** Spurious transition between step i and i+1 (WaveDrom explicit repeat, e.g. `00`) */
@@ -88,11 +205,24 @@ export interface SignalGroup {
 
 export type SignalOrGroup = Signal | SignalGroup;
 
+export interface AnalogueOverlayGroup {
+  id: string;
+  name: string;
+  /** Two to four consecutive analogue siblings, in visual order. */
+  signalIds: string[];
+}
+
 // ─── Diagram config ───────────────────────────────────────────────────────────
 
 export interface DiagramConfig {
   totalSteps: number; // number of time step columns
   hscale: number; // 1–4 (fractional OK), multiplier applied to CELL_WIDTH
+  /** Integer timing resolution. Existing documents default to one tick per step. */
+  ticksPerStep?: number;
+  /** Document-wide Ludwig analogue evaluation rails. */
+  analogueContext?: { vssa: number; vdda: number };
+  /** App-owned deterministic seed mixed into every supported rnd() expression. */
+  analogueRandomSeed?: number;
   /** WaveDrom config.skin (default, narrow, dark, …) */
   skin?: string;
   head?: { text?: string; tick?: number; every?: number };
@@ -101,10 +231,154 @@ export interface DiagramConfig {
 
 // ─── Diagram state (the saved document) ──────────────────────────────────────
 
+export type DiagramSourceFormat =
+  | 'wavedrom-json'
+  | 'undulate-json'
+  | 'undulate-yaml'
+  | 'undulate-toml';
+
+export interface OpaqueUndulateData {
+  /** Safe, unknown top-level properties keyed by their original property name. */
+  root?: Record<string, unknown>;
+  /** Safe unknown config fields, including nested head/foot fields. */
+  config?: Record<string, unknown>;
+  /** Safe unknown fields on top-level head/foot objects. */
+  head?: Record<string, unknown>;
+  foot?: Record<string, unknown>;
+  /** Safe, unknown properties keyed by the stable internal signal id. */
+  signals?: Record<string, Record<string, unknown>>;
+  /** Safe, unknown properties keyed by the stable internal annotation id. */
+  annotations?: Record<string, Record<string, unknown>>;
+}
+
+export interface DiagramCompatibility {
+  extensionsEnabled: boolean;
+  sourceFormat?: DiagramSourceFormat;
+  sourceRevision?: string;
+  /**
+   * Original source text. JSON5 uses it for CST-preserving edits; YAML and
+   * TOML keep it only as metadata and are rewritten canonically after edits.
+   */
+  sourceText?: string;
+  /** Safe declarative data retained verbatim until a future bridge models it. */
+  opaqueUndulate?: OpaqueUndulateData;
+}
+
+export interface AnnotationStyle {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  strokeDasharray?: number[];
+  /** Safe normalized pixel size for annotation labels. */
+  fontSize?: number;
+  /** Safe local generic family; no remote font loading. */
+  fontFamily?: 'sans-serif' | 'serif' | 'monospace';
+  /** CSS-compatible numeric weight, restricted to 100-step values. */
+  fontWeight?: number;
+  /** Undulate defaults textual annotations to an opaque background. */
+  textBackground?: boolean;
+}
+
+export interface AnnotationRangePosition {
+  unit: 'index' | 'percent';
+  value: number;
+}
+
+export interface TextAnnotation {
+  id: string;
+  type: 'text';
+  text: string;
+  /** Integer document tick. Version 2 currently uses one tick per major step. */
+  tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
+  snapToGrid?: boolean;
+  /** Optional semantic row anchor. */
+  signalId?: string;
+  /** Logical pixel offset from the anchored row center. */
+  yOffset?: number;
+  style?: AnnotationStyle;
+}
+
+export interface VerticalLineAnnotation {
+  id: string;
+  type: 'vertical-line';
+  /** Integer document tick. The line is centered on this step. */
+  tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
+  /** Optional vertical span, expressed as a signal-row index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
+  style?: AnnotationStyle;
+}
+
+export interface HorizontalLineAnnotation {
+  id: string;
+  type: 'horizontal-line';
+  /** Exact diagram Y coordinate in row-height units. */
+  y?: number;
+  coordinateMode?: 'diagram' | 'signal';
+  /** Optional semantic row anchor. */
+  signalId?: string;
+  /** Logical pixel offset from the anchored row center. */
+  yOffset?: number;
+  /** Optional horizontal span, expressed as a cell index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
+  style?: AnnotationStyle;
+}
+
+export interface GlobalCompressionAnnotation {
+  id: string;
+  type: 'global-compression';
+  /** Integer document tick. The compression marker is centered on this step. */
+  tick: number;
+  /** Exact Undulate X coordinate in waveform-cell units. */
+  x?: number;
+  snapToGrid?: boolean;
+  /** Optional vertical span, expressed as a signal-row index or percentage. */
+  rangeFrom?: AnnotationRangePosition;
+  rangeTo?: AnnotationRangePosition;
+  style?: AnnotationStyle;
+}
+
+export type AnnotationAnchor =
+  | { kind: 'point'; x: number; y: number; percent?: boolean }
+  | { kind: 'node'; node: string; dx?: number; dy?: number };
+
+export interface ArrowAnnotation {
+  id: string;
+  type: 'arrow';
+  shape: string;
+  from: AnnotationAnchor;
+  to: AnnotationAnchor;
+  text?: string;
+  dx?: number;
+  dy?: number;
+  style?: AnnotationStyle;
+}
+
+export type DiagramAnnotation =
+  | TextAnnotation
+  | VerticalLineAnnotation
+  | HorizontalLineAnnotation
+  | GlobalCompressionAnnotation
+  | ArrowAnnotation;
+
 export interface DiagramState {
-  version: 1;
+  /** Version 1 is accepted as legacy input; normalization always migrates it to version 2. */
+  version: 1 | 2;
+  compatibility?: DiagramCompatibility;
   signals: SignalOrGroup[];
+  /** Explicit analogue overlay membership; Undulate overlay flags are derived. */
+  analogueOverlayGroups?: AnalogueOverlayGroup[];
   config: DiagramConfig;
+  annotations?: DiagramAnnotation[];
   /** WaveDrom edge[] dependency arrow strings */
   edges: string[];
   /** Per-edge cubic control bias for ~ curves (not exported to WaveDrom JSON). */
@@ -115,8 +389,14 @@ export interface DiagramState {
 
 export type Tool =
   | 'paint'
+  | 'analogue-paint'
   | 'erase'
   | 'select'
+  | 'annotation'
+  | 'vertical-line'
+  | 'horizontal-line'
+  | 'global-compression'
+  | 'structured-arrow'
   | 'arrow'
   | 'timespan'
   | 'cursor';
@@ -143,6 +423,9 @@ export interface ViewState {
   /** Replace vs additive when painting values and gaps (Draw tool). */
   paintStyle: PaintStyle;
   activeBitState: BitState; // used when paintMode is 'set' (or Shift override)
+  /** Brush used by the dedicated Undulate analogue cell-painting tool. */
+  activeAnalogueKind: AnalogueTransition;
+  activeAnalogueValue: number;
   /** Label written on bus lanes when painting with the paint tool (= span) */
   activeBusLabel: string;
   /** Label for new timespan edges (WaveDrom edge[] text after path) */
@@ -152,6 +435,10 @@ export interface ViewState {
   /** WaveDrom bus fill palette index (2–9) for new vector spans */
   activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
+  /** Fine-timing cell targeted from the canvas or signal inspector. */
+  activeTimingCellIndex?: number | null;
+  /** Selected extended object, mutually exclusive with activeSignalIds. */
+  activeAnnotationId?: string | null;
   showCodePanel: boolean;
   showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
@@ -170,6 +457,10 @@ export interface ViewState {
   paintDraft: PaintDraft | null;
   /** In-progress WaveDrom edge[] anchor placement (arrow / timespan tools) */
   edgeAnchorPending: EdgeAnchorPending | null;
+  /** First coordinate selected while placing a structured Undulate arrow. */
+  structuredArrowPending: { x: number; y: number } | null;
+  /** Default X snapping for newly created annotations. */
+  annotationSnapToGrid?: boolean;
   /** Pointer position + optional lane snap while arrow / timespan tool is active */
   edgeToolHover: {
     signalId: string | null;
@@ -199,11 +490,13 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
-  lane: 'bit' | 'vector';
+  lane: 'bit' | 'vector' | 'analogue';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set' | 'glitch' | 'gap'; // paint only; erase ignores
   busLabel?: string; // vector paint: WaveDrom data[] label
   busColorFill?: string; // vector paint: WaveDrom bus fill hex
+  analogueKind?: AnalogueTransition;
+  analogueValue?: number;
   mode: 'paint' | 'erase';
   /** Erase tool: WaveDrom edge[] index to remove on pointer up */
   edgeIndex?: number;

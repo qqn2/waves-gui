@@ -17,6 +17,7 @@ import { CELL_WIDTH, TIME_AXIS_HEIGHT } from '../shared/constants';
 import { stepLogicalCenter } from './laneTiming';
 import { buildRowLayout } from './rowLayout';
 import { measureHeadFoot } from './renderHeadFoot';
+import { parseUndulateEdge } from '../shared/edgeSyntax';
 export interface NodeAnchor {
   signalId: string;
   step: number;
@@ -29,6 +30,8 @@ export interface ParsedEdge {
   toNode: string;
   hasStartArrow: boolean;
   hasArrow: boolean;
+  startMarker?: 'square' | 'circle';
+  endMarker?: 'square' | 'circle';
   shape: string;
   label: string;
 }
@@ -47,6 +50,8 @@ export function parseEdgeString(edge: string): { path: string; label: string } {
 }
 
 export function parsePathEndpoints(path: string): { from: string; to: string } | null {
+  const parsed = parseUndulateEdge(path);
+  if (parsed) return { from: parsed.from, to: parsed.to };
   if (path.length < 2) return null;
   return { from: path[0]!, to: path[path.length - 1]! };
 }
@@ -65,6 +70,34 @@ export function parseEdgePath(pathWord: string): Omit<ParsedEdge, 'label'> {
 }
 
 export function parseEdge(edge: string): ParsedEdge | null {
+  const undulate = parseUndulateEdge(edge);
+  if (undulate) {
+    let connector = undulate.connector;
+    const hasStartArrow = connector.startsWith('<');
+    const hasArrow = connector.endsWith('>');
+    const startMarker = connector.startsWith('#')
+      ? 'square'
+      : connector.startsWith('*')
+        ? 'circle'
+        : undefined;
+    const endMarker = connector.endsWith('#')
+      ? 'square'
+      : connector.endsWith('*')
+        ? 'circle'
+        : undefined;
+    if (hasStartArrow || startMarker) connector = connector.slice(1);
+    if (hasArrow || endMarker) connector = connector.slice(0, -1);
+    return {
+      fromNode: undulate.from,
+      toNode: undulate.to,
+      hasStartArrow,
+      hasArrow,
+      ...(startMarker ? { startMarker } : {}),
+      ...(endMarker ? { endMarker } : {}),
+      shape: connector || '-',
+      label: undulate.label,
+    };
+  }
   const { path, label } = parseEdgeString(edge);
   if (path.length < 2) return null;
   return { ...parseEdgePath(path), label };
@@ -83,7 +116,10 @@ export function collectEdgeEndpointChars(edges: string[]): Set<string> {
 }
 
 /** Map node letter → first signal/step occurrence in tree order. */
-export function buildNodeIndex(signals: SignalOrGroup[]): Map<string, NodeAnchor> {
+export function buildNodeIndex(
+  signals: SignalOrGroup[],
+  includeExpanded = true,
+): Map<string, NodeAnchor> {
   const map = new Map<string, NodeAnchor>();
   const walk = (list: SignalOrGroup[]) => {
     for (const item of list) {
@@ -95,6 +131,19 @@ export function buildNodeIndex(signals: SignalOrGroup[]): Map<string, NodeAnchor
           if (ch === '.' || ch === ' ') continue;
           if (map.has(ch)) continue;
           map.set(ch, { signalId: item.id, step, char: ch });
+        }
+        for (const [rawStep, name] of Object.entries(
+          includeExpanded ? item.nodeNames ?? {} : {},
+        )) {
+          const step = Number(rawStep);
+          if (!Number.isInteger(step) || step < 0 || map.has(name)) continue;
+          map.set(name, { signalId: item.id, step, char: name });
+        }
+      } else if (includeExpanded && item.type !== 'spacer' && item.nodeNames) {
+        for (const [rawStep, name] of Object.entries(item.nodeNames)) {
+          const step = Number(rawStep);
+          if (!Number.isInteger(step) || step < 0 || map.has(name)) continue;
+          map.set(name, { signalId: item.id, step, char: name });
         }
       }
     }
@@ -269,6 +318,10 @@ export interface EdgeDrawItem {
   d: string;
   hasArrow: boolean;
   bidirectional: boolean;
+  startMarker?: 'square' | 'circle';
+  endMarker?: 'square' | 'circle';
+  from: CanvasAnchor;
+  to: CanvasAnchor;
   label: string;
   labelX: number;
   labelY: number;
@@ -280,7 +333,10 @@ export function buildEdgeDrawItems(
   view: ViewState,
   edges: string[],
 ): EdgeDrawItem[] {
-  const nodeIndex = buildNodeIndex(diagram.signals);
+  const nodeIndex = buildNodeIndex(
+    diagram.signals,
+    diagram.compatibility?.extensionsEnabled === true,
+  );
   const items: EdgeDrawItem[] = [];
   const controls = diagram.edgeCurveControls ?? {};
 
@@ -288,6 +344,10 @@ export function buildEdgeDrawItems(
     const edgeStr = edges[i]!;
     const parsed = parseEdge(edgeStr);
     if (!parsed) continue;
+    if (
+      diagram.compatibility?.extensionsEnabled !== true
+      && (parsed.startMarker || parsed.endMarker)
+    ) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) continue;
     const curve = isCurvyEdgeShape(parsed.shape)
@@ -300,6 +360,10 @@ export function buildEdgeDrawItems(
       d,
       hasArrow: parsed.hasArrow,
       bidirectional,
+      ...(parsed.startMarker ? { startMarker: parsed.startMarker } : {}),
+      ...(parsed.endMarker ? { endMarker: parsed.endMarker } : {}),
+      from: anchors.from,
+      to: anchors.to,
       label: parsed.label,
       labelX: labelPos.x,
       labelY: labelPos.y - 4,
@@ -433,10 +497,17 @@ export function hitTestDiagramEdge(
   const edges = diagram.edges ?? [];
   if (edges.length === 0) return null;
 
-  const nodeIndex = buildNodeIndex(diagram.signals);
+  const nodeIndex = buildNodeIndex(
+    diagram.signals,
+    diagram.compatibility?.extensionsEnabled === true,
+  );
   for (let i = edges.length - 1; i >= 0; i--) {
     const parsed = parseEdge(edges[i]!);
     if (!parsed) continue;
+    if (
+      diagram.compatibility?.extensionsEnabled !== true
+      && (parsed.startMarker || parsed.endMarker)
+    ) continue;
     const anchors = resolveEdgeAnchors(diagram, view, parsed, nodeIndex);
     if (!anchors) continue;
     const poly = edgePathPolyline(anchors.from, anchors.to, parsed.shape);

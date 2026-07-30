@@ -1,4 +1,11 @@
-import type { BitState, PaintMode, PaintStyle, Theme, Tool } from '../types';
+import type {
+  AnalogueTransition,
+  BitState,
+  PaintMode,
+  PaintStyle,
+  Theme,
+  Tool,
+} from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
 import { saveThemeSettings, themeSettingsFromView } from '../theme';
@@ -23,11 +30,16 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setScroll'
   | 'setTool'
   | 'setActiveBitState'
+  | 'setActiveAnalogueKind'
+  | 'setActiveAnalogueValue'
   | 'setActiveBusLabel'
   | 'setActiveTimespanLabel'
   | 'setActiveEdgeLabel'
   | 'setActiveBusColorIndex'
+  | 'setActiveTimingCellIndex'
+  | 'setAnnotationSnapToGrid'
   | 'setEdgeToolHover'
+  | 'setStructuredArrowPending'
   | 'setPaintMode'
   | 'setPaintStyle'
   | 'toggleCodePanel'
@@ -77,6 +89,19 @@ export function createViewActions(set: ImmerSet): Pick<
       });
     },
 
+    setActiveAnalogueKind(kind: AnalogueTransition) {
+      set((s) => {
+        s.view.activeAnalogueKind = kind;
+      });
+    },
+
+    setActiveAnalogueValue(value: number) {
+      if (!Number.isFinite(value)) return;
+      set((s) => {
+        s.view.activeAnalogueValue = value;
+      });
+    },
+
     setActiveEdgeLabel(label) {
       set((s) => {
         s.view.activeEdgeLabel = label;
@@ -89,9 +114,29 @@ export function createViewActions(set: ImmerSet): Pick<
       });
     },
 
+    setStructuredArrowPending(pending) {
+      set((s) => {
+        s.view.structuredArrowPending = pending;
+      });
+    },
+
     setActiveBusColorIndex(index: WavedromColorIndex) {
       set((s) => {
         s.view.activeBusColorIndex = index;
+      });
+    },
+
+    setActiveTimingCellIndex(index) {
+      set((s) => {
+        s.view.activeTimingCellIndex = index === null
+          ? null
+          : Math.max(0, Math.floor(index));
+      });
+    },
+
+    setAnnotationSnapToGrid(enabled) {
+      set((s) => {
+        s.view.annotationSnapToGrid = enabled;
       });
     },
 

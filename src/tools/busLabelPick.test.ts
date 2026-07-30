@@ -40,7 +40,7 @@ describe('pickBusLabelFromHit', () => {
     });
 
     const ok = pickBusLabelFromHit(
-      { signalId: 'v1', signalType: 'vector', step: 0, half: null, isLabelArea: false, isTimeAxis: false, edgeIndex: null },
+      { signalId: 'v1', signalType: 'vector', step: 0, half: null, isLabelArea: false, isTimeAxis: false, edgeIndex: null, annotationId: null },
       useStore.getState().diagram,
     );
 
@@ -65,7 +65,7 @@ describe('pickBusLabelFromHit', () => {
     });
 
     const ok = pickBusLabelFromHit(
-      { signalId: 'v1', signalType: 'vector', step: 0, half: null, isLabelArea: false, isTimeAxis: false, edgeIndex: null },
+      { signalId: 'v1', signalType: 'vector', step: 0, half: null, isLabelArea: false, isTimeAxis: false, edgeIndex: null, annotationId: null },
       useStore.getState().diagram,
     );
 
