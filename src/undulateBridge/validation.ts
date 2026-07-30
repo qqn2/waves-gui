@@ -261,6 +261,12 @@ function isSafeOpaqueValue(
   ));
 }
 
+function isSafeOpaqueProperty(field: string, value: unknown): boolean {
+  return field.length <= 256
+    && !UNSAFE_OPAQUE_KEY.test(field)
+    && isSafeOpaqueValue(value);
+}
+
 function scanUnknownFields(
   record: Record<string, unknown>,
   path: string,
@@ -271,8 +277,8 @@ function scanUnknownFields(
   for (const field of Object.keys(record)) {
     const fieldPath = `${path}.${field}`;
     if (supported.has(field)) continue;
-    if (opaqueFields.has(field) || isSafeOpaqueValue(record[field])) {
-      if (!isSafeOpaqueValue(record[field])) {
+    if (opaqueFields.has(field) || isSafeOpaqueProperty(field, record[field])) {
+      if (!isSafeOpaqueProperty(field, record[field])) {
         findings.push(unknown(fieldPath));
       } else {
         findings.push(opaque(fieldPath));
@@ -297,7 +303,7 @@ function scanNamedObject(
   for (const field of Object.keys(value)) {
     if (!knownFields.has(field)) {
       findings.push(
-        isSafeOpaqueValue(value[field])
+        isSafeOpaqueProperty(field, value[field])
           ? opaque(`${path}.${field}`)
           : unknown(`${path}.${field}`),
       );
@@ -353,12 +359,14 @@ function scanSignal(
     const fieldPath = `${path}.${field}`;
     if (opaqueKnown.has(field)) {
       findings.push(
-        isSafeOpaqueValue(signal[field]) ? opaque(fieldPath) : unknown(fieldPath),
+        isSafeOpaqueProperty(field, signal[field]) ? opaque(fieldPath) : unknown(fieldPath),
       );
       continue;
     }
     if (!supported.has(field)) {
-      findings.push(isSafeOpaqueValue(signal[field]) ? opaque(fieldPath) : unknown(fieldPath));
+      findings.push(
+        isSafeOpaqueProperty(field, signal[field]) ? opaque(fieldPath) : unknown(fieldPath),
+      );
       continue;
     }
     if (field === 'wave' && typeof signal.wave === 'string' && !analogue) {
@@ -405,7 +413,9 @@ function scanAnnotations(value: unknown, findings: UndulateFinding[]): void {
       const fieldPath = `${path}.${field}`;
       if (!ANNOTATION_SUPPORTED.has(field)) {
         findings.push(
-          isSafeOpaqueValue(annotation[field]) ? opaque(fieldPath) : unknown(fieldPath),
+          isSafeOpaqueProperty(field, annotation[field])
+            ? opaque(fieldPath)
+            : unknown(fieldPath),
         );
       } else if (
         field === 'text'
@@ -448,7 +458,7 @@ function scanProperties(root: Record<string, unknown>): UndulateFinding[] {
         'The current diagram was not changed.',
       ));
     } else {
-      findings.push(isSafeOpaqueValue(root[field]) ? opaque(field) : unknown(field));
+      findings.push(isSafeOpaqueProperty(field, root[field]) ? opaque(field) : unknown(field));
     }
   }
   return findings;

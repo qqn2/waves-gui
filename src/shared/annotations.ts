@@ -128,11 +128,19 @@ function channelByte(value: unknown): number | undefined {
   return value;
 }
 
-function normalizeAlphaComponent(value: number): number | undefined {
-  if (!Number.isFinite(value) || value < 0) return undefined;
+function normalizeAlphaComponent(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+    return undefined;
+  }
   if (value <= 1) return value;
   if (value <= 255 && Number.isInteger(value)) return value / 255;
   return undefined;
+}
+
+function parseColorNumber(value: string): number | undefined {
+  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value)) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 /**
@@ -148,7 +156,7 @@ export function normalizeUndulateColor(value: unknown): string | undefined {
     if (channels.some((channel) => channel === undefined)) return undefined;
     const [r, g, b] = channels as [number, number, number];
     if (value.length === 3) return `rgb(${r}, ${g}, ${b})`;
-    const alpha = normalizeAlphaComponent(Number(value[3]));
+    const alpha = normalizeAlphaComponent(value[3]);
     if (alpha === undefined) return undefined;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
@@ -166,11 +174,14 @@ export function normalizeUndulateColor(value: unknown): string | undefined {
   const isRgba = color.toLowerCase().startsWith('rgba(');
   const expected = isRgba ? 4 : 3;
   if (parts.length !== expected) return undefined;
-  const channels = parts.slice(0, 3).map((part) => channelByte(Number(part)));
+  const channels = parts.slice(0, 3).map((part) => {
+    const parsed = parseColorNumber(part);
+    return parsed === undefined ? undefined : channelByte(parsed);
+  });
   if (channels.some((channel) => channel === undefined)) return undefined;
   const [r, g, b] = channels as [number, number, number];
   if (!isRgba) return `rgb(${r}, ${g}, ${b})`;
-  const alpha = normalizeAlphaComponent(Number(parts[3]));
+  const alpha = normalizeAlphaComponent(parseColorNumber(parts[3]!));
   if (alpha === undefined) return undefined;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }

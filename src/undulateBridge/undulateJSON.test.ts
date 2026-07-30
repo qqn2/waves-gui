@@ -876,6 +876,19 @@ describe('Undulate JSON bridge', () => {
         future_annotation: 'javascript:alert(1)',
       }],
     })).toContain('Unknown Undulate property annotations[0].future_annotation');
+    expect(validateUndulateJSON(JSON.parse(
+      '{"signal":[],"__proto__":{"polluted":true}}',
+    ))).toContain('Unknown Undulate property __proto__');
+    const directUnsafe = JSON.parse(
+      '{"signal":[],"__proto__":{"polluted":true}}',
+    ) as UndulateRoot;
+    const directExport = toUndulateJSON(fromUndulateJSON(directUnsafe));
+    expect(Object.getPrototypeOf(directExport)).toBe(Object.prototype);
+    expect((directExport as unknown as Record<string, unknown>).__proto__)
+      .toEqual({ polluted: true });
+    expect(validateUndulateJSON({
+      signal: [{ name: 'unsafe', wave: '0', style: { fill: 'red' } }],
+    })).toContain('Unknown Undulate property signal[0].style');
   });
 
   it('classifies the pinned blocked-feature fixture in one pass', () => {

@@ -3,6 +3,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { buildSVGString } from '../exportEngine/exportSVG';
+import {
+  normalizeUndulateColor,
+  parseAnnotationFontSize,
+} from '../shared/annotations';
 import { undulateCompatibilityFindings } from '../shared/compatibility';
 import { defaultView } from '../shared/store/helpers';
 import type { UndulateRoot } from './types';
@@ -14,7 +18,9 @@ import {
 } from './undulateJSON';
 import { parseUndulateTOML, stringifyUndulateTOML } from './undulateTOML';
 import { parseUndulateYAML, stringifyUndulateYAML } from './undulateYAML';
+import { normalizeUndulateEdge } from './edges';
 import { UNDULATE_TARGET_REVISION } from './validation';
+import { decodeWaveString } from '../wavedromBridge';
 
 interface Provenance {
   repository: string;
@@ -76,6 +82,78 @@ function semanticCore(root: UndulateRoot): unknown {
   }));
 }
 
+function canonicalizeStyle(record: Record<string, unknown>): void {
+  const fill = normalizeUndulateColor(record.fill);
+  const stroke = normalizeUndulateColor(record.stroke)
+    ?? normalizeUndulateColor(record.color);
+  if (fill !== undefined) record.fill = fill;
+  if (stroke !== undefined) record.stroke = stroke;
+  delete record.color;
+  const fontSize = parseAnnotationFontSize(record['font-size']);
+  if (fontSize !== undefined) record['font-size'] = `${fontSize}px`;
+}
+
+/**
+ * Canonical transformations are intentionally explicit here. This keeps the
+ * first import/export assertion independent from the bridge output, so a field
+ * dropped on that first pass cannot be hidden by comparing two lossy exports.
+ */
+function flatSignalRecords(entries: unknown[]): Array<Record<string, unknown>> {
+  return entries.flatMap((entry) => (
+    Array.isArray(entry)
+      ? flatSignalRecords(entry.slice(1))
+      : entry && typeof entry === 'object'
+        ? [entry as Record<string, unknown>]
+        : []
+  ));
+}
+
+function expectFirstExportToRetainSource(
+  source: UndulateRoot,
+  exported: UndulateRoot,
+): void {
+  const sourceSignals = flatSignalRecords(source.signal ?? []);
+  const exportedSignals = flatSignalRecords(exported.signal ?? []);
+  expect(exportedSignals).toHaveLength(sourceSignals.length);
+  sourceSignals.forEach((rawSource, index) => {
+    const expected = JSON.parse(JSON.stringify(rawSource)) as Record<string, unknown>;
+    canonicalizeStyle(expected);
+    const actual = exportedSignals[index]!;
+    for (const [field, value] of Object.entries(expected)) {
+      if (field === 'wave' && typeof value === 'string') {
+        const sourceStates = decodeWaveString(value);
+        expect(decodeWaveString(String(actual.wave)).slice(0, sourceStates.length))
+          .toEqual(sourceStates);
+      } else if (field === 'data' && Array.isArray(value)) {
+        for (const label of value) expect(actual.data).toContain(label);
+      } else if (
+        (field === 'periods' || field === 'duty_cycles')
+        && Array.isArray(value)
+      ) {
+        expect((actual[field] as unknown[]).slice(0, value.length)).toEqual(value);
+      } else {
+        expect(actual[field], `signal[${index}].${field}`).toEqual(value);
+      }
+    }
+  });
+
+  for (const [field, value] of Object.entries(source.config ?? {})) {
+    expect((exported.config as Record<string, unknown> | undefined)?.[field])
+      .toEqual(value);
+  }
+  if (source.head) expect(exported.head).toMatchObject(source.head);
+  if (source.foot) expect(exported.foot).toMatchObject(source.foot);
+  const sourceEdges = source.edges ?? source.edge;
+  if (sourceEdges) {
+    expect(exported.edges).toEqual(sourceEdges.map((edge) => normalizeUndulateEdge(edge)));
+  }
+  const expectedAnnotations = JSON.parse(
+    JSON.stringify(source.annotations ?? []),
+  ) as Array<Record<string, unknown>>;
+  expectedAnnotations.forEach(canonicalizeStyle);
+  expect(exported.annotations ?? []).toEqual(expectedAnnotations);
+}
+
 const corpusPath = join(
   process.cwd(),
   'tests/fixtures/undulate/certification-corpus.json',
@@ -129,6 +207,7 @@ describe('pinned Undulate certification corpus', () => {
       const imported = fromUndulateJSON(document);
       const exported = toUndulateJSON(imported);
       expect(validateUndulateJSON(exported)).toBeNull();
+      expectFirstExportToRetainSource(document, exported);
       const reimported = fromUndulateJSON(exported);
       expect(semanticCore(toUndulateJSON(reimported))).toEqual(semanticCore(exported));
 

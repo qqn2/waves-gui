@@ -454,9 +454,11 @@ export function toUndulateJSON(
   options: { includeAppMetadata?: boolean } = {},
 ): UndulateRoot {
   const includeAppMetadata = options.includeAppMetadata !== false;
-  const root: UndulateRoot = toWavedromJSON(diagram);
+  let root: UndulateRoot = toWavedromJSON(diagram);
   const opaque = diagram.compatibility?.opaqueUndulate;
-  Object.assign(root, opaque?.root ?? {});
+  // Object spread defines "__proto__" as data instead of invoking its legacy
+  // setter. Validation rejects that key, but keep export safe for direct API use.
+  root = { ...(opaque?.root ?? {}), ...root };
   const mergedConfig = mergeOpaqueNamedObject(opaque?.config, root.config);
   if (mergedConfig) {
     const opaqueConfig = opaque?.config;

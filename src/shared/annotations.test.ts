@@ -108,6 +108,9 @@ describe('annotations', () => {
     expect(isSafeUndulateColorInput([0, 0, 255, 255])).toBe(true);
     expect(isSafeUndulateColorInput('url(https://example.test)')).toBe(false);
     expect(isSafeUndulateColorInput([0, 0, 255, 300])).toBe(false);
+    expect(isSafeUndulateColorInput([0, 0, 255, null])).toBe(false);
+    expect(isSafeUndulateColorInput('rgb(, 0, 255)')).toBe(false);
+    expect(isSafeUndulateColorInput('rgba(0, 0, 255, )')).toBe(false);
   });
 
   it('normalizes and formats numeric and percentage line ranges', () => {

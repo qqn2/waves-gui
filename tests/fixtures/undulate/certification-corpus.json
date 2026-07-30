@@ -20,7 +20,7 @@
           {
             "name": "data",
             "wave": "x.3x=x",
-            "data": ["RST", "NOP", "CAS"],
+            "data": ["RST", "NOP"],
             "phase": 0.5
           },
           {
