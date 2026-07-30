@@ -43,8 +43,9 @@ The application must follow this decision tree:
 3. Once opaque preservation is implemented, retain safe declarative properties
    that are not yet modeled or come from a newer revision, report them as
    **Preserved**, and export them unchanged.
-4. Reject planned but incomplete features that cannot yet be preserved with
-   `[WIP] Feature not supported yet`.
+4. Preserve safe incomplete features opaquely with an explicit compatibility
+   finding, or reject only unsafe and permanently excluded features. Do not
+   leave safe pinned declarative fields on a blocking WIP path.
 5. Reject the four permanent exclusions with
    `Unsupported by design`.
 6. Reject malformed, unsafe, or over-limit content as **Invalid**.
@@ -385,7 +386,8 @@ layer. Existing behavior is not removed while the audit is completed.
 - [x] Non-mutating JSON editor rejection report.
 - [x] Replace identified imported truncation/clamping with explicit invalid
   findings.
-- [ ] Pinned fixtures proving every known incomplete feature is blocked.
+- [x] Pinned fixtures proving every known incomplete, opaque, and permanently
+  excluded feature is classified without silent loss.
 
 ##### Revision-pinned silent-loss safety gate
 

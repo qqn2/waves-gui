@@ -18,6 +18,7 @@ import {
 } from '../shared/analogueExpressions';
 import { timingForStates, timingResolution } from '../shared/fineTiming';
 import {
+  normalizeUndulateColor,
   parseAnnotationFontFamily,
   parseAnnotationFontSize,
   parseAnnotationFontWeight,
@@ -75,27 +76,23 @@ import {
 
 const ROOT_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.root.supported,
-  ...UNDULATE_PROPERTY_MANIFEST.root.wip,
   ...UNDULATE_PROPERTY_MANIFEST.root.unsupportedByDesign,
 ]);
+/** Modeled fields only — opaque-listed properties must remain outside this set. */
 const DIGITAL_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.digitalSignal.supported,
-  ...UNDULATE_PROPERTY_MANIFEST.digitalSignal.wip,
 ]);
 const ANALOGUE_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
-  ...UNDULATE_PROPERTY_MANIFEST.analogueSignal.wip,
 ]);
 const CONFIG_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.config.supported,
-  ...UNDULATE_PROPERTY_MANIFEST.config.wip,
 ]);
 const ANNOTATION_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.annotation.supported,
-  ...UNDULATE_PROPERTY_MANIFEST.annotation.wip,
 ]);
-const HEAD_FIELDS = new Set(['text', 'tick', 'every']);
-const FOOT_FIELDS = new Set(['text', 'tock', 'every']);
+const HEAD_FIELDS = new Set<string>(UNDULATE_PROPERTY_MANIFEST.head.supported);
+const FOOT_FIELDS = new Set<string>(UNDULATE_PROPERTY_MANIFEST.foot.supported);
 
 function opaqueFields(
   value: Record<string, unknown>,
@@ -221,8 +218,11 @@ function annotationStyleFromUndulate(
   annotation: Record<string, unknown>,
 ): AnnotationStyle | undefined {
   const style: AnnotationStyle = {};
-  if (typeof annotation.fill === 'string') style.fill = annotation.fill;
-  if (typeof annotation.stroke === 'string') style.stroke = annotation.stroke;
+  const fill = normalizeUndulateColor(annotation.fill);
+  const stroke = normalizeUndulateColor(annotation.stroke)
+    ?? normalizeUndulateColor(annotation.color);
+  if (fill !== undefined) style.fill = fill;
+  if (stroke !== undefined) style.stroke = stroke;
   if (typeof annotation['stroke-width'] === 'number') {
     style.strokeWidth = annotation['stroke-width'];
   }
@@ -241,11 +241,6 @@ function annotationStyleFromUndulate(
   return Object.keys(style).length > 0 ? style : undefined;
 }
 
-function isDefaultAnalogueContext(context: AnalogueContext): boolean {
-  return context.vssa === DEFAULT_ANALOGUE_CONTEXT.vssa
-    && context.vdda === DEFAULT_ANALOGUE_CONTEXT.vdda;
-}
-
 function analogueCellsFingerprint(cells: AnalogueCell[]): string {
   return JSON.stringify(cells.map((cell) => ({
     kind: cell.kind,
@@ -260,7 +255,6 @@ function analogueCellsFingerprint(cells: AnalogueCell[]): string {
 
 function analogueToUndulateEntry(
   signal: Signal,
-  context: AnalogueContext,
   preserveExpressions: boolean,
 ): WdSignal {
   const cells = signal.analogueCells ?? [];
@@ -268,7 +262,7 @@ function analogueToUndulateEntry(
   const wave = cells.map((cell, index) => {
     if (cell.kind === 'samples') {
       values.push(
-        cell.expression && (preserveExpressions || isDefaultAnalogueContext(context))
+        cell.expression && preserveExpressions
           ? cell.expression
           : (cell.samples ?? []).map((point) => {
               const timebase = cell.sampleTimebase;
@@ -282,7 +276,7 @@ function analogueToUndulateEntry(
     }
     if (cell.kind === 'capacitive') {
       values.push(
-        cell.expression && (preserveExpressions || isDefaultAnalogueContext(context))
+        cell.expression && preserveExpressions
           ? cell.expression
           : cell.value,
       );
@@ -290,7 +284,7 @@ function analogueToUndulateEntry(
     }
     if (cell.kind === 'step') {
       values.push(
-        cell.expression && (preserveExpressions || isDefaultAnalogueContext(context))
+        cell.expression && preserveExpressions
           ? cell.expression
           : cell.value,
       );
@@ -357,7 +351,7 @@ function mergeUndulateSignalEntries(
     }
     if (signal.type === 'analogue') {
       return withOpaqueFields(
-        analogueToUndulateEntry(signal, context, preserveExpressions),
+        analogueToUndulateEntry(signal, preserveExpressions),
         signal,
         opaqueSignals,
       );

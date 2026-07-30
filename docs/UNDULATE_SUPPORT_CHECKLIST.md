@@ -2,9 +2,9 @@
 
 Status: implementation audit
 
-Last audited: 2026-07-29
+Last audited: 2026-07-30
 
-Actionable implementation progress: **171 / 172 (99.4%)**
+Actionable implementation progress: **172 / 172 (100%)**
 
 Target upstream revision:
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01)
@@ -54,9 +54,10 @@ The only permanent exclusions are:
 - Exact implementation/backend reproduction, including embedding or invoking
   Undulate's Python/Cairo renderer and promising pixel-identical output.
 
-Everything else in this checklist is implemented or planned. Completion
-percentages count supported items against supported plus actionable unchecked
-items; legend examples and permanent exclusions are not counted.
+Safe declarative features at the pinned revision are certified as modeled,
+opaque-preserved, or intentionally rejected. Completion percentages count
+supported items against supported plus actionable unchecked items; legend
+examples and permanent exclusions are not counted.
 
 ## Executive summary
 
@@ -136,8 +137,15 @@ items; legend examples and permanent exclusions are not counted.
 
 ### Partial or unsupported
 
-- [ ] Partial: Undulate JSON is supported, but only the schema subset listed
-  in this document. This is not full Undulate JSON compatibility.
+- [X] Schema certification: every safe declarative feature at the pinned
+  Undulate revision is classified as modeled, opaque-preserved, or
+  intentionally rejected. Permanent exclusions remain register diagrams,
+  arbitrary code execution, unsafe remote/CSS resources, and exact
+  backend reproduction. Evidence:
+  `tests/fixtures/undulate/property-matrix.json`,
+  `tests/fixtures/undulate/certification-corpus.json`,
+  `src/undulateBridge/manifestConsistency.test.ts`, and
+  `src/undulateBridge/certificationCorpus.test.ts`.
 - [X] YAML supports semantic import/edit/export for the same validated
   Undulate subset as JSON. Syntax-tree updates retain comments, mapping and
   sequence order, and existing scalar quoting during GUI edits. Anchors,
@@ -531,6 +539,13 @@ Upstream reference:
 
 ## 11. Audit evidence in this repository
 
+Pinned schema certification (2026-07-30):
+
+- Property matrix: `tests/fixtures/undulate/property-matrix.json`
+- Provenance corpus: `tests/fixtures/undulate/certification-corpus.json`
+- Consistency gate: `src/undulateBridge/manifestConsistency.test.ts`
+- Parameterized corpus gate: `src/undulateBridge/certificationCorpus.test.ts`
+
 Primary implementation:
 
 - `src/codePanel/json5Source.ts`
@@ -560,6 +575,8 @@ Primary automated coverage:
 - `src/undulateBridge/undulateJSON.test.ts`
 - `src/undulateBridge/undulateYAML.test.ts`
 - `src/undulateBridge/undulateTOML.test.ts`
+- `src/undulateBridge/manifestConsistency.test.ts`
+- `src/undulateBridge/certificationCorpus.test.ts`
 - `src/undulateBridge/upstreamRoundTrip.test.ts`
 - `src/undulateBridge/visualConformance.test.ts`
 - `src/shared/store.test.ts`
@@ -570,6 +587,8 @@ Primary automated coverage:
 - `src/exportEngine/gapExport.test.ts`
 - `src/exportEngine/headFootImageExport.test.ts`
 - `tests/e2e/release.spec.ts`
+- `tests/fixtures/undulate/property-matrix.json`
+- `tests/fixtures/undulate/certification-corpus.json`
 - `tests/fixtures/undulate/supported-roundtrip-cases.json`
 - `tests/fixtures/undulate/visual/reference/`
 

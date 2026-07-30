@@ -1,8 +1,8 @@
 import {
-  isSafeAnnotationColor,
   isSafeAnnotationDasharray,
   isSafeAnnotationFontSize,
   isSafeAnnotationStrokeWidth,
+  normalizeUndulateColor,
   parseAnnotationFontFamily,
   parseAnnotationFontSize,
   parseAnnotationFontWeight,
@@ -14,8 +14,10 @@ export function normalizeSignalStyle(
 ): SignalStyle | undefined {
   if (!value) return undefined;
   const style: SignalStyle = {};
-  if (isSafeAnnotationColor(value.fill)) style.fill = value.fill.trim();
-  if (isSafeAnnotationColor(value.stroke)) style.stroke = value.stroke.trim();
+  const fill = normalizeUndulateColor(value.fill);
+  const stroke = normalizeUndulateColor(value.stroke);
+  if (fill !== undefined) style.fill = fill;
+  if (stroke !== undefined) style.stroke = stroke;
   if (isSafeAnnotationStrokeWidth(value.strokeWidth)) {
     style.strokeWidth = value.strokeWidth;
   }
@@ -35,9 +37,11 @@ export function normalizeSignalStyle(
 export function signalStyleFromUndulate(
   value: Record<string, unknown>,
 ): SignalStyle | undefined {
+  const stroke = normalizeUndulateColor(value.stroke)
+    ?? normalizeUndulateColor(value.color);
   return normalizeSignalStyle({
-    fill: typeof value.fill === 'string' ? value.fill : undefined,
-    stroke: typeof value.stroke === 'string' ? value.stroke : undefined,
+    fill: normalizeUndulateColor(value.fill),
+    stroke,
     strokeWidth: typeof value['stroke-width'] === 'number'
       ? value['stroke-width']
       : undefined,

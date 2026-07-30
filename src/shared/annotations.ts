@@ -122,27 +122,65 @@ export function parseAnnotationAnchorInput(value: string): AnnotationAnchor | nu
   };
 }
 
-export function isSafeAnnotationColor(value: unknown): value is string {
-  if (typeof value !== 'string') return false;
+function channelByte(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
+  if (!Number.isInteger(value) || value < 0 || value > 255) return undefined;
+  return value;
+}
+
+function normalizeAlphaComponent(value: number): number | undefined {
+  if (!Number.isFinite(value) || value < 0) return undefined;
+  if (value <= 1) return value;
+  if (value <= 255 && Number.isInteger(value)) return value / 255;
+  return undefined;
+}
+
+/**
+ * Normalize Undulate/WaveDrom-safe color values to a canonical CSS string.
+ * Accepts hex, named colors, rgb()/rgba(), and Undulate's documented
+ * `[R, G, B, A]` integer lists (alpha 0..255). rgba() alpha may be 0..1 or
+ * the documented 0..255 integer form.
+ */
+export function normalizeUndulateColor(value: unknown): string | undefined {
+  if (Array.isArray(value)) {
+    if (value.length !== 3 && value.length !== 4) return undefined;
+    const channels = value.slice(0, 3).map(channelByte);
+    if (channels.some((channel) => channel === undefined)) return undefined;
+    const [r, g, b] = channels as [number, number, number];
+    if (value.length === 3) return `rgb(${r}, ${g}, ${b})`;
+    const alpha = normalizeAlphaComponent(Number(value[3]));
+    if (alpha === undefined) return undefined;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  if (typeof value !== 'string') return undefined;
   const color = value.trim();
-  if (SAFE_NAMED_COLORS.has(color.toLowerCase())) return true;
+  if (SAFE_NAMED_COLORS.has(color.toLowerCase())) return color.toLowerCase() === 'transparent'
+    ? 'transparent'
+    : color;
   if (/^#[0-9a-f]{3,4}$/i.test(color) || /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(color)) {
-    return true;
+    return color;
   }
   const match = color.match(/^rgba?\(([^)]+)\)$/i);
-  if (!match) return false;
+  if (!match) return undefined;
   const parts = match[1]!.split(',').map((part) => part.trim());
-  const expected = color.toLowerCase().startsWith('rgba(') ? 4 : 3;
-  if (parts.length !== expected) return false;
-  if (!parts.slice(0, 3).every((part) => {
-    const number = Number(part);
-    return Number.isInteger(number) && number >= 0 && number <= 255;
-  })) return false;
-  if (expected === 4) {
-    const alpha = Number(parts[3]);
-    if (!Number.isFinite(alpha) || alpha < 0 || alpha > 1) return false;
-  }
-  return true;
+  const isRgba = color.toLowerCase().startsWith('rgba(');
+  const expected = isRgba ? 4 : 3;
+  if (parts.length !== expected) return undefined;
+  const channels = parts.slice(0, 3).map((part) => channelByte(Number(part)));
+  if (channels.some((channel) => channel === undefined)) return undefined;
+  const [r, g, b] = channels as [number, number, number];
+  if (!isRgba) return `rgb(${r}, ${g}, ${b})`;
+  const alpha = normalizeAlphaComponent(Number(parts[3]));
+  if (alpha === undefined) return undefined;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export function isSafeAnnotationColor(value: unknown): value is string {
+  return typeof value === 'string' && normalizeUndulateColor(value) !== undefined;
+}
+
+export function isSafeUndulateColorInput(value: unknown): boolean {
+  return normalizeUndulateColor(value) !== undefined;
 }
 
 export function isSafeAnnotationStrokeWidth(value: unknown): value is number {
@@ -230,8 +268,10 @@ export function normalizeAnnotationStyle(
 ): AnnotationStyle | undefined {
   if (!value) return undefined;
   const style: AnnotationStyle = {};
-  if (isSafeAnnotationColor(value.fill)) style.fill = value.fill.trim();
-  if (isSafeAnnotationColor(value.stroke)) style.stroke = value.stroke.trim();
+  const fill = normalizeUndulateColor(value.fill);
+  const stroke = normalizeUndulateColor(value.stroke);
+  if (fill !== undefined) style.fill = fill;
+  if (stroke !== undefined) style.stroke = stroke;
   if (isSafeAnnotationStrokeWidth(value.strokeWidth)) {
     style.strokeWidth = value.strokeWidth;
   }

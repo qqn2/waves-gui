@@ -4,6 +4,8 @@ import {
   MAX_ANNOTATION_TEXT_LENGTH,
   normalizeAnnotations,
   isSafeAnnotationColor,
+  isSafeUndulateColorInput,
+  normalizeUndulateColor,
   parseAnnotationFontSize,
   parseAnnotationRangeInput,
   scanExtensionContent,
@@ -95,6 +97,17 @@ describe('annotations', () => {
     expect(parseAnnotationFontSize('100%')).toBe(16);
     expect(parseAnnotationFontSize('5px')).toBeUndefined();
     expect(parseAnnotationFontSize('calc(10px + 1rem)')).toBeUndefined();
+  });
+
+  it('normalizes Undulate list colors and documented 0..255 rgba alpha', () => {
+    expect(normalizeUndulateColor([0, 0, 255, 255])).toBe('rgba(0, 0, 255, 1)');
+    expect(normalizeUndulateColor([255, 0, 0])).toBe('rgb(255, 0, 0)');
+    expect(normalizeUndulateColor('rgba(255, 255, 0, 255)')).toBe('rgba(255, 255, 0, 1)');
+    expect(normalizeUndulateColor('rgba(1, 2, 3, 0.5)')).toBe('rgba(1, 2, 3, 0.5)');
+    expect(normalizeUndulateColor('#0000FFAA')).toBe('#0000FFAA');
+    expect(isSafeUndulateColorInput([0, 0, 255, 255])).toBe(true);
+    expect(isSafeUndulateColorInput('url(https://example.test)')).toBe(false);
+    expect(isSafeUndulateColorInput([0, 0, 255, 300])).toBe(false);
   });
 
   it('normalizes and formats numeric and percentage line ranges', () => {

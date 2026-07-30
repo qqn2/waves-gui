@@ -1,0 +1,740 @@
+{
+  "revision": "c8da7d48c48fc0bbc90113b6913611132bd96c01",
+  "repository": "https://github.com/LudwigCRON/undulate",
+  "license": "MIT",
+  "taxonomy": [
+    "modeled",
+    "opaque",
+    "rejected"
+  ],
+  "properties": [
+    {
+      "id": "root.signal",
+      "path": "signal",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/supported_syntax.rst", "src/undulate/parsers/jsonml.py"],
+      "valueForms": [{ "kind": "array", "example": [] }],
+      "evidence": ["supported-roundtrip-cases#digital-states"]
+    },
+    {
+      "id": "root.config",
+      "path": "config",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "object", "example": { "hscale": 1 } }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "root.head",
+      "path": "head",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "object", "example": { "text": "Title" } }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "root.foot",
+      "path": "foot",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "object", "example": { "text": "cycles" } }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "root.edge",
+      "path": "edge",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step1.rst", "src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "string-array", "example": ["a->b"] }],
+      "evidence": ["certification-corpus#ann-step1-edges"]
+    },
+    {
+      "id": "root.edges",
+      "path": "edges",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step1.rst"],
+      "valueForms": [{ "kind": "string-array", "example": ["a->b"] }],
+      "evidence": ["certification-corpus#ann-step1-edges"]
+    },
+    {
+      "id": "root.annotations",
+      "path": "annotations",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "object-array", "example": [{ "text": "note", "x": 1, "y": 1 }] }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "root.x-waves-gui",
+      "path": "x-waves-gui",
+      "scope": "root",
+      "classification": "modeled",
+      "upstream": ["waves-gui app metadata"],
+      "valueForms": [{ "kind": "object", "example": { "randomSeed": 1 } }],
+      "evidence": ["undulateJSON.test.ts#app-metadata"]
+    },
+    {
+      "id": "root.reg",
+      "path": "reg",
+      "scope": "root",
+      "classification": "rejected",
+      "reason": "permanent-exclusion:register-diagrams",
+      "upstream": ["docs-srcs/tutorial_register.rst"],
+      "valueForms": [{ "kind": "array", "example": [] }],
+      "evidence": ["blocked-features.json", "certification-corpus#reject-register"]
+    },
+    {
+      "id": "root.register",
+      "path": "register",
+      "scope": "root",
+      "classification": "rejected",
+      "reason": "permanent-exclusion:register-diagrams",
+      "upstream": ["docs-srcs/tutorial_register.rst"],
+      "valueForms": [{ "kind": "array", "example": [] }],
+      "evidence": ["certification-corpus#reject-register"]
+    },
+    {
+      "id": "config.hscale",
+      "path": "config.hscale",
+      "scope": "config",
+      "classification": "modeled",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "number", "example": 1 }],
+      "evidence": ["supported-roundtrip-cases#digital-states"]
+    },
+    {
+      "id": "config.skin",
+      "path": "config.skin",
+      "scope": "config",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "string", "example": "default" }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "config.head",
+      "path": "config.head",
+      "scope": "config",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "object", "example": { "text": "Title" } }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "config.foot",
+      "path": "config.foot",
+      "scope": "config",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "object", "example": { "text": "cycles" } }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "config.vscale",
+      "path": "config.vscale",
+      "scope": "config",
+      "classification": "opaque",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "number", "example": 2 }],
+      "evidence": ["certification-corpus#opaque-config-layout"]
+    },
+    {
+      "id": "config.separation",
+      "path": "config.separation",
+      "scope": "config",
+      "classification": "opaque",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "number", "example": 0.25 }],
+      "evidence": ["certification-corpus#opaque-config-layout"]
+    },
+    {
+      "id": "config.no_ticks",
+      "path": "config.no_ticks",
+      "scope": "config",
+      "classification": "opaque",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "boolean", "example": true }],
+      "evidence": ["certification-corpus#opaque-config-layout"]
+    },
+    {
+      "id": "config.gap-offset",
+      "path": "config.gap-offset",
+      "scope": "config",
+      "classification": "opaque",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "number", "example": 10 }],
+      "evidence": ["certification-corpus#opaque-config-layout"]
+    },
+    {
+      "id": "config.ticks_phase",
+      "path": "config.ticks_phase",
+      "scope": "config",
+      "classification": "opaque",
+      "upstream": ["src/undulate/renderers/renderer.py"],
+      "valueForms": [{ "kind": "number", "example": 0.5 }],
+      "evidence": ["certification-corpus#opaque-config-layout"]
+    },
+    {
+      "id": "head.text",
+      "path": "head.text",
+      "scope": "head",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "string", "example": "Title" }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "head.tick",
+      "path": "head.tick",
+      "scope": "head",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "number", "example": 0 }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "head.every",
+      "path": "head.every",
+      "scope": "head",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "number", "example": 1 }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "foot.text",
+      "path": "foot.text",
+      "scope": "foot",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "string", "example": "cycles" }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "foot.tock",
+      "path": "foot.tock",
+      "scope": "foot",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "number", "example": 0 }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "foot.every",
+      "path": "foot.every",
+      "scope": "foot",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "number", "example": 1 }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "digital.name",
+      "path": "signal[].name",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step1.rst"],
+      "valueForms": [{ "kind": "string", "example": "clk" }],
+      "evidence": ["supported-roundtrip-cases#digital-states"]
+    },
+    {
+      "id": "digital.wave",
+      "path": "signal[].wave",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step1.rst", "src/undulate/bricks/digital.py"],
+      "valueForms": [{ "kind": "string", "example": "01.zx=ud" }],
+      "evidence": ["supported-roundtrip-cases#extended-digital-states"]
+    },
+    {
+      "id": "digital.data",
+      "path": "signal[].data",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step3.rst"],
+      "valueForms": [
+        { "kind": "string", "example": "head body" },
+        { "kind": "string-array", "example": ["head", "body"] }
+      ],
+      "evidence": ["supported-roundtrip-cases#bus-data-and-gaps"]
+    },
+    {
+      "id": "digital.node",
+      "path": "signal[].node",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step1.rst"],
+      "valueForms": [{ "kind": "string", "example": ".a..b." }],
+      "evidence": ["certification-corpus#ann-step1-edges"]
+    },
+    {
+      "id": "digital.period",
+      "path": "signal[].period",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "number", "example": 2 }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.phase",
+      "path": "signal[].phase",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "number", "example": -0.2 }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.repeat",
+      "path": "signal[].repeat",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "integer", "example": 8 }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.periods",
+      "path": "signal[].periods",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "number-array", "example": [0.25, 0.5, 1] }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.duty_cycle",
+      "path": "signal[].duty_cycle",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["src/undulate/bricks/digital.py"],
+      "valueForms": [{ "kind": "number", "example": 0.5 }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.duty_cycles",
+      "path": "signal[].duty_cycles",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "number-array", "example": [0.5, 0.25] }],
+      "evidence": ["certification-corpus#dig-step5-timing"]
+    },
+    {
+      "id": "digital.slewing",
+      "path": "signal[].slewing",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_dig_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 0 }],
+      "evidence": ["supported-roundtrip-cases#groups-timing-nodes-and-edges"]
+    },
+    {
+      "id": "digital.fill",
+      "path": "signal[].fill",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [
+        { "kind": "hex", "example": "#0000FF" },
+        { "kind": "rgba-list", "example": [0, 0, 255, 255] }
+      ],
+      "evidence": ["certification-corpus#ana-step2-list-colors"]
+    },
+    {
+      "id": "digital.stroke",
+      "path": "signal[].stroke",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [
+        { "kind": "hex", "example": "#F00" },
+        { "kind": "rgba-list", "example": [0, 0, 255, 255] },
+        { "kind": "hex-alpha", "example": "#0000FFAA" }
+      ],
+      "evidence": ["certification-corpus#ana-step2-list-colors"]
+    },
+    {
+      "id": "digital.color",
+      "path": "signal[].color",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "hex", "example": "#336699" }],
+      "evidence": ["certification-corpus#signal-color-alias"]
+    },
+    {
+      "id": "digital.stroke-width",
+      "path": "signal[].stroke-width",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 1.5 }],
+      "evidence": ["certification-corpus#ana-step2-list-colors"]
+    },
+    {
+      "id": "digital.stroke-dasharray",
+      "path": "signal[].stroke-dasharray",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "number-array", "example": [1, 3] }],
+      "evidence": ["certification-corpus#ana-step2-list-colors"]
+    },
+    {
+      "id": "digital.font-size",
+      "path": "signal[].font-size",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "css-length", "example": "9pt" }],
+      "evidence": ["certification-corpus#ana-step2-list-colors"]
+    },
+    {
+      "id": "digital.font",
+      "path": "signal[].font",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "generic-family", "example": "monospace" }],
+      "evidence": ["undulateJSON.test.ts#signal-styles"]
+    },
+    {
+      "id": "digital.font-weight",
+      "path": "signal[].font-weight",
+      "scope": "digitalSignal",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "number", "example": 700 }],
+      "evidence": ["undulateJSON.test.ts#signal-styles"]
+    },
+    {
+      "id": "digital.skin",
+      "path": "signal[].skin",
+      "scope": "digitalSignal",
+      "classification": "opaque",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "notes": "Per-signal skin is not a documented modeled lane field; config.skin is modeled.",
+      "valueForms": [{ "kind": "string", "example": "custom" }],
+      "evidence": ["certification-corpus#opaque-signal-skin"]
+    },
+    {
+      "id": "analogue.analogue",
+      "path": "signal[].analogue",
+      "scope": "analogueSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step1.rst"],
+      "valueForms": [
+        { "kind": "number", "example": 0.5 },
+        { "kind": "safe-expression", "example": "0.5*VDDA" },
+        { "kind": "sample-points", "example": [[0, 0], [1, 1]] }
+      ],
+      "evidence": ["supported-roundtrip-cases#analogue-cells-and-overlays"]
+    },
+    {
+      "id": "analogue.vscale",
+      "path": "signal[].vscale",
+      "scope": "analogueSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 4 }],
+      "evidence": ["supported-roundtrip-cases#analogue-cells-and-overlays"]
+    },
+    {
+      "id": "analogue.overlay",
+      "path": "signal[].overlay",
+      "scope": "analogueSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "boolean", "example": true }],
+      "evidence": ["supported-roundtrip-cases#analogue-cells-and-overlays"]
+    },
+    {
+      "id": "analogue.order",
+      "path": "signal[].order",
+      "scope": "analogueSignal",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ana_step2.rst"],
+      "valueForms": [{ "kind": "integer-0-4", "example": 2 }],
+      "evidence": ["supported-roundtrip-cases#analogue-cells-and-overlays"]
+    },
+    {
+      "id": "analogue.periods",
+      "path": "signal[].periods",
+      "scope": "analogueSignal",
+      "classification": "opaque",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "notes": "Fine timing periods are modeled for digital lanes; on analogue lanes they are preserved opaquely.",
+      "valueForms": [{ "kind": "number-array", "example": [1, 2] }],
+      "evidence": ["certification-corpus#opaque-analogue-timing"]
+    },
+    {
+      "id": "analogue.duty_cycle",
+      "path": "signal[].duty_cycle",
+      "scope": "analogueSignal",
+      "classification": "opaque",
+      "upstream": ["src/undulate/bricks/digital.py"],
+      "valueForms": [{ "kind": "number", "example": 0.5 }],
+      "evidence": ["certification-corpus#opaque-analogue-timing"]
+    },
+    {
+      "id": "analogue.duty_cycles",
+      "path": "signal[].duty_cycles",
+      "scope": "analogueSignal",
+      "classification": "opaque",
+      "upstream": ["docs-srcs/tutorial_dig_step5.rst"],
+      "valueForms": [{ "kind": "number-array", "example": [0.5, 0.25] }],
+      "evidence": ["certification-corpus#opaque-analogue-timing"]
+    },
+    {
+      "id": "analogue.skin",
+      "path": "signal[].skin",
+      "scope": "analogueSignal",
+      "classification": "opaque",
+      "upstream": ["docs-srcs/tutorial_digital.rst"],
+      "valueForms": [{ "kind": "string", "example": "custom" }],
+      "evidence": ["certification-corpus#opaque-signal-skin"]
+    },
+    {
+      "id": "analogue.color",
+      "path": "signal[].color",
+      "scope": "analogueSignal",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "hex", "example": "#F00" }],
+      "evidence": ["certification-corpus#signal-color-alias"]
+    },
+    {
+      "id": "annotation.shape",
+      "path": "annotations[].shape",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst", "src/undulate/bricks/shape.py"],
+      "valueForms": [
+        { "kind": "line", "example": "|" },
+        { "kind": "hline", "example": "-" },
+        { "kind": "compression", "example": "||" },
+        { "kind": "arrow", "example": "->" }
+      ],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles", "certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "annotation.text",
+      "path": "annotations[].text",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "string", "example": "note" }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.x",
+      "path": "annotations[].x",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 1.125 }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.y",
+      "path": "annotations[].y",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 0.375 }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.from",
+      "path": "annotations[].from",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [
+        { "kind": "node", "example": "a" },
+        { "kind": "point", "example": "(1, 2)" },
+        { "kind": "index-or-percent", "example": "25%" }
+      ],
+      "evidence": ["certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "annotation.to",
+      "path": "annotations[].to",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [
+        { "kind": "node", "example": "b" },
+        { "kind": "point", "example": "(3, 4)" }
+      ],
+      "evidence": ["certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "annotation.dx",
+      "path": "annotations[].dx",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 0.5 }],
+      "evidence": ["certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "annotation.dy",
+      "path": "annotations[].dy",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": -0.25 }],
+      "evidence": ["certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "annotation.fill",
+      "path": "annotations[].fill",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [
+        { "kind": "hex", "example": "#123456" },
+        { "kind": "rgba-0-255", "example": "rgba(255, 255, 0, 255)" }
+      ],
+      "evidence": ["certification-corpus#ann-rgba-255-alpha"]
+    },
+    {
+      "id": "annotation.stroke",
+      "path": "annotations[].stroke",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "rgb", "example": "rgb(10, 200, 240)" }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.color",
+      "path": "annotations[].color",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "hex", "example": "#FFA500" }],
+      "evidence": ["certification-corpus#signal-color-alias"]
+    },
+    {
+      "id": "annotation.stroke-width",
+      "path": "annotations[].stroke-width",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number", "example": 2 }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.stroke-dasharray",
+      "path": "annotations[].stroke-dasharray",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "number-array", "example": [1, 3] }],
+      "evidence": ["supported-roundtrip-cases#annotations-and-safe-styles"]
+    },
+    {
+      "id": "annotation.font-size",
+      "path": "annotations[].font-size",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "css-length", "example": "12px" }],
+      "evidence": ["annotations-styles.json"]
+    },
+    {
+      "id": "annotation.font",
+      "path": "annotations[].font",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "generic-family", "example": "sans-serif" }],
+      "evidence": ["undulateJSON.test.ts#annotation-fonts"]
+    },
+    {
+      "id": "annotation.font-weight",
+      "path": "annotations[].font-weight",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["src/undulate/skin.py"],
+      "valueForms": [{ "kind": "number", "example": 400 }],
+      "evidence": ["undulateJSON.test.ts#annotation-fonts"]
+    },
+    {
+      "id": "annotation.text_background",
+      "path": "annotations[].text_background",
+      "scope": "annotation",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "boolean", "example": false }],
+      "evidence": ["certification-corpus#ann-step2-arrows"]
+    },
+    {
+      "id": "format.json",
+      "path": "interchange.json",
+      "scope": "format",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/supported_syntax.rst", "src/undulate/parsers/jsonml.py"],
+      "valueForms": [{ "kind": "json-object", "example": { "signal": [] } }],
+      "evidence": ["supported-roundtrip-cases.json"]
+    },
+    {
+      "id": "format.jsonml",
+      "path": "interchange.jsonml",
+      "scope": "format",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/supported_syntax.rst", "src/undulate/parsers/jsonml.py"],
+      "valueForms": [{ "kind": "json5", "example": "{ signal: [] }" }],
+      "evidence": ["certification-corpus#format-comparison"]
+    },
+    {
+      "id": "format.yaml",
+      "path": "interchange.yaml",
+      "scope": "format",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/supported_syntax.rst", "src/undulate/parsers/yaml.py"],
+      "valueForms": [{ "kind": "yaml-mapping", "example": "clk:\n  wave: p" }],
+      "evidence": ["certification-corpus#format-comparison"]
+    },
+    {
+      "id": "format.toml",
+      "path": "interchange.toml",
+      "scope": "format",
+      "classification": "modeled",
+      "upstream": ["docs-srcs/supported_syntax.rst", "src/undulate/parsers/toml.py"],
+      "valueForms": [{ "kind": "toml-dotted", "example": "clk.wave = \"p\"" }],
+      "evidence": ["certification-corpus#format-comparison"]
+    },
+    {
+      "id": "reject.remote-css",
+      "path": "annotations[].stroke",
+      "scope": "security",
+      "classification": "rejected",
+      "reason": "permanent-exclusion:unsafe-remote-css",
+      "upstream": ["docs-srcs/tutorial_ann_step2.rst"],
+      "valueForms": [{ "kind": "url", "example": "url(https://example.test/x)" }],
+      "evidence": ["certification-corpus#reject-remote-css", "hostileInput.test.ts"]
+    },
+    {
+      "id": "reject.executable-expression",
+      "path": "signal[].analogue[]",
+      "scope": "security",
+      "classification": "rejected",
+      "reason": "permanent-exclusion:arbitrary-code-execution",
+      "upstream": ["src/undulate/bricks/generic.py"],
+      "valueForms": [{ "kind": "python-import", "example": "__import__('os')" }],
+      "evidence": ["certification-corpus#reject-executable"]
+    }
+  ]
+}

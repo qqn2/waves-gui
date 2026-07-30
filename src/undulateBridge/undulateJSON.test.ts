@@ -886,7 +886,6 @@ describe('Undulate JSON bridge', () => {
     const findings = validateUndulateFindings(root);
 
     expect(new Set(findings.map((finding) => finding.kind))).toEqual(new Set([
-      'wip',
       'unsupported-by-design',
       'opaque',
     ]));
@@ -900,6 +899,7 @@ describe('Undulate JSON bridge', () => {
         'annotations[0].future_annotation',
       ]),
     );
+    expect(findings.every((finding) => finding.kind !== 'wip')).toBe(true);
   });
 
   it('preserves arbitrary finite sampled timebases and rejects truncation losses', () => {

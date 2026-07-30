@@ -4,7 +4,7 @@ import {
 } from '../shared/analogue';
 import { validateAnalogueExpression } from '../shared/analogueExpressions';
 import {
-  isSafeAnnotationColor,
+  isSafeUndulateColorInput,
   isSafeAnnotationDasharray,
   parseAnnotationFontFamily,
   parseAnnotationFontSize,
@@ -43,26 +43,33 @@ export interface UndulateFinding {
   consequence?: string;
 }
 
+/**
+ * Revision-pinned property classification.
+ *
+ * - supported: modeled, editable where product-relevant, rendered, exported
+ * - opaque: safe declarative fields preserved verbatim with compatibility report
+ * - unsupportedByDesign: permanent exclusions only
+ *
+ * Safe unknown fields not listed here are also treated as opaque when values
+ * pass safety bounds. There is no steady-state WIP class for pinned safe data.
+ */
 export const UNDULATE_PROPERTY_MANIFEST = {
   root: {
     supported: [
       'signal', 'config', 'head', 'foot', 'edge', 'edges', 'annotations',
       'x-waves-gui',
     ],
-    wip: [],
+    opaque: [] as string[],
     unsupportedByDesign: ['reg', 'register'],
   },
   digitalSignal: {
     supported: [
       'name', 'wave', 'data', 'node', 'period', 'phase',
       'repeat', 'periods', 'duty_cycle', 'duty_cycles', 'slewing',
-      'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'font-size',
+      'fill', 'stroke', 'color', 'stroke-width', 'stroke-dasharray', 'font-size',
       'font', 'font-weight',
     ],
-    wip: [
-      'skin',
-      'color',
-    ],
+    opaque: ['skin'],
   },
   analogueSignal: {
     supported: [
@@ -79,18 +86,18 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'repeat',
       'fill',
       'stroke',
+      'color',
       'stroke-width',
       'stroke-dasharray',
       'font-size',
       'font',
       'font-weight',
     ],
-    wip: [
+    opaque: [
       'periods',
       'duty_cycle',
       'duty_cycles',
       'skin',
-      'color',
     ],
   },
   annotation: {
@@ -101,6 +108,7 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'y',
       'fill',
       'stroke',
+      'color',
       'stroke-width',
       'stroke-dasharray',
       'from',
@@ -112,23 +120,30 @@ export const UNDULATE_PROPERTY_MANIFEST = {
       'font-weight',
       'text_background',
     ],
-    wip: ['color'],
+    opaque: [] as string[],
   },
   config: {
     supported: ['hscale', 'skin', 'head', 'foot'],
-    wip: ['vscale', 'separation', 'no_ticks', 'gap-offset', 'ticks_phase'],
+    opaque: ['vscale', 'separation', 'no_ticks', 'gap-offset', 'ticks_phase'],
+  },
+  head: {
+    supported: ['text', 'tick', 'every'],
+    opaque: [] as string[],
+  },
+  foot: {
+    supported: ['text', 'tock', 'every'],
+    opaque: [] as string[],
   },
 } as const;
 
 const ROOT_SUPPORTED = new Set<string>(UNDULATE_PROPERTY_MANIFEST.root.supported);
-const ROOT_WIP = new Set<string>(UNDULATE_PROPERTY_MANIFEST.root.wip);
 const ROOT_UNSUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.root.unsupportedByDesign,
 );
 const DIGITAL_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.digitalSignal.supported,
 );
-const DIGITAL_WIP = new Set<string>(UNDULATE_PROPERTY_MANIFEST.digitalSignal.wip);
+const DIGITAL_OPAQUE = new Set<string>(UNDULATE_PROPERTY_MANIFEST.digitalSignal.opaque);
 const DIGITAL_EXTENSION_FIELDS = new Set([
   'repeat',
   'periods',
@@ -137,6 +152,7 @@ const DIGITAL_EXTENSION_FIELDS = new Set([
   'slewing',
   'fill',
   'stroke',
+  'color',
   'stroke-width',
   'stroke-dasharray',
   'font-size',
@@ -146,22 +162,19 @@ const DIGITAL_EXTENSION_FIELDS = new Set([
 const ANALOGUE_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.analogueSignal.supported,
 );
-const ANALOGUE_WIP = new Set<string>(
-  UNDULATE_PROPERTY_MANIFEST.analogueSignal.wip,
+const ANALOGUE_OPAQUE = new Set<string>(
+  UNDULATE_PROPERTY_MANIFEST.analogueSignal.opaque,
 );
 const ANNOTATION_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.annotation.supported,
-);
-const ANNOTATION_WIP = new Set<string>(
-  UNDULATE_PROPERTY_MANIFEST.annotation.wip,
 );
 
 const CONFIG_SUPPORTED = new Set<string>(
   UNDULATE_PROPERTY_MANIFEST.config.supported,
 );
-const CONFIG_WIP = new Set<string>(UNDULATE_PROPERTY_MANIFEST.config.wip);
-const HEAD_FIELDS = new Set(['text', 'tick', 'every']);
-const FOOT_FIELDS = new Set(['text', 'tock', 'every']);
+const CONFIG_OPAQUE = new Set<string>(UNDULATE_PROPERTY_MANIFEST.config.opaque);
+const HEAD_FIELDS = new Set<string>(UNDULATE_PROPERTY_MANIFEST.head.supported);
+const FOOT_FIELDS = new Set<string>(UNDULATE_PROPERTY_MANIFEST.foot.supported);
 const EXTENDED_WAVE_FEATURES: ReadonlyArray<{
   pattern: RegExp;
   feature: string;
@@ -252,16 +265,20 @@ function scanUnknownFields(
   record: Record<string, unknown>,
   path: string,
   supported: ReadonlySet<string>,
-  wipFields: ReadonlySet<string>,
+  opaqueFields: ReadonlySet<string>,
   findings: UndulateFinding[],
 ): void {
   for (const field of Object.keys(record)) {
     const fieldPath = `${path}.${field}`;
     if (supported.has(field)) continue;
-    if (wipFields.has(field)) {
-      findings.push(wip(fieldPath, field.replaceAll('_', ' ')));
+    if (opaqueFields.has(field) || isSafeOpaqueValue(record[field])) {
+      if (!isSafeOpaqueValue(record[field])) {
+        findings.push(unknown(fieldPath));
+      } else {
+        findings.push(opaque(fieldPath));
+      }
     } else {
-      findings.push(isSafeOpaqueValue(record[field]) ? opaque(fieldPath) : unknown(fieldPath));
+      findings.push(unknown(fieldPath));
     }
   }
 }
@@ -294,7 +311,7 @@ function scanConfig(value: unknown, findings: UndulateFinding[]): void {
     findings.push(invalid('config', 'config', 'must be an object'));
     return;
   }
-  scanUnknownFields(value, 'config', CONFIG_SUPPORTED, CONFIG_WIP, findings);
+  scanUnknownFields(value, 'config', CONFIG_SUPPORTED, CONFIG_OPAQUE, findings);
   scanNamedObject(value.head, 'config.head', HEAD_FIELDS, findings);
   scanNamedObject(value.foot, 'config.foot', FOOT_FIELDS, findings);
 }
@@ -331,11 +348,13 @@ function scanSignal(
 ): void {
   const analogue = Object.prototype.hasOwnProperty.call(signal, 'analogue');
   const supported = analogue ? ANALOGUE_SUPPORTED : DIGITAL_SUPPORTED;
-  const wipFields = analogue ? ANALOGUE_WIP : DIGITAL_WIP;
+  const opaqueKnown = analogue ? ANALOGUE_OPAQUE : DIGITAL_OPAQUE;
   for (const field of Object.keys(signal)) {
     const fieldPath = `${path}.${field}`;
-    if (wipFields.has(field)) {
-      findings.push(wip(fieldPath, field.replaceAll('_', ' ')));
+    if (opaqueKnown.has(field)) {
+      findings.push(
+        isSafeOpaqueValue(signal[field]) ? opaque(fieldPath) : unknown(fieldPath),
+      );
       continue;
     }
     if (!supported.has(field)) {
@@ -384,9 +403,7 @@ function scanAnnotations(value: unknown, findings: UndulateFinding[]): void {
     const path = `annotations[${index}]`;
     for (const field of Object.keys(annotation)) {
       const fieldPath = `${path}.${field}`;
-      if (ANNOTATION_WIP.has(field)) {
-        findings.push(wip(fieldPath, field.replaceAll('_', ' ')));
-      } else if (!ANNOTATION_SUPPORTED.has(field)) {
+      if (!ANNOTATION_SUPPORTED.has(field)) {
         findings.push(
           isSafeOpaqueValue(annotation[field]) ? opaque(fieldPath) : unknown(fieldPath),
         );
@@ -422,9 +439,7 @@ function scanProperties(root: Record<string, unknown>): UndulateFinding[] {
       }
       continue;
     }
-    if (ROOT_WIP.has(field)) {
-      findings.push(wip(field, field === 'edges' ? 'plural Undulate edges' : field));
-    } else if (ROOT_UNSUPPORTED.has(field)) {
+    if (ROOT_UNSUPPORTED.has(field)) {
       findings.push(finding(
         'unsupported-by-design',
         'register diagrams',
@@ -548,9 +563,9 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
 }
 
 function validateSignalStyle(signal: Record<string, unknown>): string | null {
-  for (const field of ['fill', 'stroke']) {
-    if (signal[field] !== undefined && !isSafeAnnotationColor(signal[field])) {
-      return `${field} must be a safe hex, rgb(), or rgba() color`;
+  for (const field of ['fill', 'stroke', 'color']) {
+    if (signal[field] !== undefined && !isSafeUndulateColorInput(signal[field])) {
+      return `${field} must be a safe hex, rgb(), rgba(), named color, or [R,G,B,A] list`;
     }
   }
   if (
@@ -726,12 +741,12 @@ function validateAnnotationStructure(value: unknown): string | null {
   for (let index = 0; index < value.length; index++) {
     const annotation = value[index];
     if (!isRecord(annotation)) return `annotations[${index}] must be an object`;
-    for (const field of ['fill', 'stroke']) {
+    for (const field of ['fill', 'stroke', 'color']) {
       if (
         annotation[field] !== undefined
-        && !isSafeAnnotationColor(annotation[field])
+        && !isSafeUndulateColorInput(annotation[field])
       ) {
-        return `annotations[${index}].${field} must be a safe hex, rgb(), or rgba() color`;
+        return `annotations[${index}].${field} must be a safe hex, rgb(), rgba(), named color, or [R,G,B,A] list`;
       }
     }
     if (

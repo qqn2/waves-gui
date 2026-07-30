@@ -333,7 +333,12 @@ y = 0.5
       config: { hscale: 1, vscale: 2 },
     });
     expect(detectCodeFormat(configOnly)).toBe('undulate');
-    expect(validateCodeString(configOnly)).toContain('[WIP] config.vscale');
+    expect(validateCodeString(configOnly)).toBeNull();
+    const configParsed = parseCodeToDiagram(configOnly);
+    expect(configParsed.ok).toBe(true);
+    if (!configParsed.ok) return;
+    expect(configParsed.diagram.compatibility?.opaqueUndulate?.config)
+      .toEqual({ vscale: 2 });
   });
 });
 

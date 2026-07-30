@@ -430,7 +430,7 @@ y = 0.5
     expect(saved).not.toContain('signal =');
   });
 
-  it('rejects WIP file content without mutating the open document or handle', async () => {
+  it('rejects permanently excluded file content without mutating the open document or handle', async () => {
     const firstFile = new File([
       JSON.stringify({ signal: [{ name: 'kept', wave: '01' }] }),
     ], 'kept.json', { type: 'application/json' });
@@ -446,13 +446,7 @@ y = 0.5
 
     const blockedFile = new File([
       JSON.stringify({
-        signal: [{
-          name: 'lost',
-          wave: 'p',
-          repeat: 8,
-          duty_cycles: Array(8).fill(0.5),
-          skin: 'custom',
-        }],
+        reg: [{ bits: 8, name: 'DATA' }],
       }),
     ], 'blocked.json', { type: 'application/json' });
     const blockedHandle = {
@@ -471,7 +465,7 @@ y = 0.5
     await openDiagramFile();
 
     expect(alert).toHaveBeenCalledWith(
-      expect.stringContaining('[WIP] signal[0].skin'),
+      expect.stringContaining('Unsupported by design: register diagrams'),
     );
     expect(useStore.getState().diagram).toBe(before);
     expect(useStore.getState().view.fileName).toBe('kept.json');
