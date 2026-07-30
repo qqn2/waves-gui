@@ -15,6 +15,7 @@ import {
   MAX_ANNOTATION_TEXT_LENGTH,
 } from '../shared/annotations';
 import { MAX_TICKS_PER_STEP, timingResolution } from '../shared/fineTiming';
+import { MAX_TOTAL_STEPS } from '../shared/constants';
 import { validateWavedromJSON } from '../wavedromBridge';
 import type { UndulateRoot } from './types';
 import {
@@ -885,7 +886,11 @@ function structuralError(root: Record<string, unknown>): string | null {
   if (appMetadata !== undefined) {
     if (!isRecord(appMetadata)) return 'x-waves-gui must be an object';
     for (const field of Object.keys(appMetadata)) {
-      if (field !== 'analogueContext' && field !== 'randomSeed') {
+      if (
+        field !== 'analogueContext'
+        && field !== 'randomSeed'
+        && field !== 'timingGridSteps'
+      ) {
         return `x-waves-gui.${field} is not supported`;
       }
     }
@@ -914,6 +919,17 @@ function structuralError(root: Record<string, unknown>): string | null {
       )
     ) {
       return 'x-waves-gui.randomSeed must be an integer from 0 to 4294967295';
+    }
+    if (
+      appMetadata.timingGridSteps !== undefined
+      && (
+        typeof appMetadata.timingGridSteps !== 'number'
+        || !Number.isInteger(appMetadata.timingGridSteps)
+        || appMetadata.timingGridSteps < 1
+        || appMetadata.timingGridSteps > MAX_TOTAL_STEPS
+      )
+    ) {
+      return `x-waves-gui.timingGridSteps must be an integer from 1 to ${MAX_TOTAL_STEPS}`;
     }
   }
   if (root.edge !== undefined && root.edges !== undefined) {
