@@ -21,7 +21,12 @@ import type {
 } from '../types';
 import { normalizeDiagram } from '../normalizeDiagram';
 import type { ImmerSet, StoreActions } from './storeActions';
-import { diagramsEqual, findSignal, pushHistory } from './helpers';
+import {
+  diagramsEqual,
+  findSignal,
+  markDiagramChanged,
+  pushHistory,
+} from './helpers';
 import { parseUndulateEdge } from '../edgeSyntax';
 import {
   MAX_ANNOTATIONS,
@@ -391,6 +396,7 @@ export function createEdgeActions(set: ImmerSet): Pick<
       set((s) => {
         if (!s.diagram.edges?.[index]) return;
         if (options?.recordHistory !== false) pushHistory(s);
+        else markDiagramChanged(s);
         if (!s.diagram.edgeCurveControls) s.diagram.edgeCurveControls = {};
         if (control === undefined) {
           delete s.diagram.edgeCurveControls[index];

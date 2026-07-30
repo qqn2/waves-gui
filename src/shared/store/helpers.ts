@@ -7,13 +7,18 @@ import { createDefaultDiagram } from '../defaultDiagram';
 import { loadLabelColumnWidth } from '../../shell/labelColumnLayout';
 import type { ViewState } from '../types';
 
+/** Notify derived views after a diagram mutation without creating undo history. */
+export function markDiagramChanged(state: AppState): void {
+  state.view.isDirty = true;
+  state.view.diagramRevision += 1;
+}
+
 /** Snapshot diagram for undo. Use immer `current()` — do NOT structuredClone. */
 export function pushHistory(state: AppState): void {
   state.history.push(current(state.diagram));
   if (state.history.length > MAX_HISTORY) state.history.shift();
   state.future = [];
-  state.view.isDirty = true;
-  state.view.diagramRevision += 1;
+  markDiagramChanged(state);
 }
 
 export function diagramsEqual(a: DiagramState, b: DiagramState): boolean {

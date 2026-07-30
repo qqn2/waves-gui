@@ -15,7 +15,15 @@ import type {
   ArrowAnnotation,
 } from '../types';
 import type { ImmerSet, StoreActions } from './storeActions';
-import { pushHistory } from './helpers';
+import { markDiagramChanged, pushHistory } from './helpers';
+
+function recordAnnotationChange(
+  state: Parameters<typeof pushHistory>[0],
+  recordHistory: boolean | undefined,
+): void {
+  if (recordHistory !== false) pushHistory(state);
+  else markDiagramChanged(state);
+}
 
 export function createAnnotationActions(set: ImmerSet): Pick<
   StoreActions,
@@ -144,7 +152,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        if (options?.recordHistory !== false) pushHistory(state);
+        recordAnnotationChange(state, options?.recordHistory);
         Object.assign(annotation, normalized);
       });
     },
@@ -162,7 +170,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        if (options?.recordHistory !== false) pushHistory(state);
+        recordAnnotationChange(state, options?.recordHistory);
         Object.assign(annotation, normalized);
       });
     },
@@ -179,7 +187,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           { ...annotation, ...patch, id, type: 'horizontal-line' },
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        if (options?.recordHistory !== false) pushHistory(state);
+        recordAnnotationChange(state, options?.recordHistory);
         Object.assign(annotation, normalized);
       });
     },
@@ -197,7 +205,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
           state.diagram.config.totalSteps,
         );
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        if (options?.recordHistory !== false) pushHistory(state);
+        recordAnnotationChange(state, options?.recordHistory);
         Object.assign(annotation, normalized);
       });
     },
@@ -218,7 +226,7 @@ export function createAnnotationActions(set: ImmerSet): Pick<
         });
         if (!normalized) return;
         if (JSON.stringify(annotation) === JSON.stringify(normalized)) return;
-        if (options?.recordHistory !== false) pushHistory(state);
+        recordAnnotationChange(state, options?.recordHistory);
         state.diagram.annotations![index] = normalized;
       });
     },

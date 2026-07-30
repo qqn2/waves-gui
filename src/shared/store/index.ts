@@ -28,6 +28,7 @@ export {
   findGroup,
   diagramsEqual,
   isDocumentDirty,
+  markDiagramChanged,
   pushHistory,
 } from './helpers';
 

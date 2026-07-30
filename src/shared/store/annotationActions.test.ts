@@ -143,4 +143,40 @@ describe('annotation actions', () => {
     expect(restored).not.toHaveProperty('dx');
     expect(restored).toMatchObject({ text: 'latency' });
   });
+
+  it('publishes continued drag updates without creating extra undo entries', () => {
+    useStore.getState().setExtensionsEnabled(true);
+    const id = useStore.getState().addArrowAnnotation({
+      shape: '->',
+      from: { kind: 'point', x: 10, y: 20, percent: true },
+      to: { kind: 'point', x: 30, y: 40, percent: true },
+    });
+
+    useStore.getState().updateArrowAnnotation(
+      id!,
+      { to: { kind: 'point', x: 40, y: 40, percent: true } },
+      { recordHistory: true },
+    );
+    const afterFirstUpdate = useStore.getState();
+    const historyLength = afterFirstUpdate.history.length;
+    const revision = afterFirstUpdate.view.diagramRevision;
+
+    useStore.getState().updateArrowAnnotation(
+      id!,
+      { to: { kind: 'point', x: 50, y: 40, percent: true } },
+      { recordHistory: false },
+    );
+    const afterContinuedUpdate = useStore.getState();
+
+    expect(afterContinuedUpdate.history).toHaveLength(historyLength);
+    expect(afterContinuedUpdate.view.diagramRevision).toBe(revision + 1);
+    expect(afterContinuedUpdate.diagram.annotations?.[0]).toMatchObject({
+      to: { kind: 'point', x: 50, y: 40, percent: true },
+    });
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      to: { kind: 'point', x: 30, y: 40, percent: true },
+    });
+  });
 });
