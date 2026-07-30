@@ -27,11 +27,12 @@ describe('DiagramSubStepsControl', () => {
     await act(async () => root.render(<DiagramSubStepsControl />));
 
     const input = host.querySelector<HTMLInputElement>(
-      'input[aria-label="Diagram sub-step resolution"]',
+      'input[aria-label="Timing grid divisions per step"]',
     );
     const raise = host.querySelector<HTMLButtonElement>(
-      'button[aria-label="Raise sub-step resolution"]',
+      'button[aria-label="Refine timing grid"]',
     );
+    expect(host.textContent).toContain('Timing grid');
     expect(input?.value).toBe('4');
 
     await act(async () => raise!.click());

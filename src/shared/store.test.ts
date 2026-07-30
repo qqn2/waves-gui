@@ -564,6 +564,65 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.ticksPerStep).toBe(4);
   });
 
+  it('enables fine timing for a bit signal using the diagram timing grid', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((item) => item.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.phase = 0.25;
+    bit.period = 2;
+    useStore.getState().loadDiagram(diagram);
+
+    expect(useStore.getState().enableDigitalTiming(bit.id)).toBe(true);
+
+    const enabled = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    expect(enabled?.type === 'bit' ? enabled.digitalTiming : undefined)
+      .toMatchObject({
+        ticksPerStep: 4,
+        phaseTicks: 1,
+      });
+    if (!enabled || enabled.type !== 'bit') return;
+    expect(enabled.digitalTiming?.cells).toHaveLength(enabled.states.length);
+    expect(enabled.digitalTiming?.cells.every(
+      (cell) => cell.durationTicks === 8,
+    )).toBe(true);
+    expect(enabled.phase).toBeUndefined();
+    expect(enabled.period).toBeUndefined();
+
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    expect(restored?.type === 'bit' ? restored.digitalTiming : undefined)
+      .toBeUndefined();
+    expect(restored?.type === 'bit' ? restored.phase : undefined).toBe(0.25);
+    expect(restored?.type === 'bit' ? restored.period : undefined).toBe(2);
+  });
+
+  it('refines the timing grid when enabling a lane would otherwise round phase', () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((item) => item.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.phase = 0.3;
+    useStore.getState().loadDiagram(diagram);
+
+    expect(useStore.getState().enableDigitalTiming(bit.id)).toBe(true);
+
+    const enabled = useStore.getState().diagram.signals.find(
+      (item) => item.type === 'bit' && item.id === bit.id,
+    );
+    expect(useStore.getState().diagram.config.ticksPerStep).toBe(20);
+    expect(enabled?.type === 'bit' ? enabled.digitalTiming : undefined)
+      .toMatchObject({ ticksPerStep: 20, phaseTicks: 6 });
+  });
+
   it('rejects a sub-step resolution that would round a timing boundary', () => {
     const diagram = createDefaultDiagram();
     diagram.compatibility = { extensionsEnabled: true };

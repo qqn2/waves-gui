@@ -61,6 +61,8 @@ export interface StoreActions {
     index: number,
     patch: { durationTicks?: number; dutyTicks?: number | null },
   ): void;
+  /** Promote a bit/clock lane to editable per-cell Undulate timing. */
+  enableDigitalTiming(signalId: string): boolean;
   updateDigitalTimingSignal(
     signalId: string,
     patch: { phaseTicks?: number; slewing?: number | null },

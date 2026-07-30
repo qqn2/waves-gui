@@ -838,6 +838,45 @@
   line-height: 1.4;
 }
 
+.inspectorTimingSetup {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-panel));
+}
+
+.inspectorTimingSetup p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.4;
+}
+
+.inspectorTimingSetup button {
+  min-height: 31px;
+  padding: 5px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 13%, var(--bg-panel));
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  font-weight: 700;
+}
+
+.inspectorTimingSetup button:hover {
+  background: color-mix(in srgb, var(--accent) 21%, var(--bg-panel));
+}
+
+.inspectorTimingError {
+  color: #c45b4c;
+  font-size: calc(10px * var(--ui-font-scale, 1));
+  line-height: 1.35;
+}
+
 .colorReadout {
   display: flex;
   height: 29px;

@@ -102,6 +102,34 @@ describe('App smoke', () => {
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
 
     await act(async () => {
+      useStore.getState().setTicksPerStep(4);
+      useStore.getState().setActiveSignalIds([bitSignal!.id]);
+    });
+    const fineTimingButton = Array.from(
+      host.querySelectorAll<HTMLButtonElement>('button'),
+    ).find(
+      (button) => button.textContent?.includes('Enable fine timing for selected signal'),
+    );
+    expect(fineTimingButton).toBeDefined();
+    await act(async () => {
+      fineTimingButton!.click();
+    });
+    const timedBit = useStore.getState().diagram.signals.find(
+      (signal) => signal.id === bitSignal!.id,
+    );
+    expect(timedBit?.type === 'bit' ? timedBit.digitalTiming : undefined)
+      .toMatchObject({ ticksPerStep: 4 });
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Timing grid: 4 divisions per step.');
+    expect(
+      host.querySelectorAll('input[aria-label="Fine timing phase"]'),
+    ).toHaveLength(1);
+    expect(
+      host.querySelectorAll('input[aria-label="Signal phase"]'),
+    ).toHaveLength(0);
+
+    await act(async () => {
       useStore.getState().addSignal('analogue');
       const analogueSignal = useStore.getState().diagram.signals.find(
         (signal) => signal.type === 'analogue',

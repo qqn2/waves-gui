@@ -7,7 +7,7 @@ import { useStore } from '../shared/store';
 import styles from './shell.module.css';
 
 const TITLE =
-  'Integer timing resolution for Undulate periods, duty cycles, and phase. ' +
+  'Timing grid divisions per WaveDrom step for Undulate periods, duty cycles, and phase. ' +
   'Changes preserve exact timing; resolutions that would require rounding are rejected.';
 
 function parseResolution(raw: string): number | null {
@@ -41,13 +41,13 @@ export function DiagramSubStepsControl() {
 
   return (
     <div className={styles.stepsInline} title={TITLE}>
-      <span className={styles.stepsLabel}>Sub-Steps</span>
+      <span className={styles.stepsLabel}>Timing grid</span>
       <button
         type="button"
         className={styles.stepsBtn}
         onClick={() => bump(-1)}
         disabled={ticksPerStep <= 1}
-        aria-label="Lower sub-step resolution"
+        aria-label="Coarsen timing grid"
       >
         −
       </button>
@@ -63,7 +63,7 @@ export function DiagramSubStepsControl() {
         onFocus={() => setRejected(false)}
         inputMode="numeric"
         spellCheck={false}
-        aria-label="Diagram sub-step resolution"
+        aria-label="Timing grid divisions per step"
         aria-invalid={rejected}
       />
       <button
@@ -71,13 +71,13 @@ export function DiagramSubStepsControl() {
         className={styles.stepsBtn}
         onClick={() => bump(1)}
         disabled={ticksPerStep >= MAX_TICKS_PER_STEP}
-        aria-label="Raise sub-step resolution"
+        aria-label="Refine timing grid"
       >
         +
       </button>
       {rejected ? (
         <span className={styles.subStepsError} role="status">
-          Would round timing
+          Would round existing timing
         </span>
       ) : null}
     </div>

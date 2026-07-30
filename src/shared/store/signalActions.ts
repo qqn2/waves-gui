@@ -64,6 +64,7 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
+import { rescaleDiagramTiming, timingResolution } from '../fineTiming';
 
 function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   if (isSubcycleWaveLane(sig)) {
@@ -199,6 +200,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'refreshAnalogueRandomSeed'
   | 'extendAnalogueOverlayGroup'
   | 'dissolveAnalogueOverlayGroup'
+  | 'enableDigitalTiming'
   | 'updateDigitalTimingCell'
   | 'updateDigitalTimingSignal'
   | 'setSignalState'
@@ -634,6 +636,41 @@ export function createSignalActions(set: ImmerSet): Pick<
         );
         reconcileAnalogueOverlayGroups(s.diagram);
       });
+    },
+
+    enableDigitalTiming(signalId) {
+      let enabled = false;
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit') return;
+          if (signal.digitalTiming) {
+            enabled = true;
+            return;
+          }
+          const configuredTicks = s.diagram.config.ticksPerStep ?? 1;
+          const ticksPerStep = timingResolution([
+            1 / configuredTicks,
+            signal.phase ?? 0,
+            signal.period ?? 1,
+          ]);
+          if (ticksPerStep === null) return;
+          pushHistory(s);
+          if (!rescaleDiagramTiming(s.diagram, ticksPerStep)) return;
+          signal.digitalTiming = {
+            ticksPerStep,
+            phaseTicks: Math.round((signal.phase ?? 0) * ticksPerStep),
+            cells: signal.states.map((state) => ({
+              state,
+              durationTicks: Math.round((signal.period ?? 1) * ticksPerStep),
+            })),
+          };
+          delete signal.phase;
+          delete signal.period;
+          enabled = true;
+        });
+      });
+      return enabled;
     },
 
     updateDigitalTimingCell(signalId, index, patch) {

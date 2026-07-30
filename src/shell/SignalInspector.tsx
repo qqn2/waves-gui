@@ -52,6 +52,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const analogueContext = useStore(
     (s) => s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT,
   );
+  const enableDigitalTiming = useStore((s) => s.enableDigitalTiming);
   const updateDigitalTimingCell = useStore((s) => s.updateDigitalTimingCell);
   const updateDigitalTimingSignal = useStore((s) => s.updateDigitalTimingSignal);
   const extensionsEnabled = useStore(
@@ -61,12 +62,14 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const [nameDraft, setNameDraft] = useState('');
   const [analogueCellIndex, setAnalogueCellIndex] = useState(0);
   const [timingCellIndex, setTimingCellIndex] = useState(0);
+  const [timingSetupRejected, setTimingSetupRejected] = useState(false);
   const [strokeDraft, setStrokeDraft] = useState('');
   const [fillDraft, setFillDraft] = useState('');
   const [dashDraft, setDashDraft] = useState('');
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
+    setTimingSetupRejected(false);
   }, [signal?.id, signal?.name]);
 
   useEffect(() => {
@@ -703,7 +706,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                       phaseTicks: Number(event.target.value)
                         * signal.digitalTiming!.ticksPerStep,
                     })}
-                    aria-label="Signal phase"
+                    aria-label="Fine timing phase"
                   />
                 </label>
                 <label className={styles.inspectorField}>
@@ -723,11 +726,32 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   />
                 </label>
                 <p className={styles.inspectorFieldHint}>
-                  Resolution: {signal.digitalTiming.ticksPerStep} ticks per step.
+                  Timing grid: {signal.digitalTiming.ticksPerStep} divisions per step.
                 </p>
               </>
             ) : (
               <>
+            {signal.type === 'bit' && extensionsEnabled ? (
+              <div className={styles.inspectorTimingSetup}>
+                <p>
+                  Use the {diagram.config.ticksPerStep ?? 1}-division timing grid
+                  to edit individual cell periods and duty cycles.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimingSetupRejected(!enableDigitalTiming(signal.id));
+                  }}
+                >
+                  Enable fine timing for selected signal
+                </button>
+                {timingSetupRejected ? (
+                  <span className={styles.inspectorTimingError} role="status">
+                    Existing timing needs more than 1024 grid divisions.
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
             <label className={styles.inspectorField}>
               <span>Period</span>
               <input
@@ -739,8 +763,6 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onChange={(event) => setSignalPeriod(signal.id, event.target.value ? Number(event.target.value) : undefined)}
               />
             </label>
-              </>
-            )}
             <label className={styles.inspectorField}>
               <span>Phase</span>
               <input
@@ -752,6 +774,8 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onChange={(event) => setSignalPhase(signal.id, event.target.value ? Number(event.target.value) : undefined)}
               />
             </label>
+              </>
+            )}
             {isBus ? (
               <div className={styles.inspectorMetric}>
                 <Activity size={15} aria-hidden />
