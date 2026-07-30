@@ -21,6 +21,7 @@ import type { ViewTransform } from './coordinates';
 import { renderTextAnnotations } from './renderAnnotations';
 import { renderAnalogueSignal } from './renderAnalogueSignal';
 import { applyAnalogueBrushRange } from '../shared/analogue';
+import { paintDigitalTimingTicks } from '../shared/fineTiming';
 
 function previewToggleGapColumns(signal: Signal, lo: number, hi: number): Signal {
   const len = signal.type === 'bit' ? signal.states.length : signal.stepGaps?.length ?? 0;
@@ -126,11 +127,34 @@ export class CanvasRenderer {
         } else if (item.type === 'bit') {
           let drawSignal = item;
           let draft: BitState[] | null = null;
-          let rowTotalSteps = diagram.config.totalSteps;
+          let rowTotalSteps =
+            item.digitalTiming?.cells.length ?? diagram.config.totalSteps;
           if (view.paintDraft && view.paintDraft.signalId === item.id) {
             const lo = Math.min(view.paintDraft.startStep, view.paintDraft.endStep);
             const hi = Math.max(view.paintDraft.startStep, view.paintDraft.endStep);
             if (
+              view.paintDraft.startTick !== undefined
+              && view.paintDraft.endTick !== undefined
+              && item.digitalTiming
+              && (
+                view.paintDraft.apply === 'set'
+                || view.paintDraft.apply === 'toggle'
+              )
+            ) {
+              const cells = paintDigitalTimingTicks(
+                item.digitalTiming,
+                view.paintDraft.startTick,
+                view.paintDraft.endTick,
+                view.paintDraft.bitState,
+                view.paintDraft.apply,
+              );
+              drawSignal = {
+                ...item,
+                states: cells.map((cell) => cell.state),
+                digitalTiming: { ...item.digitalTiming, cells },
+              };
+              rowTotalSteps = cells.length;
+            } else if (
               view.paintDraft.mode === 'paint' &&
               view.paintDraft.apply === 'glitch'
             ) {

@@ -143,6 +143,8 @@ export interface Signal {
   analogueCells?: AnalogueCell[];
   /** Integer-tick timing for Undulate digital lanes. */
   digitalTiming?: DigitalTiming;
+  /** Internal: timing-cell states have replaced the imported compact wave spelling. */
+  digitalTimingStatesEdited?: boolean;
   /** Original compact Undulate repeat spelling, retained while cell states stay unchanged. */
   undulateRepeat?: {
     repeat: number;
@@ -493,6 +495,9 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
+  /** Absolute document-tick range for precision digital painting. */
+  startTick?: number;
+  endTick?: number;
   lane: 'bit' | 'vector' | 'analogue';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set' | 'glitch' | 'gap'; // paint only; erase ignores

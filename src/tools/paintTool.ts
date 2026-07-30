@@ -1,9 +1,9 @@
 import type { BitState } from '../shared/types';
-import { useStore } from '../shared/store';
+import { findSignal, useStore } from '../shared/store';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
-import { stepAtCanvasX } from './pointerUtils';
+import { stepAtCanvasX, timingTickAtCanvasX } from './pointerUtils';
 import * as vectorPaint from './vectorPaintTool';
 
 function capturePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void {
@@ -35,7 +35,7 @@ export function paintPointerDown(
 
   flushPendingCodeToDiagram();
 
-  const { view } = useStore.getState();
+  const { diagram, view } = useStore.getState();
   const apply: 'toggle' | 'set' | 'glitch' | 'gap' =
     view.paintMode === 'gap'
       ? 'gap'
@@ -45,11 +45,25 @@ export function paintPointerDown(
           ? 'toggle'
           : 'set';
   const bitState: BitState = view.activeBitState;
+  let fineTiming = false;
+  findSignal(diagram.signals, hit.signalId, (signal) => {
+    fineTiming =
+      signal.type === 'bit'
+      && Boolean(signal.digitalTiming)
+      && (diagram.config.ticksPerStep ?? 1) > 1
+      && (apply === 'set' || apply === 'toggle');
+  });
+  const timingTick = fineTiming
+    ? timingTickAtCanvasX(e.offsetX, diagram, view)
+    : undefined;
 
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,
     startStep: hit.step,
     endStep: hit.step,
+    ...(timingTick !== undefined
+      ? { startTick: timingTick, endTick: timingTick }
+      : {}),
     lane: 'bit',
     bitState,
     apply,
@@ -68,6 +82,13 @@ export function paintPointerMove(e: PointerEvent): void {
   }
 
   const { diagram, view } = useStore.getState();
+  if (draft.startTick !== undefined) {
+    const tick = timingTickAtCanvasX(e.offsetX, diagram, view);
+    if (tick !== draft.endTick) {
+      useStore.getState().setPaintDraft({ ...draft, endTick: tick });
+    }
+    return;
+  }
   const step = stepAtCanvasX(e.offsetX, diagram, view, draft.signalId);
   if (step === draft.endStep) return;
   useStore.getState().setPaintDraft({ ...draft, endStep: step });
@@ -83,6 +104,19 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   releasePointer(canvas, e);
 
   if (!draft) return;
+  if (draft.startTick !== undefined && draft.endTick !== undefined) {
+    if (draft.apply === 'set' || draft.apply === 'toggle') {
+      useStore.getState().paintDigitalTimingRange(
+        draft.signalId,
+        draft.startTick,
+        draft.endTick,
+        draft.bitState,
+        draft.apply,
+      );
+    }
+    useStore.getState().clearPaintDraft();
+    return;
+  }
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
   const paintStyle = useStore.getState().view.paintStyle;

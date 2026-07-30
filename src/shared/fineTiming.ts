@@ -1,10 +1,12 @@
 import type {
   BitState,
   DiagramState,
+  DigitalTimingCell,
   DigitalTiming,
   Signal,
   SignalOrGroup,
 } from './types';
+import { resolvePaintValue, toggleBinaryBitState } from './bitToggle';
 
 export const MAX_TICKS_PER_STEP = 1024;
 const EPSILON = 1e-9;
@@ -151,4 +153,74 @@ export function rescaleDiagramTiming(
   });
   diagram.config.ticksPerStep = ticksPerStep;
   return true;
+}
+
+function slicedTimingCell(
+  cell: DigitalTimingCell,
+  offsetTicks: number,
+  durationTicks: number,
+): DigitalTimingCell {
+  const dutyTicks = cell.dutyTicks === undefined
+    ? undefined
+    : Math.max(0, Math.min(
+        durationTicks,
+        cell.dutyTicks - offsetTicks,
+      ));
+  return {
+    state: cell.state,
+    durationTicks,
+    ...(dutyTicks !== undefined ? { dutyTicks } : {}),
+  };
+}
+
+/**
+ * Paint an inclusive absolute document-tick range while preserving total lane
+ * duration. Boundary cells are split into Undulate wave/period entries.
+ */
+export function paintDigitalTimingTicks(
+  timing: DigitalTiming,
+  startTick: number,
+  endTick: number,
+  bitState: BitState,
+  mode: 'set' | 'toggle',
+): DigitalTimingCell[] {
+  const lo = Math.min(Math.floor(startTick), Math.floor(endTick));
+  const hiExclusive = Math.max(Math.floor(startTick), Math.floor(endTick)) + 1;
+  const output: DigitalTimingCell[] = [];
+  let cursor = -timing.phaseTicks;
+
+  for (const cell of timing.cells) {
+    const cellStart = cursor;
+    const cellEnd = cursor + cell.durationTicks;
+    cursor = cellEnd;
+    const overlapStart = Math.max(cellStart, lo);
+    const overlapEnd = Math.min(cellEnd, hiExclusive);
+    if (overlapStart >= overlapEnd) {
+      output.push({ ...cell });
+      continue;
+    }
+
+    const targetState = mode === 'toggle'
+      ? toggleBinaryBitState(cell.state)
+      : resolvePaintValue(
+          output.map((candidate) => candidate.state),
+          output.length,
+          bitState,
+        );
+    if (targetState === cell.state) {
+      output.push({ ...cell });
+      continue;
+    }
+
+    const before = overlapStart - cellStart;
+    const painted = overlapEnd - overlapStart;
+    const after = cellEnd - overlapEnd;
+    if (before > 0) output.push(slicedTimingCell(cell, 0, before));
+    output.push({ state: targetState, durationTicks: painted });
+    if (after > 0) {
+      output.push(slicedTimingCell(cell, before + painted, after));
+    }
+  }
+
+  return output;
 }

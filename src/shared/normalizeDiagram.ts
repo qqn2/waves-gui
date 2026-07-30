@@ -88,7 +88,15 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (!Array.isArray(signal.states)) {
       signal.states = [];
     }
-    if (signal.type === 'bit' && isWaveModeLane(signal)) {
+    const hasDigitalTiming =
+      signal.type === 'bit'
+      && signal.digitalTiming
+      && signal.digitalTiming.cells.length > 0;
+    if (hasDigitalTiming) {
+      signal.states = signal.digitalTiming!.cells.map((cell, index) =>
+        cell.state ?? signal.states[index] ?? '0'
+      );
+    } else if (signal.type === 'bit' && isWaveModeLane(signal)) {
       padWaveLaneToLength(signal, totalSteps, DEFAULT_HSCALE);
     } else {
       signal.states = padBitStatesToLength(signal.states, totalSteps);

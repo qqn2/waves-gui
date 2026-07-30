@@ -359,8 +359,10 @@ function mergeUndulateSignalEntries(
     if (signal.type === 'bit' && signal.digitalTiming) {
       const timing = signal.digitalTiming;
       const entry = { ...(shared as WdSignal) };
-      entry.wave = (shared as WdSignal).wave
-        ?? signal.states.slice(0, timing.cells.length).join('');
+      entry.wave = signal.digitalTimingStatesEdited
+        ? timing.cells.map((cell) => cell.state).join('')
+        : (shared as WdSignal).wave
+          ?? signal.states.slice(0, timing.cells.length).join('');
       const periods = timing.cells.map(
         (cell) => cell.durationTicks / timing.ticksPerStep,
       );

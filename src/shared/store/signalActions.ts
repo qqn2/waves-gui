@@ -70,7 +70,11 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
-import { rescaleDiagramTiming, timingResolution } from '../fineTiming';
+import {
+  paintDigitalTimingTicks,
+  rescaleDiagramTiming,
+  timingResolution,
+} from '../fineTiming';
 
 function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   if (isSubcycleWaveLane(sig)) {
@@ -268,6 +272,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
+  | 'paintDigitalTimingRange'
   | 'toggleSignalStateRange'
   | 'paintToggleRange'
   | 'toggleStepGlitchRange'
@@ -935,6 +940,33 @@ export function createSignalActions(set: ImmerSet): Pick<
           }, sig.states.length);
         });
         s.view.isDirty = true;
+      });
+    },
+
+    paintDigitalTimingRange(signalId, startTick, endTick, bitState, mode) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let changed = false;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit' || !signal.digitalTiming) return;
+          const cells = paintDigitalTimingTicks(
+            signal.digitalTiming,
+            startTick,
+            endTick,
+            bitState,
+            mode,
+          );
+          if (JSON.stringify(cells) === JSON.stringify(signal.digitalTiming.cells)) {
+            return;
+          }
+          pushHistory(s);
+          signal.digitalTiming.cells = cells;
+          signal.states = cells.map((cell) => cell.state);
+          signal.digitalTimingStatesEdited = true;
+          delete signal.undulateRepeat;
+          changed = true;
+        });
+        if (changed) s.view.isDirty = true;
       });
     },
 

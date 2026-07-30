@@ -67,7 +67,8 @@ export function stepLogicalCenter(signal: Signal, step: number): number {
 
 /** Total logical width spanned by `totalSteps` columns for this lane. */
 export function laneLogicalWidth(signal: Signal, totalSteps: number): number {
-  return stepLogicalXEnd(signal, totalSteps - 1);
+  const cellCount = signal.digitalTiming?.cells.length ?? totalSteps;
+  return stepLogicalXEnd(signal, cellCount - 1);
 }
 
 /** Map canvas X to step index for a lane (uniform grid fallback when signal omitted). */
@@ -112,12 +113,13 @@ export function stepAtLogicalXForSignal(
   signal: Signal,
   totalSteps: number,
 ): number | null {
-  if (totalSteps <= 0) return null;
+  const cellCount = signal.digitalTiming?.cells.length ?? totalSteps;
+  if (cellCount <= 0) return null;
   if (logicalX < stepLogicalX(signal, 0)) return null;
   if (logicalX >= laneLogicalWidth(signal, totalSteps)) return null;
 
   const step = stepFromLogicalX(logicalX, signal);
-  if (step < 0 || step >= totalSteps) return null;
+  if (step < 0 || step >= cellCount) return null;
 
   const x0 = stepLogicalX(signal, step);
   const x1 = stepLogicalXEnd(signal, step);
