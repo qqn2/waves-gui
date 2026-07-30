@@ -108,6 +108,28 @@ export function PointerMarker({
   const waveformTop = axis + headHeight;
   const top = row.y * view.zoom - view.scrollY + waveformTop;
   const height = row.height * view.zoom;
+  const timingDivisions =
+    diagram.compatibility?.extensionsEnabled === true
+      ? diagram.config.ticksPerStep ?? 1
+      : 1;
+  const rawPointerX = hit.canvasX ?? left + cellW / 2;
+  const pointerLogicalX =
+    (rawPointerX + view.scrollX) / Math.max(Number.EPSILON, scale);
+  const snappedTick = Math.max(
+    0,
+    Math.min(
+      diagram.config.totalSteps * timingDivisions,
+      Math.round(pointerLogicalX / CELL_WIDTH * timingDivisions),
+    ),
+  );
+  const precisionX =
+    snappedTick / timingDivisions * CELL_WIDTH * scale - view.scrollX;
+  const majorTick = Math.floor(snappedTick / timingDivisions);
+  const minorTick = snappedTick % timingDivisions;
+  const tickLabel =
+    timingDivisions > 1 && minorTick > 0
+      ? `${majorTick}+${minorTick}/${timingDivisions}`
+      : `${majorTick}`;
 
   if (tool === 'structured-arrow') {
     const hover = view.edgeToolHover;
@@ -221,15 +243,22 @@ export function PointerMarker({
   return (
     <>
       <div
-        className="pointerMarkerCol"
-        style={{ left, width: cellW, top: waveformTop }}
+        className="pointerPrecisionLine"
+        style={{ left: precisionX, top: waveformTop }}
         aria-hidden
       />
       <div
-        className="pointerMarkerRow"
-        style={{ top, height, left: 0, right: 0 }}
+        className="pointerPrecisionTarget"
+        style={{ left: precisionX, top: top + height / 2 }}
         aria-hidden
       />
+      <div
+        className="pointerTickBadge"
+        style={{ left: precisionX, top: waveformTop }}
+        aria-hidden
+      >
+        {tickLabel}
+      </div>
       {analoguePreview ? (
         <svg
           className="analogueBrushGhost"
@@ -249,12 +278,17 @@ export function PointerMarker({
           ))}
         </svg>
       ) : null}
-      <div className="pointerMarkerLabel" style={{ left: left + 4, top: top + 2 }}>
-        t{hit.step} · {signalName}
-        {paintHint}
-        {analoguePaintHint}
-        {edgeHint}
-      </div>
+      {tool !== 'cursor' && tool !== 'select' ? (
+        <div
+          className="pointerMarkerLabel pointerMarkerLabelCompact"
+          style={{ left: precisionX + 7, top: top + 3 }}
+        >
+          {signalName}
+          {paintHint}
+          {analoguePaintHint}
+          {edgeHint}
+        </div>
+      ) : null}
     </>
   );
 }

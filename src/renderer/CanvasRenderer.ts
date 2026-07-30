@@ -110,6 +110,9 @@ export class CanvasRenderer {
       contentH,
       transform,
       canvasWidth,
+      diagram.compatibility?.extensionsEnabled === true
+        ? diagram.config.ticksPerStep ?? 1
+        : 1,
     );
 
     let rowIndex = 0;

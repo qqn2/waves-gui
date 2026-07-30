@@ -18,6 +18,8 @@ export interface HitTestResult {
   isTimeAxis: boolean;
   edgeIndex: number | null;
   annotationId: string | null;
+  /** Canvas-space pointer X, attached by the interactive canvas on hover. */
+  canvasX?: number;
 }
 
 const MISS: HitTestResult = {

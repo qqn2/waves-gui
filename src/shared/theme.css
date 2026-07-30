@@ -22,6 +22,7 @@
   --bus-color-stroke: #20242a;
   --bus-label-on-color: #172033;
   --grid-line: #d9dde2;
+  --grid-substep-line: #aeb7c466;
   --selection-fill: #2563eb22;
   --selection-stroke: #2563eb;
   --pointer-marker: #2563eb55;
@@ -52,6 +53,7 @@
   --bus-color-stroke: #20242a;
   --bus-label-on-color: #172033;
   --grid-line: #bdbdbd;
+  --grid-substep-line: #8f969f66;
   --selection-fill: #1d4ed822;
   --selection-stroke: #1d4ed8;
   --pointer-marker: #1d4ed855;
@@ -84,6 +86,7 @@
   --bus-color-stroke: #737d8a;
   --bus-label-on-color: #172033;
   --grid-line: #2d333c;
+  --grid-substep-line: #68738370;
   --selection-fill: #69a3ff2b;
   --selection-stroke: #84b5ff;
   --pointer-marker: #69a3ff55;

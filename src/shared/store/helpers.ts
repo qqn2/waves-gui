@@ -46,6 +46,7 @@ export function defaultView(): ViewState {
     activeEdgeLabel: '',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    activeTimingCellIndex: null,
     activeAnnotationId: null,
     showCodePanel: true,
     showRenderPanel: true,

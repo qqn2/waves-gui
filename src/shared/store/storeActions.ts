@@ -135,6 +135,7 @@ export interface StoreActions {
   setSignalPhase(signalId: string, phase: number | undefined): void;
   setSignalPeriod(signalId: string, period: number | undefined): void;
   setActiveSignalIds(ids: string[]): void;
+  setActiveTimingCellIndex(index: number | null): void;
   setActiveAnnotationId(id: string | null): void;
   setTotalSteps(steps: number): void;
   setHscale(hscale: number): void;

@@ -4,7 +4,7 @@ import {
   ROW_HEIGHT,
   TIME_AXIS_HEIGHT,
 } from '../shared/constants';
-import { useStore } from '../shared/store';
+import { findSignal, useStore } from '../shared/store';
 import { buildRowLayout } from '../renderer/rowLayout';
 import {
   canvasToLogicalX,
@@ -91,6 +91,7 @@ function applyRectSelection(
   }
 
   setActiveSignalIds(ids);
+  useStore.getState().setActiveTimingCellIndex(null);
   toolState.setStepSelection(
     ids.length > 0 ? { start: stepStart, end: stepEnd } : null,
   );
@@ -99,11 +100,19 @@ function applyRectSelection(
 function applyClickSelection(hit: HitTestResult, diagram: DiagramState): void {
   if (hit.annotationId) {
     useStore.getState().setActiveAnnotationId(hit.annotationId);
+    useStore.getState().setActiveTimingCellIndex(null);
     toolState.setStepSelection(null);
     return;
   }
   if (hit.signalId && hit.signalType !== 'group' && hit.signalType !== null) {
     setActiveSignalIds([hit.signalId]);
+    let hasFineTiming = false;
+    findSignal(diagram.signals, hit.signalId, (signal) => {
+      hasFineTiming = Boolean(signal.digitalTiming);
+    });
+    useStore.getState().setActiveTimingCellIndex(
+      hasFineTiming && hit.step !== null ? hit.step : null,
+    );
     if (hit.step !== null) {
       toolState.setStepSelection({ start: hit.step, end: hit.step });
     } else {
@@ -281,6 +290,7 @@ export function selectAllSignals(): void {
   const diagram = useStore.getState().diagram;
   const ids = collectSignalIds(diagram.signals);
   setActiveSignalIds(ids);
+  useStore.getState().setActiveTimingCellIndex(null);
   toolState.setStepSelection({
     start: 0,
     end: diagram.config.totalSteps - 1,
@@ -377,6 +387,7 @@ export function deleteSelection(): void {
 
 export function clearSelection(): void {
   setActiveSignalIds([]);
+  useStore.getState().setActiveTimingCellIndex(null);
   useStore.getState().setActiveAnnotationId(null);
   toolState.setStepSelection(null);
   toolState.clearSelectOverlay();

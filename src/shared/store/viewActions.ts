@@ -36,6 +36,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setActiveTimespanLabel'
   | 'setActiveEdgeLabel'
   | 'setActiveBusColorIndex'
+  | 'setActiveTimingCellIndex'
   | 'setAnnotationSnapToGrid'
   | 'setEdgeToolHover'
   | 'setStructuredArrowPending'
@@ -122,6 +123,14 @@ export function createViewActions(set: ImmerSet): Pick<
     setActiveBusColorIndex(index: WavedromColorIndex) {
       set((s) => {
         s.view.activeBusColorIndex = index;
+      });
+    },
+
+    setActiveTimingCellIndex(index) {
+      set((s) => {
+        s.view.activeTimingCellIndex = index === null
+          ? null
+          : Math.max(0, Math.floor(index));
       });
     },
 

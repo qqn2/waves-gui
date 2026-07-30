@@ -47,7 +47,9 @@ function IntegratedCanvas({
 
   const onPointerEvent = useCallback(
     (phase: 'down' | 'move' | 'up', e: PointerEvent, hit: HitTestResult) => {
-      if (phase === 'move') onHoverHit(hit.signalId ? hit : null);
+      if (phase === 'move') {
+        onHoverHit(hit.signalId ? { ...hit, canvasX: e.offsetX } : null);
+      }
       if (phase === 'down') onPointerDown(e, hit);
       else if (phase === 'move') onPointerMove(e, hit);
       else onPointerUp(e, hit);

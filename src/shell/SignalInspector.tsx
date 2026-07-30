@@ -58,10 +58,15 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const extensionsEnabled = useStore(
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
+  const activeTimingCellIndex = useStore(
+    (s) => s.view.activeTimingCellIndex,
+  );
+  const setActiveTimingCellIndex = useStore(
+    (s) => s.setActiveTimingCellIndex,
+  );
   const signal = useMemo(() => selectedSignal(signals, activeIds), [signals, activeIds]);
   const [nameDraft, setNameDraft] = useState('');
   const [analogueCellIndex, setAnalogueCellIndex] = useState(0);
-  const [timingCellIndex, setTimingCellIndex] = useState(0);
   const [timingSetupRejected, setTimingSetupRejected] = useState(false);
   const [strokeDraft, setStrokeDraft] = useState('');
   const [fillDraft, setFillDraft] = useState('');
@@ -105,6 +110,13 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
     findSignal(signals, id, (member) => { name = member.name; });
     return name;
   }) ?? [];
+  const timingCellIndex = Math.max(
+    0,
+    Math.min(
+      (signal?.digitalTiming?.cells.length ?? 1) - 1,
+      activeTimingCellIndex ?? 0,
+    ),
+  );
   const timingCell = signal?.digitalTiming?.cells[timingCellIndex];
 
   return (
@@ -642,7 +654,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     min={1}
                     max={signal.digitalTiming.cells.length}
                     value={timingCellIndex + 1}
-                    onChange={(event) => setTimingCellIndex(Math.max(
+                    onChange={(event) => setActiveTimingCellIndex(Math.max(
                       0,
                       Math.min(
                         signal.digitalTiming!.cells.length - 1,
@@ -652,6 +664,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     aria-label="Timing cell"
                   />
                 </label>
+                <p className={styles.inspectorHint}>
+                  Select tool: click a waveform cell to edit its timing.
+                </p>
                 <label className={styles.inspectorField}>
                   <span>Period</span>
                   <input

@@ -435,6 +435,8 @@ export interface ViewState {
   /** WaveDrom bus fill palette index (2–9) for new vector spans */
   activeBusColorIndex: WavedromColorIndex;
   activeSignalIds: string[]; // selected for operations
+  /** Fine-timing cell targeted from the canvas or signal inspector. */
+  activeTimingCellIndex?: number | null;
   /** Selected extended object, mutually exclusive with activeSignalIds. */
   activeAnnotationId?: string | null;
   showCodePanel: boolean;

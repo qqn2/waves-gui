@@ -131,4 +131,36 @@ describe('annotation direct dragging', () => {
       to: { kind: 'point', x: 3, y: 2 },
     });
   });
+
+  it('targets a fine-timing cell when its waveform cell is selected', () => {
+    const signal = useStore.getState().diagram.signals.find(
+      (candidate) => candidate.type === 'bit',
+    );
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(useStore.getState().enableDigitalTiming(signal.id)).toBe(true);
+
+    const hit: HitTestResult = {
+      signalId: signal.id,
+      signalType: 'bit',
+      step: 2,
+      half: 'top',
+      isLabelArea: false,
+      isTimeAxis: false,
+      edgeIndex: null,
+      annotationId: null,
+    };
+    const event = {
+      pointerId: 9,
+      offsetX: 100,
+      offsetY: TIME_AXIS_HEIGHT + ROW_HEIGHT / 2,
+      shiftKey: false,
+    } as PointerEvent;
+
+    selectPointerDown(event, canvas, hit);
+    selectPointerUp(event, canvas);
+
+    expect(useStore.getState().view.activeSignalIds).toEqual([signal.id]);
+    expect(useStore.getState().view.activeTimingCellIndex).toBe(2);
+  });
 });
