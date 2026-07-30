@@ -360,7 +360,11 @@ function mergeUndulateSignalEntries(
       const timing = signal.digitalTiming;
       const entry = { ...(shared as WdSignal) };
       entry.wave = signal.digitalTimingStatesEdited
-        ? timing.cells.map((cell) => cell.state).join('')
+        ? timing.cells.map((cell, index, cells) =>
+            index > 0 && cell.state === cells[index - 1]!.state
+              ? '.'
+              : cell.state
+          ).join('')
         : (shared as WdSignal).wave
           ?? signal.states.slice(0, timing.cells.length).join('');
       const periods = timing.cells.map(
@@ -558,11 +562,17 @@ export function toUndulateJSON(
     }
   }
   if (annotations.length > 0) root.annotations = annotations;
+  const hasExpandedTimingCells = flattenDiagramSignals(diagram.signals).some(
+    (signal) =>
+      signal.type === 'bit'
+      && (signal.digitalTiming?.cells.length ?? 0) > diagram.config.totalSteps,
+  );
   if (
     includeAppMetadata
     && (
       diagram.config.analogueContext !== undefined
       || diagram.config.analogueRandomSeed !== undefined
+      || hasExpandedTimingCells
     )
   ) {
     root['x-waves-gui'] = {
@@ -571,6 +581,9 @@ export function toUndulateJSON(
         : {}),
       ...(diagram.config.analogueRandomSeed !== undefined
         ? { randomSeed: diagram.config.analogueRandomSeed >>> 0 }
+        : {}),
+      ...(hasExpandedTimingCells
+        ? { timingGridSteps: diagram.config.totalSteps }
         : {}),
     };
   } else {
@@ -816,6 +829,11 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     Number.isInteger(appMetadata?.randomSeed)
       ? appMetadata!.randomSeed! >>> 0
       : undefined;
+  const timingGridSteps =
+    Number.isInteger(appMetadata?.timingGridSteps)
+    && appMetadata!.timingGridSteps! > 0
+      ? appMetadata!.timingGridSteps!
+      : undefined;
   let hasAnalogueExpression = false;
   const opaqueSignals: Record<string, Record<string, unknown>> = {};
   rawSignals.forEach((raw, index) => {
@@ -890,6 +908,9 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     diagram.config.totalSteps,
     ...parsedSignals.map((signal) => signal.analogueCells?.length ?? 0),
   );
+  if (timingGridSteps !== undefined) {
+    diagram.config.totalSteps = timingGridSteps;
+  }
   const annotations = (root.annotations ?? []).map((annotation): DiagramAnnotation => {
     const style = annotationStyleFromUndulate(
       annotation as unknown as Record<string, unknown>,
