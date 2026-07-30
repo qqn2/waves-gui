@@ -336,6 +336,48 @@ describe('Undulate JSON bridge', () => {
     ).toBeUndefined();
   });
 
+  it('does not pad sibling lanes to a fine-painted lane symbol count', () => {
+    const root = {
+      signal: [
+        {
+          name: 'fine',
+          wave: '01010101',
+          periods: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+        },
+        {
+          name: 'coarse',
+          wave: '01.0',
+        },
+        {
+          name: 'timed sibling',
+          wave: '10.1',
+          periods: [1, 1, 1, 1],
+        },
+      ],
+      'x-waves-gui': { timingGridSteps: 4 },
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const [fine, coarse, timedSibling] = diagram.signals;
+
+    expect(fine?.type === 'bit' ? fine.states : []).toHaveLength(8);
+    expect(coarse?.type === 'bit' ? coarse.states : []).toHaveLength(4);
+    expect(
+      timedSibling?.type === 'bit'
+        ? timedSibling.digitalTiming?.cells
+        : [],
+    ).toHaveLength(4);
+    expect(diagram.config.totalSteps).toBe(4);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved.signal[1]).toMatchObject({ wave: '01.0' });
+    expect(saved.signal[2]).toMatchObject({
+      wave: '10.1',
+      period: 1,
+    });
+  });
+
   it('expands analogue repeat with the upstream value-cycling semantics', () => {
     const root = {
       signal: [{

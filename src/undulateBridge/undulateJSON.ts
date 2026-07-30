@@ -839,6 +839,22 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   rawSignals.forEach((raw, index) => {
     const parsed = parsedSignals[index];
     if (parsed) {
+      // The WaveDrom bridge pads every lane to the longest wave string. Fine
+      // timing may legitimately add more symbols to only one lane, so restore
+      // each digital lane's own source-cell count before periods are imported.
+      if (
+        timingGridSteps !== undefined
+        && !Array.isArray(raw.analogue)
+        && typeof raw.wave === 'string'
+      ) {
+        const sourceCellCount = raw.wave.length
+          * (
+            typeof raw.repeat === 'number'
+              ? Math.max(1, Math.floor(raw.repeat))
+              : 1
+          );
+        parsed.states = parsed.states.slice(0, sourceCellCount);
+      }
       hasAnalogueExpression =
         importAnalogueSignal(raw, parsed, analogueContext, randomSeed)
         || hasAnalogueExpression;
