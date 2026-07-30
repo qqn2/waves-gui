@@ -8,7 +8,7 @@ Local copies and links for WaveJSON / WaveDrom behavior. Refresh manually when u
 |----------|-----|------------|
 | WaveJSON schema notes | https://github.com/wavedrom/schema/blob/master/WaveJSON.md | `WaveJSON.md` |
 | WaveDrom engine README | https://github.com/wavedrom/wavedrom | `README-wavedrom.md` |
-| Hitchhiker's tutorial | http://wavedrom.com/tutorial.html | (online only; see checklist) |
+| Hitchhiker's tutorial | http://wavedrom.com/tutorial.html | (online only; see [format compatibility](../FORMAT_COMPATIBILITY.md)) |
 | Online editor | http://wavedrom.com/editor.html | — |
 | JSON schema repo | https://github.com/wavedrom/schema | — |
 

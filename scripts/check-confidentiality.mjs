@@ -51,7 +51,13 @@ for (const file of files) {
   }
   if (contentExclusions.some((pattern) => pattern.test(normalized))) continue;
 
-  const buffer = await readFile(resolve(root, file));
+  let buffer;
+  try {
+    buffer = await readFile(resolve(root, file));
+  } catch (error) {
+    if (error?.code === 'ENOENT') continue;
+    throw error;
+  }
   if (buffer.includes(0)) continue;
   const content = buffer.toString('utf8');
   for (const [label, pattern] of signatures) {
