@@ -23,6 +23,7 @@ import {
   annotationYLogical,
   layoutArrowAnnotations,
 } from '../renderer/annotationLayout';
+import { snapAnnotationX, snapAnnotationY } from '../shared/annotationGrid';
 
 interface AnnotationDrag {
   id: string;
@@ -192,12 +193,18 @@ export function selectPointerMove(e: PointerEvent): void {
     ) / ROW_HEIGHT;
     if (annotation.type === 'arrow') {
       if (!annotationDrag.arrowEndpoint) return;
+      const shouldSnap =
+        state.view.annotationSnapToGrid !== false && !e.shiftKey;
       const options = { recordHistory: !annotationDrag.historyRecorded };
       state.updateArrowAnnotation(annotation.id, {
         [annotationDrag.arrowEndpoint]: {
           kind: 'point',
-          x: Math.round(Math.max(0, rawX) * 100) / 100,
-          y: Math.round(Math.max(0, rawY) * 100) / 100,
+          x: shouldSnap
+            ? snapAnnotationX(rawX, state.diagram)
+            : Math.round(Math.max(0, rawX) * 100) / 100,
+          y: shouldSnap
+            ? snapAnnotationY(rawY)
+            : Math.round(Math.max(0, rawY) * 100) / 100,
         },
       }, options);
       annotationDrag.historyRecorded = true;

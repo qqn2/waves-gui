@@ -50,4 +50,49 @@ describe('PointerMarker', () => {
     await act(async () => root.unmount());
     host.remove();
   });
+
+  it('snaps the structured-arrow preview to the timing grid', async () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((signal) => signal.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    const view = defaultView();
+    view.edgeToolHover = {
+      signalId: bit.id,
+      step: 1,
+      canvasX: 87,
+      canvasY: 200,
+    };
+
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    await act(async () => root.render(
+      <PointerMarker
+        diagram={diagram}
+        view={view}
+        tool="structured-arrow"
+        hit={{
+          signalId: bit.id,
+          signalType: 'bit',
+          step: 1,
+          half: 'top',
+          isLabelArea: false,
+          isTimeAxis: false,
+          edgeIndex: null,
+          annotationId: null,
+          canvasX: 87,
+        }}
+      />,
+    ));
+
+    const cursor = host.querySelector<HTMLElement>('.structuredArrowCursor');
+    expect(cursor?.style.left).toBe('90px');
+    expect(host.querySelector('.pointerTickBadge')?.textContent).toBe('2+1/4');
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
 });

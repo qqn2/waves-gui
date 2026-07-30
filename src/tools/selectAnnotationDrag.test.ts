@@ -93,6 +93,7 @@ describe('annotation direct dragging', () => {
   });
 
   it('drags a selected structured-arrow endpoint as one undo step', () => {
+    expect(useStore.getState().setTicksPerStep(4)).toBe(true);
     const id = useStore.getState().addArrowAnnotation({
       shape: '->',
       from: { kind: 'point', x: 1, y: 1 },

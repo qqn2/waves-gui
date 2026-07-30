@@ -132,9 +132,9 @@ export function PointerMarker({
       : `${majorTick}`;
 
   if (tool === 'structured-arrow') {
-    const hover = view.edgeToolHover;
-    const currentX = hover?.canvasX ?? left + cellW / 2;
-    const currentY = hover?.canvasY ?? top + height / 2;
+    const currentX =
+      timingDivisions > 1 ? precisionX : left + cellW / 2;
+    const currentY = top + height / 2;
     const pending = view.structuredArrowPending;
     const startX = pending
       ? pending.x * CELL_WIDTH * scale - view.scrollX
@@ -161,6 +161,15 @@ export function PointerMarker({
           style={{ left: currentX, top: currentY }}
           aria-hidden
         />
+        {timingDivisions > 1 ? (
+          <div
+            className="pointerTickBadge"
+            style={{ left: currentX, top: waveformTop }}
+            aria-hidden
+          >
+            {tickLabel}
+          </div>
+        ) : null}
         <div
           className="pointerMarkerLabel"
           style={{ left: currentX + 10, top: currentY + 8 }}

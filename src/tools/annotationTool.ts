@@ -7,6 +7,7 @@ import {
 } from '../shared/constants';
 import { canvasToLogicalX, canvasToLogicalY } from '../renderer/coordinates';
 import { measureHeadFoot } from '../renderer/renderHeadFoot';
+import { snapAnnotationX, snapAnnotationY } from '../shared/annotationGrid';
 
 function pointerAnchor(event: PointerEvent): { x: number; y: number } {
   const { diagram, view } = useStore.getState();
@@ -37,11 +38,11 @@ function pointerAnchor(event: PointerEvent): { x: number; y: number } {
 
 function creationAnchor(event: PointerEvent): { x: number; y: number } {
   const anchor = pointerAnchor(event);
-  const totalSteps = useStore.getState().diagram.config.totalSteps;
+  const diagram = useStore.getState().diagram;
   return useStore.getState().view.annotationSnapToGrid !== false
     ? {
-        x: Math.min(Math.max(0.5, totalSteps - 0.5), Math.floor(anchor.x) + 0.5),
-        y: Math.floor(anchor.y) + 0.5,
+        x: snapAnnotationX(anchor.x, diagram),
+        y: snapAnnotationY(anchor.y),
       }
     : anchor;
 }

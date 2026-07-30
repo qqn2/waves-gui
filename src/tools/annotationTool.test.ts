@@ -125,6 +125,25 @@ describe('annotation tool', () => {
     expect(useStore.getState().view.selectedTool).toBe('cursor');
   });
 
+  it('snaps structured-arrow endpoints to fine timing ticks', () => {
+    useStore.getState().setTicksPerStep(4);
+    const { headHeight } = measureHeadFoot(useStore.getState().diagram.config);
+    const pointer = (x: number, y: number) => ({
+      button: 0,
+      offsetX: x,
+      offsetY: TIME_AXIS_HEIGHT + headHeight + y,
+    } as PointerEvent);
+
+    structuredArrowPointerDown(pointer(CELL_WIDTH * 1.31, ROW_HEIGHT * 0.8));
+    structuredArrowPointerDown(pointer(CELL_WIDTH * 3.68, ROW_HEIGHT * 2.2));
+
+    expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
+      type: 'arrow',
+      from: { kind: 'point', x: 1.25, y: 0.5 },
+      to: { kind: 'point', x: 3.75, y: 2.5 },
+    });
+  });
+
   it('creates annotations at exact pointer coordinates when snapping is off', () => {
     useStore.getState().setAnnotationSnapToGrid(false);
     const signal = useStore.getState().diagram.signals.find(
