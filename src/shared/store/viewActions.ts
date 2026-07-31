@@ -42,6 +42,8 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setStructuredArrowPending'
   | 'setPaintMode'
   | 'setPaintStyle'
+  | 'toggleGroupCollapsed'
+  | 'toggleInspector'
   | 'toggleCodePanel'
   | 'toggleRenderPanel'
   | 'setLabelWidth'
@@ -149,6 +151,20 @@ export function createViewActions(set: ImmerSet): Pick<
     setPaintStyle(style: PaintStyle) {
       set((s) => {
         s.view.paintStyle = style;
+      });
+    },
+
+    toggleGroupCollapsed(groupId) {
+      set((s) => {
+        const index = s.view.collapsedGroupIds.indexOf(groupId);
+        if (index >= 0) s.view.collapsedGroupIds.splice(index, 1);
+        else s.view.collapsedGroupIds.push(groupId);
+      });
+    },
+
+    toggleInspector() {
+      set((s) => {
+        s.view.showInspector = !s.view.showInspector;
       });
     },
 

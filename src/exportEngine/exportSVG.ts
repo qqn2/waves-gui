@@ -770,9 +770,7 @@ function walkSignalSvg(
     if (!row) break;
     if (item.type === 'group') {
       rowIndex.i++;
-      if (!item.collapsed) {
-        parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex));
-      }
+      parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex));
     } else if (item.type === 'bit') {
       parts.push(
         svgBitSignal(

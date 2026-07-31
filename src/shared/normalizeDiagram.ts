@@ -135,9 +135,7 @@ function walkSignals(signals: SignalOrGroup[], totalSteps: number): void {
       if (!Array.isArray(group.children)) {
         group.children = [];
       }
-      if (typeof group.collapsed !== 'boolean') {
-        group.collapsed = false;
-      }
+      delete (group as SignalGroup & { collapsed?: boolean }).collapsed;
       walkSignals(group.children, totalSteps);
     } else {
       normalizeSignal(item, totalSteps);

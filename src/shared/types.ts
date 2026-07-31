@@ -199,7 +199,6 @@ export interface SignalGroup {
   name: string;
   type: 'group';
   children: Array<Signal | SignalGroup>;
-  collapsed: boolean;
   color?: string; // bracket color
 }
 
@@ -439,6 +438,10 @@ export interface ViewState {
   activeTimingCellIndex?: number | null;
   /** Selected extended object, mutually exclusive with activeSignalIds. */
   activeAnnotationId?: string | null;
+  /** Group ids collapsed in the current editor session; never serialized. */
+  collapsedGroupIds: string[];
+  /** User-controlled properties inspector visibility; never serialized. */
+  showInspector: boolean;
   showCodePanel: boolean;
   showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */

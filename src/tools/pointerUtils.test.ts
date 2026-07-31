@@ -25,6 +25,8 @@ function minimal(overrides?: Partial<ViewState>): {
     activeBusLabel: 'data',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    collapsedGroupIds: [],
+    showInspector: false,
     showCodePanel: true,
     showRenderPanel: false,
     labelWidth: 160,

@@ -37,6 +37,7 @@ import { canRescaleDiagramTiming, rescaleDiagramTiming } from '../fineTiming';
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
   s.view.scrollY = 0;
+  s.view.collapsedGroupIds = [];
   s.view.paintDraft = null;
   s.view.edgeAnchorPending = null;
   s.view.structuredArrowPending = null;
@@ -493,6 +494,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = [];
+        s.view.collapsedGroupIds = [];
       });
     },
 

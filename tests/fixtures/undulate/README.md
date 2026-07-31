@@ -7,7 +7,7 @@ schema documented by Undulate revision
 Reference:
 <https://github.com/LudwigCRON/undulate/blob/c8da7d48c48fc0bbc90113b6913611132bd96c01/docs-srcs/tutorial_ann_step2.rst>
 
-## Machine-readable certification inventories
+## Machine-readable conformance inventories
 
 `property-matrix.json` is the revision-pinned feature/property matrix. Every
 documented declarative property or value form is classified as exactly one of:
@@ -16,13 +16,7 @@ documented declarative property or value form is classified as exactly one of:
 - **opaque** — safely preserved verbatim with an explicit compatibility report
 - **rejected** — unsafe or permanently excluded
 
-`certification-corpus.json` is the provenance-tracked fixture corpus. Each case
-records source repository, exact commit SHA, original path or documentation
-section, license, and whether it is copied verbatim or minimally adapted. Cases
-cover pinned Undulate tutorials, format comparison, native JSON/YAML/TOML
-equivalents, representative WaveDrom timing/edge examples, opaque-preservation
-paths, and negative fixtures for register diagrams, executable expressions,
-remote CSS, and oversize input.
+`certification-corpus.json` is the provenance-tracked conformance fixture corpus; its historical filename is retained to avoid unnecessary churn. Each case records source repository, exact commit SHA, original path or documentation section, license, and whether it is copied verbatim or minimally adapted. Cases cover pinned Undulate tutorials, format comparison, native JSON/YAML/TOML equivalents, representative WaveDrom timing/edge examples, opaque-preservation paths, and negative fixtures for register diagrams, executable expressions, remote CSS, and oversize input.
 
 YAML and TOML are Undulate interchange formats, not native WaveDrom formats.
 Cross-format cases prove equivalent semantics without calling YAML/TOML

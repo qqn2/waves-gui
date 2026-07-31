@@ -39,17 +39,9 @@ import styles from './shell.module.css';
 
 export interface ToolbarProps {
   onExport: () => void;
-  inspectorVisible: boolean;
-  inspectorAvailable: boolean;
-  onToggleInspector: () => void;
 }
 
-export function Toolbar({
-  onExport,
-  inspectorVisible,
-  inspectorAvailable,
-  onToggleInspector,
-}: ToolbarProps) {
+export function Toolbar({ onExport }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const paintMode = useStore((s) => s.view.paintMode);
   const paintStyle = useStore((s) => s.view.paintStyle);
@@ -67,6 +59,8 @@ export function Toolbar({
   const activeBusColorIndex = useStore((s) => s.view.activeBusColorIndex);
   const setActiveBusColorIndex = useStore((s) => s.setActiveBusColorIndex);
   const setHscale = useStore((s) => s.setHscale);
+  const inspectorVisible = useStore((s) => s.view.showInspector);
+  const toggleInspector = useStore((s) => s.toggleInspector);
   const zoom = useStore((s) => s.view.zoom);
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
@@ -89,7 +83,7 @@ export function Toolbar({
   const [shortcutOpen, setShortcutOpen] = useState(false);
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
   const [recentBits, setRecentBits] = useState<BitState[]>([]);
-  const [diagramControlsVisible, setDiagramControlsVisible] = useState(true);
+  const [diagramControlsVisible, setDiagramControlsVisible] = useState(false);
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -104,7 +98,7 @@ export function Toolbar({
 
     const contentW = diagramLogicalWidth(diagram) * diagram.config.hscale;
 
-    const rows = buildRowLayout(diagram.signals);
+    const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
     const contentH = totalContentHeight(rows);
 
     const axisOffset = TIME_AXIS_HEIGHT;
@@ -171,6 +165,7 @@ export function Toolbar({
                     ? 'Compression'
                     : 'Span';
   const annotationSnapToGrid = view.annotationSnapToGrid !== false;
+  const hasContextOptions = tool !== 'horizontal-line';
 
 
   return (
@@ -195,17 +190,55 @@ export function Toolbar({
         </button>
 
         <span className={styles.divider} />
-        <button
-          type="button"
-          className={`${styles.toolBtn} ${diagramControlsVisible ? styles.toolActive : ''}`}
-          onClick={() => setDiagramControlsVisible((visible) => !visible)}
-          title="Show or hide Steps, Labels, and Scale controls"
-          aria-label="Diagram controls"
-          aria-pressed={diagramControlsVisible}
-        >
-          <SlidersHorizontal size={16} aria-hidden />
-        </button>
-        {diagramControlsVisible ? <HeadFootFields /> : null}
+        <div className={styles.diagramSettingsWrap}>
+          <button
+            type="button"
+            className={`${styles.toolBtn} ${diagramControlsVisible ? styles.toolActive : ''}`}
+            onClick={() => setDiagramControlsVisible((visible) => !visible)}
+            title="Diagram settings"
+            aria-label="Diagram settings"
+            aria-expanded={diagramControlsVisible}
+          >
+            <SlidersHorizontal size={16} aria-hidden /> Settings
+          </button>
+          {diagramControlsVisible ? (
+            <div className={styles.diagramSettingsPopover} role="group" aria-label="Diagram settings">
+              <HeadFootFields />
+              <label className={styles.hscaleField} title="WaveDrom config.hscale">
+                <span className={styles.hscaleLabel}>hscale</span>
+                <input
+                  type="number"
+                  className={styles.hscaleInput}
+                  min={MIN_HSCALE}
+                  max={MAX_HSCALE}
+                  step={HSCALE_STEP}
+                  value={localHscale}
+                  onChange={(e) => updateHscale(e.target.value)}
+                  onBlur={commitHscale}
+                  onKeyDown={handleHscaleKeyDown}
+                  aria-label="WaveDrom horizontal scale"
+                />
+              </label>
+              <label className={styles.hscaleField} title="WaveDrom config.skin">
+                <span className={styles.hscaleLabel}>Skin</span>
+                <select
+                  className={`${styles.hscaleInput} ${styles.skinSelect}`}
+                  aria-label="WaveDrom skin"
+                  value={diagramSkin ?? 'default'}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setDiagramSkin(value === 'default' ? undefined : value);
+                  }}
+                >
+                  <option value="default">default</option>
+                  <option value="narrow">narrow</option>
+                  <option value="dark">dark</option>
+                  <option value="lowkey">lowkey</option>
+                </select>
+              </label>
+            </div>
+          ) : null}
+        </div>
 
         <span className={styles.toolbarSpacer} />
 
@@ -226,21 +259,6 @@ export function Toolbar({
           >
             <Maximize size={15} aria-hidden />
           </button>
-          <label className={styles.hscaleWrap} title="WaveDrom config.hscale (≥ 1, fractional OK e.g. 1.5)">
-            <span className={styles.hscaleLabel}>hscale</span>
-            <input
-              type="number"
-              className={styles.hscaleInput}
-              min={MIN_HSCALE}
-              max={MAX_HSCALE}
-              step={HSCALE_STEP}
-              value={localHscale}
-              onChange={(e) => updateHscale(e.target.value)}
-              onBlur={commitHscale}
-              onKeyDown={handleHscaleKeyDown}
-              aria-label="WaveDrom horizontal scale"
-            />
-          </label>
         </div>
 
         <div className={styles.viewControls}>
@@ -249,9 +267,9 @@ export function Toolbar({
           type="button"
           className={`${styles.toolBtn} ${view.showCodePanel ? styles.toolActive : ''}`}
           onClick={() => toggleCodePanel()}
-          title="Show or hide WaveDrom JSON editor"
+          title="Show or hide source editor"
         >
-          <Braces size={16} aria-hidden /> JSON
+          <Braces size={16} aria-hidden /> Source
         </button>
         <button
           type="button"
@@ -265,30 +283,12 @@ export function Toolbar({
         <button
           type="button"
           className={`${styles.toolBtn} ${inspectorVisible ? styles.toolActive : ''}`}
-          onClick={onToggleInspector}
-          disabled={!inspectorAvailable}
-          title={inspectorAvailable ? 'Show or hide properties inspector' : 'Select a signal or annotation to inspect its properties'}
+          onClick={toggleInspector}
+          title="Show or hide properties inspector"
           aria-pressed={inspectorVisible}
         >
           <PanelRight size={16} aria-hidden /> Inspector
         </button>
-        <label className={styles.hscaleField} title="WaveDrom config.skin">
-          <span className={styles.hscaleLabel}>Skin</span>
-          <select
-            className={`${styles.hscaleInput} ${styles.skinSelect}`}
-            aria-label="WaveDrom skin"
-            value={diagramSkin ?? 'default'}
-            onChange={(e) => {
-              const v = e.target.value;
-              setDiagramSkin(v === 'default' ? undefined : v);
-            }}
-          >
-            <option value="default">default</option>
-            <option value="narrow">narrow</option>
-            <option value="dark">dark</option>
-            <option value="lowkey">lowkey</option>
-          </select>
-        </label>
         <ThemeMenu />
         <button
           type="button"
@@ -301,7 +301,7 @@ export function Toolbar({
         </div>
       </div>
 
-      <div
+      {hasContextOptions ? <div
         className={styles.contextToolbar}
         data-toolbar="context"
         aria-label={`${toolLabel} tool options`}
@@ -374,7 +374,7 @@ export function Toolbar({
           />
         )}
         {tool === 'erase' ? <span className={styles.contextHint}>Drag across waveform cells to clear them</span> : null}
-      </div>
+      </div> : null}
       <ShortcutHelp open={shortcutOpen} onClose={() => setShortcutOpen(false)} />
     </div>
   );

@@ -38,7 +38,7 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
           isGroup: true,
           centerRatio: 0.5,
         });
-        if (!item.collapsed) walk(item.children, depth + 1);
+        walk(item.children, depth + 1);
       } else {
         entries.push({
           name: item.name,

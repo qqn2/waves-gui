@@ -82,7 +82,7 @@ export class CanvasRenderer {
       scrollY: view.scrollY,
     };
 
-    const rows = buildRowLayout(diagram.signals);
+    const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
     const contentH = totalContentHeight(rows);
     const axisOffset = TIME_AXIS_HEIGHT;
     const { headHeight, footHeight } = measureHeadFoot(diagram.config);
@@ -122,7 +122,7 @@ export class CanvasRenderer {
         if (!row) return;
         if (item.type === 'group') {
           rowIndex++;
-          if (!item.collapsed) walkDraw(item.children);
+          if (!view.collapsedGroupIds.includes(item.id)) walkDraw(item.children);
         } else if (item.type === 'bit') {
           let drawSignal = item;
           let draft: BitState[] | null = null;

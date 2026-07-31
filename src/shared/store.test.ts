@@ -50,6 +50,86 @@ describe('useStore', () => {
     expect(useStore.getState().view.diagramRevision).toBe(revBeforeLoad + 1);
   });
 
+  it('records head and foot edits once and preserves redo on no-op updates', () => {
+    const revision = useStore.getState().view.diagramRevision;
+    useStore.getState().updateDiagramHead({ text: 'Protocol timing' });
+    useStore.getState().updateDiagramFoot({ text: 'Figure 1' });
+
+    expect(useStore.getState().diagram.config).toMatchObject({
+      head: { text: 'Protocol timing' },
+      foot: { text: 'Figure 1' },
+    });
+    expect(useStore.getState().history).toHaveLength(2);
+    expect(useStore.getState().view.diagramRevision).toBe(revision + 2);
+
+    useStore.getState().undo();
+    expect(useStore.getState().diagram.config.foot).toBeUndefined();
+    expect(useStore.getState().future).toHaveLength(1);
+    useStore.getState().updateDiagramHead({ text: 'Protocol timing' });
+    expect(useStore.getState().future).toHaveLength(1);
+    useStore.getState().redo();
+    expect(useStore.getState().diagram.config.foot?.text).toBe('Figure 1');
+  });
+
+  it('renames groups with history and keeps collapse in view state', () => {
+    useStore.getState().addGroup(undefined, 'Inputs');
+    const group = useStore.getState().diagram.signals[0];
+    expect(group?.type).toBe('group');
+    if (!group || group.type !== 'group') return;
+
+    const historyBeforeRename = useStore.getState().history.length;
+    useStore.getState().renameGroup(group.id, 'AXI Write Channel');
+    expect(useStore.getState().history).toHaveLength(historyBeforeRename + 1);
+    expect(useStore.getState().diagram.signals[0]).toMatchObject({
+      name: 'AXI Write Channel',
+    });
+
+    const diagramBeforeCollapse = JSON.stringify(useStore.getState().diagram);
+    const historyBeforeCollapse = useStore.getState().history.length;
+    const revisionBeforeCollapse = useStore.getState().view.diagramRevision;
+    useStore.getState().toggleGroupCollapsed(group.id);
+    expect(useStore.getState().view.collapsedGroupIds).toEqual([group.id]);
+    expect(JSON.stringify(useStore.getState().diagram)).toBe(diagramBeforeCollapse);
+    expect(useStore.getState().history).toHaveLength(historyBeforeCollapse);
+    expect(useStore.getState().view.diagramRevision).toBe(revisionBeforeCollapse);
+  });
+
+  it('inserts a signal relative to a sibling inside a group', () => {
+    useStore.getState().addGroup(undefined, 'Nested');
+    const group = useStore.getState().diagram.signals[0];
+    if (!group || group.type !== 'group') return;
+    useStore.getState().addSignal('bit', { parentId: group.id });
+    const first = useStore.getState().diagram.signals[0];
+    if (!first || first.type !== 'group') return;
+    const firstId = first.children[0]!.id;
+
+    useStore.getState().addSignal('vector', {
+      parentId: group.id,
+      afterId: firstId,
+    });
+
+    const updated = useStore.getState().diagram.signals[0];
+    expect(updated?.type).toBe('group');
+    if (updated?.type === 'group') {
+      expect(updated.children.map((item) => item.type)).toEqual(['bit', 'vector']);
+    }
+    expect(useStore.getState().diagram.signals).toHaveLength(1);
+  });
+
+  it('does not consume redo for an equivalent normalized signal style', () => {
+    useStore.getState().addSignal('bit');
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type === 'group') return;
+    useStore.getState().updateSignalStyle(signal.id, { strokeWidth: 2 });
+    useStore.getState().undo();
+    expect(useStore.getState().future).toHaveLength(1);
+
+    useStore.getState().updateSignalStyle(signal.id, { stroke: undefined });
+
+    expect(useStore.getState().future).toHaveLength(1);
+    expect(useStore.getState().history).toHaveLength(1);
+  });
+
   it('adds and resizes a normalized analogue lane', () => {
     useStore.getState().setExtensionsEnabled(true);
     useStore.getState().addSignal('analogue');
@@ -776,7 +856,6 @@ describe('useStore', () => {
           id: 'group-1',
           name: 'Group',
           type: 'group',
-          collapsed: false,
           children: [
             {
               id: 'nested-sig',
@@ -812,7 +891,6 @@ describe('useStore', () => {
           id: 'section-1',
           name: 'Section',
           type: 'group',
-          collapsed: false,
           children: [
             {
               id: 'nested-sig',
@@ -889,7 +967,7 @@ describe('useStore', () => {
     if (g?.type === 'group') {
       expect(g.name).toBe('Section');
       expect(g.children).toHaveLength(0);
-      expect(g.collapsed).toBe(false);
+      expect(g).not.toHaveProperty('collapsed');
     }
   });
 
@@ -1099,7 +1177,6 @@ describe('useStore', () => {
           id: 'group-1',
           name: 'Group',
           type: 'group',
-          collapsed: false,
           children: [
             {
               id: 'nested-sig-1',

@@ -438,6 +438,27 @@
   flex: 0 0 auto;
 }
 
+.diagramSettingsWrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.diagramSettingsPopover {
+  position: absolute;
+  z-index: 45;
+  top: calc(100% + 7px);
+  left: 0;
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-panel);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 18%);
+}
+
 .extensionsMode {
   display: inline-flex;
   align-items: center;

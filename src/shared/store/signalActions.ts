@@ -32,7 +32,13 @@ import {
   removeGapColumnsOnDiagram,
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
-import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
+import type {
+  BitState,
+  DiagramConfig,
+  Signal,
+  SignalGroup,
+  SignalOrGroup,
+} from '../types';
 import { normalizeSignalStyle } from '../signalStyles';
 import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
 import {
@@ -185,6 +191,54 @@ function duplicateSignalInDraft(
   return false;
 }
 
+type SignalLocation = {
+  parentId?: string;
+  beforeId?: string;
+  afterId?: string;
+};
+
+function insertAtLocation(
+  signals: SignalOrGroup[],
+  item: SignalOrGroup,
+  location: SignalLocation | undefined,
+): void {
+  let siblings = signals;
+  if (location?.parentId) {
+    findGroup(signals, location.parentId, (group) => {
+      siblings = group.children;
+    });
+  }
+  const beforeIndex = location?.beforeId
+    ? siblings.findIndex((candidate) => candidate.id === location.beforeId)
+    : -1;
+  const index = beforeIndex >= 0
+    ? beforeIndex
+    : insertIndexAfter(siblings, location?.afterId);
+  siblings.splice(index, 0, item);
+}
+
+function normalizeHead(
+  value: NonNullable<DiagramConfig['head']>,
+): DiagramConfig['head'] {
+  const next = {
+    ...(value.text ? { text: value.text } : {}),
+    ...(value.tick !== undefined ? { tick: value.tick } : {}),
+    ...(value.every !== undefined ? { every: value.every } : {}),
+  };
+  return Object.keys(next).length > 0 ? next : undefined;
+}
+
+function normalizeFoot(
+  value: NonNullable<DiagramConfig['foot']>,
+): DiagramConfig['foot'] {
+  const next = {
+    ...(value.text ? { text: value.text } : {}),
+    ...(value.tock !== undefined ? { tock: value.tock } : {}),
+    ...(value.every !== undefined ? { every: value.every } : {}),
+  };
+  return Object.keys(next).length > 0 ? next : undefined;
+}
+
 export function createSignalActions(set: ImmerSet): Pick<
   StoreActions,
   | 'addSignal'
@@ -192,6 +246,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
+  | 'renameGroup'
   | 'updateSignalStyle'
   | 'updateAnalogueCell'
   | 'paintAnalogueCellRange'
@@ -227,13 +282,15 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setActiveAnnotationId'
   | 'setTotalSteps'
   | 'setHscale'
+  | 'updateDiagramHead'
+  | 'updateDiagramFoot'
   | 'insertStepAt'
   | 'deleteStepAt'
   | 'toggleStepGapAt'
   | 'setDiagramSkin'
 > {
   return {
-    addSignal(type, afterId) {
+    addSignal(type, location) {
       set((s) => {
         pushHistory(s);
         const analogueContext =
@@ -274,11 +331,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           color: DEFAULT_SIGNAL_COLOR,
           rowHeight: ROW_HEIGHT,
         };
-        s.diagram.signals.splice(
-          insertIndexAfter(s.diagram.signals, afterId),
-          0,
-          signal,
-        );
+        insertAtLocation(s.diagram.signals, signal, location);
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
@@ -299,7 +352,6 @@ export function createSignalActions(set: ImmerSet): Pick<
           name,
           type: 'group',
           children: [],
-          collapsed: false,
         };
         s.diagram.signals.splice(
           insertIndexAfter(s.diagram.signals, afterId),
@@ -314,12 +366,20 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = removeFromTree(s.diagram.signals, id);
+        s.view.collapsedGroupIds = s.view.collapsedGroupIds.filter(
+          (groupId) => groupId !== id,
+        );
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
     renameSignal(id, name) {
       set((s) => {
+        let currentName: string | undefined;
+        findSignal(s.diagram.signals, id, (sig) => {
+          currentName = sig.name;
+        });
+        if (currentName === undefined || currentName === name) return;
         pushHistory(s);
         findSignal(s.diagram.signals, id, (sig) => {
           sig.name = name;
@@ -327,15 +387,37 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
+    renameGroup(id, name) {
+      set((s) => {
+        let currentName: string | undefined;
+        findGroup(s.diagram.signals, id, (group) => {
+          currentName = group.name;
+        });
+        if (currentName === undefined || currentName === name) return;
+        pushHistory(s);
+        findGroup(s.diagram.signals, id, (group) => {
+          group.name = name;
+        });
+      });
+    },
+
     updateSignalStyle(signalId, patch) {
       set((s) => {
+        let currentStyle: Signal['style'];
+        let nextStyle: Signal['style'];
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          currentStyle = normalizeSignalStyle(sig.style ?? {});
+          nextStyle = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
+        });
+        if (
+          !found
+          || JSON.stringify(currentStyle ?? {}) === JSON.stringify(nextStyle ?? {})
+        ) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          const next = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
-          if (next) sig.style = next;
+          if (nextStyle) sig.style = nextStyle;
           else delete sig.style;
         });
-        s.view.isDirty = true;
       });
     },
 
@@ -1119,6 +1201,28 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.config.hscale = next;
         s.view.isDirty = true;
+      });
+    },
+
+    updateDiagramHead(patch) {
+      set((s) => {
+        const previous = normalizeHead(s.diagram.config.head ?? {});
+        const next = normalizeHead({ ...(previous ?? {}), ...patch });
+        if (JSON.stringify(previous ?? {}) === JSON.stringify(next ?? {})) return;
+        pushHistory(s);
+        if (next) s.diagram.config.head = next;
+        else delete s.diagram.config.head;
+      });
+    },
+
+    updateDiagramFoot(patch) {
+      set((s) => {
+        const previous = normalizeFoot(s.diagram.config.foot ?? {});
+        const next = normalizeFoot({ ...(previous ?? {}), ...patch });
+        if (JSON.stringify(previous ?? {}) === JSON.stringify(next ?? {})) return;
+        pushHistory(s);
+        if (next) s.diagram.config.foot = next;
+        else delete s.diagram.config.foot;
       });
     },
 

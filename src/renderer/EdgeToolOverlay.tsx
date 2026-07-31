@@ -35,7 +35,7 @@ export function EdgeToolOverlay() {
   const layout = useMemo(() => {
     if (tool !== 'arrow' && tool !== 'timespan') return null;
 
-    const rows = buildRowLayout(diagram.signals);
+    const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
     const laneColumn = (signalId: string, step: number) => {
       let signal: import('../shared/types').Signal | null = null;
       findSignal(diagram.signals, signalId, (found) => {

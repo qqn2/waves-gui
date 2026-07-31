@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Bug, ExternalLink, FileText, Github, ShieldCheck, X } from 'lucide-react';
+import { BUILD_LABEL } from '../shared/buildInfo';
 import styles from './shell.module.css';
 
 export interface ShortcutHelpProps {
@@ -49,8 +50,9 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
             <span className={styles.shortcutEyebrow}>waves-gui workspace</span>
             <h2 id="help-about-title" className={styles.shortcutTitle}>Help &amp; About</h2>
             <p className={styles.shortcutLead}>
-              Paint timing diagrams, inspect WaveDrom JSON, and export locally.
+              Paint WaveDrom and Undulate timing diagrams, inspect source, and export locally.
             </p>
+            <p className={styles.shortcutText}>{BUILD_LABEL}</p>
           </div>
           <button type="button" aria-label="Close help" className={styles.shortcutClose} onClick={onClose}>
             <X size={17} aria-hidden />

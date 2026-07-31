@@ -7,6 +7,7 @@ import type {
   HorizontalLineAnnotation,
   GlobalCompressionAnnotation,
   ArrowAnnotation,
+  DiagramConfig,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -23,11 +24,15 @@ import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 /** Public store API — grouped by domain for navigation. */
 export interface StoreActions {
   // ── Signals ──
-  addSignal(type: Signal['type'], afterId?: string): void;
+  addSignal(
+    type: Signal['type'],
+    location?: { parentId?: string; beforeId?: string; afterId?: string },
+  ): void;
   duplicateSignal(id: string): void;
   addGroup(afterId?: string, name?: string): void;
   removeSignal(id: string): void;
   renameSignal(id: string, name: string): void;
+  renameGroup(id: string, name: string): void;
   updateSignalStyle(signalId: string, patch: Partial<SignalStyle>): void;
   updateAnalogueCell(
     signalId: string,
@@ -139,6 +144,8 @@ export interface StoreActions {
   setActiveAnnotationId(id: string | null): void;
   setTotalSteps(steps: number): void;
   setHscale(hscale: number): void;
+  updateDiagramHead(patch: Partial<NonNullable<DiagramConfig['head']>>): void;
+  updateDiagramFoot(patch: Partial<NonNullable<DiagramConfig['foot']>>): void;
   insertStepAt(index: number): void;
   deleteStepAt(index: number): void;
   /** Toggle WaveDrom `|` gap before column `boundary + 1` on every lane (bulk helper). */
@@ -237,6 +244,8 @@ export interface StoreActions {
   setStructuredArrowPending(pending: ViewState['structuredArrowPending']): void;
   setPaintMode(mode: PaintMode): void;
   setPaintStyle(style: PaintStyle): void;
+  toggleGroupCollapsed(groupId: string): void;
+  toggleInspector(): void;
   toggleCodePanel(): void;
   toggleRenderPanel(): void;
   setLabelWidth(width: number): void;

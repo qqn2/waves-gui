@@ -19,21 +19,22 @@ describe('App smoke', () => {
     expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
 
     const inspectorToggle = host.querySelector<HTMLButtonElement>(
-      'button[title="Select a signal or annotation to inspect its properties"]',
+      'button[title="Show or hide properties inspector"]',
     );
     expect(inspectorToggle).not.toBeNull();
-    expect(inspectorToggle!.disabled).toBe(true);
+    expect(inspectorToggle!.disabled).toBe(false);
+
+    await act(async () => {
+      inspectorToggle!.click();
+    });
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Select a signal or annotation');
 
     const bitSignal = useStore.getState().diagram.signals.find((signal) => signal.type === 'bit');
     expect(bitSignal).toBeDefined();
     await act(async () => {
       useStore.getState().setActiveSignalIds([bitSignal!.id]);
-    });
-    expect(inspectorToggle!.disabled).toBe(false);
-    expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
-
-    await act(async () => {
-      inspectorToggle!.click();
     });
     const inspector = host.querySelector('aside[aria-label="Properties inspector"]');
     expect(inspector).not.toBeNull();
@@ -59,26 +60,21 @@ describe('App smoke', () => {
     );
     expect(editedBit?.type === 'bit' ? editedBit.period : undefined).toBe(3);
 
+    const diagramControlsToggle = host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Diagram settings"]',
+    );
+    expect(diagramControlsToggle).not.toBeNull();
+    expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('false');
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).toBeNull();
+    await act(async () => {
+      diagramControlsToggle!.click();
+    });
+    expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('true');
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
     const hscaleInput = host.querySelector<HTMLInputElement>(
       'input[aria-label="WaveDrom horizontal scale"]',
     );
     expect(hscaleInput).not.toBeNull();
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
-
-    const diagramControlsToggle = host.querySelector<HTMLButtonElement>(
-      'button[aria-label="Diagram controls"]',
-    );
-    expect(diagramControlsToggle).not.toBeNull();
-    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('true');
-    await act(async () => {
-      diagramControlsToggle!.click();
-    });
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).toBeNull();
-    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('false');
-    await act(async () => {
-      diagramControlsToggle!.click();
-    });
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
 
     await act(async () => {
       const valueSetter = Object.getOwnPropertyDescriptor(

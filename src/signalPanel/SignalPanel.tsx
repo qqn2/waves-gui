@@ -9,6 +9,7 @@ import {
 import { Search, X } from 'lucide-react';
 import { useStore } from '../shared/store';
 import { getSignalRowsTopInsetPx } from '../renderer/renderHeadFoot';
+import { countSignals } from '../shell/statusUtils';
 import type { Signal, SignalOrGroup } from '../shared/types';
 import type { ScrollSyncHandles } from './scrollSyncTypes';
 import { SignalRow } from './SignalRow';
@@ -18,6 +19,7 @@ import { SignalContextMenu } from './SignalContextMenu';
 import {
   collectAllGroups,
   collectVisibleRows,
+  filterSignalTree,
   getSiblingIds,
   reorderSiblingIds,
 } from './panelTree';
@@ -41,6 +43,7 @@ function renderTree(
   zoom: number,
   depth: number,
   activeIds: string[],
+  collapsedGroupIds: readonly string[],
   dropTargetId: string | null,
   dragHandlers: {
     onDragStart: (e: React.DragEvent, id: string) => void;
@@ -64,6 +67,7 @@ function renderTree(
         <GroupRow
           key={item.id}
           group={item}
+          collapsed={collapsedGroupIds.includes(item.id)}
           zoom={zoom}
           depth={depth}
           dropHighlight={dropTargetId === item.id}
@@ -73,13 +77,14 @@ function renderTree(
           onEditEnd={onEditEnd}
         />,
       );
-      if (!item.collapsed) {
+      if (!collapsedGroupIds.includes(item.id)) {
         nodes.push(
           ...renderTree(
             item.children,
             zoom,
             depth + 1,
             activeIds,
+            collapsedGroupIds,
             dropTargetId,
             dragHandlers,
             renameId,
@@ -106,24 +111,6 @@ function renderTree(
   return nodes;
 }
 
-function filterSignalTree(items: SignalOrGroup[], q: string): SignalOrGroup[] {
-  const lower = q.toLowerCase();
-  const result: SignalOrGroup[] = [];
-  for (const item of items) {
-    if (item.type === 'group') {
-      const children = filterSignalTree(item.children, q);
-      if (children.length > 0) {
-        result.push({ ...item, children, collapsed: false });
-      }
-    } else if (item.type !== 'spacer') {
-      if (item.name.toLowerCase().includes(lower)) {
-        result.push(item);
-      }
-    }
-  }
-  return result;
-}
-
 export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const signals = useStore((s) => s.diagram.signals);
   const zoom = useStore((s) => s.view.zoom);
@@ -132,6 +119,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const totalSteps = config.totalSteps;
   const signalRowsTopInset = getSignalRowsTopInsetPx(config);
   const activeIds = useStore((s) => s.view.activeSignalIds);
+  const collapsedGroupIds = useStore((s) => s.view.collapsedGroupIds);
   const addSignal = useStore((s) => s.addSignal);
   const duplicateSignal = useStore((s) => s.duplicateSignal);
   const addGroup = useStore((s) => s.addGroup);
@@ -195,10 +183,10 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   const parentForId = useCallback(
     (id: string): string | undefined => {
-      const rows = collectVisibleRows(signals);
+      const rows = collectVisibleRows(signals, collapsedGroupIds);
       return rows.find((r) => r.id === id)?.parentId;
     },
-    [signals],
+    [signals, collapsedGroupIds],
   );
 
   const onDragStart = (e: React.DragEvent, id: string) => {
@@ -215,7 +203,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   const onDragOver = (e: React.DragEvent, targetId: string) => {
     if (!drag || drag.id === targetId) return;
-    const rows = collectVisibleRows(signals);
+    const rows = collectVisibleRows(signals, collapsedGroupIds);
     const dragRow = rows.find((r) => r.id === drag.id);
     const targetRow = rows.find((r) => r.id === targetId);
     if (!dragRow || !targetRow) return;
@@ -230,7 +218,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const onDrop = (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
     if (!drag) return;
-    const rows = collectVisibleRows(signals);
+    const rows = collectVisibleRows(signals, collapsedGroupIds);
     const dragRow = rows.find((r) => r.id === drag.id);
     const targetRow = rows.find((r) => r.id === targetId);
     if (!dragRow || !targetRow) return;
@@ -270,7 +258,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const menuSignalId = menuSignal?.id;
   const sectionOptions = useMemo(() => collectAllGroups(signals), [signals]);
   const menuParentId = menuSignalId
-    ? collectVisibleRows(signals).find((r) => r.id === menuSignalId)?.parentId
+    ? collectVisibleRows(signals, collapsedGroupIds)
+      .find((r) => r.id === menuSignalId)?.parentId
     : undefined;
   return (
     <div
@@ -280,7 +269,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
     >
       <div className={styles.panelHeader}>
         <strong>Signals</strong>
-        <span>{signals.length} lanes</span>
+        <span>{countSignals(signals)} lanes</span>
       </div>
       <div className={styles.filterBar}>
         <Search className={styles.filterIcon} size={12} aria-hidden />
@@ -319,6 +308,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           zoom,
           0,
           activeIds,
+          filterText.trim() ? [] : collapsedGroupIds,
           dropTargetId,
           {
             onDragStart,
@@ -419,15 +409,17 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
         onAddAbove={(type) => {
           if (menuSignalId) {
             const parentId = parentForId(menuSignalId);
-            const siblings = getSiblingIds(signals, parentId);
-            const idx = siblings?.indexOf(menuSignalId) ?? -1;
-            if (idx <= 0) addSignal(type);
-            else addSignal(type, siblings![idx - 1]!);
+            addSignal(type, { parentId, beforeId: menuSignalId });
           }
           closeMenu();
         }}
         onAddBelow={(type) => {
-          if (menuSignalId) addSignal(type, menuSignalId);
+          if (menuSignalId) {
+            addSignal(type, {
+              parentId: parentForId(menuSignalId),
+              afterId: menuSignalId,
+            });
+          }
           closeMenu();
         }}
         onSetAll={(state) => {

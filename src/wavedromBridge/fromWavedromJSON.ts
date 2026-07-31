@@ -134,7 +134,6 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       name: entry[0],
       type: 'group',
       children: [],
-      collapsed: false,
     };
     for (const child of children) {
       const parsed = parseEntry(child);

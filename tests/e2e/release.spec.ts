@@ -55,6 +55,7 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await page.getByLabel('Undulate extensions').check();
   await page.getByRole('button', { name: 'Add analog', exact: true }).click();
   await signalRow(page, 'analog').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   await expect(page.getByText('Analog inspector', { exact: true })).toBeVisible();
 
   const editor = page.locator('.cm-content');
@@ -219,6 +220,7 @@ test('edits mixed analogue states, styles, rails, and stable random seeds', asyn
   }, null, 2));
 
   await signalRow(page, 'mixed analogue').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   await expect(page.getByLabel('Analog cell transition'))
     .toHaveValue('metastable-low');
   await expect(page.getByLabel('Signal value font family'))
@@ -486,6 +488,7 @@ test('uses consistent editing rail controls and a readable skin selector', async
     expect(box!.height).toBeGreaterThanOrEqual(48);
   }
 
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   const skinBox = await page.getByLabel('WaveDrom skin').boundingBox();
   expect(skinBox).not.toBeNull();
   expect(skinBox!.height).toBeCloseTo(32, 3);
@@ -547,8 +550,8 @@ test('keeps bus segment editing exclusively in the selected signal inspector', a
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
   await expect(page.getByLabel('Signals panel').getByLabel('Bus segment labels')).toHaveCount(0);
   await expect(
-    page.getByTitle('Select a signal or annotation to inspect its properties'),
-  ).toBeDisabled();
+    page.getByTitle('Show or hide properties inspector'),
+  ).toBeEnabled();
 
   await replaceJson(page, JSON.stringify({
     signal: [
@@ -559,6 +562,7 @@ test('keeps bus segment editing exclusively in the selected signal inspector', a
   }, null, 2));
 
   await signalRow(page, 'payload').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   const inspector = page.getByLabel('Properties inspector');
   const segments = inspector.getByLabel('Bus segment labels');
   await expect(inspector).toBeVisible();
@@ -605,10 +609,10 @@ test('keeps narrow view controls separated instead of shrinking labels together'
   await page.setViewportSize({ width: 420, height: 760 });
 
   const controls = [
-    page.getByTitle('Show or hide WaveDrom JSON editor'),
+    page.getByTitle('Show or hide source editor'),
     page.getByTitle('Show or hide WaveDrom render preview'),
     page.getByRole('button', { name: 'Inspector', exact: true }),
-    page.getByLabel('WaveDrom skin'),
+    page.getByTitle('Appearance'),
   ];
   const boxes = await Promise.all(controls.map((control) => control.boundingBox()));
   for (const box of boxes) expect(box).not.toBeNull();
@@ -631,10 +635,10 @@ test('wraps document controls without overlapping tool options at desktop width'
   expect(context!.y).toBeGreaterThanOrEqual(primary!.y + primary!.height - 1);
 
   const viewControls = [
-    page.getByTitle('Show or hide WaveDrom JSON editor'),
+    page.getByTitle('Show or hide source editor'),
     page.getByTitle('Show or hide WaveDrom render preview'),
     page.getByRole('button', { name: 'Inspector', exact: true }),
-    page.getByLabel('WaveDrom skin'),
+    page.getByTitle('Appearance'),
   ];
   const boxes = await Promise.all(viewControls.map((control) => control.boundingBox()));
   for (const box of boxes) {
@@ -676,6 +680,7 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   await page.waitForTimeout(1_200);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('wavedrom-gui-draft'))).not.toBeNull();
 
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   await page.getByLabel('More steps').click();
@@ -695,6 +700,82 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   expect(recoveryDialogs).toEqual([]);
 });
 
+test('keeps title edits synchronized with source and undo history', async ({ page }) => {
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
+  await page.getByRole('button', { name: /Labels/ }).click();
+  const title = page.getByLabel('Diagram labels').getByText('Title').locator('..').locator('input');
+  const editor = page.locator('.cm-content');
+  const originalTitle = await title.inputValue();
+
+  await title.fill('AXI write timing');
+  await title.press('Enter');
+  await expect(editor).toContainText('AXI write timing');
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await page.getByRole('button', { name: /Labels/ }).click();
+  await expect(title).toHaveValue(originalTitle);
+  await expect(editor).not.toContainText('AXI write timing');
+
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await page.getByRole('button', { name: /Labels/ }).click();
+  await expect(title).toHaveValue('AXI write timing');
+  await expect(editor).toContainText('AXI write timing');
+});
+
+test('renames groups with undo while collapse remains view-only', async ({ page }) => {
+  await page.getByRole('button', { name: '+ Add signal', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Section (group)', exact: true }).click();
+  const section = page.locator('[data-group-row="true"]').first();
+  await section.getByText('Section', { exact: true }).dblclick();
+  const editor = section.locator('input');
+  await editor.fill('AXI Write Channel');
+  await editor.press('Enter');
+  await expect(page.locator('.cm-content')).toContainText('AXI Write Channel');
+
+  const sourceBeforeCollapse = await page.locator('.cm-content').textContent();
+  await section.getByRole('button', { name: 'Collapse group' }).click();
+  expect(await page.locator('.cm-content').textContent()).toBe(sourceBeforeCollapse);
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(section).toContainText('Section');
+  await expect(section.getByRole('button', { name: 'Expand group' })).toBeVisible();
+});
+
+test('adds a lane below its nested sibling instead of at the root', async ({ page }) => {
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      ['Protocol', { name: 'request', wave: '01..' }, { name: 'ready', wave: '10..' }],
+    ],
+  }));
+  const request = signalRow(page, 'request');
+  await request.click({ button: 'right' });
+  await page.getByRole('menuitem', { name: 'Add bit below', exact: true }).click();
+  await expect(signalRow(page, 'sig')).toBeVisible();
+
+  const group = page.locator('[data-group-row="true"]').filter({ hasText: 'Protocol' });
+  await group.getByRole('button', { name: 'Collapse group' }).click();
+  await expect(request).toHaveCount(0);
+  await expect(signalRow(page, 'ready')).toHaveCount(0);
+  await expect(signalRow(page, 'sig')).toHaveCount(0);
+});
+
+test('commits numeric style once and preserves redo after a no-op blur', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  await signalRow(page, 'clk').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
+  const width = page.getByLabel('Signal stroke width');
+
+  await width.fill('12');
+  await width.press('Enter');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(width).toHaveValue('');
+
+  await width.focus();
+  await width.press('Tab');
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(width).toHaveValue('12');
+});
+
 test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page }) => {
   const commentedSource = `{ signal : [
   // clock signal
@@ -710,6 +791,7 @@ test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page
   await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
   await expect(signalRow(page, 'bus')).toBeVisible();
 
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(editor).toContainText('// clock signal');
   await expect(editor).toContainText('// bus data');
@@ -757,6 +839,7 @@ test('dirty state follows the confirmed savepoint across undo', async ({ page })
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
 
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
@@ -799,6 +882,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   await page.getByRole('button', { name: /File/ }).click();
   await page.getByRole('button', { name: 'Open document…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+s' : 'Control+s');
@@ -813,6 +897,7 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
 });
 
 test('invalid JSON never mutates the diagram or history', async ({ page }) => {
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   const editor = page.locator('.cm-content');
@@ -855,6 +940,7 @@ test('safe unknown Undulate properties are preserved without data loss', async (
 
   await expect(signalRow(page, 'blocked')).toBeVisible();
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
   await expect(page.locator('.cm-content')).toContainText('"future_config"');
@@ -881,6 +967,7 @@ test('promotes shorthand edges to styled Undulate arrows', async ({ page }) => {
   await expect(editor).toContainText('"text": "latency"');
   await expect(promote).toHaveCount(0);
 
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   const annotationStroke = page.getByLabel('Annotation stroke', { exact: true });
   await expect(annotationStroke).toBeVisible();
   await annotationStroke.fill('#336699');
@@ -958,6 +1045,7 @@ test('Help/About exposes privacy and project routes', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Help & About' })).toBeVisible();
   await expect(page.getByText(/full recovery draft and recent filenames/i)).toBeVisible();
   await expect(page.getByText(/independent community project/i)).toBeVisible();
+  await expect(page.getByText(/^Version 0\.1\.0 · (?:[0-9a-f]{7}|unknown)$/)).toBeVisible();
   await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/qqn2/waves-gui');
   await expect(page.getByRole('link', { name: 'Report a bug' })).toHaveAttribute(
     'href',

@@ -90,7 +90,7 @@ export function PointerMarker({
 }: PointerMarkerProps) {
   if (!hit?.signalId || hit.step === null) return null;
 
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
   const row = rows.find((r) => r.id === hit.signalId);
   if (!row || row.type === 'group') return null;
 

@@ -40,6 +40,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     activeTimespanLabel: '',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    collapsedGroupIds: [],
+    showInspector: false,
     showCodePanel: false,
     showRenderPanel: false,
     labelWidth: 160,

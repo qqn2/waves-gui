@@ -39,7 +39,6 @@ describe('secondary exports', () => {
         id: 'group',
         name: 'Inputs',
         type: 'group',
-        collapsed: false,
         children: [{
           id: 'bit',
           name: 'clk',

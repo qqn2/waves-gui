@@ -53,6 +53,8 @@ export function defaultView(): ViewState {
     activeSignalIds: [],
     activeTimingCellIndex: null,
     activeAnnotationId: null,
+    collapsedGroupIds: [],
+    showInspector: false,
     showCodePanel: true,
     showRenderPanel: true,
     labelWidth: loadLabelColumnWidth(),
