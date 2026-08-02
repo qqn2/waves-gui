@@ -1,8 +1,10 @@
 import type { DiagramState, Signal, ViewState } from '../shared/types';
 import { findSignal } from '../shared/store';
+import { CELL_WIDTH } from '../shared/constants';
 import { canvasToLogicalX, type ViewTransform } from '../renderer/coordinates';
 import { stepAtLogicalXForSignal } from '../renderer/laneTiming';
 import { stepFromLogicalX } from '../renderer/laneTiming';
+import { signalTiming } from '../shared/fineTiming';
 
 export function viewTransform(
   diagram: DiagramState,
@@ -48,4 +50,27 @@ export function stepAtCanvasX(
     if (step !== null) return step;
   }
   return clampStep(stepFromLogicalX(logicalX, null), totalSteps);
+}
+
+/** Visible document-tick interval under a canvas X coordinate. */
+export function timingTickAtCanvasX(
+  canvasX: number,
+  diagram: DiagramState,
+  view: ViewState,
+  signalId?: string,
+): number {
+  const divisions = Math.max(1, Math.floor(diagram.config.ticksPerStep ?? 1));
+  const logicalX = canvasToLogicalX(canvasX, viewTransform(diagram, view));
+  const signal = signalById(diagram, signalId);
+  const timing = signal ? signalTiming(signal) : undefined;
+  const laneStart = timing ? -timing.phaseTicks : 0;
+  const laneDuration = timing
+    ? timing.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)
+    : diagram.config.totalSteps * divisions;
+  const laneEnd = laneStart + laneDuration;
+  const rawTick = Math.floor(logicalX / CELL_WIDTH * divisions);
+  return Math.max(
+    Math.floor(laneStart),
+    Math.min(Math.ceil(laneEnd) - 1, rawTick),
+  );
 }

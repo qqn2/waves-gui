@@ -72,7 +72,7 @@ export function hitTest(
 
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
 
   if (view.selectedTool === 'cursor' || view.selectedTool === 'select') {
     const annotationId = hitTestAnnotation(

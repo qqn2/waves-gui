@@ -50,7 +50,6 @@ describe('PointerMarker', () => {
     await act(async () => root.unmount());
     host.remove();
   });
-
   it('snaps the structured-arrow preview to the timing grid', async () => {
     const diagram = createDefaultDiagram();
     diagram.compatibility = { extensionsEnabled: true };

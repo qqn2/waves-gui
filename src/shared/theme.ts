@@ -59,6 +59,22 @@ export const CANVAS_PRESETS: { id: string; hex: string; label: string }[] = [
   { id: 'grid', hex: '#f0f0f0', label: 'Light grey' },
 ];
 
+const LIGHT_CANVAS_PRESET_COLORS = new Set(
+  CANVAS_PRESETS.map((preset) => preset.hex).filter(Boolean),
+);
+
+/**
+ * A canvas colour chosen from the light palette should not follow the user into
+ * dark mode. This also repairs older saved settings that retained the previous
+ * light canvas when the base theme changed.
+ */
+export function canvasColorForTheme(theme: Theme, color: string | null): string | null {
+  if (theme === 'dark' && color && LIGHT_CANVAS_PRESET_COLORS.has(color.toLowerCase())) {
+    return null;
+  }
+  return color;
+}
+
 export const UI_FONT_SCALES = [
   { id: 'sm', value: 0.9, label: 'S' },
   { id: 'md', value: 1, label: 'M' },

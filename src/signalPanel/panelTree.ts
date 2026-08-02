@@ -12,6 +12,30 @@ export interface GroupRef {
   depth: number;
 }
 
+export function filterSignalTree(
+  items: SignalOrGroup[],
+  query: string,
+): SignalOrGroup[] {
+  const lower = query.toLowerCase();
+  const result: SignalOrGroup[] = [];
+  for (const item of items) {
+    if (item.type === 'group') {
+      if (item.name.toLowerCase().includes(lower)) {
+        result.push(item);
+        continue;
+      }
+      const children = filterSignalTree(item.children, query);
+      if (children.length > 0) result.push({ ...item, children });
+    } else if (
+      item.type !== 'spacer'
+      && item.name.toLowerCase().includes(lower)
+    ) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
 /** All section (group) headers for "move to section" menus. */
 export function collectAllGroups(
   items: SignalOrGroup[],
@@ -29,6 +53,7 @@ export function collectAllGroups(
 
 export function collectVisibleRows(
   items: SignalOrGroup[],
+  collapsedGroupIds: readonly string[] = [],
   parentId?: string,
 ): VisibleRow[] {
   const rows: VisibleRow[] = [];
@@ -38,11 +63,27 @@ export function collectVisibleRows(
       kind: item.type === 'group' ? 'group' : 'signal',
       parentId,
     });
-    if (item.type === 'group' && !item.collapsed) {
-      rows.push(...collectVisibleRows(item.children, item.id));
+    if (item.type === 'group' && !collapsedGroupIds.includes(item.id)) {
+      rows.push(...collectVisibleRows(item.children, collapsedGroupIds, item.id));
     }
   }
   return rows;
+}
+
+/** Resolve hierarchy from the document tree, never from the currently visible rows. */
+export function findParentGroupId(
+  items: SignalOrGroup[],
+  id: string,
+  parentId?: string,
+): string | undefined {
+  for (const item of items) {
+    if (item.id === id) return parentId;
+    if (item.type === 'group') {
+      const nested = findParentGroupId(item.children, id, item.id);
+      if (nested !== undefined) return nested;
+    }
+  }
+  return undefined;
 }
 
 export function getSiblingIds(
@@ -83,48 +124,4 @@ export function reorderSiblingIds(
   const [moved] = next.splice(from, 1);
   next.splice(to, 0, moved!);
   return next;
-}
-
-/** Toggle group.collapsed in-place (no store action yet). */
-export function toggleGroupCollapsedInStore(
-  setState: (fn: (state: { diagram: { signals: SignalOrGroup[] }; view: { isDirty: boolean } }) => void) => void,
-  groupId: string,
-): void {
-  setState((s) => {
-    const walk = (items: SignalOrGroup[]): boolean => {
-      for (const item of items) {
-        if (item.type === 'group') {
-          if (item.id === groupId) {
-            item.collapsed = !item.collapsed;
-            return true;
-          }
-          if (walk(item.children)) return true;
-        }
-      }
-      return false;
-    };
-    if (walk(s.diagram.signals)) s.view.isDirty = true;
-  });
-}
-
-export function renameGroupInStore(
-  setState: (fn: (state: { diagram: { signals: SignalOrGroup[] }; view: { isDirty: boolean } }) => void) => void,
-  groupId: string,
-  name: string,
-): void {
-  setState((s) => {
-    const walk = (items: SignalOrGroup[]): boolean => {
-      for (const item of items) {
-        if (item.type === 'group') {
-          if (item.id === groupId) {
-            item.name = name;
-            return true;
-          }
-          if (walk(item.children)) return true;
-        }
-      }
-      return false;
-    };
-    if (walk(s.diagram.signals)) s.view.isDirty = true;
-  });
 }

@@ -38,6 +38,8 @@ function defaultView(overrides: Partial<ViewState> = {}): ViewState {
     activeBusLabel: 'data',
     activeBusColorIndex: 2,
     activeSignalIds: [],
+    collapsedGroupIds: [],
+    showInspector: false,
     showCodePanel: false,
     showRenderPanel: false,
     labelWidth: 160,
@@ -185,7 +187,6 @@ describe('hitTest', () => {
           id: 'g1',
           name: 'grp',
           type: 'group',
-          collapsed: false,
           children: [
             {
               id: 'inner',

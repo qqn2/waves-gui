@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Bug, ExternalLink, FileText, Github, ShieldCheck, X } from 'lucide-react';
+import { BUILD_LABEL } from '../shared/buildInfo';
 import styles from './shell.module.css';
 
 export interface ShortcutHelpProps {
@@ -49,8 +50,9 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
             <span className={styles.shortcutEyebrow}>waves-gui workspace</span>
             <h2 id="help-about-title" className={styles.shortcutTitle}>Help &amp; About</h2>
             <p className={styles.shortcutLead}>
-              Paint timing diagrams, inspect WaveDrom JSON, and export locally.
+              Paint WaveDrom and Undulate timing diagrams, inspect source, and export locally.
             </p>
+            <p className={styles.shortcutText}>{BUILD_LABEL}</p>
           </div>
           <button type="button" aria-label="Close help" className={styles.shortcutClose} onClick={onClose}>
             <X size={17} aria-hidden />
@@ -102,7 +104,7 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
         </div>
 
         <footer className={styles.shortcutFooter}>
-          <p>This independent community project is not affiliated with or endorsed by WaveDrom or its maintainers.</p>
+          <p>This independent community project is not affiliated with or endorsed by WaveDrom, Undulate, or their maintainers.</p>
           <nav className={styles.shortcutLinks} aria-label="Project links">
             <a href={GITHUB_URL} target="_blank" rel="noreferrer"><Github size={13} aria-hidden /> GitHub</a>
             <a href="/licenses/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer"><FileText size={13} aria-hidden /> Licenses</a>

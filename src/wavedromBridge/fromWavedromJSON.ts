@@ -134,7 +134,6 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       name: entry[0],
       type: 'group',
       children: [],
-      collapsed: false,
     };
     for (const child of children) {
       const parsed = parseEntry(child);
@@ -268,14 +267,27 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
   walk(signals);
 }
 
-export function fromWavedromJSON(wd: WdRoot): DiagramState {
+export interface FromWavedromJSONOptions {
+  /**
+   * WaveDrom normally extends every row to the longest source wave. Undulate
+   * timed rows must retain their native cell counts until periods are applied.
+   */
+  padSignals?: boolean;
+}
+
+export function fromWavedromJSON(
+  wd: WdRoot,
+  options: FromWavedromJSONOptions = {},
+): DiagramState {
   const signals: SignalOrGroup[] = [];
   for (const entry of wd.signal ?? []) {
     const parsed = parseEntry(entry);
     if (parsed) signals.push(parsed);
   }
   const totalSteps = maxSteps(signals);
-  padSignals(signals, totalSteps);
+  if (options.padSignals !== false) {
+    padSignals(signals, totalSteps);
+  }
   const config = {
     totalSteps,
     hscale: wd.config?.hscale ?? DEFAULT_HSCALE,

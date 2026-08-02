@@ -2,6 +2,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import {
   applyThemeSettings,
+  canvasColorForTheme,
   defaultThemeSettings,
   loadThemeSettings,
   migrateLegacyTheme,
@@ -26,6 +27,13 @@ describe('theme helpers', () => {
     expect(migrateLegacyTheme('dark')).toBe('dark');
     expect(migrateLegacyTheme('dark-hc')).toBe('dark');
     expect(migrateLegacyTheme('light-hc')).toBe('light');
+  });
+
+  it('uses the dark canvas default instead of retained light presets', () => {
+    expect(canvasColorForTheme('dark', '#ffffff')).toBeNull();
+    expect(canvasColorForTheme('dark', '#f5f8fa')).toBeNull();
+    expect(canvasColorForTheme('dark', '#16202e')).toBe('#16202e');
+    expect(canvasColorForTheme('light', '#ffffff')).toBe('#ffffff');
   });
 
   it('persists full settings envelope', () => {

@@ -7,8 +7,13 @@ import {
   setBitLaneWave,
   writeDecodedToSignal,
 } from '../wavedromBridge/laneWaveOps';
-import type { DecodedWave } from '../wavedromBridge/waveStringCodec';
+import { encodeWaveString, type DecodedWave } from '../wavedromBridge/waveStringCodec';
 import { isClockBitState } from './bitToggle';
+import {
+  deleteMajorStepInTiming,
+  insertMajorStepInTiming,
+  resizeTimingToDuration,
+} from './timedStepResize';
 import type { BitState, Signal } from './types';
 
 function readDecoded(sig: Signal): DecodedWave {
@@ -23,19 +28,21 @@ function hasGapColumns(sig: Signal): boolean {
   return Boolean(sig.stepGaps?.some(Boolean));
 }
 
-function resizeDigitalTiming(sig: Signal, newLen: number): void {
+function syncTimedBitSource(sig: Signal): void {
   const timing = sig.digitalTiming;
   if (!timing) return;
-  while (timing.cells.length < newLen) {
-    timing.cells.push({
-      state: sig.states[timing.cells.length] ?? sig.states.at(-1) ?? '0',
-      durationTicks: timing.ticksPerStep,
+  const states = timing.cells.map((cell) => cell.state);
+  sig.states = states;
+  if (isWaveModeLane(sig)) {
+    setBitLaneWave(
+      sig,
+      encodeWaveString(states, sig.stepGaps, sig.stepGlitches),
+      states.length,
+    );
+    timing.cells.forEach((cell, index) => {
+      cell.state = sig.states[index] ?? cell.state;
     });
   }
-  timing.cells.length = newLen;
-  timing.cells.forEach((cell, index) => {
-    cell.state = sig.states[index] ?? '0';
-  });
 }
 
 /** Clock-bearing lanes always grow/shrink via wave `.` — never hold-fill state push. */
@@ -51,13 +58,21 @@ export function resizeBitSignalToLength(
 ): void {
   if (sig.type !== 'bit' || newLen < 0) return;
 
+  if (sig.digitalTiming) {
+    resizeTimingToDuration(
+      sig.digitalTiming,
+      newLen * Math.max(1, sig.digitalTiming.ticksPerStep),
+    );
+    syncTimedBitSource(sig);
+    return;
+  }
+
   const delta =
     prevDiagramLen !== undefined ? newLen - prevDiagramLen : newLen - sig.states.length;
   if (delta === 0 && sig.states.length === newLen) return;
 
   if (shouldUseWaveStepResize(sig)) {
     mutateBitWave(sig, (wave) => resizeWaveByDelta(wave, delta, newLen), newLen);
-    resizeDigitalTiming(sig, newLen);
     return;
   }
 
@@ -69,17 +84,20 @@ export function resizeBitSignalToLength(
       decoded.stepGaps.push(false);
     }
     writeDecodedToSignal(sig, decoded, newLen);
-    resizeDigitalTiming(sig, newLen);
     return;
   }
 
   writeDecodedToSignal(sig, readDecoded(sig), newLen);
-  resizeDigitalTiming(sig, newLen);
 }
 
 /** Insert one timeline column on a bit lane (wave `.` insertion when no gaps). */
 export function insertBitStepAt(sig: Signal, index: number): void {
   if (sig.type !== 'bit') return;
+  if (sig.digitalTiming) {
+    insertMajorStepInTiming(sig.digitalTiming, index);
+    syncTimedBitSource(sig);
+    return;
+  }
   const n = sig.states.length;
   const at = Math.max(0, Math.min(index, n));
 
@@ -89,13 +107,6 @@ export function insertBitStepAt(sig: Signal, index: number): void {
       (wave) => (at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at)),
       n + 1,
     );
-    if (sig.digitalTiming) {
-      sig.digitalTiming.cells.splice(at, 0, {
-        state: sig.states[at] ?? '0',
-        durationTicks: sig.digitalTiming.ticksPerStep,
-      });
-      resizeDigitalTiming(sig, n + 1);
-    }
     return;
   }
 
@@ -108,18 +119,17 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   decoded.stepGaps = gaps;
   decoded.stepGlitches.splice(at, 0, false);
   writeDecodedToSignal(sig, decoded, n + 1);
-  if (sig.digitalTiming) {
-    sig.digitalTiming.cells.splice(at, 0, {
-      state: sig.states[at] ?? '0',
-      durationTicks: sig.digitalTiming.ticksPerStep,
-    });
-    resizeDigitalTiming(sig, n + 1);
-  }
 }
 
 /** Remove one timeline column on a bit lane (wave char removal when no gaps). */
 export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boolean {
-  if (sig.type !== 'bit' || sig.states.length <= minLen) return false;
+  if (sig.type !== 'bit') return false;
+  if (sig.digitalTiming) {
+    const deleted = deleteMajorStepInTiming(sig.digitalTiming, index, minLen);
+    if (deleted) syncTimedBitSource(sig);
+    return deleted;
+  }
+  if (sig.states.length <= minLen) return false;
   const n = sig.states.length;
   const at = Math.max(0, Math.min(index, n - 1));
 
@@ -129,8 +139,6 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
     const waveAt = Math.min(at, wave.length - 1);
     const trimmed = wave.slice(0, waveAt) + wave.slice(waveAt + 1);
     setBitLaneWave(sig, trimmed.length > 0 ? trimmed : '0', n - 1);
-    sig.digitalTiming?.cells.splice(at, 1);
-    resizeDigitalTiming(sig, n - 1);
     return true;
   }
 
@@ -141,8 +149,6 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
     decoded.stepGlitches.splice(at - 1, 1);
   }
   writeDecodedToSignal(sig, decoded, n - 1);
-  sig.digitalTiming?.cells.splice(at, 1);
-  resizeDigitalTiming(sig, n - 1);
   return true;
 }
 

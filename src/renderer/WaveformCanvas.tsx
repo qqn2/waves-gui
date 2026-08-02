@@ -79,7 +79,10 @@ export function WaveformCanvas({
     redraw();
   }, [diagram, view, redraw]);
 
-  const focusableRows = buildRowLayout(diagram.signals).filter(
+  const focusableRows = buildRowLayout(
+    diagram.signals,
+    view.collapsedGroupIds,
+  ).filter(
     (row) =>
       row.type === 'bit'
       || row.type === 'vector'
@@ -148,7 +151,7 @@ export function WaveformCanvas({
       const canvas = canvasRef.current;
       const viewportH = canvas?.clientHeight ?? 0;
       const viewportW = canvas?.clientWidth ?? 0;
-      const rows = buildRowLayout(diagram.signals);
+      const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
       const contentLogicalH = totalContentHeight(rows);
       const maxY = Math.max(0, contentLogicalH * view.zoom - viewportH);
       const contentLogicalW = diagramLogicalWidth(diagram) * diagram.config.hscale;
@@ -168,6 +171,7 @@ export function WaveformCanvas({
       view.zoom,
       view.scrollX,
       view.scrollY,
+      view.collapsedGroupIds,
       canvasRef,
       setScroll,
       scrollSync,

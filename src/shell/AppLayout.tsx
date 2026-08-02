@@ -310,7 +310,7 @@ export function AppLayout({
       {floatJson ? (
         <FloatingCodePanel
           layout={effectivePanelsLayout.json}
-          ariaLabel="JSON panel"
+          ariaLabel="Source panel"
           onLayoutChange={(patch) => updatePanelLayout('json', patch)}
         >
           <DockPanel

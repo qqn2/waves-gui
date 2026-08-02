@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const dist = join(root, 'dist');
+const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 const requiredPackages = [
   'wavedrom',
   '@codemirror/view',
@@ -30,6 +31,11 @@ await access(join(dist, 'index.html'));
 await access(join(dist, '_headers'));
 await access(join(dist, 'licenses', 'THIRD_PARTY_NOTICES.txt'));
 const files = await walk(dist);
+const indexHtml = await readFile(join(dist, 'index.html'), 'utf8');
+const expectedTitle = 'Waves GUI — WaveDrom and Undulate Timing Editor';
+if (!indexHtml.includes(`<title>${expectedTitle}</title>`)) {
+  throw new Error('Production title is missing or stale');
+}
 const forbidden = files.filter((file) =>
   /\.(map|key|pem|p12|pfx)$/i.test(file)
   || /(^|\/)(golden|fixtures?)(\/|$)/i.test(file)
@@ -54,6 +60,22 @@ for (const file of files.filter((name) => !name.startsWith('licenses/'))) {
   if (sensitiveArtifactPatterns.some((pattern) => pattern.test(content))) {
     throw new Error(`Sensitive marker in production file: ${file}`);
   }
+}
+
+const textArtifacts = await Promise.all(
+  files
+    .filter((name) => /\.(?:html|js|css)$/i.test(name))
+    .map((name) => readFile(join(dist, name), 'utf8')),
+);
+if (!textArtifacts.some((content) => content.includes(`Version ${version} · `))) {
+  throw new Error('Production version/build marker is missing');
+}
+
+if (!textArtifacts.some((content) => {
+  const markerAt = content.indexOf(`Version ${version}`);
+  return markerAt >= 0 && /^[^\r\n]*[0-9a-f]{7,40}/.test(content.slice(markerAt));
+})) {
+  throw new Error('Production version/build marker is missing a Git revision');
 }
 
 const headers = await readFile(join(dist, '_headers'), 'utf8');

@@ -2,8 +2,6 @@ import { fromWavedromJSON, validateWavedromJSON } from '../wavedromBridge';
 import {
   fromUndulateJSON,
   isUndulateJSON,
-  parseUndulateTOML,
-  parseUndulateYAML,
   validateUndulateJSON,
   type UndulateRoot,
 } from '../undulateBridge';
@@ -14,15 +12,11 @@ import { useStore } from '../shared/store';
 import { clearDraft } from './soloDesk/localDraft';
 import { recordRecentFile } from './soloDesk/recentFiles';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
-import {
-  diagramToCodeStringForFormat,
-  type DiagramCodeFormat,
-} from '../codePanel/codeSync';
+import type { DiagramCodeFormat } from '../codePanel/codeSync';
 import {
   json5SyntaxError,
   parseJSON5Source,
 } from '../codePanel/json5Source';
-import { vcdToWavedromJSON } from '../importers/vcd';
 
 type FilePickerWindow = Window & {
   showOpenFilePicker?: (options?: {
@@ -116,15 +110,16 @@ function parseDiagramJSON(
   };
 }
 
-function parseDiagramFile(
+async function parseDiagramFile(
   file: File,
   text: string,
   kind: 'document' | 'vcd',
-): {
+): Promise<{
   diagram: DiagramState;
   format: DiagramFileFormat;
-} | { error: string } {
+} | { error: string }> {
   if (kind === 'vcd') {
+    const { vcdToWavedromJSON } = await import('../importers/vcd');
     const root = vcdToWavedromJSON(text);
     const error = validateWavedromJSON(root);
     if (error) return { error };
@@ -138,6 +133,9 @@ function parseDiagramFile(
   }
   if (/\.ya?ml$/i.test(file.name)) {
     try {
+      const { parseUndulateYAML } = await import(
+        '../undulateBridge/undulateYAML'
+      );
       const root = parseUndulateYAML(text);
       const error = validateUndulateJSON(root);
       if (error) return { error };
@@ -156,6 +154,9 @@ function parseDiagramFile(
   }
   if (/\.toml$/i.test(file.name)) {
     try {
+      const { parseUndulateTOML } = await import(
+        '../undulateBridge/undulateTOML'
+      );
       const root = parseUndulateTOML(text);
       const error = validateUndulateJSON(root);
       if (error) return { error };
@@ -199,7 +200,11 @@ function saveFormatForDiagram(diagram: DiagramState): DiagramFileFormat {
     : 'wavedrom-json';
 }
 
-function diagramBlob(diagram: DiagramState, format: DiagramFileFormat): Blob {
+async function diagramBlob(
+  diagram: DiagramState,
+  format: DiagramFileFormat,
+): Promise<Blob> {
+  const { diagramToCodeStringForFormat } = await import('../codePanel/codeSync');
   const codeFormat: DiagramCodeFormat =
     format === 'undulate-yaml'
       ? 'undulate-yaml'
@@ -260,7 +265,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
       });
       const file = await handle.getFile();
       const text = await readFileAsText(file);
-      const parsed = parseDiagramFile(file, text, kind);
+      const parsed = await parseDiagramFile(file, text, kind);
       if ('error' in parsed) {
         window.alert(parsed.error);
         return;
@@ -290,7 +295,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
       }
       try {
         const text = await readFileAsText(file);
-        const parsed = parseDiagramFile(file, text, kind);
+        const parsed = await parseDiagramFile(file, text, kind);
         if ('error' in parsed) window.alert(parsed.error);
         else {
           useStore.getState().loadDiagram(parsed.diagram);
@@ -321,7 +326,7 @@ export async function saveDiagramFile(
 ): Promise<void> {
   const w = window as FilePickerWindow;
   const format = saveFormatForDiagram(diagram);
-  const blob = diagramBlob(diagram, format);
+  const blob = await diagramBlob(diagram, format);
 
   if (retainedFileHandle) {
     try {

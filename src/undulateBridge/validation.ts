@@ -885,7 +885,10 @@ function structuralError(root: Record<string, unknown>): string | null {
   if (appMetadata !== undefined) {
     if (!isRecord(appMetadata)) return 'x-waves-gui must be an object';
     for (const field of Object.keys(appMetadata)) {
-      if (field !== 'analogueContext' && field !== 'randomSeed') {
+      if (
+        field !== 'analogueContext'
+        && field !== 'randomSeed'
+      ) {
         return `x-waves-gui.${field} is not supported`;
       }
     }

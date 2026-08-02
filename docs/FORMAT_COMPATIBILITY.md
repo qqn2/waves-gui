@@ -1,14 +1,12 @@
 # Format compatibility
 
-Last certified: 2026-07-30
+Conformance baseline audited: 2026-07-30
 
 waves-gui is a visual editor for WaveDrom diagrams and the declarative
 waveform features documented by Undulate at revision
 [`c8da7d48c48fc0bbc90113b6913611132bd96c01`](https://github.com/LudwigCRON/undulate/tree/c8da7d48c48fc0bbc90113b6913611132bd96c01).
 
-The completed implementation audit covered **172 of 172 actionable items**.
-The former implementation checklist, plan, and fine-timing design remain
-available in Git history; this document is the maintained product contract.
+The former implementation checklist, plan, and fine-timing design remain available in Git history; this document is the maintained product contract.
 
 ## Compatibility guarantee
 
@@ -120,9 +118,9 @@ apply to JSON and TOML.
 These are deliberate product boundaries rather than unfinished checklist
 items.
 
-## Certification evidence
+## Conformance evidence
 
-The compatibility contract is enforced primarily by:
+The compatibility contract is enforced by this project’s revision-pinned source audit, property matrix, fixture corpus, and automated tests:
 
 - `src/undulateBridge/validation.ts`
 - `src/undulateBridge/manifestConsistency.test.ts`

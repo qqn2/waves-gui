@@ -8,7 +8,7 @@ import type {
 } from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
-import { saveThemeSettings, themeSettingsFromView } from '../theme';
+import { canvasColorForTheme, saveThemeSettings, themeSettingsFromView } from '../theme';
 import {
   clampLabelColumnWidth,
   saveLabelColumnWidth,
@@ -42,6 +42,8 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setStructuredArrowPending'
   | 'setPaintMode'
   | 'setPaintStyle'
+  | 'toggleGroupCollapsed'
+  | 'toggleInspector'
   | 'toggleCodePanel'
   | 'toggleRenderPanel'
   | 'setLabelWidth'
@@ -152,6 +154,20 @@ export function createViewActions(set: ImmerSet): Pick<
       });
     },
 
+    toggleGroupCollapsed(groupId) {
+      set((s) => {
+        const index = s.view.collapsedGroupIds.indexOf(groupId);
+        if (index >= 0) s.view.collapsedGroupIds.splice(index, 1);
+        else s.view.collapsedGroupIds.push(groupId);
+      });
+    },
+
+    toggleInspector() {
+      set((s) => {
+        s.view.showInspector = !s.view.showInspector;
+      });
+    },
+
     toggleCodePanel() {
       set((s) => {
         s.view.showCodePanel = !s.view.showCodePanel;
@@ -175,6 +191,7 @@ export function createViewActions(set: ImmerSet): Pick<
     setTheme(theme: Theme) {
       set((s) => {
         s.view.theme = theme;
+        s.view.canvasColor = canvasColorForTheme(theme, s.view.canvasColor);
         persistTheme(s.view);
       });
     },

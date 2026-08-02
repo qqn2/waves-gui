@@ -1,21 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type InputHTMLAttributes } from 'react';
 import { useStore } from '../shared/store';
 import type { DiagramConfig } from '../shared/types';
-import { DiagramStepsControl } from './DiagramStepsControl';
-import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import styles from './shell.module.css';
 
-type HeadSlice = NonNullable<DiagramConfig['head']>;
-type FootSlice = NonNullable<DiagramConfig['foot']>;
-
-function parseOptionalInt(raw: string): number | undefined {
+function parseOptionalNumber(raw: string): number | undefined | null {
   const t = raw.trim();
   if (t === '') return undefined;
   const n = Number(t);
-  return Number.isFinite(n) ? n : undefined;
+  return Number.isFinite(n) ? n : null;
 }
 
-function formatOptionalInt(n: number | undefined): string {
+function formatOptionalNumber(n: number | undefined): string {
   return n === undefined ? '' : String(n);
 }
 
@@ -35,39 +30,52 @@ function hasLabelFields(head: DiagramConfig['head'], foot: DiagramConfig['foot']
   return Boolean(head?.text?.trim() || foot?.text?.trim());
 }
 
-function patchHead(patch: Partial<HeadSlice>): void {
-  useStore.setState((s) => {
-    const prev = s.diagram.config.head ?? {};
-    const next: HeadSlice = { ...prev, ...patch };
-    if (!next.text && next.tick === undefined && next.every === undefined) {
-      delete s.diagram.config.head;
-    } else {
-      s.diagram.config.head = next;
+function CommitInput({
+  value,
+  onCommit,
+  ...props
+}: Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> & {
+  value: string;
+  onCommit: (value: string) => boolean | void;
+}) {
+  const [draft, setDraft] = useState(value);
+  const cancelBlurRef = useRef(false);
+
+  useEffect(() => setDraft(value), [value]);
+
+  const commit = () => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      return;
     }
-    s.view.isDirty = true;
-  });
+    if (onCommit(draft) === false) setDraft(value);
+  };
+
+  return (
+    <input
+      {...props}
+      value={draft}
+      onChange={(event) => setDraft(event.target.value)}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') event.currentTarget.blur();
+        if (event.key === 'Escape') {
+          cancelBlurRef.current = true;
+          setDraft(value);
+          event.currentTarget.blur();
+        }
+        props.onKeyDown?.(event);
+      }}
+    />
+  );
 }
 
-function patchFoot(patch: Partial<FootSlice>): void {
-  useStore.setState((s) => {
-    const prev = s.diagram.config.foot ?? {};
-    const next: FootSlice = { ...prev, ...patch };
-    if (!next.text && next.tock === undefined && next.every === undefined) {
-      delete s.diagram.config.foot;
-    } else {
-      s.diagram.config.foot = next;
-    }
-    s.view.isDirty = true;
-  });
-}
-
-/** Steps plus collapsible title/caption and column scale (WaveDrom head/foot). */
+/** Collapsible title/caption and column scale controls (WaveDrom head/foot). */
 export function HeadFootFields() {
   const head = useStore((s) => s.diagram.config.head);
   const foot = useStore((s) => s.diagram.config.foot);
-  const extensionsEnabled = useStore(
-    (s) => s.diagram.compatibility?.extensionsEnabled === true,
-  );
+  const updateDiagramHead = useStore((s) => s.updateDiagramHead);
+  const updateDiagramFoot = useStore((s) => s.updateDiagramFoot);
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [scaleOpen, setScaleOpen] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -85,30 +93,20 @@ export function HeadFootFields() {
         setScaleOpen(false);
       }
     };
-    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('click', closeOnOutsideClick);
     document.addEventListener('keydown', closeOnEscape);
     return () => {
-      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('click', closeOnOutsideClick);
       document.removeEventListener('keydown', closeOnEscape);
     };
-  }, []);
-
-  const onHeadText = useCallback((text: string) => {
-    patchHead({ text: text || undefined });
-  }, []);
-
-  const onFootText = useCallback((text: string) => {
-    patchFoot({ text: text || undefined });
   }, []);
 
   return (
     <div
       ref={controlsRef}
       className={styles.headFootToolbarControls}
-      title="Diagram steps; Labels: head.text / foot.text; Scale: column number ticks"
+      title="Labels: head.text / foot.text; Scale: column number ticks"
     >
-      <DiagramStepsControl />
-      {extensionsEnabled ? <DiagramSubStepsControl /> : null}
       <div className={styles.headFootMenuWrap}>
         <button
           type="button"
@@ -127,22 +125,22 @@ export function HeadFootFields() {
           <div className={styles.headFootPopover} role="group" aria-label="Diagram labels">
             <label className={styles.headFootField}>
               <span className={styles.headFootLabel}>Title</span>
-              <input
+              <CommitInput
                 type="text"
                 className={styles.headFootInput}
                 value={head?.text ?? ''}
-                onChange={(e) => onHeadText(e.target.value)}
+                onCommit={(text) => updateDiagramHead({ text: text || undefined })}
                 placeholder="head.text"
                 spellCheck={false}
               />
             </label>
             <label className={styles.headFootField}>
               <span className={styles.headFootLabel}>Caption</span>
-              <input
+              <CommitInput
                 type="text"
                 className={styles.headFootInput}
                 value={foot?.text ?? ''}
-                onChange={(e) => onFootText(e.target.value)}
+                onCommit={(text) => updateDiagramFoot({ text: text || undefined })}
                 placeholder="foot.text"
                 spellCheck={false}
               />
@@ -172,11 +170,15 @@ export function HeadFootFields() {
           >
           <label className={styles.headFootField} title="head.tick — first number on top time scale">
             <span className={styles.headFootLabel}>tick</span>
-            <input
+            <CommitInput
               type="text"
               className={styles.headFootNum}
-              value={formatOptionalInt(head?.tick)}
-              onChange={(e) => patchHead({ tick: parseOptionalInt(e.target.value) })}
+              value={formatOptionalNumber(head?.tick)}
+              onCommit={(raw) => {
+                const tick = parseOptionalNumber(raw);
+                if (tick === null) return false;
+                updateDiagramHead({ tick });
+              }}
               placeholder="0"
               inputMode="numeric"
             />
@@ -186,22 +188,30 @@ export function HeadFootFields() {
             title="head.every — show a label only every N columns on top"
           >
             <span className={styles.headFootLabel}>every↑</span>
-            <input
+            <CommitInput
               type="text"
               className={styles.headFootNum}
-              value={formatOptionalInt(head?.every)}
-              onChange={(e) => patchHead({ every: parseOptionalInt(e.target.value) })}
+              value={formatOptionalNumber(head?.every)}
+              onCommit={(raw) => {
+                const every = parseOptionalNumber(raw);
+                if (every === null) return false;
+                updateDiagramHead({ every });
+              }}
               placeholder="—"
               inputMode="numeric"
             />
           </label>
           <label className={styles.headFootField} title="foot.tock — first number on bottom scale">
             <span className={styles.headFootLabel}>tock</span>
-            <input
+            <CommitInput
               type="text"
               className={styles.headFootNum}
-              value={formatOptionalInt(foot?.tock)}
-              onChange={(e) => patchFoot({ tock: parseOptionalInt(e.target.value) })}
+              value={formatOptionalNumber(foot?.tock)}
+              onCommit={(raw) => {
+                const tock = parseOptionalNumber(raw);
+                if (tock === null) return false;
+                updateDiagramFoot({ tock });
+              }}
               placeholder="0"
               inputMode="numeric"
             />
@@ -211,11 +221,15 @@ export function HeadFootFields() {
             title="foot.every — show a label only every N columns on bottom"
           >
             <span className={styles.headFootLabel}>every↓</span>
-            <input
+            <CommitInput
               type="text"
               className={styles.headFootNum}
-              value={formatOptionalInt(foot?.every)}
-              onChange={(e) => patchFoot({ every: parseOptionalInt(e.target.value) })}
+              value={formatOptionalNumber(foot?.every)}
+              onCommit={(raw) => {
+                const every = parseOptionalNumber(raw);
+                if (every === null) return false;
+                updateDiagramFoot({ every });
+              }}
               placeholder="—"
               inputMode="numeric"
             />

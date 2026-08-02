@@ -5,11 +5,13 @@ import {
   allocateNodeChars,
   findSignalInDiagram,
   formatArrowEdge,
+  nodeSlotCount,
   pruneUnusedNodeAnchorsAfterEdgeRemoval,
   setNodeCharAt,
   visibleNodeCharAt,
 } from '../../wavedromBridge/nodeString';
-import { demoteToStatesMode } from '../../wavedromBridge/laneWaveOps';
+import { demoteToStatesMode, isWaveModeLane } from '../../wavedromBridge/laneWaveOps';
+import { timingCellDuration } from '../timedStepResize';
 import type {
   AppState,
   BitState,
@@ -37,6 +39,7 @@ import { canRescaleDiagramTiming, rescaleDiagramTiming } from '../fineTiming';
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
   s.view.scrollY = 0;
+  s.view.collapsedGroupIds = [];
   s.view.paintDraft = null;
   s.view.edgeAnchorPending = null;
   s.view.structuredArrowPending = null;
@@ -130,14 +133,27 @@ function removeExtendedDigitalStates(signals: SignalOrGroup[]): void {
   }
 }
 
-function removeDigitalTiming(signals: SignalOrGroup[]): void {
+function timingCellAtTick(
+  timing: NonNullable<Signal['digitalTiming'] | Signal['vectorTiming']>,
+  tick: number,
+): number {
+  const target = Math.max(0, Math.min(Math.max(0, timingCellDuration(timing) - 1), tick));
+  let cursor = 0;
+  for (let index = 0; index < timing.cells.length; index++) {
+    cursor += timing.cells[index]!.durationTicks;
+    if (target < cursor) return index;
+  }
+  return Math.max(0, timing.cells.length - 1);
+}
+
+function removeDigitalTiming(signals: SignalOrGroup[], totalSteps: number): void {
   for (const signal of signals) {
     if (signal.type === 'group') {
-      removeDigitalTiming(signal.children);
+      removeDigitalTiming(signal.children, totalSteps);
       continue;
     }
-    if (signal.type !== 'bit' || !signal.digitalTiming) continue;
-    const timing = signal.digitalTiming;
+    const timing = signal.digitalTiming ?? signal.vectorTiming;
+    if (!timing) continue;
     const firstDuration = timing.cells[0]?.durationTicks;
     const uniformDuration = firstDuration !== undefined
       && timing.cells.every((cell) => cell.durationTicks === firstDuration);
@@ -153,7 +169,46 @@ function removeDigitalTiming(signals: SignalOrGroup[]): void {
     const phase = timing.phaseTicks / timing.ticksPerStep;
     if (phase === 0) delete signal.phase;
     else signal.phase = phase;
+
+    // Native cells can be finer than the document grid. Resample their
+    // visible values at each major-column boundary before dropping timing.
+    const targetSteps = Math.max(1, totalSteps);
+    const sampled = Array.from({ length: targetSteps }, (_, step) =>
+      timingCellAtTick(
+        timing,
+        step * timing.ticksPerStep + timing.phaseTicks,
+      ));
+    if (signal.type === 'bit' && signal.digitalTiming) {
+      signal.states = sampled.map((index) => signal.digitalTiming!.cells[index]!.state);
+      if (isWaveModeLane(signal)) {
+        demoteToStatesMode(signal, targetSteps);
+      }
+    } else if (signal.type === 'vector' && signal.vectorTiming) {
+      const sourceSegments = signal.segments;
+      const nextSegments: Signal['segments'] = [];
+      for (let step = 0; step < targetSteps; step++) {
+        const sourceIndex = sampled[step]!;
+        const source = sourceSegments.find(
+          (segment) => segment.startStep <= sourceIndex && segment.endStep > sourceIndex,
+        );
+        const value = source?.value ?? '';
+        const previous = nextSegments.at(-1);
+        if (previous && previous.value === value && previous.endStep === step) {
+          previous.endStep += 1;
+        } else {
+          nextSegments.push({
+            id: nanoid(),
+            startStep: step,
+            endStep: step + 1,
+            value,
+          });
+        }
+      }
+      signal.segments = nextSegments;
+      delete signal.stepGaps;
+    }
     delete signal.digitalTiming;
+    delete signal.vectorTiming;
   }
 }
 
@@ -292,11 +347,13 @@ export function createEdgeActions(set: ImmerSet): Pick<
         if (fromSignal.type === 'spacer' || toSignal.type === 'spacer') return;
 
         const totalSteps = s.diagram.config.totalSteps;
+        const fromSlots = nodeSlotCount(fromSignal, totalSteps);
+        const toSlots = nodeSlotCount(toSignal, totalSteps);
         if (
           from.step < 0
-          || from.step >= totalSteps
+          || from.step >= fromSlots
           || to.step < 0
-          || to.step >= totalSteps
+          || to.step >= toSlots
         ) return;
 
         const existingFrom = visibleNodeCharAt(fromSignal, from.step, totalSteps);
@@ -493,6 +550,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = [];
+        s.view.collapsedGroupIds = [];
       });
     },
 
@@ -534,7 +592,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
         delete s.diagram.analogueOverlayGroups;
         removeExtendedDigitalStates(s.diagram.signals);
-        removeDigitalTiming(s.diagram.signals);
+        removeDigitalTiming(s.diagram.signals, s.diagram.config.totalSteps);
         const removedNodeNames = removeExpandedNodes(s.diagram.signals);
         s.diagram.edges = s.diagram.edges.filter((edge) => {
           const parsed = parseUndulateEdge(edge);

@@ -19,21 +19,22 @@ describe('App smoke', () => {
     expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
 
     const inspectorToggle = host.querySelector<HTMLButtonElement>(
-      'button[title="Select a signal or annotation to inspect its properties"]',
+      'button[title="Show or hide properties inspector"]',
     );
     expect(inspectorToggle).not.toBeNull();
-    expect(inspectorToggle!.disabled).toBe(true);
+    expect(inspectorToggle!.disabled).toBe(false);
+
+    await act(async () => {
+      inspectorToggle!.click();
+    });
+    expect(
+      host.querySelector('aside[aria-label="Properties inspector"]')?.textContent,
+    ).toContain('Select a signal or annotation');
 
     const bitSignal = useStore.getState().diagram.signals.find((signal) => signal.type === 'bit');
     expect(bitSignal).toBeDefined();
     await act(async () => {
       useStore.getState().setActiveSignalIds([bitSignal!.id]);
-    });
-    expect(inspectorToggle!.disabled).toBe(false);
-    expect(host.querySelector('aside[aria-label="Properties inspector"]')).toBeNull();
-
-    await act(async () => {
-      inspectorToggle!.click();
     });
     const inspector = host.querySelector('aside[aria-label="Properties inspector"]');
     expect(inspector).not.toBeNull();
@@ -46,6 +47,7 @@ describe('App smoke', () => {
     );
     expect(periodInput).not.toBeNull();
     await act(async () => {
+      periodInput!.focus();
       const valueSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
         'value',
@@ -53,34 +55,35 @@ describe('App smoke', () => {
       valueSetter?.call(periodInput, '3');
       periodInput!.dispatchEvent(new Event('input', { bubbles: true }));
       periodInput!.dispatchEvent(new Event('change', { bubbles: true }));
+      periodInput!.blur();
     });
     const editedBit = useStore.getState().diagram.signals.find(
       (signal) => signal.id === bitSignal!.id,
     );
     expect(editedBit?.type === 'bit' ? editedBit.period : undefined).toBe(3);
 
+    const diagramControlsToggle = host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Diagram settings"]',
+    );
+    expect(diagramControlsToggle).not.toBeNull();
+    expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('false');
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
+    const substeps = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Diagram substep count"]',
+    );
+    expect(substeps).not.toBeNull();
+    expect(substeps!.disabled).toBe(true);
+    await act(async () => {
+      diagramControlsToggle!.click();
+    });
+    expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('true');
     const hscaleInput = host.querySelector<HTMLInputElement>(
       'input[aria-label="WaveDrom horizontal scale"]',
     );
     expect(hscaleInput).not.toBeNull();
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
-
-    const diagramControlsToggle = host.querySelector<HTMLButtonElement>(
-      'button[aria-label="Diagram controls"]',
-    );
-    expect(diagramControlsToggle).not.toBeNull();
-    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('true');
-    await act(async () => {
-      diagramControlsToggle!.click();
-    });
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).toBeNull();
-    expect(diagramControlsToggle!.getAttribute('aria-pressed')).toBe('false');
-    await act(async () => {
-      diagramControlsToggle!.click();
-    });
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
 
     await act(async () => {
+      hscaleInput!.focus();
       const valueSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
         'value',
@@ -88,6 +91,7 @@ describe('App smoke', () => {
       valueSetter?.call(hscaleInput, '2');
       hscaleInput!.dispatchEvent(new Event('input', { bubbles: true }));
       hscaleInput!.dispatchEvent(new Event('change', { bubbles: true }));
+      hscaleInput!.blur();
     });
     expect(useStore.getState().diagram.config.hscale).toBe(2);
 
@@ -100,6 +104,7 @@ describe('App smoke', () => {
       extensionsToggle!.click();
     });
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+    expect(substeps!.disabled).toBe(false);
 
     await act(async () => {
       useStore.getState().setTicksPerStep(4);

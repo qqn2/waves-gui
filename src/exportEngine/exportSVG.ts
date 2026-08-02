@@ -770,16 +770,16 @@ function walkSignalSvg(
     if (!row) break;
     if (item.type === 'group') {
       rowIndex.i++;
-      if (!item.collapsed) {
-        parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex));
-      }
+      parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex));
     } else if (item.type === 'bit') {
+      const renderSteps =
+        item.digitalTiming?.cells.length ?? diagram.config.totalSteps;
       parts.push(
         svgBitSignal(
           item,
           row.y,
           row.height,
-          diagram.config.totalSteps,
+          renderSteps,
           hscale,
           axisOffset,
         ),

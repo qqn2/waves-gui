@@ -336,6 +336,126 @@ describe('Undulate JSON bridge', () => {
     ).toBeUndefined();
   });
 
+  it('derives the major grid from native lane durations without app metadata', () => {
+    const root = {
+      signal: [
+        {
+          name: 'fine',
+          wave: '01010101',
+          periods: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+        },
+        {
+          name: 'coarse',
+          wave: '01.0',
+        },
+        {
+          name: 'timed sibling',
+          wave: '10.1',
+          periods: [1, 1, 1, 1],
+        },
+      ],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const [fine, coarse, timedSibling] = diagram.signals;
+
+    expect(fine?.type === 'bit' ? fine.digitalTiming?.cells : []).toHaveLength(8);
+    expect(coarse?.type === 'bit' ? coarse.digitalTiming?.cells : []).toHaveLength(4);
+    expect(
+      timedSibling?.type === 'bit'
+        ? timedSibling.digitalTiming?.cells
+        : [],
+    ).toHaveLength(4);
+    expect(diagram.config.totalSteps).toBe(4);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved).not.toHaveProperty('x-waves-gui');
+    expect(saved.signal[0]).toMatchObject({
+      wave: '01010101',
+      period: 0.5,
+    });
+    expect(saved.signal[1]).toMatchObject({ wave: '01.0' });
+    expect(saved.signal[2]).toMatchObject({
+      wave: '10.1',
+      period: 1,
+    });
+
+    const reimported = fromUndulateJSON(saved);
+    expect(reimported.config.totalSteps).toBe(4);
+    expect(reimported.signals.map((signal) =>
+      signal.type === 'bit' ? signal.digitalTiming?.cells.length : 0,
+    )).toEqual([8, 4, 4]);
+  });
+
+  it('treats an explicit integer period as native timing without metadata', () => {
+    const root = {
+      signal: [{ name: 'wide', wave: '01', period: 2 }],
+    } satisfies UndulateRoot;
+
+    const diagram = fromUndulateJSON(root);
+    const signal = diagram.signals[0];
+    expect(diagram.config).toMatchObject({ totalSteps: 4, ticksPerStep: 1 });
+    expect(signal?.type === 'bit' ? signal.digitalTiming?.cells : []).toEqual([
+      { state: '0', durationTicks: 2 },
+      { state: '1', durationTicks: 2 },
+    ]);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved).not.toHaveProperty('x-waves-gui');
+    expect(saved.signal[0]).toMatchObject({ wave: '01', period: 2 });
+    expect(fromUndulateJSON(saved).config.totalSteps).toBe(4);
+  });
+
+  it('round-trips native per-cell timing on vector lanes', () => {
+    const root = {
+      signal: [{
+        name: 'bus',
+        wave: '=.=.',
+        data: ['A', 'B'],
+        periods: [1, 2, 1, 2],
+        duty_cycles: [0.25, 0.5, 0.75, 0.5],
+        slewing: 0.25,
+      }],
+    } satisfies UndulateRoot;
+
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const bus = diagram.signals[0];
+    expect(diagram.config).toMatchObject({ totalSteps: 6, ticksPerStep: 4 });
+    expect(bus?.type === 'vector' ? bus.vectorTiming?.cells : []).toMatchObject([
+      { durationTicks: 4, dutyTicks: 1 },
+      { durationTicks: 8, dutyTicks: 4 },
+      { durationTicks: 4, dutyTicks: 3 },
+      { durationTicks: 8, dutyTicks: 4 },
+    ]);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved).not.toHaveProperty('x-waves-gui');
+    expect(saved.signal[0]).toMatchObject({
+      wave: '=.=.',
+      data: ['A', 'B'],
+      periods: [1, 2, 1, 2],
+      duty_cycles: [0.25, 0.5, 0.75, 0.5],
+      slewing: 0.25,
+    });
+    expect(fromUndulateJSON(saved).config.totalSteps).toBe(6);
+  });
+
+  it('enables Undulate mode for a vector-only native timing document', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{
+        name: 'timed bus',
+        wave: '=.=.',
+        data: ['A', 'B'],
+        periods: [0.5, 0.5, 0.5, 0.5],
+      }],
+    } satisfies UndulateRoot);
+    const signal = diagram.signals[0];
+    expect(signal?.type === 'vector' ? signal.vectorTiming : undefined).toBeDefined();
+    expect(diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
   it('expands analogue repeat with the upstream value-cycling semantics', () => {
     const root = {
       signal: [{

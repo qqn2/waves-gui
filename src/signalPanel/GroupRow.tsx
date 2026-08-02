@@ -6,11 +6,11 @@ import { useStore } from '../shared/store';
 import { OverflowText } from '../shared/OverflowText';
 import { DragHandle } from './DragHandle';
 import { InlineEditor } from './InlineEditor';
-import { renameGroupInStore, toggleGroupCollapsedInStore } from './panelTree';
 import styles from './SignalPanel.module.css';
 
 export interface GroupRowProps {
   group: SignalGroup;
+  collapsed: boolean;
   zoom: number;
   depth: number;
   dropHighlight: boolean;
@@ -25,6 +25,7 @@ export interface GroupRowProps {
 
 export function GroupRow({
   group,
+  collapsed,
   zoom,
   depth,
   dropHighlight,
@@ -36,7 +37,8 @@ export function GroupRow({
   forceEdit = false,
   onEditEnd,
 }: GroupRowProps) {
-  const setState = useStore.setState;
+  const renameGroup = useStore((s) => s.renameGroup);
+  const toggleGroupCollapsed = useStore((s) => s.toggleGroupCollapsed);
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
@@ -67,10 +69,10 @@ export function GroupRow({
       <button
         type="button"
         className={styles.collapseBtn}
-        aria-label={group.collapsed ? 'Expand group' : 'Collapse group'}
-        onClick={() => toggleGroupCollapsedInStore(setState, group.id)}
+        aria-label={collapsed ? 'Expand group' : 'Collapse group'}
+        onClick={() => toggleGroupCollapsed(group.id)}
       >
-        {group.collapsed ? (
+        {collapsed ? (
           <ChevronRight size={14} />
         ) : (
           <ChevronDown size={14} />
@@ -80,7 +82,7 @@ export function GroupRow({
         <InlineEditor
           value={group.name}
           onCommit={(name) => {
-            renameGroupInStore(setState, group.id, name);
+            renameGroup(group.id, name);
             setEditing(false);
             onEditEnd?.();
           }}

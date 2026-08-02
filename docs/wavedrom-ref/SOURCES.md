@@ -14,14 +14,10 @@ Local copies and links for WaveJSON / WaveDrom behavior. Refresh manually when u
 
 ## Upstream test fixtures (timing + other)
 
-Pinned WaveDrom revision for certification adaptations:
+Pinned WaveDrom revision for conformance adaptations:
 [`da34dd29435ae1b8bc35d305e844e8766d522af5`](https://github.com/wavedrom/wavedrom/tree/da34dd29435ae1b8bc35d305e844e8766d522af5/test).
 
-Local copies below were originally downloaded from trunk and are retained as
-compact reference material. Certification corpus cases in
-`tests/fixtures/undulate/certification-corpus.json` adapt timing, arcs, nodes,
-edges, head/foot, and JSONML-compatible semantics from that pinned revision
-without copying the entire upstream test directory.
+Local copies below were originally downloaded from trunk and are retained as compact reference material. Conformance corpus cases in `tests/fixtures/undulate/certification-corpus.json` adapt timing, arcs, nodes, edges, head/foot, and JSONML-compatible semantics from that pinned revision without copying the entire upstream test directory.
 
 | File | Diagram kind | Use in this project |
 |------|----------------|---------------------|
