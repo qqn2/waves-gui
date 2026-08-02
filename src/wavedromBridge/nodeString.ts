@@ -6,6 +6,13 @@ export const NODE_PAD_CHAR = '.' as const;
 const LETTER_POOL =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
+/** Source-cell slots available for node anchors on this lane. */
+export function nodeSlotCount(signal: Signal, documentSteps: number): number {
+  return signal.digitalTiming?.cells.length
+    ?? signal.vectorTiming?.cells.length
+    ?? Math.max(0, documentSteps);
+}
+
 /** Pad or trim a WaveDrom node string to exactly `totalSteps` characters. */
 export function padNodeString(
   node: string | undefined,
@@ -48,10 +55,11 @@ export function visibleNodeCharAt(
   step: number,
   totalSteps: number,
 ): string | null {
-  if (step < 0 || step >= totalSteps) return null;
+  const slots = nodeSlotCount(signal, totalSteps);
+  if (step < 0 || step >= slots) return null;
   const expanded = signal.nodeNames?.[step];
   if (expanded) return expanded;
-  const padded = padNodeString(signal.node, totalSteps);
+  const padded = padNodeString(signal.node, slots);
   if (!padded) return null;
   const ch = padded[step]!;
   if (ch === NODE_PAD_CHAR || ch === ' ') return null;
@@ -95,7 +103,7 @@ export function setNodeCharAt(
   char: string | null,
   totalSteps: number,
 ): void {
-  const node = ensureNodeString(signal, totalSteps);
+  const node = ensureNodeString(signal, nodeSlotCount(signal, totalSteps));
   const fill = char && char !== NODE_PAD_CHAR && char !== ' ' ? char[0]! : NODE_PAD_CHAR;
   if (step < 0 || step >= node.length) return;
   const arr = node.split('');
@@ -127,7 +135,7 @@ export function clearNodeCharFromDiagram(
           delete item.nodeNames;
         }
         if (!item.node?.includes(char)) continue;
-        for (let step = 0; step < totalSteps; step++) {
+        for (let step = 0; step < nodeSlotCount(item, totalSteps); step++) {
           if (!item.node) break;
           if (item.node[step] === char) {
             setNodeCharAt(item, step, null, totalSteps);

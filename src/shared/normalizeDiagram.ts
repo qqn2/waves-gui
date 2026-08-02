@@ -1,5 +1,11 @@
 import { nanoid } from 'nanoid';
-import type { DiagramState, Signal, SignalGroup, SignalOrGroup } from './types';
+import type {
+  DiagramState,
+  Signal,
+  SignalGroup,
+  SignalOrGroup,
+  SignalTiming,
+} from './types';
 import {
   clampHscale,
   DEFAULT_HSCALE,
@@ -34,6 +40,35 @@ function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
 }
 
+function normalizeSignalTiming(timing: SignalTiming): void {
+  timing.ticksPerStep = Math.max(
+    1,
+    Math.min(1024, Math.floor(timing.ticksPerStep || 1)),
+  );
+  timing.phaseTicks = Math.round(timing.phaseTicks || 0);
+  timing.cells = (timing.cells ?? []).map((source) => {
+    const durationTicks = Math.max(
+      1,
+      Math.round(source?.durationTicks || timing.ticksPerStep),
+    );
+    return {
+      ...source,
+      durationTicks,
+      ...(source?.dutyTicks !== undefined
+        ? {
+            dutyTicks: Math.max(
+              0,
+              Math.min(durationTicks, Math.round(source.dutyTicks)),
+            ),
+          }
+        : {}),
+    };
+  });
+  if (timing.sourceFields) {
+    timing.sourceFields = { ...timing.sourceFields };
+  }
+}
+
 function normalizeSignal(signal: Signal, totalSteps: number): void {
   if (signal.rowHeight === undefined || signal.rowHeight <= 0) {
     signal.rowHeight = ROW_HEIGHT;
@@ -41,6 +76,10 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
   if (!signal.color) {
     signal.color = DEFAULT_SIGNAL_COLOR;
   }
+  const nodeSlots =
+    signal.digitalTiming?.cells.length
+    ?? signal.vectorTiming?.cells.length
+    ?? totalSteps;
   if (signal.nodeNames && typeof signal.nodeNames === 'object') {
     const normalized: Record<number, string> = {};
     for (const [rawStep, name] of Object.entries(signal.nodeNames)) {
@@ -48,7 +87,7 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
       if (
         Number.isInteger(step)
         && step >= 0
-        && step < totalSteps
+        && step < nodeSlots
         && typeof name === 'string'
         && name.length > 0
       ) {
@@ -73,13 +112,17 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
         {
           id: nanoid(),
           startStep: 0,
-          endStep: totalSteps,
+          endStep: signal.vectorTiming?.cells.length ?? totalSteps,
           value: '',
         },
       ];
     }
     if (!Array.isArray(signal.states)) {
       signal.states = [];
+    }
+    if (signal.vectorTiming) {
+      normalizeSignalTiming(signal.vectorTiming);
+      if (signal.vectorTiming.cells.length === 0) delete signal.vectorTiming;
     }
     return;
   }
@@ -105,14 +148,8 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
       signal.segments = [];
     }
     if (signal.type === 'bit' && signal.digitalTiming) {
-      const ticksPerStep = Math.max(
-        1,
-        Math.min(1024, Math.floor(signal.digitalTiming.ticksPerStep || 1)),
-      );
-      signal.digitalTiming.ticksPerStep = ticksPerStep;
-      signal.digitalTiming.phaseTicks = Math.round(
-        signal.digitalTiming.phaseTicks || 0,
-      );
+      normalizeSignalTiming(signal.digitalTiming);
+      const ticksPerStep = signal.digitalTiming.ticksPerStep;
       signal.digitalTiming.cells = signal.states.map((state, index) => {
         const source = signal.digitalTiming!.cells?.[index];
         const durationTicks = Math.max(
@@ -129,9 +166,14 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
                   Math.min(durationTicks, Math.round(source.dutyTicks)),
                 ),
               }
-            : {}),
+          : {}),
         };
       });
+      if (signal.digitalTiming.sourceFields) {
+        signal.digitalTiming.sourceFields = {
+          ...signal.digitalTiming.sourceFields,
+        };
+      }
     }
   }
 }

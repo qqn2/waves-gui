@@ -280,7 +280,7 @@ export class CanvasRenderer {
               row.y,
               row.height,
               transform,
-              diagram.config.totalSteps,
+              item.digitalTiming?.cells.length ?? diagram.config.totalSteps,
               item.node,
               showAnchorLetters,
             );
@@ -288,6 +288,8 @@ export class CanvasRenderer {
           rowIndex++;
         } else if (item.type === 'vector') {
           let drawSignal = item;
+          const rowTotalSteps =
+            item.vectorTiming?.cells.length ?? diagram.config.totalSteps;
           const draft = view.paintDraft;
           if (draft && draft.signalId === item.id && draft.lane === 'vector') {
             const lo = Math.min(draft.startStep, draft.endStep);
@@ -312,7 +314,7 @@ export class CanvasRenderer {
                   lo,
                   hi,
                   value,
-                  diagram.config.totalSteps,
+                  rowTotalSteps,
                   busFill,
                 ),
               };
@@ -327,7 +329,7 @@ export class CanvasRenderer {
               row.y,
               row.height,
               transform,
-              diagram.config.totalSteps,
+              drawSignal.vectorTiming?.cells.length ?? rowTotalSteps,
               drawSignal.node,
               showAnchorLetters,
             );

@@ -1,4 +1,5 @@
 import type { BitState } from '../shared/types';
+import { canPaintDigitalTimingTicks } from '../shared/fineTiming';
 import { findSignal, useStore } from '../shared/store';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
@@ -46,16 +47,26 @@ export function paintPointerDown(
           : 'set';
   const bitState: BitState = view.activeBitState;
   let fineTiming = false;
+  let timing: import('../shared/types').DigitalTiming | null = null;
   findSignal(diagram.signals, hit.signalId, (signal) => {
     fineTiming =
       signal.type === 'bit'
       && Boolean(signal.digitalTiming)
       && (diagram.config.ticksPerStep ?? 1) > 1
       && (apply === 'set' || apply === 'toggle');
+    if (signal.type === 'bit') timing = signal.digitalTiming ?? null;
   });
   const timingTick = fineTiming
     ? timingTickAtCanvasX(e.offsetX, diagram, view)
     : undefined;
+  // A P/p/N/n cell is one complete clock cycle. Do not split it into more
+  // clock symbols—the result would silently add cycles. Fine painting becomes
+  // available after an explicit clock-to-static expansion is introduced.
+  if (
+    timingTick !== undefined
+    && timing
+    && !canPaintDigitalTimingTicks(timing, timingTick, timingTick)
+  ) return;
 
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,

@@ -51,7 +51,7 @@ export function stepAtCanvasX(
   return clampStep(stepFromLogicalX(logicalX, null), totalSteps);
 }
 
-/** Nearest visible document tick under a canvas X coordinate. */
+/** Visible document-tick interval under a canvas X coordinate. */
 export function timingTickAtCanvasX(
   canvasX: number,
   diagram: DiagramState,
@@ -63,7 +63,7 @@ export function timingTickAtCanvasX(
     0,
     Math.min(
       diagram.config.totalSteps * divisions - 1,
-      Math.round(logicalX / CELL_WIDTH * divisions),
+      Math.floor(logicalX / CELL_WIDTH * divisions),
     ),
   );
 }

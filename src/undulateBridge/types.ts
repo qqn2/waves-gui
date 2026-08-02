@@ -66,8 +66,6 @@ export type UndulateAnalogueValue =
 export interface WavesGuiUndulateMetadata {
   analogueContext?: { vssa: number; vdda: number };
   randomSeed?: number;
-  /** Major timing-grid extent when fine painting creates extra wave entries. */
-  timingGridSteps?: number;
 }
 
 export interface UndulateRoot extends WdRoot {

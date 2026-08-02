@@ -23,9 +23,9 @@ describe('fine timing paint tool', () => {
     useStore.getState().setActiveBitState('1');
   });
 
-  it('paints one timing-grid interval and updates exported JSON', () => {
+  it('paints one static timing-grid interval as native Undulate timing', () => {
     const signal = useStore.getState().diagram.signals.find(
-      (candidate) => candidate.type === 'bit',
+      (candidate) => candidate.type === 'bit' && candidate.name === 'enable',
     );
     expect(signal?.type).toBe('bit');
     if (!signal || signal.type !== 'bit') return;
@@ -57,18 +57,67 @@ describe('fine timing paint tool', () => {
     expect(updated?.type).toBe('bit');
     if (!updated || updated.type !== 'bit') return;
     expect(updated.digitalTiming?.cells.slice(0, 3)).toEqual([
-      { state: 'P', durationTicks: 1 },
+      { state: '0', durationTicks: 1 },
       { state: '1', durationTicks: 1 },
-      { state: 'P', durationTicks: 2 },
+      { state: '0', durationTicks: 2 },
     ]);
 
     const exported = toUndulateJSON(useStore.getState().diagram);
-    expect(exported.signal[0]).toMatchObject({
-      wave: 'P1P.........',
-      periods: [0.25, 0.25, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    const lane = exported.signal.find((entry) =>
+      !Array.isArray(entry) && entry.name === 'enable',
+    );
+    expect(lane).toMatchObject({
+      wave: expect.stringMatching(/^010/),
+      periods: expect.arrayContaining([0.25, 0.25, 0.5]),
     });
-    expect(exported['x-waves-gui']).toMatchObject({ timingGridSteps: 10 });
+    expect(exported).not.toHaveProperty('x-waves-gui');
     expect(validateUndulateJSON(exported)).toBeNull();
     expect(fromUndulateJSON(exported).config.totalSteps).toBe(10);
+  });
+
+  it('refuses precision painting on an unexpanded clock macro', () => {
+    const signal = useStore.getState().diagram.signals.find(
+      (candidate) => candidate.type === 'bit' && candidate.name === 'clk',
+    );
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(useStore.getState().enableDigitalTiming(signal.id)).toBe(true);
+    const before = useStore.getState().diagram.signals.find(
+      (candidate) => candidate.type !== 'group' && candidate.id === signal.id,
+    );
+    const originalCells = before?.type === 'bit'
+      ? before.digitalTiming?.cells.map((cell) => ({ ...cell }))
+      : undefined;
+    const hit: HitTestResult = {
+      signalId: signal.id,
+      signalType: 'bit',
+      step: 0,
+      half: 'top',
+      isLabelArea: false,
+      isTimeAxis: false,
+      edgeIndex: null,
+      annotationId: null,
+    };
+    const event = {
+      button: 0,
+      pointerId: 12,
+      offsetX: 10,
+      offsetY: 100,
+      shiftKey: false,
+    } as PointerEvent;
+
+    paintPointerDown(event, hit, canvas);
+    paintPointerUp(event, canvas);
+
+    const updated = useStore.getState().diagram.signals.find(
+      (candidate) => candidate.type !== 'group' && candidate.id === signal.id,
+    );
+    expect(updated?.type === 'bit' ? updated.digitalTiming?.cells : []).toEqual(originalCells);
+    const exported = toUndulateJSON(useStore.getState().diagram);
+    const lane = exported.signal.find((entry) =>
+      !Array.isArray(entry) && entry.name === 'clk',
+    );
+    expect(lane).toMatchObject({ wave: 'P.........' });
+    expect(lane).not.toMatchObject({ wave: expect.stringMatching(/P1P/) });
   });
 });

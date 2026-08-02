@@ -46,4 +46,16 @@ describe('fine timing paint', () => {
       { state: '0', durationTicks: 2 },
     ]);
   });
+
+  it('does not split a complete clock macro into additional clock cycles', () => {
+    const timing = {
+      ticksPerStep: 4,
+      phaseTicks: 0,
+      cells: [{ state: 'P' as const, durationTicks: 4 }],
+    };
+
+    expect(paintDigitalTimingTicks(timing, 1, 1, '1', 'set')).toEqual(
+      timing.cells,
+    );
+  });
 });

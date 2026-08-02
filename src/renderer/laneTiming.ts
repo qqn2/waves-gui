@@ -8,12 +8,13 @@
  */
 import { CELL_WIDTH } from '../shared/constants';
 import type { DiagramState, Signal, SignalOrGroup } from '../shared/types';
+import { signalTiming } from '../shared/fineTiming';
 
 /** WaveDrom period: cycles per displayed column (integer >= 1). */
 export function lanePeriod(signal: Signal): number {
-  if (signal.digitalTiming?.cells.length) {
-    return signal.digitalTiming.cells[0]!.durationTicks
-      / signal.digitalTiming.ticksPerStep;
+  const timing = signalTiming(signal);
+  if (timing?.cells.length) {
+    return timing.cells[0]!.durationTicks / timing.ticksPerStep;
   }
   const p = signal.period;
   if (p === undefined || p < 1) return 1;
@@ -22,8 +23,9 @@ export function lanePeriod(signal: Signal): number {
 
 /** WaveDrom phase: horizontal shift in step units (may be fractional). */
 export function lanePhase(signal: Signal): number {
-  if (signal.digitalTiming) {
-    return signal.digitalTiming.phaseTicks / signal.digitalTiming.ticksPerStep;
+  const timing = signalTiming(signal);
+  if (timing) {
+    return timing.phaseTicks / timing.ticksPerStep;
   }
   return signal.phase ?? 0;
 }
@@ -34,7 +36,7 @@ export function stepLogicalWidth(signal: Signal): number {
 }
 
 function timingCellWidth(signal: Signal, step: number): number | null {
-  const timing = signal.digitalTiming;
+  const timing = signalTiming(signal);
   const cell = timing?.cells[step];
   return timing && cell
     ? CELL_WIDTH * cell.durationTicks / timing.ticksPerStep
@@ -43,13 +45,14 @@ function timingCellWidth(signal: Signal, step: number): number | null {
 
 /** Logical X at the left edge of `step` for this lane (before hscale/zoom). */
 export function stepLogicalX(signal: Signal, step: number): number {
-  if (signal.digitalTiming) {
-    let ticks = -signal.digitalTiming.phaseTicks;
-    const fallback = signal.digitalTiming.ticksPerStep;
+  const timing = signalTiming(signal);
+  if (timing) {
+    let ticks = -timing.phaseTicks;
+    const fallback = timing.ticksPerStep;
     for (let index = 0; index < step; index++) {
-      ticks += signal.digitalTiming.cells[index]?.durationTicks ?? fallback;
+      ticks += timing.cells[index]?.durationTicks ?? fallback;
     }
-    return CELL_WIDTH * ticks / signal.digitalTiming.ticksPerStep;
+    return CELL_WIDTH * ticks / timing.ticksPerStep;
   }
   return step * stepLogicalWidth(signal) - lanePhase(signal) * CELL_WIDTH;
 }
@@ -67,7 +70,7 @@ export function stepLogicalCenter(signal: Signal, step: number): number {
 
 /** Total logical width spanned by `totalSteps` columns for this lane. */
 export function laneLogicalWidth(signal: Signal, totalSteps: number): number {
-  const cellCount = signal.digitalTiming?.cells.length ?? totalSteps;
+  const cellCount = signalTiming(signal)?.cells.length ?? totalSteps;
   return stepLogicalXEnd(signal, cellCount - 1);
 }
 
@@ -79,8 +82,8 @@ export function stepFromLogicalX(
   if (!signal) {
     return Math.floor(logicalX / CELL_WIDTH);
   }
-  if (signal.digitalTiming) {
-    const timing = signal.digitalTiming;
+  const timing = signalTiming(signal);
+  if (timing) {
     let cursor = -timing.phaseTicks;
     const target = logicalX * timing.ticksPerStep / CELL_WIDTH;
     for (let index = 0; index < timing.cells.length; index++) {
@@ -113,7 +116,7 @@ export function stepAtLogicalXForSignal(
   signal: Signal,
   totalSteps: number,
 ): number | null {
-  const cellCount = signal.digitalTiming?.cells.length ?? totalSteps;
+  const cellCount = signalTiming(signal)?.cells.length ?? totalSteps;
   if (cellCount <= 0) return null;
   if (logicalX < stepLogicalX(signal, 0)) return null;
   if (logicalX >= laneLogicalWidth(signal, totalSteps)) return null;

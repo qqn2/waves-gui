@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stepAtCanvasX } from './pointerUtils';
+import { stepAtCanvasX, timingTickAtCanvasX } from './pointerUtils';
 import type { DiagramState, ViewState } from '../shared/types';
 
 function minimal(overrides?: Partial<ViewState>): {
@@ -60,5 +60,15 @@ describe('stepAtCanvasX', () => {
     const { diagram, view } = minimal();
     expect(stepAtCanvasX(-100, diagram, view)).toBe(0);
     expect(stepAtCanvasX(9999, diagram, view)).toBe(9);
+  });
+
+  it('selects the tick interval at exact substep boundaries', () => {
+    const { diagram, view } = minimal();
+    diagram.config = { totalSteps: 2, hscale: 1, ticksPerStep: 4 };
+
+    expect(timingTickAtCanvasX(9.999, diagram, view)).toBe(0);
+    expect(timingTickAtCanvasX(10, diagram, view)).toBe(1);
+    expect(timingTickAtCanvasX(19.999, diagram, view)).toBe(1);
+    expect(timingTickAtCanvasX(20, diagram, view)).toBe(2);
   });
 });

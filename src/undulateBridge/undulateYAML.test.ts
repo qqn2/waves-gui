@@ -4,6 +4,7 @@ import {
   stringifyUndulateYAML,
   updateUndulateYAMLSource,
 } from './undulateYAML';
+import { fromUndulateJSON, toUndulateJSON } from './undulateJSON';
 
 describe('Undulate YAML adapter', () => {
   it('imports upstream mapping-based signals, groups, edges, and tuple anchors', () => {
@@ -102,6 +103,58 @@ annotations: []
     const yaml = stringifyUndulateYAML(root);
     expect(yaml).toContain('x-waves-gui:');
     expect(parseUndulateYAML(yaml)).toEqual(root);
+  });
+
+  it('keeps metadata-free native substep lanes across YAML import and export', () => {
+    const root = parseUndulateYAML(`
+fine:
+  wave: "01010101"
+  periods: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+coarse:
+  wave: "01.0"
+timed sibling:
+  wave: "10.1"
+  periods: [1, 1, 1, 1]
+config:
+  hscale: 1
+`);
+    const diagram = fromUndulateJSON(root);
+
+    expect(diagram.config).toMatchObject({ totalSteps: 4, ticksPerStep: 2 });
+    expect(diagram.signals.map((signal) =>
+      signal.type === 'bit' ? signal.digitalTiming?.cells.length : 0,
+    )).toEqual([8, 4, 4]);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved).not.toHaveProperty('x-waves-gui');
+    const roundTrip = fromUndulateJSON(
+      parseUndulateYAML(stringifyUndulateYAML(saved)),
+    );
+    expect(roundTrip.config.totalSteps).toBe(4);
+    expect(roundTrip.signals.map((signal) =>
+      signal.type === 'bit' ? signal.digitalTiming?.cells.length : 0,
+    )).toEqual([8, 4, 4]);
+  });
+
+  it('keeps native vector periods across YAML import and export', () => {
+    const root = parseUndulateYAML(`
+bus:
+  wave: "=.=."
+  data: [A, B]
+  periods: [1, 2, 1, 2]
+  duty_cycles: [0.25, 0.5, 0.75, 0.5]
+  slewing: 0.25
+`);
+    const diagram = fromUndulateJSON(root);
+    const bus = diagram.signals[0];
+    expect(diagram.config.totalSteps).toBe(6);
+    expect(bus?.type === 'vector' ? bus.vectorTiming?.cells : []).toHaveLength(4);
+
+    const saved = toUndulateJSON(diagram);
+    expect(saved).not.toHaveProperty('x-waves-gui');
+    expect(saved.signal[0]).toMatchObject({ periods: [1, 2, 1, 2] });
+    expect(fromUndulateJSON(parseUndulateYAML(stringifyUndulateYAML(saved)))
+      .config.totalSteps).toBe(6);
   });
 
   it('aliases ambiguous group keys while preserving visible names', () => {

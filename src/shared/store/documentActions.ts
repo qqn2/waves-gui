@@ -5,6 +5,7 @@ import {
   allocateNodeChars,
   findSignalInDiagram,
   formatArrowEdge,
+  nodeSlotCount,
   pruneUnusedNodeAnchorsAfterEdgeRemoval,
   setNodeCharAt,
   visibleNodeCharAt,
@@ -137,8 +138,8 @@ function removeDigitalTiming(signals: SignalOrGroup[]): void {
       removeDigitalTiming(signal.children);
       continue;
     }
-    if (signal.type !== 'bit' || !signal.digitalTiming) continue;
-    const timing = signal.digitalTiming;
+    const timing = signal.digitalTiming ?? signal.vectorTiming;
+    if (!timing) continue;
     const firstDuration = timing.cells[0]?.durationTicks;
     const uniformDuration = firstDuration !== undefined
       && timing.cells.every((cell) => cell.durationTicks === firstDuration);
@@ -155,6 +156,7 @@ function removeDigitalTiming(signals: SignalOrGroup[]): void {
     if (phase === 0) delete signal.phase;
     else signal.phase = phase;
     delete signal.digitalTiming;
+    delete signal.vectorTiming;
   }
 }
 
@@ -293,11 +295,13 @@ export function createEdgeActions(set: ImmerSet): Pick<
         if (fromSignal.type === 'spacer' || toSignal.type === 'spacer') return;
 
         const totalSteps = s.diagram.config.totalSteps;
+        const fromSlots = nodeSlotCount(fromSignal, totalSteps);
+        const toSlots = nodeSlotCount(toSignal, totalSteps);
         if (
           from.step < 0
-          || from.step >= totalSteps
+          || from.step >= fromSlots
           || to.step < 0
-          || to.step >= totalSteps
+          || to.step >= toSlots
         ) return;
 
         const existingFrom = visibleNodeCharAt(fromSignal, from.step, totalSteps);
