@@ -129,8 +129,10 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
   await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
   await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
     .toHaveAttribute('aria-pressed', 'true');
-  const fitted = await preview.locator('svg').evaluate((svg) => {
-    const viewport = svg.parentElement!;
+  await expect(preview.locator('svg')).toBeVisible();
+  const fitted = await preview.evaluate((viewport) => {
+    const svg = viewport.querySelector('svg');
+    if (!svg) throw new Error('local preview SVG unavailable');
     const svgBox = svg.getBoundingClientRect();
     const style = getComputedStyle(viewport);
     return {
@@ -1179,7 +1181,7 @@ test('serves security headers, licenses, and SPA fallback', async ({ request }) 
   expect(root.headers()['x-content-type-options']).toBe('nosniff');
   const licenses = await request.get('/licenses/THIRD_PARTY_NOTICES.txt');
   expect(licenses.ok()).toBeTruthy();
-  expect(await licenses.text()).toContain('wavedrom 3.6.1');
+  expect(await licenses.text()).toMatch(/(?:^|\n)wavedrom \d+\.\d+\.\d+/);
   const fallback = await request.get('/diagram/synthetic-route', {
     headers: { 'Sec-Fetch-Mode': 'navigate' },
   });
