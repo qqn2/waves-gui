@@ -71,4 +71,25 @@ describe('stepAtCanvasX', () => {
     expect(timingTickAtCanvasX(19.999, diagram, view)).toBe(1);
     expect(timingTickAtCanvasX(20, diagram, view)).toBe(2);
   });
+
+  it('clamps precision paint to a negatively phased lane tail', () => {
+    const { diagram, view } = minimal();
+    diagram.config = { totalSteps: 4, hscale: 1, ticksPerStep: 4 };
+    diagram.signals = [{
+      id: 'timed',
+      name: 'timed',
+      type: 'bit',
+      states: ['0', '0', '0', '0'],
+      segments: [],
+      color: '#000',
+      rowHeight: 40,
+      digitalTiming: {
+        ticksPerStep: 4,
+        phaseTicks: -4,
+        cells: Array.from({ length: 4 }, () => ({ state: '0' as const, durationTicks: 4 })),
+      },
+    }];
+
+    expect(timingTickAtCanvasX(199.999, diagram, view, 'timed')).toBe(19);
+  });
 });

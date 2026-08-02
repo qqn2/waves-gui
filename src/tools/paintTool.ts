@@ -57,7 +57,7 @@ export function paintPointerDown(
     if (signal.type === 'bit') timing = signal.digitalTiming ?? null;
   });
   const timingTick = fineTiming
-    ? timingTickAtCanvasX(e.offsetX, diagram, view)
+    ? timingTickAtCanvasX(e.offsetX, diagram, view, hit.signalId)
     : undefined;
   // A P/p/N/n cell is one complete clock cycle. Do not split it into more
   // clock symbols—the result would silently add cycles. Fine painting becomes
@@ -94,7 +94,7 @@ export function paintPointerMove(e: PointerEvent): void {
 
   const { diagram, view } = useStore.getState();
   if (draft.startTick !== undefined) {
-    const tick = timingTickAtCanvasX(e.offsetX, diagram, view);
+    const tick = timingTickAtCanvasX(e.offsetX, diagram, view, draft.signalId);
     if (tick !== draft.endTick) {
       useStore.getState().setPaintDraft({ ...draft, endTick: tick });
     }
