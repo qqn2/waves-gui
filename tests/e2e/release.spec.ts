@@ -124,6 +124,7 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
     .toHaveAttribute('aria-pressed', 'true');
   await renderScale.getByRole('button', { name: '100%', exact: true }).click();
   await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
+  await expect.poll(() => preview.locator('svg').boundingBox()).not.toBeNull();
   const naturalRenderBox = await preview.locator('svg').boundingBox();
   await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
   await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
