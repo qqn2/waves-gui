@@ -48,6 +48,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    setupFiles: ['./src/testSetup.ts'],
     testTimeout: 10_000,
   },
 })
