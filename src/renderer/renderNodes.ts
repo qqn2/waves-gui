@@ -3,7 +3,7 @@ import {
   isInvisibleNodeChar,
   isVisibleNodeChar,
 } from '../wavedromBridge/nodeVisibility';
-import { NODE_PAD_CHAR } from '../wavedromBridge/nodeString';
+import { NODE_PAD_CHAR, nodeSlotCount } from '../wavedromBridge/nodeString';
 import { stepLogicalCenter } from './laneTiming';
 import type { ViewTransform } from './coordinates';
 import { logicalToCanvasY } from './coordinates';
@@ -48,7 +48,8 @@ export function renderSignalNodes(
     getComputedStyle(document.documentElement).getPropertyValue('--edge-stroke').trim() ||
     '#d4a84b';
 
-  for (let step = 0; step < totalSteps && step < nodeStr.length; step++) {
+  const slots = nodeSlotCount(signal, totalSteps);
+  for (let step = 0; step < slots && step < nodeStr.length; step++) {
     const ch = nodeStr[step]!;
     if (ch === NODE_PAD_CHAR || ch === ' ') continue;
     if (!showInvisibleAnchors && !isVisibleNodeChar(ch)) continue;

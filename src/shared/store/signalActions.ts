@@ -1,5 +1,9 @@
 import { nanoid } from 'nanoid';
-import { setNodeCharAt } from '../../wavedromBridge/nodeString';
+import {
+  NODE_PAD_CHAR,
+  padNodeString,
+  setNodeCharAt,
+} from '../../wavedromBridge/nodeString';
 import {
   applyClockBrushToRange,
   applyClockToggleToRange,
@@ -34,6 +38,7 @@ import {
 } from '../stepGapHelpers';
 import type {
   BitState,
+  DigitalTimingCell,
   DiagramConfig,
   Signal,
   SignalGroup,
@@ -70,7 +75,100 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
-import { rescaleDiagramTiming, timingResolution } from '../fineTiming';
+import {
+  paintDigitalTimingTicksWithMapping,
+  rescaleDiagramTiming,
+  timingResolution,
+} from '../fineTiming';
+
+type TimingOutputRange = { start: number; end: number };
+
+function closestOutputCell(
+  range: TimingOutputRange,
+  output: DigitalTimingCell[],
+): number {
+  if (range.end - range.start <= 1) return range.start;
+  const duration = output
+    .slice(range.start, range.end)
+    .reduce((total, cell) => total + cell.durationTicks, 0);
+  const sourceCenter = duration / 2;
+  let offset = 0;
+  let closest = range.start;
+  let closestDistance = Number.POSITIVE_INFINITY;
+  for (let index = range.start; index < range.end; index++) {
+    const cell = output[index]!;
+    const center = offset + cell.durationTicks / 2;
+    const distance = Math.abs(center - sourceCenter);
+    if (distance < closestDistance) {
+      closest = index;
+      closestDistance = distance;
+    }
+    offset += cell.durationTicks;
+  }
+  return closest;
+}
+
+/**
+ * A precision paint may split a source cell. Preserve the meaning of every
+ * source-indexed decoration by moving it into the corresponding output range
+ * rather than letting array indexes drift in time.
+ */
+function remapTimingDecorations(
+  signal: Signal,
+  sourceCellRanges: TimingOutputRange[],
+  cells: DigitalTimingCell[],
+): void {
+  const outputLength = cells.length;
+  const sourceGaps = signal.stepGaps;
+  if (sourceGaps) {
+    const gaps = Array<boolean>(outputLength).fill(false);
+    sourceCellRanges.forEach((range, sourceIndex) => {
+      if (sourceGaps[sourceIndex] && range.start < outputLength) {
+        // A WaveDrom gap belongs to the cell it decorates, so use its first
+        // fragment after a precision split.
+        gaps[range.start] = true;
+      }
+    });
+    signal.stepGaps = gaps.some(Boolean) ? gaps : undefined;
+  }
+
+  const sourceGlitches = signal.stepGlitches;
+  if (sourceGlitches) {
+    const glitches = Array<boolean>(Math.max(0, outputLength - 1)).fill(false);
+    for (let sourceIndex = 0; sourceIndex < sourceGlitches.length; sourceIndex++) {
+      if (!sourceGlitches[sourceIndex]) continue;
+      const range = sourceCellRanges[sourceIndex];
+      const boundary = range ? range.end - 1 : -1;
+      if (boundary >= 0 && boundary < glitches.length) glitches[boundary] = true;
+    }
+    signal.stepGlitches = glitches.some(Boolean) ? glitches : undefined;
+  }
+
+  if (signal.node !== undefined) {
+    const sourceNode = padNodeString(signal.node, sourceCellRanges.length);
+    const node = Array<string>(outputLength).fill(NODE_PAD_CHAR);
+    if (sourceNode) {
+      sourceCellRanges.forEach((range, sourceIndex) => {
+        const char = sourceNode[sourceIndex] ?? NODE_PAD_CHAR;
+        node[closestOutputCell(range, cells)] = char;
+      });
+    }
+    signal.node = node.every((char) => char === NODE_PAD_CHAR || char === ' ')
+      ? undefined
+      : node.join('');
+  }
+
+  if (signal.nodeNames) {
+    const names: Record<number, string> = {};
+    for (const [rawIndex, name] of Object.entries(signal.nodeNames)) {
+      const sourceIndex = Number(rawIndex);
+      const range = sourceCellRanges[sourceIndex];
+      if (!Number.isInteger(sourceIndex) || !range) continue;
+      names[closestOutputCell(range, cells)] = name;
+    }
+    signal.nodeNames = Object.keys(names).length > 0 ? names : undefined;
+  }
+}
 
 function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   if (isSubcycleWaveLane(sig)) {
@@ -176,6 +274,12 @@ function duplicateSignalInDraft(
               cells: item.digitalTiming.cells.map((cell) => ({ ...cell })),
             }
           : undefined,
+        vectorTiming: item.vectorTiming
+          ? {
+              ...item.vectorTiming,
+              cells: item.vectorTiming.cells.map((cell) => ({ ...cell })),
+            }
+          : undefined,
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
@@ -268,6 +372,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
+  | 'paintDigitalTimingRange'
   | 'toggleSignalStateRange'
   | 'paintToggleRange'
   | 'toggleStepGlitchRange'
@@ -464,7 +569,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             startStep,
             endStepInclusive,
             value,
-            s.diagram.config.totalSteps,
+            sig.vectorTiming?.cells.length ?? s.diagram.config.totalSteps,
             busColorFill,
             options,
           );
@@ -935,6 +1040,38 @@ export function createSignalActions(set: ImmerSet): Pick<
           }, sig.states.length);
         });
         s.view.isDirty = true;
+      });
+    },
+
+    paintDigitalTimingRange(signalId, startTick, endTick, bitState, mode) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let changed = false;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit' || !signal.digitalTiming) return;
+          const painted = paintDigitalTimingTicksWithMapping(
+            signal.digitalTiming,
+            startTick,
+            endTick,
+            bitState,
+            mode,
+          );
+          if (JSON.stringify(painted.cells) === JSON.stringify(signal.digitalTiming.cells)) {
+            return;
+          }
+          pushHistory(s);
+          signal.digitalTiming.cells = painted.cells;
+          signal.states = painted.cells.map((cell) => cell.state);
+          remapTimingDecorations(
+            signal,
+            painted.sourceCellRanges,
+            painted.cells,
+          );
+          signal.digitalTimingStatesEdited = true;
+          delete signal.undulateRepeat;
+          changed = true;
+        });
+        if (changed) s.view.isDirty = true;
       });
     },
 

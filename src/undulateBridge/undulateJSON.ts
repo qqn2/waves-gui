@@ -16,7 +16,13 @@ import {
   evaluateAnalogueScalar,
   type AnalogueContext,
 } from '../shared/analogueExpressions';
-import { timingForStates, timingResolution } from '../shared/fineTiming';
+import {
+  documentDurationTicks,
+  durationTicksToSteps,
+  timingForCellCount,
+  timingForStates,
+  timingResolution,
+} from '../shared/fineTiming';
 import {
   normalizeUndulateColor,
   parseAnnotationFontFamily,
@@ -38,9 +44,15 @@ import type {
   HorizontalLineAnnotation,
   Signal,
   SignalOrGroup,
+  SignalTiming,
   VerticalLineAnnotation,
 } from '../shared/types';
-import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
+import {
+  encodeWaveString,
+  fromWavedromJSON,
+  toWavedromJSON,
+} from '../wavedromBridge';
+import { segmentsToWaveAndData } from '../shared/vectorSegments';
 import type {
   UndulateAnalogueValue,
   UndulateAnnotation,
@@ -326,6 +338,76 @@ function analogueToUndulateEntry(
     : expanded;
 }
 
+function applyTimingFields(entry: WdSignal, timing: SignalTiming): WdSignal {
+  const periods = timing.cells.map(
+    (cell) => cell.durationTicks / timing.ticksPerStep,
+  );
+  const hasExplicitPeriod = timing.sourceFields?.period === true;
+  delete entry.period;
+  delete entry.periods;
+  if (
+    periods.length > 0
+    && (hasExplicitPeriod || periods.some((value) => value !== 1))
+    && periods.every((value) => value === periods[0])
+  ) {
+    entry.period = periods[0];
+  } else if (periods.some((value) => value !== 1)) {
+    entry.periods = periods;
+  }
+
+  const dutyCycles = timing.cells.map((cell) =>
+    cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks,
+  );
+  const hasExplicitDuty = timing.sourceFields?.dutyCycle === true;
+  delete entry.duty_cycle;
+  delete entry.duty_cycles;
+  if (hasExplicitDuty || dutyCycles.some((value) => value !== 0.5)) {
+    if (dutyCycles.every((value) => value === dutyCycles[0])) {
+      entry.duty_cycle = dutyCycles[0];
+    } else {
+      entry.duty_cycles = dutyCycles;
+    }
+  }
+
+  const phase = timing.phaseTicks / timing.ticksPerStep;
+  if (phase !== 0 || timing.sourceFields?.phase === true) {
+    entry.phase = phase;
+  } else {
+    delete entry.phase;
+  }
+  if (timing.slewing !== undefined) entry.slewing = timing.slewing;
+  else delete entry.slewing;
+  return entry;
+}
+
+function vectorToUndulateEntry(signal: Signal): WdSignal {
+  const totalSteps = Math.max(
+    1,
+    signal.vectorTiming?.cells.length ?? 0,
+    signal.stepGaps?.length ?? 0,
+    signal.segments.reduce((end, segment) => Math.max(end, segment.endStep), 0),
+  );
+  const { wave, data } = segmentsToWaveAndData(
+    signal.segments,
+    totalSteps,
+    signal.stepGaps,
+  );
+  const entry: WdSignal = {
+    name: signal.name,
+    wave,
+    data,
+    ...(signal.phase !== undefined ? { phase: signal.phase } : {}),
+    ...(signal.period !== undefined ? { period: signal.period } : {}),
+    ...(nodeToUndulate(signal) !== undefined
+      ? { node: nodeToUndulate(signal) }
+      : {}),
+    ...signalStyleToUndulate(signal.style),
+  };
+  return signal.vectorTiming
+    ? applyTimingFields(entry, signal.vectorTiming)
+    : entry;
+}
+
 function mergeUndulateSignalEntries(
   signals: SignalOrGroup[],
   sharedEntries: WdSignalEntry[],
@@ -356,33 +438,24 @@ function mergeUndulateSignalEntries(
         opaqueSignals,
       );
     }
+    if (signal.type === 'vector') {
+      return withOpaqueFields(
+        vectorToUndulateEntry(signal),
+        signal,
+        opaqueSignals,
+      );
+    }
     if (signal.type === 'bit' && signal.digitalTiming) {
       const timing = signal.digitalTiming;
       const entry = { ...(shared as WdSignal) };
-      entry.wave = (shared as WdSignal).wave
-        ?? signal.states.slice(0, timing.cells.length).join('');
-      const periods = timing.cells.map(
-        (cell) => cell.durationTicks / timing.ticksPerStep,
+      // Do not take the timed wave from toWavedromJSON(): that bridge pads to
+      // the document's major grid and would truncate a native fine-timed lane.
+      entry.wave = encodeWaveString(
+        timing.cells.map((cell) => cell.state),
+        signal.stepGaps,
+        signal.stepGlitches,
       );
-      if (periods.length > 0 && periods.every((value) => value === periods[0])) {
-        entry.period = periods[0];
-        delete entry.periods;
-      } else {
-        entry.periods = periods;
-        delete entry.period;
-      }
-      const dutyCycles = timing.cells.map((cell) =>
-        cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks,
-      );
-      if (dutyCycles.some((value) => value !== 0.5)) {
-        if (dutyCycles.every((value) => value === dutyCycles[0])) {
-          entry.duty_cycle = dutyCycles[0];
-        } else {
-          entry.duty_cycles = dutyCycles;
-        }
-      }
-      entry.phase = timing.phaseTicks / timing.ticksPerStep;
-      if (timing.slewing !== undefined) entry.slewing = timing.slewing;
+      applyTimingFields(entry, timing);
       delete entry.repeat;
       return withOpaqueFields(
         retainCompactDigitalRepeat(
@@ -766,36 +839,85 @@ function timingValues(rawSignals: WdSignal[]): number[] {
   return values;
 }
 
-function importDigitalTiming(
-  raw: WdSignal,
-  parsed: Signal,
-  ticksPerStep: number,
-): void {
-  if (parsed.type !== 'bit' || Array.isArray(raw.analogue)) return;
-  const hasFineTiming =
-    raw.repeat !== undefined
+/**
+ * A native timing document needs source-cell preservation across sibling
+ * lanes. Shared WaveDrom-only documents retain the longstanding padded
+ * canonical form instead.
+ */
+function hasNativeTimingFields(raw: WdSignal): boolean {
+  return raw.repeat !== undefined
     || raw.periods !== undefined
     || raw.duty_cycle !== undefined
     || raw.duty_cycles !== undefined
     || raw.slewing !== undefined
-    || (raw.period !== undefined && !Number.isInteger(raw.period))
-    || (raw.phase !== undefined && !Number.isInteger(raw.phase));
-  if (!hasFineTiming) return;
-  parsed.digitalTiming = timingForStates(parsed.states, ticksPerStep, {
+    // An explicitly authored timing field is native even when its value is an
+    // integer.  `period: 2`, for example, changes a two-cell waveform's
+    // duration from two major steps to four; treating it as an ordinary
+    // WaveDrom lane would lose both that extent and Draw-mode timing.
+    || raw.period !== undefined
+    || raw.phase !== undefined;
+}
+
+function importDigitalTiming(
+  raw: WdSignal,
+  parsed: Signal,
+  ticksPerStep: number,
+  preserveNativeCellCounts: boolean,
+): void {
+  if (
+    (parsed.type !== 'bit' && parsed.type !== 'vector')
+    || Array.isArray(raw.analogue)
+  ) return;
+  if (!preserveNativeCellCounts && !hasNativeTimingFields(raw)) return;
+  // Every native digital lane keeps its source cells. This is what lets a
+  // coarse sibling remain four cells wide beside an eight-cell half-period
+  // lane without WaveDrom's generic padding changing either source shape.
+  const timingOptions = {
     phase: raw.phase,
     period: raw.period,
     periods: raw.periods,
     dutyCycle: raw.duty_cycle,
     dutyCycles: raw.duty_cycles,
     slewing: raw.slewing,
-  });
+    sourceFields: {
+      ...(raw.period !== undefined || raw.periods !== undefined
+        ? { period: true }
+        : {}),
+      ...(raw.phase !== undefined ? { phase: true } : {}),
+      ...(raw.duty_cycle !== undefined || raw.duty_cycles !== undefined
+        ? { dutyCycle: true }
+        : {}),
+    },
+  };
+  if (parsed.type === 'bit') {
+    parsed.digitalTiming = timingForStates(
+      parsed.states,
+      ticksPerStep,
+      timingOptions,
+    );
+  } else {
+    const repeat = Number.isInteger(raw.repeat) && raw.repeat! > 0
+      ? raw.repeat!
+      : 1;
+    const cells = Math.max(
+      1,
+      (raw.wave?.length ?? Math.max(
+        parsed.stepGaps?.length ?? 0,
+        ...parsed.segments.map((segment) => segment.endStep),
+      )) * repeat,
+    );
+    parsed.vectorTiming = timingForCellCount(cells, ticksPerStep, timingOptions);
+  }
   delete parsed.period;
   delete parsed.phase;
 }
 
 export function fromUndulateJSON(root: UndulateRoot): DiagramState {
-  const diagram = fromWavedromJSON(wavedromCompatibleRoot(root));
   const rawSignals = flattenRawSignals(root.signal);
+  const preserveNativeCellCounts = rawSignals.some(hasNativeTimingFields);
+  const diagram = fromWavedromJSON(wavedromCompatibleRoot(root), {
+    padSignals: !preserveNativeCellCounts,
+  });
   const parsedSignals = flattenDiagramSignals(diagram.signals);
   const ticksPerStep = timingResolution(timingValues(rawSignals));
   if (ticksPerStep === null) {
@@ -822,7 +944,12 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
       hasAnalogueExpression =
         importAnalogueSignal(raw, parsed, analogueContext, randomSeed)
         || hasAnalogueExpression;
-      importDigitalTiming(raw, parsed, ticksPerStep);
+      importDigitalTiming(
+        raw,
+        parsed,
+        ticksPerStep,
+        preserveNativeCellCounts,
+      );
       importExpandedNodes(raw, parsed);
       parsed.style = signalStyleFromUndulate(
         raw as unknown as Record<string, unknown>,
@@ -888,6 +1015,18 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
     diagram.config.totalSteps,
     ...parsedSignals.map((signal) => signal.analogueCells?.length ?? 0),
   );
+  if (preserveNativeCellCounts) {
+    const nativeDurationTicks = documentDurationTicks(
+      diagram.signals,
+      ticksPerStep,
+    );
+    if (nativeDurationTicks > 0) {
+      diagram.config.totalSteps = durationTicksToSteps(
+        nativeDurationTicks,
+        ticksPerStep,
+      );
+    }
+  }
   const annotations = (root.annotations ?? []).map((annotation): DiagramAnnotation => {
     const style = annotationStyleFromUndulate(
       annotation as unknown as Record<string, unknown>,

@@ -610,7 +610,9 @@ export function scanExtensionContent(
       else {
         expandedNodeCount += Object.keys(signal.nodeNames ?? {}).length;
         if (signal.type === 'analogue') analogueSignalCount++;
-        else if (hasUndulateOnlyDigitalStates(signal)) extendedDigitalSignalCount++;
+        else if (signal.vectorTiming || hasUndulateOnlyDigitalStates(signal)) {
+          extendedDigitalSignalCount++;
+        }
       }
     }
   };

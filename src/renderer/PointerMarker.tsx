@@ -118,6 +118,10 @@ export function PointerMarker({
   const snappedTick = Math.max(
     0,
     Math.min(
+      // This is a visual/grid snap, not a paint hit test. Keep it nearest so
+      // arrow endpoints and the cursor do not jump backwards while the
+      // pointer approaches a tick boundary. The terminal grid line is a
+      // valid annotation endpoint as well.
       diagram.config.totalSteps * timingDivisions,
       Math.round(pointerLogicalX / CELL_WIDTH * timingDivisions),
     ),

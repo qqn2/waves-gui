@@ -120,12 +120,17 @@ describe('annotation direct dragging', () => {
 
     selectPointerDown(pointer(40, waveformTop + ROW_HEIGHT), canvas, hit);
     selectPointerMove(pointer(90, waveformTop + ROW_HEIGHT * 1.5));
-    selectPointerUp(pointer(90, waveformTop + ROW_HEIGHT * 1.5), canvas);
+    const firstMoveRevision = useStore.getState().view.diagramRevision;
+    selectPointerMove(pointer(110, waveformTop + ROW_HEIGHT * 1.5));
+    selectPointerUp(pointer(110, waveformTop + ROW_HEIGHT * 1.5), canvas);
 
     expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
-      from: { kind: 'point', x: 2.25, y: 1.5 },
+      from: { kind: 'point', x: 2.75, y: 1.5 },
       to: { kind: 'point', x: 3, y: 2 },
     });
+    expect(useStore.getState().view.diagramRevision).toBeGreaterThan(
+      firstMoveRevision,
+    );
     useStore.getState().undo();
     expect(useStore.getState().diagram.annotations?.[0]).toMatchObject({
       from: { kind: 'point', x: 1, y: 1 },

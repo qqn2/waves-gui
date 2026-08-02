@@ -1270,4 +1270,56 @@ describe('useStore', () => {
     ]);
     expect(useStore.getState().diagram.annotations).toEqual([]);
   });
+
+  it('remaps timed decorations and accepts native fine-cell arrow endpoints', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true, sourceFormat: 'undulate-json' },
+      config: { totalSteps: 2, hscale: 1, ticksPerStep: 4 },
+      edges: [],
+      signals: [{
+        id: 'timed',
+        name: 'timed',
+        type: 'bit',
+        states: ['0', '1'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        stepGaps: [false, true],
+        stepGlitches: [true],
+        node: 'ab',
+        nodeNames: { 0: 'request.ready' },
+        digitalTiming: {
+          ticksPerStep: 4,
+          phaseTicks: 0,
+          cells: [
+            { state: '0', durationTicks: 4 },
+            { state: '1', durationTicks: 4 },
+          ],
+        },
+      }],
+    });
+
+    useStore.getState().paintDigitalTimingRange('timed', 0, 0, '1', 'set');
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.cells).toMatchObject([
+      { state: '1', durationTicks: 1 },
+      { state: '0', durationTicks: 3 },
+      { state: '1', durationTicks: 4 },
+    ]);
+    expect(signal.stepGaps).toEqual([false, false, true]);
+    expect(signal.stepGlitches).toEqual([false, true]);
+    expect(signal.node).toBe('.ab');
+    expect(signal.nodeNames).toEqual({ 1: 'request.ready' });
+
+    // Cell 2 is beyond the two major Draw columns but remains a valid native
+    // source-cell endpoint.
+    useStore.getState().addDiagramArrow(
+      { signalId: signal.id, step: 2 },
+      { signalId: signal.id, step: 1 },
+    );
+    expect(useStore.getState().diagram.edges).toEqual(['b->request.ready']);
+  });
 });

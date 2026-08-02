@@ -137,10 +137,12 @@ export function undulateCompatibilityFindings(
         appendTypedExtensions(signal.children);
         continue;
       }
-      if (signal.type === 'bit' && signal.digitalTiming) {
+      if (signal.digitalTiming || signal.vectorTiming) {
         findings.push({
           level: 'exact',
-          feature: 'integer-digital-timing',
+          feature: signal.type === 'vector'
+            ? 'integer-vector-timing'
+            : 'integer-digital-timing',
           objectId: signal.id,
           message: 'Per-cell periods, duty boundaries, phase, and slew export exactly.',
         });

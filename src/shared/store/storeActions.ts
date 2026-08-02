@@ -86,6 +86,13 @@ export interface StoreActions {
     bitState: BitState,
     paintStyle: PaintStyle,
   ): void;
+  paintDigitalTimingRange(
+    signalId: string,
+    startTick: number,
+    endTick: number,
+    bitState: BitState,
+    mode: 'set' | 'toggle',
+  ): void;
   toggleSignalStateRange(signalId: string, startStep: number, endStep: number): void;
   paintToggleRange(
     signalId: string,
