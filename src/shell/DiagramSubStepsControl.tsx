@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   canRescaleDiagramTiming,
   MAX_TICKS_PER_STEP,
@@ -22,12 +22,30 @@ export function DiagramSubStepsControl() {
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
   const ticksPerStep = diagram.config.ticksPerStep ?? 1;
+  const [draft, setDraft] = useState(String(ticksPerStep));
   const [rejected, setRejected] = useState(false);
+  const cancelBlurRef = useRef(false);
+
+  useEffect(() => setDraft(String(ticksPerStep)), [ticksPerStep]);
 
   const apply = useCallback((next: number) => {
     const accepted = setTicksPerStep(next);
     setRejected(!accepted);
   }, [setTicksPerStep]);
+
+  const commitDraft = useCallback(() => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      return;
+    }
+    const next = parseResolution(draft);
+    if (next === null || draft.trim() === '') {
+      setDraft(String(ticksPerStep));
+      setRejected(false);
+      return;
+    }
+    apply(next);
+  }, [apply, draft, ticksPerStep]);
 
   const bump = useCallback((direction: -1 | 1) => {
     for (
@@ -60,13 +78,24 @@ export function DiagramSubStepsControl() {
       <input
         type="text"
         className={`${styles.stepsNum} ${rejected ? styles.stepsNumRejected : ''}`}
-        value={String(ticksPerStep)}
+        value={draft}
         onChange={(event) => {
-          const next = parseResolution(event.target.value);
-          if (next !== null) apply(next);
-          else setRejected(true);
+          setDraft(event.target.value);
+          setRejected(false);
         }}
         onFocus={() => setRejected(false)}
+        onBlur={commitDraft}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            commitDraft();
+            event.currentTarget.blur();
+          } else if (event.key === 'Escape') {
+            cancelBlurRef.current = true;
+            setDraft(String(ticksPerStep));
+            setRejected(false);
+            event.currentTarget.blur();
+          }
+        }}
         inputMode="numeric"
         spellCheck={false}
         aria-label="Diagram substep count"

@@ -149,6 +149,13 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const filteredSignals = useMemo(() =>
     filterText.trim() ? filterSignalTree(signals, filterText) : signals,
   [signals, filterText]);
+  const visibleRows = useMemo(
+    () => collectVisibleRows(
+      filteredSignals,
+      filterText.trim() ? [] : collapsedGroupIds,
+    ),
+    [collapsedGroupIds, filterText, filteredSignals],
+  );
 
   const scrollRef = panelScrollRef;
 
@@ -201,9 +208,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
   const onDragOver = (e: React.DragEvent, targetId: string) => {
     if (!drag || drag.id === targetId) return;
-    const rows = collectVisibleRows(signals, collapsedGroupIds);
-    const dragRow = rows.find((r) => r.id === drag.id);
-    const targetRow = rows.find((r) => r.id === targetId);
+    const dragRow = visibleRows.find((r) => r.id === drag.id);
+    const targetRow = visibleRows.find((r) => r.id === targetId);
     if (!dragRow || !targetRow) return;
     if (dragRow.kind === 'group' && parentForId(targetId) !== drag.parentId) {
       return;
@@ -216,9 +222,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const onDrop = (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
     if (!drag) return;
-    const rows = collectVisibleRows(signals, collapsedGroupIds);
-    const dragRow = rows.find((r) => r.id === drag.id);
-    const targetRow = rows.find((r) => r.id === targetId);
+    const dragRow = visibleRows.find((r) => r.id === drag.id);
+    const targetRow = visibleRows.find((r) => r.id === targetId);
     if (!dragRow || !targetRow) return;
 
     if (dragRow.kind === 'signal') {

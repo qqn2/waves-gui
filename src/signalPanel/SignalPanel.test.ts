@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SignalOrGroup } from '../shared/types';
-import { filterSignalTree } from './panelTree';
+import { collectVisibleRows, filterSignalTree } from './panelTree';
 
 const tree: SignalOrGroup[] = [
   {
@@ -42,5 +42,13 @@ describe('signal panel filtering', () => {
     expect(result).toHaveLength(1);
     expect(result[0]?.type === 'group' && result[0].children.map((item) => item.id))
       .toEqual(['awvalid']);
+  });
+
+  it('keeps filtered descendants in the drag rows even when their group is collapsed', () => {
+    const filtered = filterSignalTree(tree, 'awvalid');
+    expect(collectVisibleRows(filtered, []).map((row) => row.id)).toEqual([
+      'axi',
+      'awvalid',
+    ]);
   });
 });

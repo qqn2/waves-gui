@@ -699,6 +699,38 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   expect(recoveryDialogs).toEqual([]);
 });
 
+test('commits a multi-character Steps edit without losing later waveform data', async ({ page }) => {
+  await replaceJson(page, JSON.stringify({
+    signal: [{ name: 'payload', wave: '01011010' }],
+  }));
+
+  const steps = page.getByLabel('Diagram step count');
+  await steps.click();
+  await steps.press(process.platform === 'darwin' ? 'Meta+A' : 'Control+A');
+  await steps.type('12');
+  await steps.press('Enter');
+
+  await expect(steps).toHaveValue('12');
+  await expect(page.locator('.cm-content')).toContainText('"wave":"01011010...."');
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(steps).toHaveValue('8');
+  await expect(page.locator('.cm-content')).toContainText('"wave":"01011010"');
+});
+
+test('commits a multi-character Substeps edit as one history entry', async ({ page }) => {
+  await page.getByLabel('Undulate extensions').check();
+  const substeps = page.getByLabel('Diagram substep count');
+  await substeps.click();
+  await substeps.press(process.platform === 'darwin' ? 'Meta+A' : 'Control+A');
+  await substeps.type('16');
+  await substeps.press('Enter');
+
+  await expect(substeps).toHaveValue('16');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(substeps).toHaveValue('1');
+});
+
 test('keeps title edits synchronized with source and undo history', async ({ page }) => {
   await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByRole('button', { name: /Labels/ }).click();
