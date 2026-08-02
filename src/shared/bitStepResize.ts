@@ -13,6 +13,8 @@ import {
   deleteMajorStepInTiming,
   insertMajorStepInTiming,
   resizeTimingToDuration,
+  timingBoundaryAtMajorStep,
+  timingCellDuration,
 } from './timedStepResize';
 import type { BitState, Signal } from './types';
 
@@ -28,11 +30,56 @@ function hasGapColumns(sig: Signal): boolean {
   return Boolean(sig.stepGaps?.some(Boolean));
 }
 
+function fitTimingFlags(flags: boolean[] | undefined, length: number): boolean[] | undefined {
+  if (!flags?.length) return undefined;
+  const out = flags.slice(0, length);
+  while (out.length < length) out.push(false);
+  return out.some(Boolean) ? out : undefined;
+}
+
+function insertTimingFlags(
+  flags: boolean[] | undefined,
+  boundary: ReturnType<typeof timingBoundaryAtMajorStep>,
+): boolean[] | undefined {
+  if (!flags?.length) return undefined;
+  const out = [...flags];
+  if (boundary.kind === 'inside') {
+    const value = out[boundary.index] ?? false;
+    out.splice(boundary.index, 1, value, value, value);
+  } else {
+    out.splice(boundary.index, 0, false);
+  }
+  return fitTimingFlags(out, out.length);
+}
+
+function deleteTimingFlags(
+  flags: boolean[] | undefined,
+  sourceCells: { durationTicks: number }[],
+  start: number,
+  end: number,
+): boolean[] | undefined {
+  if (!flags?.length) return undefined;
+  const out: boolean[] = [];
+  let cursor = 0;
+  sourceCells.forEach((cell, index) => {
+    const duration = Math.max(1, Math.round(cell.durationTicks));
+    const cellEnd = cursor + duration;
+    const before = Math.max(0, Math.min(cellEnd, start) - cursor);
+    const after = Math.max(0, cellEnd - Math.max(cursor, end));
+    if (before > 0) out.push(flags[index] ?? false);
+    if (after > 0) out.push(flags[index] ?? false);
+    cursor = cellEnd;
+  });
+  return fitTimingFlags(out, out.length);
+}
+
 function syncTimedBitSource(sig: Signal): void {
   const timing = sig.digitalTiming;
   if (!timing) return;
   const states = timing.cells.map((cell) => cell.state);
   sig.states = states;
+  sig.stepGaps = fitTimingFlags(sig.stepGaps, states.length);
+  sig.stepGlitches = fitTimingFlags(sig.stepGlitches, states.length);
   if (isWaveModeLane(sig)) {
     setBitLaneWave(
       sig,
@@ -63,6 +110,8 @@ export function resizeBitSignalToLength(
       sig.digitalTiming,
       newLen * Math.max(1, sig.digitalTiming.ticksPerStep),
     );
+    sig.stepGaps = fitTimingFlags(sig.stepGaps, sig.digitalTiming.cells.length);
+    sig.stepGlitches = fitTimingFlags(sig.stepGlitches, sig.digitalTiming.cells.length);
     syncTimedBitSource(sig);
     return;
   }
@@ -91,12 +140,18 @@ export function resizeBitSignalToLength(
 }
 
 /** Insert one timeline column on a bit lane (wave `.` insertion when no gaps). */
-export function insertBitStepAt(sig: Signal, index: number): void {
-  if (sig.type !== 'bit') return;
+export function insertBitStepAt(sig: Signal, index: number): boolean {
+  if (sig.type !== 'bit') return false;
   if (sig.digitalTiming) {
-    insertMajorStepInTiming(sig.digitalTiming, index);
+    const boundary = timingBoundaryAtMajorStep(sig.digitalTiming, index);
+    const previousGaps = sig.stepGaps;
+    const previousGlitches = sig.stepGlitches;
+    const inserted = insertMajorStepInTiming(sig.digitalTiming, index);
+    if (!inserted) return false;
+    sig.stepGaps = insertTimingFlags(previousGaps, boundary);
+    sig.stepGlitches = insertTimingFlags(previousGlitches, boundary);
     syncTimedBitSource(sig);
-    return;
+    return true;
   }
   const n = sig.states.length;
   const at = Math.max(0, Math.min(index, n));
@@ -107,7 +162,7 @@ export function insertBitStepAt(sig: Signal, index: number): void {
       (wave) => (at === 0 ? '.' + wave : wave.slice(0, at) + '.' + wave.slice(at)),
       n + 1,
     );
-    return;
+    return true;
   }
 
   const decoded = readDecoded(sig);
@@ -119,14 +174,27 @@ export function insertBitStepAt(sig: Signal, index: number): void {
   decoded.stepGaps = gaps;
   decoded.stepGlitches.splice(at, 0, false);
   writeDecodedToSignal(sig, decoded, n + 1);
+  return true;
 }
 
 /** Remove one timeline column on a bit lane (wave char removal when no gaps). */
 export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boolean {
   if (sig.type !== 'bit') return false;
   if (sig.digitalTiming) {
+    const sourceCells = sig.digitalTiming.cells.map((cell) => ({ ...cell }));
+    const boundary = timingBoundaryAtMajorStep(sig.digitalTiming, index);
+    const total = timingCellDuration(sig.digitalTiming);
+    const stepTicks = Math.max(1, sig.digitalTiming.ticksPerStep);
+    const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundary.tick));
+    const end = Math.min(total, start + stepTicks);
+    const previousGaps = sig.stepGaps;
+    const previousGlitches = sig.stepGlitches;
     const deleted = deleteMajorStepInTiming(sig.digitalTiming, index, minLen);
-    if (deleted) syncTimedBitSource(sig);
+    if (deleted) {
+      sig.stepGaps = deleteTimingFlags(previousGaps, sourceCells, start, end);
+      sig.stepGlitches = deleteTimingFlags(previousGlitches, sourceCells, start, end);
+      syncTimedBitSource(sig);
+    }
     return deleted;
   }
   if (sig.states.length <= minLen) return false;

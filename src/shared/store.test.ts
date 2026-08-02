@@ -625,7 +625,9 @@ describe('useStore', () => {
     if (!stripped || stripped.type !== 'bit') return;
     expect(stripped.digitalTiming).toBeUndefined();
     expect(stripped.period).toBeUndefined();
-    expect(stripped.phase).toBe(0.25);
+    // The native phase is already included in the major-grid samples when
+    // timing is not exactly representable, so it must not be exported again.
+    expect(stripped.phase).toBeUndefined();
     expect(useStore.getState().diagram.config.ticksPerStep).toBeUndefined();
 
     useStore.getState().undo();

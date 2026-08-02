@@ -161,14 +161,29 @@ function removeDigitalTiming(signals: SignalOrGroup[], totalSteps: number): void
       && firstDuration % timing.ticksPerStep === 0
       ? firstDuration / timing.ticksPerStep
       : null;
-    if (exactIntegerPeriod !== null && exactIntegerPeriod >= 1) {
+    const representable = exactIntegerPeriod !== null && exactIntegerPeriod >= 1;
+    if (representable) {
       signal.period = exactIntegerPeriod;
-    } else {
-      delete signal.period;
+      const phase = timing.phaseTicks / timing.ticksPerStep;
+      if (phase === 0) delete signal.phase;
+      else signal.phase = phase;
+      // A uniform native lane is already exactly representable by its source
+      // cells plus WaveDrom period/phase. Keep that compact representation;
+      // resampling it would apply period and phase a second time on export.
+      if (signal.type === 'bit' && signal.digitalTiming) {
+        signal.states = signal.digitalTiming.cells.map((cell) => cell.state);
+        if (isWaveModeLane(signal)) demoteToStatesMode(signal, signal.states.length);
+      }
+      delete signal.digitalTiming;
+      delete signal.vectorTiming;
+      continue;
     }
-    const phase = timing.phaseTicks / timing.ticksPerStep;
-    if (phase === 0) delete signal.phase;
-    else signal.phase = phase;
+
+    // Non-uniform/fractional timing has no exact WaveDrom representation.
+    // Samples below already include the native phase, so do not retain either
+    // field and accidentally apply it again during export.
+    delete signal.period;
+    delete signal.phase;
 
     // Native cells can be finer than the document grid. Resample their
     // visible values at each major-column boundary before dropping timing.

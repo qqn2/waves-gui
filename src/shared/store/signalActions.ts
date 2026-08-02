@@ -61,6 +61,8 @@ import {
 } from '../analogueOverlayGroups';
 import {
   clearNodesAndEdges,
+  canDeleteStepInSignal,
+  canInsertStepInSignal,
   deleteStepInSignal,
   insertStepInSignal,
   walkSignals,
@@ -1400,6 +1402,11 @@ export function createSignalActions(set: ImmerSet): Pick<
         const total = s.diagram.config.totalSteps;
         if (total >= MAX_TOTAL_STEPS) return;
         const at = Math.max(0, Math.min(index, total));
+        let blocked = false;
+        walkSignals(s.diagram.signals, (sig) => {
+          if (!canInsertStepInSignal(sig, at, total)) blocked = true;
+        });
+        if (blocked) return;
         pushHistory(s);
         walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at, total));
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
@@ -1415,7 +1422,10 @@ export function createSignalActions(set: ImmerSet): Pick<
         const at = Math.max(0, Math.min(index, total - 1));
         let blocked = false;
         walkSignals(s.diagram.signals, (sig) => {
-          if (sig.type === 'vector') {
+          if (!canDeleteStepInSignal(sig, at, MIN_TOTAL_STEPS)) {
+            blocked = true;
+          }
+          if (sig.type === 'vector' && !sig.vectorTiming) {
             for (const seg of sig.segments) {
               if (
                 seg.startStep <= at &&

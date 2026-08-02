@@ -5,6 +5,16 @@ import { segmentsToWaveAndData } from '../shared/vectorSegments';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 import { exportWdFoot, exportWdHead } from './headFootExport';
 
+function sourceStepsForExactPeriod(sig: Signal, totalSteps: number): number | undefined {
+  if (sig.period === undefined || !Number.isInteger(sig.period) || sig.period < 1) return undefined;
+  const sourceSteps = sig.type === 'bit'
+    ? sig.states.length
+    : sig.type === 'vector'
+      ? sig.segments.reduce((end, segment) => Math.max(end, segment.endStep), 0)
+      : 0;
+  return sourceSteps > 0 && sourceSteps * sig.period === totalSteps ? sourceSteps : undefined;
+}
+
 function signalToEntry(
   sig: Signal,
   totalSteps: number,
@@ -13,11 +23,13 @@ function signalToEntry(
   if (sig.type === 'spacer') return {};
   if (sig.type === 'analogue') return {};
   if (sig.type === 'bit') {
+    const sourceSteps = sourceStepsForExactPeriod(sig, totalSteps);
+    const exportSteps = sourceSteps ?? totalSteps;
     const wave = isWaveModeLane(sig)
-      ? padWaveForDiagram(sig, totalSteps, hscale)
+      ? padWaveForDiagram(sig, exportSteps, hscale)
       : encodeWaveStringForDiagram(
           sig.states,
-          totalSteps,
+          exportSteps,
           sig.stepGaps,
           sig.stepGlitches,
         );
@@ -30,7 +42,7 @@ function signalToEntry(
     if (sig.node !== undefined) entry.node = sig.node;
     return entry;
   }
-  const steps = Math.max(
+  const steps = sourceStepsForExactPeriod(sig, totalSteps) ?? Math.max(
     totalSteps,
     sig.segments.length > 0 ? Math.max(...sig.segments.map((s) => s.endStep)) : 0,
   );

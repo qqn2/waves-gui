@@ -70,7 +70,7 @@ export function SignalTimingBar() {
       setLocalPhase(formatOptionalNumber(target.signal.phase));
       setLocalPeriod(formatOptionalNumber(target.signal.period));
     }
-  }, [target?.id, target?.signal.phase, target?.signal.period]);
+  }, [target]);
 
   const commitPhase = useCallback(() => {
     if (!target) return;

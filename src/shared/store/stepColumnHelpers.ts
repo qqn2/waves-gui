@@ -2,9 +2,11 @@ import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
 import type { Signal, SignalOrGroup } from '../types';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
 import {
+  canDeleteMajorStepInTiming,
+  canInsertMajorStepInTiming,
   deleteMajorStepInTiming,
   insertMajorStepInTiming,
-  majorStepBoundaryCellIndex,
+  timingBoundaryAtMajorStep,
 } from '../timedStepResize';
 
 
@@ -86,7 +88,62 @@ function removeColumnFlags(
 
 
 
-export function insertStepInSignal(sig: Signal, index: number, totalSteps: number): void {
+export function canInsertStepInSignal(sig: Signal, index: number, totalSteps: number): boolean {
+  const clamped = Math.max(0, Math.min(index, totalSteps));
+  return sig.type !== 'bit' || !sig.digitalTiming || canInsertMajorStepInTiming(sig.digitalTiming, clamped);
+}
+
+function insertTimingFlags(
+  flags: boolean[] | undefined,
+  boundary: ReturnType<typeof timingBoundaryAtMajorStep>,
+): boolean[] | undefined {
+  if (!flags?.length) return undefined;
+  const out = [...flags];
+  if (boundary.kind === 'inside') {
+    const value = out[boundary.index] ?? false;
+    out.splice(boundary.index, 1, value, value, value);
+  } else {
+    out.splice(boundary.index, 0, false);
+  }
+  return pruneStepGaps(out);
+}
+
+function deleteTimingFlags(
+  flags: boolean[] | undefined,
+  sourceCells: { durationTicks: number }[],
+  start: number,
+  end: number,
+): boolean[] | undefined {
+  if (!flags?.length) return undefined;
+  const out: boolean[] = [];
+  let cursor = 0;
+  sourceCells.forEach((cell, index) => {
+    const duration = Math.max(1, Math.round(cell.durationTicks));
+    const cellEnd = cursor + duration;
+    const before = Math.max(0, Math.min(cellEnd, start) - cursor);
+    const after = Math.max(0, cellEnd - Math.max(cursor, end));
+    if (before > 0) out.push(flags[index] ?? false);
+    if (after > 0) out.push(flags[index] ?? false);
+    cursor = cellEnd;
+  });
+  return pruneStepGaps(out);
+}
+
+export function canDeleteStepInSignal(
+  sig: Signal,
+  index: number,
+  minSteps: number,
+): boolean {
+  if (sig.type === 'bit' && sig.digitalTiming) {
+    return canDeleteMajorStepInTiming(sig.digitalTiming, index, minSteps);
+  }
+  if (sig.type === 'vector' && sig.vectorTiming) {
+    return canDeleteMajorStepInTiming(sig.vectorTiming, index, minSteps);
+  }
+  return true;
+}
+
+export function insertStepInSignal(sig: Signal, index: number, totalSteps: number): boolean {
 
   const clamped = Math.max(0, Math.min(index, totalSteps));
 
@@ -94,9 +151,8 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
 
   if (sig.type === 'bit') {
 
-    insertBitStepAt(sig, clamped);
+    return insertBitStepAt(sig, clamped);
 
-    return;
 
   }
 
@@ -105,15 +161,29 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
   if (sig.type === 'vector') {
 
     if (sig.vectorTiming) {
-      const boundary = majorStepBoundaryCellIndex(sig.vectorTiming, clamped);
+      const boundary = timingBoundaryAtMajorStep(sig.vectorTiming, clamped);
       const beforeCount = sig.vectorTiming.cells.length;
-      insertMajorStepInTiming(sig.vectorTiming, clamped);
+      if (!insertMajorStepInTiming(sig.vectorTiming, clamped)) return false;
       const inserted = sig.vectorTiming.cells.length - beforeCount;
+      sig.stepGaps = insertTimingFlags(sig.stepGaps, boundary);
       for (const seg of sig.segments) {
-        if (seg.startStep > boundary) seg.startStep += inserted;
-        if (seg.endStep >= boundary) seg.endStep += inserted;
+        if (boundary.kind === 'inside') {
+          if (seg.startStep > boundary.index) {
+            seg.startStep += inserted;
+            seg.endStep += inserted;
+          } else if (seg.endStep > boundary.index) {
+            seg.endStep += inserted;
+          }
+        } else if (boundary.index === 0 && seg.startStep === 0) {
+          seg.endStep += inserted;
+        } else if (seg.startStep >= boundary.index) {
+          seg.startStep += inserted;
+          seg.endStep += inserted;
+        } else if (seg.endStep === boundary.index) {
+          seg.endStep += inserted;
+        }
       }
-      return;
+      return true;
     }
 
     for (const seg of sig.segments) {
@@ -128,10 +198,11 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
 
     sig.stepGaps = spliceColumnFlags(sig.stepGaps, clamped, totalSteps + 1);
 
-    return;
+    return true;
 
   }
 
+  return true;
 }
 
 
@@ -159,17 +230,35 @@ export function deleteStepInSignal(
   if (sig.type === 'vector') {
 
     if (sig.vectorTiming) {
-      const boundary = majorStepBoundaryCellIndex(sig.vectorTiming, index);
-      const beforeCount = sig.vectorTiming.cells.length;
+      const sourceCells = sig.vectorTiming.cells.map((cell) => ({ ...cell }));
+      const boundary = timingBoundaryAtMajorStep(sig.vectorTiming, index);
+      const total = sourceCells.reduce(
+        (sum, cell) => sum + Math.max(1, Math.round(cell.durationTicks)),
+        0,
+      );
+      const stepTicks = Math.max(1, sig.vectorTiming.ticksPerStep);
+      const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundary.tick));
+      const end = Math.min(total, start + stepTicks);
+      const remappedBoundaries = [0];
+      let cursor = 0;
+      for (const cell of sourceCells) {
+        const duration = Math.max(1, Math.round(cell.durationTicks));
+        const cellEnd = cursor + duration;
+        const before = Math.max(0, Math.min(cellEnd, start) - cursor);
+        const after = Math.max(0, cellEnd - Math.max(cursor, end));
+        remappedBoundaries.push(
+          remappedBoundaries.at(-1)! + (before > 0 ? 1 : 0) + (after > 0 ? 1 : 0),
+        );
+        cursor = cellEnd;
+      }
       const deleted = deleteMajorStepInTiming(sig.vectorTiming, index, minSteps);
       if (!deleted) return false;
-      const removed = beforeCount - sig.vectorTiming.cells.length;
+      sig.stepGaps = deleteTimingFlags(sig.stepGaps, sourceCells, start, end);
       for (const seg of sig.segments) {
-        if (seg.startStep >= boundary + removed) seg.startStep -= removed;
-        else if (seg.startStep >= boundary) seg.startStep = boundary;
-        if (seg.endStep > boundary + removed) seg.endStep -= removed;
-        else if (seg.endStep > boundary) seg.endStep = boundary;
+        seg.startStep = remappedBoundaries[Math.max(0, Math.min(seg.startStep, sourceCells.length))]!;
+        seg.endStep = remappedBoundaries[Math.max(0, Math.min(seg.endStep, sourceCells.length))]!;
       }
+      sig.segments = sig.segments.filter((seg) => seg.endStep > seg.startStep);
       return true;
     }
 

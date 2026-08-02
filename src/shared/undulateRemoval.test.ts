@@ -196,4 +196,25 @@ describe('remove Undulate features for WaveDrom', () => {
     expect((toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string }).wave)
       .toHaveLength(4);
   });
+
+  it('preserves exact integer period and phase without double-applying them', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'exact', wave: '01', period: 2, phase: 0.5 }],
+    } as UndulateRoot);
+    expect(diagram.config.totalSteps).toBe(4);
+    useStore.getState().loadDiagram(diagram);
+    useStore.getState().removeUndulateFeatures();
+
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'bit') throw new Error('expected bit lane');
+    expect(signal.digitalTiming).toBeUndefined();
+    expect(signal.states).toEqual(['0', '1']);
+    expect(signal.period).toBe(2);
+    expect(signal.phase).toBe(0.5);
+    expect(toWavedromJSON(useStore.getState().diagram).signal[0]).toMatchObject({
+      wave: '01',
+      period: 2,
+      phase: 0.5,
+    });
+  });
 });

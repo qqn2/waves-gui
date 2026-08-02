@@ -1,4 +1,5 @@
-import type { SignalTiming, TimedCell } from './types';
+import { isClockBitState } from './bitToggle';
+import type { BitState, SignalTiming, TimedCell } from './types';
 
 function cloneCell(cell: TimedCell, durationTicks: number, offsetTicks = 0): TimedCell {
   const dutyTicks = cell.dutyTicks === undefined
@@ -59,45 +60,82 @@ function boundaryTick(timing: SignalTiming, majorIndex: number): number {
   );
 }
 
+export type TimingBoundary =
+  | { kind: 'exact'; index: number; tick: number }
+  | { kind: 'inside'; index: number; offsetTicks: number; tick: number };
+
+/** Locate a document boundary without losing whether it splits a source cell. */
+export function timingBoundaryAtMajorStep(
+  timing: SignalTiming,
+  majorIndex: number,
+): TimingBoundary {
+  const target = boundaryTick(timing, majorIndex);
+  let cursor = 0;
+  for (let index = 0; index < timing.cells.length; index++) {
+    const duration = Math.max(1, Math.round(timing.cells[index]!.durationTicks));
+    if (target === cursor) return { kind: 'exact', index, tick: target };
+    if (target < cursor + duration) {
+      return { kind: 'inside', index, offsetTicks: target - cursor, tick: target };
+    }
+    cursor += duration;
+  }
+  return { kind: 'exact', index: timing.cells.length, tick: target };
+}
+
+function isClockCell(cell: TimedCell): boolean {
+  return 'state' in cell && isClockBitState((cell as TimedCell & { state: BitState }).state);
+}
+
+function rangeSplitsClockCell(timing: SignalTiming, start: number, end: number): boolean {
+  let cursor = 0;
+  for (const cell of timing.cells) {
+    const cellEnd = cursor + Math.max(1, Math.round(cell.durationTicks));
+    if (
+      isClockCell(cell)
+      && ((start > cursor && start < cellEnd) || (end > cursor && end < cellEnd))
+    ) {
+      return true;
+    }
+    cursor = cellEnd;
+  }
+  return false;
+}
+
 /** Source-cell index at a major-step boundary (before that cell, if exact). */
 export function majorStepBoundaryCellIndex(
   timing: SignalTiming,
   majorIndex: number,
 ): number {
-  const target = boundaryTick(timing, majorIndex);
-  let cursor = 0;
-  for (let index = 0; index < timing.cells.length; index++) {
-    const end = cursor + timing.cells[index]!.durationTicks;
-    if (target <= cursor) return index;
-    if (target < end) return index;
-    cursor = end;
-  }
-  return timing.cells.length;
+  return timingBoundaryAtMajorStep(timing, majorIndex).index;
+}
+
+export function canInsertMajorStepInTiming(timing: SignalTiming, majorIndex: number): boolean {
+  const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
+  return boundary.kind !== 'inside' || !isClockCell(timing.cells[boundary.index]!);
 }
 
 /** Insert one major step at its document-tick boundary. */
 export function insertMajorStepInTiming(
   timing: SignalTiming,
   majorIndex: number,
-): void {
+): boolean {
   const stepTicks = Math.max(1, timing.ticksPerStep);
-  const target = boundaryTick(timing, majorIndex);
   const cells = timing.cells.map((cell) => ({ ...cell }));
-  let cursor = 0;
-  let index = 0;
-  while (index < cells.length && cursor + cells[index]!.durationTicks < target) {
-    cursor += cells[index]!.durationTicks;
-    index += 1;
-  }
+  const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
+  const index = boundary.index;
+  if (boundary.kind === 'inside' && isClockCell(cells[index]!)) return false;
 
-  if (index < cells.length && target > cursor && target < cursor + cells[index]!.durationTicks) {
+  if (boundary.kind === 'inside') {
     const cell = cells[index]!;
-    const before = target - cursor;
+    const before = boundary.offsetTicks;
+    const insertedCell = 'state' in cell
+      ? { state: (cell as TimedCell & { state: unknown }).state, durationTicks: stepTicks }
+      : { durationTicks: stepTicks };
     cells.splice(
       index,
       1,
       cloneCell(cell, before),
-      { durationTicks: stepTicks },
+      insertedCell,
       cloneCell(cell, cell.durationTicks - before, before),
     );
   } else {
@@ -108,6 +146,20 @@ export function insertMajorStepInTiming(
     cells.splice(index, 0, { ...state, durationTicks: stepTicks });
   }
   timing.cells = cells;
+  return true;
+}
+
+export function canDeleteMajorStepInTiming(
+  timing: SignalTiming,
+  majorIndex: number,
+  minimumMajorSteps: number,
+): boolean {
+  const stepTicks = Math.max(1, timing.ticksPerStep);
+  const total = timingCellDuration(timing);
+  if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
+  const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundaryTick(timing, majorIndex)));
+  const end = Math.min(total, start + stepTicks);
+  return !rangeSplitsClockCell(timing, start, end);
 }
 
 /** Delete one major step, preserving partial cells on either side. */
@@ -121,6 +173,7 @@ export function deleteMajorStepInTiming(
   if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
   const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundaryTick(timing, majorIndex)));
   const end = Math.min(total, start + stepTicks);
+  if (rangeSplitsClockCell(timing, start, end)) return false;
   const cells: TimedCell[] = [];
   let cursor = 0;
   for (const source of timing.cells) {

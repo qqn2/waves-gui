@@ -178,6 +178,33 @@ describe('bitStepResize via diagram step controls', () => {
     expect(restored.vectorTiming.cells.map((cell) => cell.durationTicks)).toEqual(durations);
   });
 
+  it('remaps timed vector segments at an exact source-cell boundary', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'bus', wave: '=.=.', data: ['A', 'B'], period: 0.5 }],
+    } as UndulateRoot);
+    useStore.getState().loadDiagram(diagram);
+    const before = useStore.getState().diagram.signals[0];
+    if (!before || before.type !== 'vector' || !before.vectorTiming) throw new Error('expected timed vector');
+    expect(before.segments.map(({ startStep, endStep, value }) => ({ startStep, endStep, value }))).toEqual([
+      { startStep: 0, endStep: 2, value: 'A' },
+      { startStep: 2, endStep: 4, value: 'B' },
+    ]);
+    useStore.getState().insertStepAt(1);
+    const after = useStore.getState().diagram.signals[0];
+    if (!after || after.type !== 'vector') throw new Error('expected vector after insertion');
+    expect(after.segments.map(({ startStep, endStep, value }) => ({ startStep, endStep, value }))).toEqual([
+      { startStep: 0, endStep: 3, value: 'A' },
+      { startStep: 3, endStep: 5, value: 'B' },
+    ]);
+    useStore.getState().deleteStepAt(1);
+    const restored = useStore.getState().diagram.signals[0];
+    if (!restored || restored.type !== 'vector') throw new Error('expected vector after deletion');
+    expect(restored.segments.every((segment, index, segments) => (
+      segment.endStep > segment.startStep
+      && (index === 0 || segments[index - 1]!.endStep <= segment.startStep)
+    ))).toBe(true);
+  });
+
   it('inserts and deletes native bit steps at major boundaries', () => {
     const diagram = fromUndulateJSON({
       signal: [{ name: 'fine', wave: '01010101', period: 0.5 }],
@@ -193,5 +220,61 @@ describe('bitStepResize via diagram step controls', () => {
     signal = useStore.getState().diagram.signals[0];
     if (!signal || signal.type !== 'bit' || !signal.digitalTiming) throw new Error('expected deleted timed bit');
     expect(signal.digitalTiming.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)).toBe(8);
+  });
+
+  it('inserts at the exact native boundary instead of one cell early', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'fine', wave: '01234567', period: 0.5 }],
+    } as UndulateRoot);
+    useStore.getState().loadDiagram(diagram);
+    useStore.getState().insertStepAt(1);
+
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'bit' || !signal.digitalTiming) throw new Error('expected timed bit');
+    expect(signal.digitalTiming.cells.map((cell) => cell.state)).toEqual([
+      '0', '1', '1', '2', '3', '4', '5', '6', '7',
+    ]);
+
+    useStore.getState().undo();
+    expect((useStore.getState().diagram.signals[0] as { digitalTiming?: { cells: { state: string }[] } })
+      .digitalTiming?.cells.map((cell) => cell.state)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7']);
+    useStore.getState().redo();
+    expect((useStore.getState().diagram.signals[0] as { digitalTiming?: { cells: { state: string }[] } })
+      .digitalTiming?.cells.map((cell) => cell.state)).toEqual([
+        '0', '1', '1', '2', '3', '4', '5', '6', '7',
+      ]);
+  });
+
+  it('keeps timed bit decorations aligned with source-cell edits', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'fine', wave: '01010101', period: 0.5 }],
+    } as UndulateRoot);
+    useStore.getState().loadDiagram(diagram);
+    useStore.setState((state) => {
+      const signal = state.diagram.signals[0];
+      if (signal?.type === 'bit') {
+        signal.stepGaps = [false, false, false, false, false, false, true, false];
+        signal.stepGlitches = [false, false, false, false, false, true, false, false];
+      }
+    });
+    useStore.getState().insertStepAt(1);
+    const edited = useStore.getState().diagram.signals[0];
+    if (!edited || edited.type !== 'bit') throw new Error('expected edited bit lane');
+    expect(edited.stepGaps?.indexOf(true)).toBe(7);
+    expect(edited.stepGlitches?.indexOf(true)).toBe(6);
+  });
+
+  it.each(['P', 'p', 'N', 'n'])('rejects edits that split a %s clock macro', (clock) => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'clock', wave: clock, period: 3 }],
+    } as UndulateRoot);
+    useStore.getState().loadDiagram(diagram);
+    const before = useStore.getState().diagram;
+    useStore.getState().insertStepAt(1);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(before.config.totalSteps);
+    useStore.getState().deleteStepAt(1);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(before.config.totalSteps);
+    expect((useStore.getState().diagram.signals[0] as { digitalTiming?: { cells: unknown[] } })
+      .digitalTiming?.cells).toHaveLength(1);
   });
 });
