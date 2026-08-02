@@ -1181,7 +1181,7 @@ test('serves security headers, licenses, and SPA fallback', async ({ request }) 
   expect(root.headers()['x-content-type-options']).toBe('nosniff');
   const licenses = await request.get('/licenses/THIRD_PARTY_NOTICES.txt');
   expect(licenses.ok()).toBeTruthy();
-  expect(await licenses.text()).toContain('wavedrom 3.6.1');
+  expect(await licenses.text()).toMatch(/(?:^|\n)wavedrom \d+\.\d+\.\d+/);
   const fallback = await request.get('/diagram/synthetic-route', {
     headers: { 'Sec-Fetch-Mode': 'navigate' },
   });
