@@ -1,6 +1,11 @@
 import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
 import type { Signal, SignalOrGroup } from '../types';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
+import {
+  deleteMajorStepInTiming,
+  insertMajorStepInTiming,
+  majorStepBoundaryCellIndex,
+} from '../timedStepResize';
 
 
 
@@ -99,6 +104,18 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
 
   if (sig.type === 'vector') {
 
+    if (sig.vectorTiming) {
+      const boundary = majorStepBoundaryCellIndex(sig.vectorTiming, clamped);
+      const beforeCount = sig.vectorTiming.cells.length;
+      insertMajorStepInTiming(sig.vectorTiming, clamped);
+      const inserted = sig.vectorTiming.cells.length - beforeCount;
+      for (const seg of sig.segments) {
+        if (seg.startStep > boundary) seg.startStep += inserted;
+        if (seg.endStep >= boundary) seg.endStep += inserted;
+      }
+      return;
+    }
+
     for (const seg of sig.segments) {
 
       if (seg.startStep >= clamped) seg.startStep++;
@@ -140,6 +157,21 @@ export function deleteStepInSignal(
 
 
   if (sig.type === 'vector') {
+
+    if (sig.vectorTiming) {
+      const boundary = majorStepBoundaryCellIndex(sig.vectorTiming, index);
+      const beforeCount = sig.vectorTiming.cells.length;
+      const deleted = deleteMajorStepInTiming(sig.vectorTiming, index, minSteps);
+      if (!deleted) return false;
+      const removed = beforeCount - sig.vectorTiming.cells.length;
+      for (const seg of sig.segments) {
+        if (seg.startStep >= boundary + removed) seg.startStep -= removed;
+        else if (seg.startStep >= boundary) seg.startStep = boundary;
+        if (seg.endStep > boundary + removed) seg.endStep -= removed;
+        else if (seg.endStep > boundary) seg.endStep = boundary;
+      }
+      return true;
+    }
 
     for (const seg of sig.segments) {
 

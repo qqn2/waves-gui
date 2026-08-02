@@ -1138,6 +1138,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
           (signal) =>
             signal.type === 'analogue'
             || signal.digitalTiming !== undefined
+            || signal.vectorTiming !== undefined
             || signal.nodeNames !== undefined,
         ),
       sourceFormat: 'undulate-json',

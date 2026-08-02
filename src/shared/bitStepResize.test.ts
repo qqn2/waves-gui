@@ -5,6 +5,8 @@ import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
 import type { WdRoot } from '../wavedromBridge/wdTypes';
 import { createDefaultDiagram } from './defaultDiagram';
 import { useStore } from './store';
+import { fromUndulateJSON, toUndulateJSON } from '../undulateBridge/undulateJSON';
+import type { UndulateRoot } from '../undulateBridge/types';
 
 function expectClockDotsOnly(wave: string): void {
   expect(wave.length).toBeGreaterThan(0);
@@ -117,5 +119,79 @@ describe('bitStepResize via diagram step controls', () => {
     const after = (toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string })
       .wave;
     expect(after).toBe(before);
+  });
+
+  it('resizes native bit timing by major duration and restores it with one undo', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'fine', wave: '01010101', period: 0.5 }],
+    } as UndulateRoot);
+    expect(diagram.config.totalSteps).toBe(4);
+    useStore.getState().loadDiagram(diagram);
+    const before = useStore.getState().diagram.signals[0];
+    if (!before || before.type !== 'bit' || !before.digitalTiming) throw new Error('expected timed bit');
+    const states = before.digitalTiming.cells.map((cell) => cell.state);
+    const durations = before.digitalTiming.cells.map((cell) => cell.durationTicks);
+
+    useStore.getState().setTotalSteps(5);
+    const grown = useStore.getState().diagram.signals[0];
+    if (!grown || grown.type !== 'bit' || !grown.digitalTiming) throw new Error('expected grown timed bit');
+    expect(grown.digitalTiming.cells.slice(0, 8).map((cell) => cell.state)).toEqual(states);
+    expect(grown.digitalTiming.cells.slice(0, 8).map((cell) => cell.durationTicks)).toEqual(durations);
+    expect(grown.digitalTiming.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)).toBe(10);
+    expect((toUndulateJSON(useStore.getState().diagram).signal[0] as { wave: string }).wave)
+      .toHaveLength(9);
+
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.signals[0];
+    if (!restored || restored.type !== 'bit' || !restored.digitalTiming) throw new Error('expected restored timed bit');
+    expect(useStore.getState().diagram.config.totalSteps).toBe(4);
+    expect(restored.digitalTiming.cells.map((cell) => cell.state)).toEqual(states);
+    expect(restored.digitalTiming.cells.map((cell) => cell.durationTicks)).toEqual(durations);
+  });
+
+  it('resizes native vector timing by major duration without truncating source cells', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{
+        name: 'bus',
+        wave: '=.=.',
+        data: ['A', 'B'],
+        periods: [1, 2, 1, 2],
+        duty_cycles: [0.25, 0.5, 0.75, 0.5],
+      }],
+    } as UndulateRoot);
+    expect(diagram.config.totalSteps).toBe(6);
+    useStore.getState().loadDiagram(diagram);
+    const before = useStore.getState().diagram.signals[0];
+    if (!before || before.type !== 'vector' || !before.vectorTiming) throw new Error('expected timed vector');
+    const durations = before.vectorTiming.cells.map((cell) => cell.durationTicks);
+
+    useStore.getState().setTotalSteps(7);
+    const grown = useStore.getState().diagram.signals[0];
+    if (!grown || grown.type !== 'vector' || !grown.vectorTiming) throw new Error('expected grown timed vector');
+    expect(grown.vectorTiming.ticksPerStep).toBe(4);
+    expect(grown.vectorTiming.cells.slice(0, 4).map((cell) => cell.durationTicks)).toEqual(durations);
+    expect(grown.vectorTiming.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)).toBe(28);
+
+    useStore.getState().undo();
+    const restored = useStore.getState().diagram.signals[0];
+    if (!restored || restored.type !== 'vector' || !restored.vectorTiming) throw new Error('expected restored timed vector');
+    expect(restored.vectorTiming.cells.map((cell) => cell.durationTicks)).toEqual(durations);
+  });
+
+  it('inserts and deletes native bit steps at major boundaries', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{ name: 'fine', wave: '01010101', period: 0.5 }],
+    } as UndulateRoot);
+    useStore.getState().loadDiagram(diagram);
+    useStore.getState().insertStepAt(0);
+    let signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'bit' || !signal.digitalTiming) throw new Error('expected inserted timed bit');
+    expect(signal.digitalTiming.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)).toBe(10);
+    expect(signal.digitalTiming.cells[0]?.state).toBe('0');
+
+    useStore.getState().deleteStepAt(0);
+    signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'bit' || !signal.digitalTiming) throw new Error('expected deleted timed bit');
+    expect(signal.digitalTiming.cells.reduce((sum, cell) => sum + cell.durationTicks, 0)).toBe(8);
   });
 });
