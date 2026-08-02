@@ -443,6 +443,13 @@
   flex: 0 0 auto;
 }
 
+.timelineControls {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+}
+
 .diagramSettingsPopover {
   position: absolute;
   z-index: 45;

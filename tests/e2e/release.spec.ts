@@ -680,7 +680,6 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
   await page.waitForTimeout(1_200);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('wavedrom-gui-draft'))).not.toBeNull();
 
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   await page.getByLabel('More steps').click();
@@ -856,7 +855,6 @@ test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page
   await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
   await expect(signalRow(page, 'bus')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(editor).toContainText('// clock signal');
   await expect(editor).toContainText('// bus data');
@@ -904,7 +902,6 @@ test('dirty state follows the confirmed savepoint across undo', async ({ page })
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
 
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
@@ -947,7 +944,6 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
   await page.getByRole('button', { name: /File/ }).click();
   await page.getByRole('button', { name: 'Open document…', exact: true }).click();
   await expect(signalRow(page, 'opened_handle')).toBeVisible();
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+s' : 'Control+s');
@@ -962,7 +958,6 @@ test('Open retains its file handle and Ctrl+S writes back without Save As', asyn
 });
 
 test('invalid JSON never mutates the diagram or history', async ({ page }) => {
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   const steps = page.getByLabel('Diagram step count');
   const before = await steps.inputValue();
   const editor = page.locator('.cm-content');
@@ -975,7 +970,6 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
     hasText: 'Invalid JSON/JSON5/JSONML syntax',
   })).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
@@ -1006,7 +1000,6 @@ test('safe unknown Undulate properties are preserved without data loss', async (
 
   await expect(signalRow(page, 'blocked')).toBeVisible();
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
-  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await page.getByLabel('More steps').click();
   await expect(page.locator('.cm-content')).toContainText('"future_lane": true');
   await expect(page.locator('.cm-content')).toContainText('"future_config"');

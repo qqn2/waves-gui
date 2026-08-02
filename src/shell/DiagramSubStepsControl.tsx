@@ -18,6 +18,9 @@ function parseResolution(raw: string): number | null {
 export function DiagramSubStepsControl() {
   const diagram = useStore((s) => s.diagram);
   const setTicksPerStep = useStore((s) => s.setTicksPerStep);
+  const extensionsEnabled = useStore(
+    (s) => s.diagram.compatibility?.extensionsEnabled === true,
+  );
   const ticksPerStep = diagram.config.ticksPerStep ?? 1;
   const [rejected, setRejected] = useState(false);
 
@@ -40,13 +43,16 @@ export function DiagramSubStepsControl() {
   }, [apply, diagram, ticksPerStep]);
 
   return (
-    <div className={styles.stepsInline} title={TITLE}>
-      <span className={styles.stepsLabel}>Timing grid</span>
+    <div
+      className={styles.stepsInline}
+      title={extensionsEnabled ? TITLE : 'Enable Undulate extensions to edit substeps.'}
+    >
+      <span className={styles.stepsLabel}>Substeps</span>
       <button
         type="button"
         className={styles.stepsBtn}
         onClick={() => bump(-1)}
-        disabled={ticksPerStep <= 1}
+        disabled={!extensionsEnabled || ticksPerStep <= 1}
         aria-label="Coarsen timing grid"
       >
         −
@@ -63,14 +69,15 @@ export function DiagramSubStepsControl() {
         onFocus={() => setRejected(false)}
         inputMode="numeric"
         spellCheck={false}
-        aria-label="Timing grid divisions per step"
+        aria-label="Diagram substep count"
         aria-invalid={rejected}
+        disabled={!extensionsEnabled}
       />
       <button
         type="button"
         className={styles.stepsBtn}
         onClick={() => bump(1)}
-        disabled={ticksPerStep >= MAX_TICKS_PER_STEP}
+        disabled={!extensionsEnabled || ticksPerStep >= MAX_TICKS_PER_STEP}
         aria-label="Refine timing grid"
       >
         +

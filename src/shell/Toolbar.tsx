@@ -28,6 +28,8 @@ import { diagramLogicalWidth } from '../renderer/laneTiming';
 import { ThemeMenu } from './ThemeMenu';
 import { ExtensionsModeToggle } from './ExtensionsModeToggle';
 import { HeadFootFields } from './HeadFootFields';
+import { DiagramStepsControl } from './DiagramStepsControl';
+import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
 import {
   ToolbarBusSection,
@@ -219,6 +221,11 @@ export function Toolbar({ onExport }: ToolbarProps) {
           <Redo2 size={16} aria-hidden /><span>Redo</span>
         </button>
 
+        <span className={styles.divider} />
+        <div className={styles.timelineControls} aria-label="Timeline controls">
+          <DiagramStepsControl />
+          <DiagramSubStepsControl />
+        </div>
         <span className={styles.divider} />
         <div className={styles.diagramSettingsWrap}>
           <button

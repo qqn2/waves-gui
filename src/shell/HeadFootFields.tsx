@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type InputHTMLAttributes } from 'react';
 import { useStore } from '../shared/store';
 import type { DiagramConfig } from '../shared/types';
-import { DiagramStepsControl } from './DiagramStepsControl';
-import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import styles from './shell.module.css';
 
 function parseOptionalNumber(raw: string): number | undefined | null {
@@ -72,15 +70,12 @@ function CommitInput({
   );
 }
 
-/** Steps plus collapsible title/caption and column scale (WaveDrom head/foot). */
+/** Collapsible title/caption and column scale controls (WaveDrom head/foot). */
 export function HeadFootFields() {
   const head = useStore((s) => s.diagram.config.head);
   const foot = useStore((s) => s.diagram.config.foot);
   const updateDiagramHead = useStore((s) => s.updateDiagramHead);
   const updateDiagramFoot = useStore((s) => s.updateDiagramFoot);
-  const extensionsEnabled = useStore(
-    (s) => s.diagram.compatibility?.extensionsEnabled === true,
-  );
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [scaleOpen, setScaleOpen] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -110,10 +105,8 @@ export function HeadFootFields() {
     <div
       ref={controlsRef}
       className={styles.headFootToolbarControls}
-      title="Diagram steps; Labels: head.text / foot.text; Scale: column number ticks"
+      title="Labels: head.text / foot.text; Scale: column number ticks"
     >
-      <DiagramStepsControl />
-      {extensionsEnabled ? <DiagramSubStepsControl /> : null}
       <div className={styles.headFootMenuWrap}>
         <button
           type="button"

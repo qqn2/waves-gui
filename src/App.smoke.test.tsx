@@ -67,12 +67,16 @@ describe('App smoke', () => {
     );
     expect(diagramControlsToggle).not.toBeNull();
     expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('false');
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).toBeNull();
+    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
+    const substeps = host.querySelector<HTMLInputElement>(
+      'input[aria-label="Diagram substep count"]',
+    );
+    expect(substeps).not.toBeNull();
+    expect(substeps!.disabled).toBe(true);
     await act(async () => {
       diagramControlsToggle!.click();
     });
     expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('true');
-    expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
     const hscaleInput = host.querySelector<HTMLInputElement>(
       'input[aria-label="WaveDrom horizontal scale"]',
     );
@@ -100,6 +104,7 @@ describe('App smoke', () => {
       extensionsToggle!.click();
     });
     expect(useStore.getState().diagram.compatibility?.extensionsEnabled).toBe(true);
+    expect(substeps!.disabled).toBe(false);
 
     await act(async () => {
       useStore.getState().setTicksPerStep(4);
