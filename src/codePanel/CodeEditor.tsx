@@ -173,7 +173,10 @@ export function CodeEditor({
       syncingRef.current = true;
       view.dispatch({
         changes: { from: 0, to: current.length, insert: code },
-        selection: view.state.selection,
+        // Let CodeMirror map the selection through the replacement. Passing
+        // the pre-change selection verbatim can leave a cursor past the end
+        // when a canvas edit regenerates a shorter document, which makes the
+        // editor fail to mount with "Selection points outside of document".
       });
       queueMicrotask(() => {
         syncingRef.current = false;
