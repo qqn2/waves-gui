@@ -169,7 +169,7 @@ export function resolveNodeAnchor(
   signalId: string,
   step: number,
 ): CanvasAnchor | null {
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
   const row = rows.find((r) => r.id === signalId);
   if (!row || row.type === 'group') return null;
 

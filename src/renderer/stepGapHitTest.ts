@@ -38,7 +38,7 @@ export function hitTestStepGapBoundary(
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
   const hitLogical = GLITCH_HIT_PX / (transform.zoom * transform.hscale);
 
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
   const signalById = buildSignalById(diagram.signals);
 
   for (const row of rows) {

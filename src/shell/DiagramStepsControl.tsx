@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '../shared/store';
 import { MAX_TOTAL_STEPS, MIN_TOTAL_STEPS } from '../shared/constants';
 import styles from './shell.module.css';
@@ -19,27 +19,29 @@ function parseSteps(raw: string): number | null {
 export function DiagramStepsControl() {
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
   const setTotalSteps = useStore((s) => s.setTotalSteps);
+  const [draft, setDraft] = useState(String(totalSteps));
+  const cancelBlurRef = useRef(false);
 
-  const applySteps = useCallback(
-    (n: number) => {
-      setTotalSteps(n);
-    },
-    [setTotalSteps],
-  );
+  useEffect(() => setDraft(String(totalSteps)), [totalSteps]);
 
-  const onInputChange = useCallback(
-    (raw: string) => {
-      const n = parseSteps(raw);
-      if (n !== null) applySteps(n);
-    },
-    [applySteps],
-  );
+  const commitDraft = useCallback(() => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      return;
+    }
+    const next = parseSteps(draft);
+    if (next === null) {
+      setDraft(String(totalSteps));
+      return;
+    }
+    setTotalSteps(next);
+  }, [draft, setTotalSteps, totalSteps]);
 
   const bump = useCallback(
     (delta: number) => {
-      applySteps(totalSteps + delta);
+      setTotalSteps(totalSteps + delta);
     },
-    [applySteps, totalSteps],
+    [setTotalSteps, totalSteps],
   );
 
   return (
@@ -58,8 +60,19 @@ export function DiagramStepsControl() {
       <input
         type="text"
         className={styles.stepsNum}
-        value={String(totalSteps)}
-        onChange={(e) => onInputChange(e.target.value)}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commitDraft}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            commitDraft();
+            e.currentTarget.blur();
+          } else if (e.key === 'Escape') {
+            cancelBlurRef.current = true;
+            setDraft(String(totalSteps));
+            e.currentTarget.blur();
+          }
+        }}
         inputMode="numeric"
         spellCheck={false}
         aria-label="Diagram step count"

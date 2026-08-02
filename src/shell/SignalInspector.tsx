@@ -71,6 +71,10 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const [strokeDraft, setStrokeDraft] = useState('');
   const [fillDraft, setFillDraft] = useState('');
   const [dashDraft, setDashDraft] = useState('');
+  const [strokeWidthDraft, setStrokeWidthDraft] = useState('');
+  const [fontSizeDraft, setFontSizeDraft] = useState('');
+  const [periodDraft, setPeriodDraft] = useState('');
+  const [phaseDraft, setPhaseDraft] = useState('');
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
@@ -81,12 +85,25 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
     setStrokeDraft(signal?.style?.stroke ?? '');
     setFillDraft(signal?.style?.fill ?? '');
     setDashDraft(signal?.style?.strokeDasharray?.join(', ') ?? '');
+    setStrokeWidthDraft(
+      signal?.style?.strokeWidth === undefined ? '' : String(signal.style.strokeWidth),
+    );
+    setFontSizeDraft(
+      signal?.style?.fontSize === undefined ? '' : String(signal.style.fontSize),
+    );
   }, [
     signal?.id,
     signal?.style?.stroke,
     signal?.style?.fill,
     signal?.style?.strokeDasharray,
+    signal?.style?.strokeWidth,
+    signal?.style?.fontSize,
   ]);
+
+  useEffect(() => {
+    setPeriodDraft(signal?.period === undefined ? '' : String(signal.period));
+    setPhaseDraft(signal?.phase === undefined ? '' : String(signal.phase));
+  }, [signal?.id, signal?.period, signal?.phase]);
 
   useEffect(() => {
     setAnalogueCellIndex((index) => Math.max(
@@ -224,17 +241,35 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 min={0}
                 max={32}
                 step="any"
-                value={signal.style?.strokeWidth ?? ''}
+                value={strokeWidthDraft}
                 placeholder="2"
                 aria-label="Signal stroke width"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  const parsed = value === '' ? undefined : Number(value);
+                onChange={(event) => setStrokeWidthDraft(event.target.value)}
+                onBlur={() => {
+                  const parsed = strokeWidthDraft === ''
+                    ? undefined
+                    : Number(strokeWidthDraft);
                   if (
                     parsed === undefined
                     || (Number.isFinite(parsed) && parsed >= 0 && parsed <= 32)
                   ) {
                     updateSignalStyle(signal.id, { strokeWidth: parsed });
+                  } else {
+                    setStrokeWidthDraft(
+                      signal.style?.strokeWidth === undefined
+                        ? ''
+                        : String(signal.style.strokeWidth),
+                    );
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur();
+                  if (event.key === 'Escape') {
+                    setStrokeWidthDraft(
+                      signal.style?.strokeWidth === undefined
+                        ? ''
+                        : String(signal.style.strokeWidth),
+                    );
                   }
                 }}
               />
@@ -268,17 +303,33 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 min={6}
                 max={96}
                 step="any"
-                value={signal.style?.fontSize ?? ''}
+                value={fontSizeDraft}
                 placeholder="Auto"
                 aria-label="Signal font size"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  const parsed = value === '' ? undefined : Number(value);
+                onChange={(event) => setFontSizeDraft(event.target.value)}
+                onBlur={() => {
+                  const parsed = fontSizeDraft === '' ? undefined : Number(fontSizeDraft);
                   if (
                     parsed === undefined
                     || (Number.isFinite(parsed) && parsed >= 6 && parsed <= 96)
                   ) {
                     updateSignalStyle(signal.id, { fontSize: parsed });
+                  } else {
+                    setFontSizeDraft(
+                      signal.style?.fontSize === undefined
+                        ? ''
+                        : String(signal.style.fontSize),
+                    );
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur();
+                  if (event.key === 'Escape') {
+                    setFontSizeDraft(
+                      signal.style?.fontSize === undefined
+                        ? ''
+                        : String(signal.style.fontSize),
+                    );
                   }
                 }}
               />
@@ -774,8 +825,25 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 min={1}
                 placeholder="1"
                 aria-label="Signal period"
-                value={signal.period ?? ''}
-                onChange={(event) => setSignalPeriod(signal.id, event.target.value ? Number(event.target.value) : undefined)}
+                value={periodDraft}
+                onChange={(event) => setPeriodDraft(event.target.value)}
+                onBlur={() => {
+                  const period = periodDraft === '' ? undefined : Number(periodDraft);
+                  if (
+                    period === undefined
+                    || (Number.isFinite(period) && period >= 1)
+                  ) {
+                    setSignalPeriod(signal.id, period);
+                  } else {
+                    setPeriodDraft(signal.period === undefined ? '' : String(signal.period));
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur();
+                  if (event.key === 'Escape') {
+                    setPeriodDraft(signal.period === undefined ? '' : String(signal.period));
+                  }
+                }}
               />
             </label>
             <label className={styles.inspectorField}>
@@ -785,8 +853,22 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 step="any"
                 placeholder="0"
                 aria-label="Signal phase"
-                value={signal.phase ?? ''}
-                onChange={(event) => setSignalPhase(signal.id, event.target.value ? Number(event.target.value) : undefined)}
+                value={phaseDraft}
+                onChange={(event) => setPhaseDraft(event.target.value)}
+                onBlur={() => {
+                  const phase = phaseDraft === '' ? undefined : Number(phaseDraft);
+                  if (phase === undefined || Number.isFinite(phase)) {
+                    setSignalPhase(signal.id, phase);
+                  } else {
+                    setPhaseDraft(signal.phase === undefined ? '' : String(signal.phase));
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') event.currentTarget.blur();
+                  if (event.key === 'Escape') {
+                    setPhaseDraft(signal.phase === undefined ? '' : String(signal.phase));
+                  }
+                }}
               />
             </label>
               </>
@@ -801,7 +883,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
         </div>
       ) : (
         <div className={styles.inspectorEmpty}>
-          <strong>The selected signal is no longer available.</strong>
+          <strong>Select a signal or annotation to inspect its properties.</strong>
         </div>
       )}
     </aside>

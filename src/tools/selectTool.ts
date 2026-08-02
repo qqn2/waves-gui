@@ -81,7 +81,7 @@ function applyRectSelection(
     Math.floor(logicalX1 / CELL_WIDTH),
   );
 
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
   const ids: string[] = [];
   for (const row of rows) {
     if (row.type === 'group' || row.type === 'spacer') continue;
@@ -143,7 +143,10 @@ export function selectPointerDown(
     let arrowEndpoint: 'from' | 'to' | undefined;
     if (annotation?.type === 'arrow') {
       const transform = viewTransform(state.diagram, state.view);
-      const rows = buildRowLayout(state.diagram.signals);
+      const rows = buildRowLayout(
+        state.diagram.signals,
+        state.view.collapsedGroupIds,
+      );
       const layout = layoutArrowAnnotations(state.diagram, rows).find(
         (candidate) => candidate.annotation.id === annotation.id,
       );
@@ -334,7 +337,10 @@ export function nudgeSelectedAnnotation(
   if (annotation.type === 'vertical-line' || annotation.type === 'global-compression') {
     return false;
   }
-  const rows = buildRowLayout(state.diagram.signals);
+  const rows = buildRowLayout(
+    state.diagram.signals,
+    state.view.collapsedGroupIds,
+  );
   const currentY = (annotationYLogical(annotation, rows) ?? 0) / ROW_HEIGHT;
   state[annotation.type === 'text'
     ? 'updateTextAnnotation'

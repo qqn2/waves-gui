@@ -90,7 +90,7 @@ export function PointerMarker({
 }: PointerMarkerProps) {
   if (!hit?.signalId || hit.step === null) return null;
 
-  const rows = buildRowLayout(diagram.signals);
+  const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);
   const row = rows.find((r) => r.id === hit.signalId);
   if (!row || row.type === 'group') return null;
 
@@ -118,6 +118,10 @@ export function PointerMarker({
   const snappedTick = Math.max(
     0,
     Math.min(
+      // This is a visual/grid snap, not a paint hit test. Keep it nearest so
+      // arrow endpoints and the cursor do not jump backwards while the
+      // pointer approaches a tick boundary. The terminal grid line is a
+      // valid annotation endpoint as well.
       diagram.config.totalSteps * timingDivisions,
       Math.round(pointerLogicalX / CELL_WIDTH * timingDivisions),
     ),

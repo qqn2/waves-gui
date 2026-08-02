@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Signal } from '../shared/types';
+import type { Signal, SignalGroup } from '../shared/types';
 import { buildRowLayout, totalContentHeight } from './rowLayout';
 
 function analogue(
@@ -36,5 +36,23 @@ describe('row layout', () => {
       { id: 'd', y: 80, height: 40 },
     ]);
     expect(totalContentHeight(rows)).toBe(120);
+  });
+
+  it('uses session collapse ids without changing the signal tree', () => {
+    const group: SignalGroup = {
+      id: 'group',
+      name: 'Inputs',
+      type: 'group',
+      children: [analogue('nested', 40)],
+    };
+
+    expect(buildRowLayout([group]).map((row) => row.id)).toEqual([
+      'group',
+      'nested',
+    ]);
+    expect(buildRowLayout([group], ['group']).map((row) => row.id)).toEqual([
+      'group',
+    ]);
+    expect(group).not.toHaveProperty('collapsed');
   });
 });

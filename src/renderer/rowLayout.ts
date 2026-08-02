@@ -9,7 +9,10 @@ export interface RowLayoutEntry {
 }
 
 /** Flat visible rows in logical pixels (zoom = 1). */
-export function buildRowLayout(signals: SignalOrGroup[]): RowLayoutEntry[] {
+export function buildRowLayout(
+  signals: SignalOrGroup[],
+  collapsedGroupIds: readonly string[] = [],
+): RowLayoutEntry[] {
   const rows: RowLayoutEntry[] = [];
   let y = 0;
 
@@ -19,7 +22,7 @@ export function buildRowLayout(signals: SignalOrGroup[]): RowLayoutEntry[] {
       if (item.type === 'group') {
         rows.push({ id: item.id, y, height: GROUP_HEADER_HEIGHT, type: 'group' });
         y += GROUP_HEADER_HEIGHT;
-        if (!item.collapsed) walk(item.children);
+        if (!collapsedGroupIds.includes(item.id)) walk(item.children);
       } else {
         let chainEnd = index;
         let rowHeight = item.rowHeight ?? ROW_HEIGHT;

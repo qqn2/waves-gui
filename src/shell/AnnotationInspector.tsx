@@ -348,6 +348,7 @@ function signalOptions(signals: SignalOrGroup[]): Array<{ id: string; name: stri
 export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const diagram = useStore((state) => state.diagram);
   const activeId = useStore((state) => state.view.activeAnnotationId);
+  const collapsedGroupIds = useStore((state) => state.view.collapsedGroupIds);
   const updateTextAnnotation = useStore((state) => state.updateTextAnnotation);
   const updateVerticalLineAnnotation = useStore(
     (state) => state.updateVerticalLineAnnotation,
@@ -364,7 +365,10 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const annotation = selected?.type === 'arrow' ? null : selected;
   const textAnnotation = annotation?.type === 'text' ? annotation : null;
   const options = useMemo(() => signalOptions(diagram.signals), [diagram.signals]);
-  const rows = useMemo(() => buildRowLayout(diagram.signals), [diagram.signals]);
+  const rows = useMemo(
+    () => buildRowLayout(diagram.signals, collapsedGroupIds),
+    [diagram.signals, collapsedGroupIds],
+  );
   const [textDraft, setTextDraft] = useState('');
   const [fillDraft, setFillDraft] = useState('');
   const [strokeDraft, setStrokeDraft] = useState('');

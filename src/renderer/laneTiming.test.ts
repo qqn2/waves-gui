@@ -53,4 +53,38 @@ describe('laneTiming', () => {
     expect(stepAtLogicalXForSignal(30, sig, 3)).toBe(1);
     expect(stepAtLogicalXForSignal(80, sig, 3)).toBe(2);
   });
+
+  it('aligns fine and coarse native siblings by duration rather than symbol count', () => {
+    const fine: Signal = {
+      ...base,
+      id: 'fine',
+      states: Array(8).fill('0'),
+      digitalTiming: {
+        ticksPerStep: 2,
+        phaseTicks: 0,
+        cells: Array.from({ length: 8 }, () => ({
+          state: '0' as const,
+          durationTicks: 1,
+        })),
+      },
+    };
+    const coarse: Signal = {
+      ...base,
+      id: 'coarse',
+      states: Array(4).fill('0'),
+      digitalTiming: {
+        ticksPerStep: 2,
+        phaseTicks: 0,
+        cells: Array.from({ length: 4 }, () => ({
+          state: '0' as const,
+          durationTicks: 2,
+        })),
+      },
+    };
+
+    expect(laneLogicalWidth(fine, 4)).toBe(160);
+    expect(laneLogicalWidth(coarse, 4)).toBe(160);
+    expect(stepAtLogicalXForSignal(120, fine, 4)).toBe(6);
+    expect(stepAtLogicalXForSignal(120, coarse, 4)).toBe(3);
+  });
 });

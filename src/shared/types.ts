@@ -99,22 +99,41 @@ export interface AnalogueCell {
   expression?: string;
 }
 
-export interface DigitalTimingCell {
-  state: BitState;
+export interface TimedCell {
   /** Positive duration in document ticks. */
   durationTicks: number;
-  /** Clock high/low boundary measured from the cell start. */
+  /** Optional high/low boundary preserved for native timing round-trips. */
   dutyTicks?: number;
 }
 
-export interface DigitalTiming {
+export interface DigitalTimingCell extends TimedCell {
+  state: BitState;
+}
+
+export interface SignalTiming {
   ticksPerStep: number;
   /** Horizontal shift in document ticks. */
   phaseTicks: number;
-  cells: DigitalTimingCell[];
-  /** Digital transition width in document steps. */
+  cells: TimedCell[];
+  /** Signal transition width in document steps. */
   slewing?: number;
+  /** Preserve explicitly authored default-valued native timing fields. */
+  sourceFields?: {
+    period?: boolean;
+    phase?: boolean;
+    dutyCycle?: boolean;
+  };
 }
+
+export interface DigitalTiming extends Omit<SignalTiming, 'cells'> {
+  cells: DigitalTimingCell[];
+}
+
+/**
+ * Per-cell native timing for bus/vector lanes. Timing is deliberately shared
+ * with digital lanes, while values remain represented by vector segments.
+ */
+export type VectorTiming = SignalTiming;
 
 export interface SignalStyle {
   /** Safe normalized waveform stroke color. */
@@ -141,8 +160,12 @@ export interface Signal {
   segments: VectorSegment[];
   /** Analogue lanes: one finite, normalized cell per document step. */
   analogueCells?: AnalogueCell[];
-  /** Integer-tick timing for Undulate digital lanes. */
+  /** Integer-tick timing for Undulate bit lanes. */
   digitalTiming?: DigitalTiming;
+  /** Integer-tick timing for Undulate vector lanes. */
+  vectorTiming?: VectorTiming;
+  /** Internal: timing-cell states have replaced the imported compact wave spelling. */
+  digitalTimingStatesEdited?: boolean;
   /** Original compact Undulate repeat spelling, retained while cell states stay unchanged. */
   undulateRepeat?: {
     repeat: number;
@@ -199,7 +222,6 @@ export interface SignalGroup {
   name: string;
   type: 'group';
   children: Array<Signal | SignalGroup>;
-  collapsed: boolean;
   color?: string; // bracket color
 }
 
@@ -439,6 +461,10 @@ export interface ViewState {
   activeTimingCellIndex?: number | null;
   /** Selected extended object, mutually exclusive with activeSignalIds. */
   activeAnnotationId?: string | null;
+  /** Group ids collapsed in the current editor session; never serialized. */
+  collapsedGroupIds: string[];
+  /** User-controlled properties inspector visibility; never serialized. */
+  showInspector: boolean;
   showCodePanel: boolean;
   showRenderPanel: boolean;
   /** Signal name column width in px (DOM, not zoomed). */
@@ -490,6 +516,9 @@ export interface PaintDraft {
   signalId: string;
   startStep: number;
   endStep: number; // inclusive; grows during drag
+  /** Absolute document-tick range for precision digital painting. */
+  startTick?: number;
+  endTick?: number;
   lane: 'bit' | 'vector' | 'analogue';
   bitState: BitState; // paint+set: target state; paint+toggle: unused
   apply: 'toggle' | 'set' | 'glitch' | 'gap'; // paint only; erase ignores

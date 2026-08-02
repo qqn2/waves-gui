@@ -1,5 +1,9 @@
 import { nanoid } from 'nanoid';
-import { setNodeCharAt } from '../../wavedromBridge/nodeString';
+import {
+  NODE_PAD_CHAR,
+  padNodeString,
+  setNodeCharAt,
+} from '../../wavedromBridge/nodeString';
 import {
   applyClockBrushToRange,
   applyClockToggleToRange,
@@ -32,7 +36,14 @@ import {
   removeGapColumnsOnDiagram,
   toggleGapColumnsOnSignal,
 } from '../stepGapHelpers';
-import type { BitState, Signal, SignalGroup, SignalOrGroup } from '../types';
+import type {
+  BitState,
+  DigitalTimingCell,
+  DiagramConfig,
+  Signal,
+  SignalGroup,
+  SignalOrGroup,
+} from '../types';
 import { normalizeSignalStyle } from '../signalStyles';
 import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
 import {
@@ -64,7 +75,100 @@ import {
   reorderSiblingLevel,
   resizeAllStates,
 } from './helpers';
-import { rescaleDiagramTiming, timingResolution } from '../fineTiming';
+import {
+  paintDigitalTimingTicksWithMapping,
+  rescaleDiagramTiming,
+  timingResolution,
+} from '../fineTiming';
+
+type TimingOutputRange = { start: number; end: number };
+
+function closestOutputCell(
+  range: TimingOutputRange,
+  output: DigitalTimingCell[],
+): number {
+  if (range.end - range.start <= 1) return range.start;
+  const duration = output
+    .slice(range.start, range.end)
+    .reduce((total, cell) => total + cell.durationTicks, 0);
+  const sourceCenter = duration / 2;
+  let offset = 0;
+  let closest = range.start;
+  let closestDistance = Number.POSITIVE_INFINITY;
+  for (let index = range.start; index < range.end; index++) {
+    const cell = output[index]!;
+    const center = offset + cell.durationTicks / 2;
+    const distance = Math.abs(center - sourceCenter);
+    if (distance < closestDistance) {
+      closest = index;
+      closestDistance = distance;
+    }
+    offset += cell.durationTicks;
+  }
+  return closest;
+}
+
+/**
+ * A precision paint may split a source cell. Preserve the meaning of every
+ * source-indexed decoration by moving it into the corresponding output range
+ * rather than letting array indexes drift in time.
+ */
+function remapTimingDecorations(
+  signal: Signal,
+  sourceCellRanges: TimingOutputRange[],
+  cells: DigitalTimingCell[],
+): void {
+  const outputLength = cells.length;
+  const sourceGaps = signal.stepGaps;
+  if (sourceGaps) {
+    const gaps = Array<boolean>(outputLength).fill(false);
+    sourceCellRanges.forEach((range, sourceIndex) => {
+      if (sourceGaps[sourceIndex] && range.start < outputLength) {
+        // A WaveDrom gap belongs to the cell it decorates, so use its first
+        // fragment after a precision split.
+        gaps[range.start] = true;
+      }
+    });
+    signal.stepGaps = gaps.some(Boolean) ? gaps : undefined;
+  }
+
+  const sourceGlitches = signal.stepGlitches;
+  if (sourceGlitches) {
+    const glitches = Array<boolean>(Math.max(0, outputLength - 1)).fill(false);
+    for (let sourceIndex = 0; sourceIndex < sourceGlitches.length; sourceIndex++) {
+      if (!sourceGlitches[sourceIndex]) continue;
+      const range = sourceCellRanges[sourceIndex];
+      const boundary = range ? range.end - 1 : -1;
+      if (boundary >= 0 && boundary < glitches.length) glitches[boundary] = true;
+    }
+    signal.stepGlitches = glitches.some(Boolean) ? glitches : undefined;
+  }
+
+  if (signal.node !== undefined) {
+    const sourceNode = padNodeString(signal.node, sourceCellRanges.length);
+    const node = Array<string>(outputLength).fill(NODE_PAD_CHAR);
+    if (sourceNode) {
+      sourceCellRanges.forEach((range, sourceIndex) => {
+        const char = sourceNode[sourceIndex] ?? NODE_PAD_CHAR;
+        node[closestOutputCell(range, cells)] = char;
+      });
+    }
+    signal.node = node.every((char) => char === NODE_PAD_CHAR || char === ' ')
+      ? undefined
+      : node.join('');
+  }
+
+  if (signal.nodeNames) {
+    const names: Record<number, string> = {};
+    for (const [rawIndex, name] of Object.entries(signal.nodeNames)) {
+      const sourceIndex = Number(rawIndex);
+      const range = sourceCellRanges[sourceIndex];
+      if (!Number.isInteger(sourceIndex) || !range) continue;
+      names[closestOutputCell(range, cells)] = name;
+    }
+    signal.nodeNames = Object.keys(names).length > 0 ? names : undefined;
+  }
+}
 
 function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   if (isSubcycleWaveLane(sig)) {
@@ -170,6 +274,12 @@ function duplicateSignalInDraft(
               cells: item.digitalTiming.cells.map((cell) => ({ ...cell })),
             }
           : undefined,
+        vectorTiming: item.vectorTiming
+          ? {
+              ...item.vectorTiming,
+              cells: item.vectorTiming.cells.map((cell) => ({ ...cell })),
+            }
+          : undefined,
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
@@ -185,6 +295,61 @@ function duplicateSignalInDraft(
   return false;
 }
 
+type SignalLocation = {
+  parentId?: string;
+  beforeId?: string;
+  afterId?: string;
+};
+
+function insertAtLocation(
+  signals: SignalOrGroup[],
+  item: SignalOrGroup,
+  location: SignalLocation | undefined,
+): boolean {
+  let siblings = signals;
+  if (location?.parentId) {
+    const parentFound = findGroup(signals, location.parentId, (group) => {
+      siblings = group.children;
+    });
+    if (!parentFound) return false;
+  }
+  let index = siblings.length;
+  if (location?.beforeId) {
+    index = siblings.findIndex((candidate) => candidate.id === location.beforeId);
+    if (index < 0) return false;
+  } else if (location?.afterId) {
+    const afterIndex = siblings.findIndex(
+      (candidate) => candidate.id === location.afterId,
+    );
+    if (afterIndex < 0) return false;
+    index = afterIndex + 1;
+  }
+  siblings.splice(index, 0, item);
+  return true;
+}
+
+function normalizeHead(
+  value: NonNullable<DiagramConfig['head']>,
+): DiagramConfig['head'] {
+  const next = {
+    ...(value.text ? { text: value.text } : {}),
+    ...(value.tick !== undefined ? { tick: value.tick } : {}),
+    ...(value.every !== undefined ? { every: value.every } : {}),
+  };
+  return Object.keys(next).length > 0 ? next : undefined;
+}
+
+function normalizeFoot(
+  value: NonNullable<DiagramConfig['foot']>,
+): DiagramConfig['foot'] {
+  const next = {
+    ...(value.text ? { text: value.text } : {}),
+    ...(value.tock !== undefined ? { tock: value.tock } : {}),
+    ...(value.every !== undefined ? { every: value.every } : {}),
+  };
+  return Object.keys(next).length > 0 ? next : undefined;
+}
+
 export function createSignalActions(set: ImmerSet): Pick<
   StoreActions,
   | 'addSignal'
@@ -192,6 +357,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'addGroup'
   | 'removeSignal'
   | 'renameSignal'
+  | 'renameGroup'
   | 'updateSignalStyle'
   | 'updateAnalogueCell'
   | 'paintAnalogueCellRange'
@@ -206,6 +372,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setSignalState'
   | 'setSignalStateRange'
   | 'paintBitStateRange'
+  | 'paintDigitalTimingRange'
   | 'toggleSignalStateRange'
   | 'paintToggleRange'
   | 'toggleStepGlitchRange'
@@ -227,14 +394,30 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'setActiveAnnotationId'
   | 'setTotalSteps'
   | 'setHscale'
+  | 'updateDiagramHead'
+  | 'updateDiagramFoot'
   | 'insertStepAt'
   | 'deleteStepAt'
   | 'toggleStepGapAt'
   | 'setDiagramSkin'
 > {
   return {
-    addSignal(type, afterId) {
+    addSignal(type, location) {
       set((s) => {
+        if (
+          location?.parentId
+          && !findGroup(s.diagram.signals, location.parentId, () => {})
+        ) return;
+        if (location?.beforeId || location?.afterId) {
+          let siblings = s.diagram.signals;
+          if (location.parentId) {
+            findGroup(s.diagram.signals, location.parentId, (group) => {
+              siblings = group.children;
+            });
+          }
+          const anchorId = location.beforeId ?? location.afterId;
+          if (!siblings.some((candidate) => candidate.id === anchorId)) return;
+        }
         pushHistory(s);
         const analogueContext =
           s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
@@ -274,11 +457,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           color: DEFAULT_SIGNAL_COLOR,
           rowHeight: ROW_HEIGHT,
         };
-        s.diagram.signals.splice(
-          insertIndexAfter(s.diagram.signals, afterId),
-          0,
-          signal,
-        );
+        if (!insertAtLocation(s.diagram.signals, signal, location)) return;
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
@@ -299,7 +478,6 @@ export function createSignalActions(set: ImmerSet): Pick<
           name,
           type: 'group',
           children: [],
-          collapsed: false,
         };
         s.diagram.signals.splice(
           insertIndexAfter(s.diagram.signals, afterId),
@@ -314,12 +492,20 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         pushHistory(s);
         s.diagram.signals = removeFromTree(s.diagram.signals, id);
+        s.view.collapsedGroupIds = s.view.collapsedGroupIds.filter(
+          (groupId) => groupId !== id,
+        );
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
 
     renameSignal(id, name) {
       set((s) => {
+        let currentName: string | undefined;
+        findSignal(s.diagram.signals, id, (sig) => {
+          currentName = sig.name;
+        });
+        if (currentName === undefined || currentName === name) return;
         pushHistory(s);
         findSignal(s.diagram.signals, id, (sig) => {
           sig.name = name;
@@ -327,15 +513,37 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
+    renameGroup(id, name) {
+      set((s) => {
+        let currentName: string | undefined;
+        findGroup(s.diagram.signals, id, (group) => {
+          currentName = group.name;
+        });
+        if (currentName === undefined || currentName === name) return;
+        pushHistory(s);
+        findGroup(s.diagram.signals, id, (group) => {
+          group.name = name;
+        });
+      });
+    },
+
     updateSignalStyle(signalId, patch) {
       set((s) => {
+        let currentStyle: Signal['style'];
+        let nextStyle: Signal['style'];
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          currentStyle = normalizeSignalStyle(sig.style ?? {});
+          nextStyle = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
+        });
+        if (
+          !found
+          || JSON.stringify(currentStyle ?? {}) === JSON.stringify(nextStyle ?? {})
+        ) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          const next = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
-          if (next) sig.style = next;
+          if (nextStyle) sig.style = nextStyle;
           else delete sig.style;
         });
-        s.view.isDirty = true;
       });
     },
 
@@ -361,7 +569,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             startStep,
             endStepInclusive,
             value,
-            s.diagram.config.totalSteps,
+            sig.vectorTiming?.cells.length ?? s.diagram.config.totalSteps,
             busColorFill,
             options,
           );
@@ -395,24 +603,35 @@ export function createSignalActions(set: ImmerSet): Pick<
     },
 
     setSignalPhase(signalId, phase) {
+      if (phase !== undefined && !Number.isFinite(phase)) return;
       set((s) => {
+        let previous: number | undefined;
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          previous = sig.phase;
+        });
+        if (!found || previous === phase) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (phase === undefined) delete sig.phase;
           else sig.phase = phase;
         });
-        s.view.isDirty = true;
       });
     },
 
     setSignalPeriod(signalId, period) {
+      if (period !== undefined && !Number.isFinite(period)) return;
+      const next = period === undefined || period < 1 ? undefined : Math.floor(period);
       set((s) => {
+        let previous: number | undefined;
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          previous = sig.period;
+        });
+        if (!found || previous === next) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (period === undefined || period < 1) delete sig.period;
-          else sig.period = Math.floor(period);
+          if (next === undefined) delete sig.period;
+          else sig.period = next;
         });
-        s.view.isDirty = true;
       });
     },
 
@@ -824,6 +1043,38 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
+    paintDigitalTimingRange(signalId, startTick, endTick, bitState, mode) {
+      set((s) => {
+        if (s.diagram.compatibility?.extensionsEnabled !== true) return;
+        let changed = false;
+        findSignal(s.diagram.signals, signalId, (signal) => {
+          if (signal.type !== 'bit' || !signal.digitalTiming) return;
+          const painted = paintDigitalTimingTicksWithMapping(
+            signal.digitalTiming,
+            startTick,
+            endTick,
+            bitState,
+            mode,
+          );
+          if (JSON.stringify(painted.cells) === JSON.stringify(signal.digitalTiming.cells)) {
+            return;
+          }
+          pushHistory(s);
+          signal.digitalTiming.cells = painted.cells;
+          signal.states = painted.cells.map((cell) => cell.state);
+          remapTimingDecorations(
+            signal,
+            painted.sourceCellRanges,
+            painted.cells,
+          );
+          signal.digitalTimingStatesEdited = true;
+          delete signal.undulateRepeat;
+          changed = true;
+        });
+        if (changed) s.view.isDirty = true;
+      });
+    },
+
     toggleSignalStateRange(signalId, startStep, endStep) {
       set((s) => {
         pushHistory(s);
@@ -1119,6 +1370,28 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.config.hscale = next;
         s.view.isDirty = true;
+      });
+    },
+
+    updateDiagramHead(patch) {
+      set((s) => {
+        const previous = normalizeHead(s.diagram.config.head ?? {});
+        const next = normalizeHead({ ...(previous ?? {}), ...patch });
+        if (JSON.stringify(previous ?? {}) === JSON.stringify(next ?? {})) return;
+        pushHistory(s);
+        if (next) s.diagram.config.head = next;
+        else delete s.diagram.config.head;
+      });
+    },
+
+    updateDiagramFoot(patch) {
+      set((s) => {
+        const previous = normalizeFoot(s.diagram.config.foot ?? {});
+        const next = normalizeFoot({ ...(previous ?? {}), ...patch });
+        if (JSON.stringify(previous ?? {}) === JSON.stringify(next ?? {})) return;
+        pushHistory(s);
+        if (next) s.diagram.config.foot = next;
+        else delete s.diagram.config.foot;
       });
     },
 

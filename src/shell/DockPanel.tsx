@@ -22,7 +22,7 @@ export interface DockPanelProps {
 }
 
 const PANEL_TITLES: Record<SidePanelId, string> = {
-  json: 'JSON',
+  json: 'Source',
   render: 'Render',
 };
 

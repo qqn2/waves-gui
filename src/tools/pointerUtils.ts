@@ -1,5 +1,6 @@
 import type { DiagramState, Signal, ViewState } from '../shared/types';
 import { findSignal } from '../shared/store';
+import { CELL_WIDTH } from '../shared/constants';
 import { canvasToLogicalX, type ViewTransform } from '../renderer/coordinates';
 import { stepAtLogicalXForSignal } from '../renderer/laneTiming';
 import { stepFromLogicalX } from '../renderer/laneTiming';
@@ -48,4 +49,21 @@ export function stepAtCanvasX(
     if (step !== null) return step;
   }
   return clampStep(stepFromLogicalX(logicalX, null), totalSteps);
+}
+
+/** Visible document-tick interval under a canvas X coordinate. */
+export function timingTickAtCanvasX(
+  canvasX: number,
+  diagram: DiagramState,
+  view: ViewState,
+): number {
+  const divisions = Math.max(1, Math.floor(diagram.config.ticksPerStep ?? 1));
+  const logicalX = canvasToLogicalX(canvasX, viewTransform(diagram, view));
+  return Math.max(
+    0,
+    Math.min(
+      diagram.config.totalSteps * divisions - 1,
+      Math.floor(logicalX / CELL_WIDTH * divisions),
+    ),
+  );
 }
