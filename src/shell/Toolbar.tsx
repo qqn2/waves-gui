@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ShortcutHelp } from './ShortcutHelp';
 import {
   Braces,
@@ -84,6 +84,9 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const [moreBitsOpen, setMoreBitsOpen] = useState(false);
   const [recentBits, setRecentBits] = useState<BitState[]>([]);
   const [diagramControlsVisible, setDiagramControlsVisible] = useState(false);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const cancelHscaleBlurRef = useRef(false);
   const selectBitValue = (st: BitState) => {
     setActiveBitState(st);
     setPaintMode('set');
@@ -120,24 +123,23 @@ export function Toolbar({ onExport }: ToolbarProps) {
   }, [diagram.config.hscale]);
 
   const commitHscale = () => {
-    const val = Number(localHscale);
-    if (Number.isFinite(val)) {
-      setHscale(val);
-    } else {
-      setLocalHscale(String(diagram.config.hscale));
-    }
-  };
-
-  const updateHscale = (raw: string) => {
-    setLocalHscale(raw);
-    if (raw.trim() === '') return;
+    const raw = localHscale.trim();
     const val = Number(raw);
-    if (Number.isFinite(val)) setHscale(val);
+    if (raw === '' || !Number.isFinite(val)) {
+      setLocalHscale(String(diagram.config.hscale));
+      return;
+    }
+    setHscale(val);
   };
 
   const handleHscaleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       commitHscale();
+      (e.target as HTMLInputElement).blur();
+    }
+    if (e.key === 'Escape') {
+      cancelHscaleBlurRef.current = true;
+      setLocalHscale(String(diagram.config.hscale));
       (e.target as HTMLInputElement).blur();
     }
   };
@@ -165,11 +167,32 @@ export function Toolbar({ onExport }: ToolbarProps) {
                     ? 'Compression'
                     : 'Span';
   const annotationSnapToGrid = view.annotationSnapToGrid !== false;
-  const hasContextOptions = tool !== 'horizontal-line';
-
+  useEffect(() => {
+    if (!fileOpen && !diagramControlsVisible && !appearanceOpen) return;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!toolbarRef.current?.contains(event.target as Node)) {
+        setFileOpen(false);
+        setDiagramControlsVisible(false);
+        setAppearanceOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setFileOpen(false);
+        setDiagramControlsVisible(false);
+        setAppearanceOpen(false);
+      }
+    };
+    document.addEventListener('click', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('click', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [appearanceOpen, diagramControlsVisible, fileOpen]);
 
   return (
-    <div className={styles.toolbarShell}>
+    <div ref={toolbarRef} className={styles.toolbarShell}>
       <div className={`${styles.toolbar} ${styles.toolbarPrimary}`} data-toolbar="primary">
         <div className={styles.appIdentity} aria-label="Waves GUI waveform editor">
           <span className={styles.appMark}>W</span>
@@ -178,7 +201,14 @@ export function Toolbar({ onExport }: ToolbarProps) {
         <span className={styles.divider} />
         <ToolbarFileMenu
           open={fileOpen}
-          onToggle={() => setFileOpen((o) => !o)}
+          onToggle={() => setFileOpen((open) => {
+            const next = !open;
+            if (next) {
+              setDiagramControlsVisible(false);
+              setAppearanceOpen(false);
+            }
+            return next;
+          })}
           onClose={() => setFileOpen(false)}
           onExport={onExport}
         />
@@ -194,7 +224,14 @@ export function Toolbar({ onExport }: ToolbarProps) {
           <button
             type="button"
             className={`${styles.toolBtn} ${diagramControlsVisible ? styles.toolActive : ''}`}
-            onClick={() => setDiagramControlsVisible((visible) => !visible)}
+            onClick={() => setDiagramControlsVisible((visible) => {
+              const next = !visible;
+              if (next) {
+                setFileOpen(false);
+                setAppearanceOpen(false);
+              }
+              return next;
+            })}
             title="Diagram settings"
             aria-label="Diagram settings"
             aria-expanded={diagramControlsVisible}
@@ -213,8 +250,14 @@ export function Toolbar({ onExport }: ToolbarProps) {
                   max={MAX_HSCALE}
                   step={HSCALE_STEP}
                   value={localHscale}
-                  onChange={(e) => updateHscale(e.target.value)}
-                  onBlur={commitHscale}
+                  onChange={(e) => setLocalHscale(e.target.value)}
+                  onBlur={() => {
+                    if (cancelHscaleBlurRef.current) {
+                      cancelHscaleBlurRef.current = false;
+                      return;
+                    }
+                    commitHscale();
+                  }}
                   onKeyDown={handleHscaleKeyDown}
                   aria-label="WaveDrom horizontal scale"
                 />
@@ -275,7 +318,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
           type="button"
           className={`${styles.toolBtn} ${view.showRenderPanel ? styles.toolActive : ''}`}
           onClick={() => toggleRenderPanel()}
-          title="Show or hide WaveDrom render preview"
+          title="Show or hide local timing diagram preview"
           aria-pressed={view.showRenderPanel}
         >
           <Eye size={16} aria-hidden /> Render
@@ -289,7 +332,16 @@ export function Toolbar({ onExport }: ToolbarProps) {
         >
           <PanelRight size={16} aria-hidden /> Inspector
         </button>
-        <ThemeMenu />
+        <ThemeMenu
+          open={appearanceOpen}
+          onOpenChange={(open) => {
+            setAppearanceOpen(open);
+            if (open) {
+              setFileOpen(false);
+              setDiagramControlsVisible(false);
+            }
+          }}
+        />
         <button
           type="button"
           className={styles.toolBtn}
@@ -301,7 +353,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
         </div>
       </div>
 
-      {hasContextOptions ? <div
+      <div
         className={styles.contextToolbar}
         data-toolbar="context"
         aria-label={`${toolLabel} tool options`}
@@ -374,7 +426,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
           />
         )}
         {tool === 'erase' ? <span className={styles.contextHint}>Drag across waveform cells to clear them</span> : null}
-      </div> : null}
+        {tool === 'horizontal-line' ? <span className={styles.contextHint}>Place a horizontal guide in the waveform workspace</span> : null}
+      </div>
       <ShortcutHelp open={shortcutOpen} onClose={() => setShortcutOpen(false)} />
     </div>
   );

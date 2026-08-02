@@ -104,7 +104,7 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
         </div>
 
         <footer className={styles.shortcutFooter}>
-          <p>This independent community project is not affiliated with or endorsed by WaveDrom or its maintainers.</p>
+          <p>This independent community project is not affiliated with or endorsed by WaveDrom, Undulate, or their maintainers.</p>
           <nav className={styles.shortcutLinks} aria-label="Project links">
             <a href={GITHUB_URL} target="_blank" rel="noreferrer"><Github size={13} aria-hidden /> GitHub</a>
             <a href="/licenses/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer"><FileText size={13} aria-hidden /> Licenses</a>

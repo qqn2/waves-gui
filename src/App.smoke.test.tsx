@@ -47,6 +47,7 @@ describe('App smoke', () => {
     );
     expect(periodInput).not.toBeNull();
     await act(async () => {
+      periodInput!.focus();
       const valueSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
         'value',
@@ -54,6 +55,7 @@ describe('App smoke', () => {
       valueSetter?.call(periodInput, '3');
       periodInput!.dispatchEvent(new Event('input', { bubbles: true }));
       periodInput!.dispatchEvent(new Event('change', { bubbles: true }));
+      periodInput!.blur();
     });
     const editedBit = useStore.getState().diagram.signals.find(
       (signal) => signal.id === bitSignal!.id,
@@ -77,6 +79,7 @@ describe('App smoke', () => {
     expect(hscaleInput).not.toBeNull();
 
     await act(async () => {
+      hscaleInput!.focus();
       const valueSetter = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
         'value',
@@ -84,6 +87,7 @@ describe('App smoke', () => {
       valueSetter?.call(hscaleInput, '2');
       hscaleInput!.dispatchEvent(new Event('input', { bubbles: true }));
       hscaleInput!.dispatchEvent(new Event('change', { bubbles: true }));
+      hscaleInput!.blur();
     });
     expect(useStore.getState().diagram.config.hscale).toBe(2);
 

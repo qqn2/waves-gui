@@ -8,7 +8,12 @@ import {
 } from '../shared/theme';
 import styles from './shell.module.css';
 
-export function ThemeMenu() {
+export interface ThemeMenuProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function ThemeMenu({ open: controlledOpen, onOpenChange }: ThemeMenuProps) {
   const theme = useStore((s) => s.view.theme);
   const accentColor = useStore((s) => s.view.accentColor);
   const canvasColor = useStore((s) => s.view.canvasColor);
@@ -17,7 +22,12 @@ export function ThemeMenu() {
   const setAccentColor = useStore((s) => s.setAccentColor);
   const setCanvasColor = useStore((s) => s.setCanvasColor);
   const setUiFontScale = useStore((s) => s.setUiFontScale);
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
 
   const activeAccent = accentColor ?? ACCENT_PRESETS[0]!.hex;
   const activeCanvas = canvasColor ?? (theme === 'dark' ? '#111418' : '#fafafa');
@@ -28,7 +38,7 @@ export function ThemeMenu() {
         type="button"
         className={`${styles.toolBtn} ${open ? styles.toolActive : ''}`}
         title="Appearance"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
         Theme ▾

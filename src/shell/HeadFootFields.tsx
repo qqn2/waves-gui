@@ -98,10 +98,10 @@ export function HeadFootFields() {
         setScaleOpen(false);
       }
     };
-    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('click', closeOnOutsideClick);
     document.addEventListener('keydown', closeOnEscape);
     return () => {
-      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('click', closeOnOutsideClick);
       document.removeEventListener('keydown', closeOnEscape);
     };
   }, []);

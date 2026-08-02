@@ -71,6 +71,13 @@ if (!textArtifacts.some((content) => content.includes(`Version ${version} · `))
   throw new Error('Production version/build marker is missing');
 }
 
+if (!textArtifacts.some((content) => {
+  const markerAt = content.indexOf(`Version ${version}`);
+  return markerAt >= 0 && /^[^\r\n]*[0-9a-f]{7,40}/.test(content.slice(markerAt));
+})) {
+  throw new Error('Production version/build marker is missing a Git revision');
+}
+
 const headers = await readFile(join(dist, '_headers'), 'utf8');
 for (const header of ['Content-Security-Policy', 'X-Frame-Options', 'X-Content-Type-Options', 'Referrer-Policy', 'Permissions-Policy']) {
   if (!headers.includes(header)) throw new Error(`Missing security header: ${header}`);

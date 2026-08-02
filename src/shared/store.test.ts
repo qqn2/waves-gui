@@ -116,6 +116,29 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.signals).toHaveLength(1);
   });
 
+  it('rejects a missing insertion parent or sibling without consuming history', () => {
+    const historyBefore = useStore.getState().history.length;
+    useStore.getState().addSignal('bit', { parentId: 'missing-group' });
+    useStore.getState().addSignal('bit', { afterId: 'missing-signal' });
+
+    expect(useStore.getState().diagram.signals).toEqual([]);
+    expect(useStore.getState().history).toHaveLength(historyBefore);
+  });
+
+  it('does not consume redo for an unchanged period or phase', () => {
+    useStore.getState().addSignal('bit');
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type === 'group') return;
+
+    useStore.getState().setSignalPeriod(signal.id, 3);
+    useStore.getState().undo();
+    expect(useStore.getState().future).toHaveLength(1);
+
+    useStore.getState().setSignalPeriod(signal.id, undefined);
+    useStore.getState().setSignalPhase(signal.id, undefined);
+    expect(useStore.getState().future).toHaveLength(1);
+  });
+
   it('does not consume redo for an equivalent normalized signal style', () => {
     useStore.getState().addSignal('bit');
     const signal = useStore.getState().diagram.signals[0];

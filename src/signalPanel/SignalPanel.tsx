@@ -19,6 +19,7 @@ import { SignalContextMenu } from './SignalContextMenu';
 import {
   collectAllGroups,
   collectVisibleRows,
+  findParentGroupId,
   filterSignalTree,
   getSiblingIds,
   reorderSiblingIds,
@@ -182,11 +183,8 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   };
 
   const parentForId = useCallback(
-    (id: string): string | undefined => {
-      const rows = collectVisibleRows(signals, collapsedGroupIds);
-      return rows.find((r) => r.id === id)?.parentId;
-    },
-    [signals, collapsedGroupIds],
+    (id: string): string | undefined => findParentGroupId(signals, id),
+    [signals],
   );
 
   const onDragStart = (e: React.DragEvent, id: string) => {
@@ -258,8 +256,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
   const menuSignalId = menuSignal?.id;
   const sectionOptions = useMemo(() => collectAllGroups(signals), [signals]);
   const menuParentId = menuSignalId
-    ? collectVisibleRows(signals, collapsedGroupIds)
-      .find((r) => r.id === menuSignalId)?.parentId
+    ? findParentGroupId(signals, menuSignalId)
     : undefined;
   return (
     <div
@@ -269,7 +266,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
     >
       <div className={styles.panelHeader}>
         <strong>Signals</strong>
-        <span>{countSignals(signals)} lanes</span>
+        <span>{countSignals(signals)} signals</span>
       </div>
       <div className={styles.filterBar}>
         <Search className={styles.filterIcon} size={12} aria-hidden />
@@ -280,7 +277,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           placeholder="Filter signals…"
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
-          aria-label="Filter signals by name"
+          aria-label="Filter signals and sections by name"
           spellCheck={false}
         />
         {filterText && (

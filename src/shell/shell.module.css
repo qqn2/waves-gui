@@ -449,8 +449,9 @@
   top: calc(100% + 7px);
   left: 0;
   display: flex;
-  min-width: max-content;
+  width: min(max-content, calc(100vw - 18px));
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 9px;
   border: 1px solid var(--border);
@@ -1027,7 +1028,15 @@
   }
 
   .inspector {
-    display: none;
+    position: absolute;
+    z-index: 100;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+    width: min(360px, calc(100vw - 16px));
+    min-width: 0;
+    max-width: none;
+    box-shadow: 0 12px 28px rgb(0 0 0 / 24%);
   }
 }
 

@@ -36,7 +36,7 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
   await page.reload();
   await expect(page.locator('canvas')).toBeVisible();
   expect((await page.locator('canvas').boundingBox())!.height).toBeGreaterThanOrEqual(120);
-  await expect(page.getByTitle('Show or hide WaveDrom render preview')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTitle('Show or hide local timing diagram preview')).toHaveAttribute('aria-pressed', 'true');
   const preview = page.getByText('WaveDrom render (local)', { exact: true })
     .locator('..')
     .locator('svg');
@@ -610,7 +610,7 @@ test('keeps narrow view controls separated instead of shrinking labels together'
 
   const controls = [
     page.getByTitle('Show or hide source editor'),
-    page.getByTitle('Show or hide WaveDrom render preview'),
+    page.getByTitle('Show or hide local timing diagram preview'),
     page.getByRole('button', { name: 'Inspector', exact: true }),
     page.getByTitle('Appearance'),
   ];
@@ -636,7 +636,7 @@ test('wraps document controls without overlapping tool options at desktop width'
 
   const viewControls = [
     page.getByTitle('Show or hide source editor'),
-    page.getByTitle('Show or hide WaveDrom render preview'),
+    page.getByTitle('Show or hide local timing diagram preview'),
     page.getByRole('button', { name: 'Inspector', exact: true }),
     page.getByTitle('Appearance'),
   ];
@@ -722,6 +722,17 @@ test('keeps title edits synchronized with source and undo history', async ({ pag
   await expect(editor).toContainText('AXI write timing');
 });
 
+test('commits title edits before closing settings on click-away', async ({ page }) => {
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
+  await page.getByRole('button', { name: /Labels/ }).click();
+  const title = page.getByLabel('Diagram labels').getByText('Title').locator('..').locator('input');
+
+  await title.fill('Click-away title');
+  await page.getByRole('grid', { name: /Waveform editor/ }).click({ position: { x: 8, y: 8 } });
+
+  await expect(page.locator('.cm-content')).toContainText('Click-away title');
+});
+
 test('renames groups with undo while collapse remains view-only', async ({ page }) => {
   await page.getByRole('button', { name: '+ Add signal', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Section (group)', exact: true }).click();
@@ -757,6 +768,60 @@ test('adds a lane below its nested sibling instead of at the root', async ({ pag
   await expect(request).toHaveCount(0);
   await expect(signalRow(page, 'ready')).toHaveCount(0);
   await expect(signalRow(page, 'sig')).toHaveCount(0);
+});
+
+test('adds below a filtered child in a collapsed group without escaping the group', async ({ page }) => {
+  await replaceJson(page, JSON.stringify({
+    signal: [
+      ['Protocol', { name: 'request', wave: '01..' }, { name: 'ready', wave: '10..' }],
+    ],
+  }));
+  const group = page.locator('[data-group-row="true"]').filter({ hasText: 'Protocol' });
+  await group.getByRole('button', { name: 'Collapse group' }).click();
+
+  const filter = page.getByLabel('Filter signals and sections by name');
+  await filter.fill('request');
+  await signalRow(page, 'request').click({ button: 'right' });
+  await page.getByRole('menuitem', { name: 'Add bit below', exact: true }).click();
+
+  await filter.fill('');
+  await group.getByRole('button', { name: 'Expand group' }).click();
+  await expect(signalRow(page, 'sig')).toBeVisible();
+  await group.getByRole('button', { name: 'Collapse group' }).click();
+  await expect(signalRow(page, 'sig')).toHaveCount(0);
+});
+
+test('commits hscale once and restores it after a blank blur', async ({ page }) => {
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
+  const hscale = page.getByLabel('WaveDrom horizontal scale');
+
+  await hscale.fill('1.5');
+  await hscale.press('Enter');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(hscale).toHaveValue('1');
+
+  await hscale.focus();
+  await hscale.fill('');
+  await hscale.press('Tab');
+  await expect(hscale).toHaveValue('1');
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(hscale).toHaveValue('1.5');
+});
+
+test('commits signal timing fields once and preserves redo after an unchanged blur', async ({ page }) => {
+  await signalRow(page, 'clk').click();
+  await page.getByRole('button', { name: 'Inspector', exact: true }).click();
+  const period = page.getByLabel('Signal period');
+
+  await period.fill('3');
+  await period.press('Enter');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(period).toHaveValue('');
+
+  await period.focus();
+  await period.press('Tab');
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(period).toHaveValue('3');
 });
 
 test('commits numeric style once and preserves redo after a no-op blur', async ({ page }) => {
@@ -910,6 +975,7 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
     hasText: 'Invalid JSON/JSON5/JSONML syntax',
   })).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
+  await page.getByRole('button', { name: 'Diagram settings' }).click();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
@@ -1045,7 +1111,7 @@ test('Help/About exposes privacy and project routes', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Help & About' })).toBeVisible();
   await expect(page.getByText(/full recovery draft and recent filenames/i)).toBeVisible();
   await expect(page.getByText(/independent community project/i)).toBeVisible();
-  await expect(page.getByText(/^Version 0\.1\.0 · (?:[0-9a-f]{7}|unknown)$/)).toBeVisible();
+  await expect(page.getByText(/^Version 0\.1\.0 · [0-9a-f]{7,40}$/)).toBeVisible();
   await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/qqn2/waves-gui');
   await expect(page.getByRole('link', { name: 'Report a bug' })).toHaveAttribute(
     'href',

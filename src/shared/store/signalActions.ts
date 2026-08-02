@@ -201,20 +201,27 @@ function insertAtLocation(
   signals: SignalOrGroup[],
   item: SignalOrGroup,
   location: SignalLocation | undefined,
-): void {
+): boolean {
   let siblings = signals;
   if (location?.parentId) {
-    findGroup(signals, location.parentId, (group) => {
+    const parentFound = findGroup(signals, location.parentId, (group) => {
       siblings = group.children;
     });
+    if (!parentFound) return false;
   }
-  const beforeIndex = location?.beforeId
-    ? siblings.findIndex((candidate) => candidate.id === location.beforeId)
-    : -1;
-  const index = beforeIndex >= 0
-    ? beforeIndex
-    : insertIndexAfter(siblings, location?.afterId);
+  let index = siblings.length;
+  if (location?.beforeId) {
+    index = siblings.findIndex((candidate) => candidate.id === location.beforeId);
+    if (index < 0) return false;
+  } else if (location?.afterId) {
+    const afterIndex = siblings.findIndex(
+      (candidate) => candidate.id === location.afterId,
+    );
+    if (afterIndex < 0) return false;
+    index = afterIndex + 1;
+  }
   siblings.splice(index, 0, item);
+  return true;
 }
 
 function normalizeHead(
@@ -292,6 +299,20 @@ export function createSignalActions(set: ImmerSet): Pick<
   return {
     addSignal(type, location) {
       set((s) => {
+        if (
+          location?.parentId
+          && !findGroup(s.diagram.signals, location.parentId, () => {})
+        ) return;
+        if (location?.beforeId || location?.afterId) {
+          let siblings = s.diagram.signals;
+          if (location.parentId) {
+            findGroup(s.diagram.signals, location.parentId, (group) => {
+              siblings = group.children;
+            });
+          }
+          const anchorId = location.beforeId ?? location.afterId;
+          if (!siblings.some((candidate) => candidate.id === anchorId)) return;
+        }
         pushHistory(s);
         const analogueContext =
           s.diagram.config.analogueContext ?? DEFAULT_ANALOGUE_CONTEXT;
@@ -331,7 +352,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           color: DEFAULT_SIGNAL_COLOR,
           rowHeight: ROW_HEIGHT,
         };
-        insertAtLocation(s.diagram.signals, signal, location);
+        if (!insertAtLocation(s.diagram.signals, signal, location)) return;
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
@@ -477,24 +498,35 @@ export function createSignalActions(set: ImmerSet): Pick<
     },
 
     setSignalPhase(signalId, phase) {
+      if (phase !== undefined && !Number.isFinite(phase)) return;
       set((s) => {
+        let previous: number | undefined;
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          previous = sig.phase;
+        });
+        if (!found || previous === phase) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (phase === undefined) delete sig.phase;
           else sig.phase = phase;
         });
-        s.view.isDirty = true;
       });
     },
 
     setSignalPeriod(signalId, period) {
+      if (period !== undefined && !Number.isFinite(period)) return;
+      const next = period === undefined || period < 1 ? undefined : Math.floor(period);
       set((s) => {
+        let previous: number | undefined;
+        const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          previous = sig.period;
+        });
+        if (!found || previous === next) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
-          if (period === undefined || period < 1) delete sig.period;
-          else sig.period = Math.floor(period);
+          if (next === undefined) delete sig.period;
+          else sig.period = next;
         });
-        s.view.isDirty = true;
       });
     },
 

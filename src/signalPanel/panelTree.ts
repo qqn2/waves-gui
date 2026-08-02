@@ -70,6 +70,22 @@ export function collectVisibleRows(
   return rows;
 }
 
+/** Resolve hierarchy from the document tree, never from the currently visible rows. */
+export function findParentGroupId(
+  items: SignalOrGroup[],
+  id: string,
+  parentId?: string,
+): string | undefined {
+  for (const item of items) {
+    if (item.id === id) return parentId;
+    if (item.type === 'group') {
+      const nested = findParentGroupId(item.children, id, item.id);
+      if (nested !== undefined) return nested;
+    }
+  }
+  return undefined;
+}
+
 export function getSiblingIds(
   signals: SignalOrGroup[],
   parentId?: string,
