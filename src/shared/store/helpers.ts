@@ -1,6 +1,7 @@
 import { current } from 'immer';
 import { resizeBitSignalToLength } from '../bitStepResize';
 import { resizeAnalogueCells } from '../analogue';
+import { resizeTimingToDuration } from '../timedStepResize';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import { MAX_HISTORY } from '../constants';
 import { createDefaultDiagram } from '../defaultDiagram';
@@ -152,6 +153,20 @@ export function resizeAllStates(
     } else if (sg.type === 'bit') {
       resizeBitSignalToLength(sg, newLen, oldLen);
     } else if (sg.type === 'vector') {
+      if (sg.vectorTiming) {
+        resizeTimingToDuration(
+          sg.vectorTiming,
+          newLen * Math.max(1, sg.vectorTiming.ticksPerStep),
+        );
+        const cellCount = sg.vectorTiming.cells.length;
+        for (const seg of sg.segments) {
+          if (seg.endStep > cellCount) seg.endStep = cellCount;
+          if (seg.startStep >= cellCount) seg.startStep = Math.max(0, cellCount - 1);
+        }
+        const last = sg.segments[sg.segments.length - 1];
+        if (last && last.endStep < cellCount) last.endStep = cellCount;
+        continue;
+      }
       for (const seg of sg.segments) {
         if (seg.endStep > newLen) seg.endStep = newLen;
         if (seg.startStep >= newLen) seg.startStep = Math.max(0, newLen - 1);

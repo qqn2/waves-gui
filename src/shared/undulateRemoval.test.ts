@@ -172,4 +172,28 @@ describe('remove Undulate features for WaveDrom', () => {
     expect(metrics.height).toBeGreaterThan(0);
     expect(metrics.pathCount).toBeGreaterThan(0);
   });
+
+  it('resamples native vector timing onto major columns before removal', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{
+        name: 'fine bus',
+        wave: '=.=.=.=.',
+        data: ['A', 'B', 'C', 'D'],
+        period: 0.5,
+      }],
+    } as UndulateRoot);
+    expect(diagram.config.totalSteps).toBe(4);
+    useStore.getState().loadDiagram(diagram);
+    useStore.getState().removeUndulateFeatures();
+
+    const signal = useStore.getState().diagram.signals[0];
+    if (!signal || signal.type !== 'vector') throw new Error('expected vector lane');
+    expect(signal.vectorTiming).toBeUndefined();
+    expect(signal.segments.every((segment) => segment.endStep <= 4)).toBe(true);
+    expect(toWavedromJSON(useStore.getState().diagram).signal[0]).toMatchObject({
+      wave: expect.any(String),
+    });
+    expect((toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string }).wave)
+      .toHaveLength(4);
+  });
 });

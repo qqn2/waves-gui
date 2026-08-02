@@ -442,6 +442,20 @@ describe('Undulate JSON bridge', () => {
     expect(fromUndulateJSON(saved).config.totalSteps).toBe(6);
   });
 
+  it('enables Undulate mode for a vector-only native timing document', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{
+        name: 'timed bus',
+        wave: '=.=.',
+        data: ['A', 'B'],
+        periods: [0.5, 0.5, 0.5, 0.5],
+      }],
+    } satisfies UndulateRoot);
+    const signal = diagram.signals[0];
+    expect(signal?.type === 'vector' ? signal.vectorTiming : undefined).toBeDefined();
+    expect(diagram.compatibility?.extensionsEnabled).toBe(true);
+  });
+
   it('expands analogue repeat with the upstream value-cycling semantics', () => {
     const root = {
       signal: [{
