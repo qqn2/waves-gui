@@ -15,7 +15,7 @@ import type { AppState } from '../types';
 import type { StoreActions } from './storeActions';
 import { defaultDiagram, defaultView, isDocumentDirty } from './helpers';
 import { normalizeDiagram } from '../normalizeDiagram';
-import { loadThemeSettings } from '../theme';
+import { canvasColorForTheme, loadThemeSettings } from '../theme';
 import { createSignalActions } from './signalActions';
 import { createEdgeActions, createDocumentActions } from './documentActions';
 import { createViewActions } from './viewActions';
@@ -43,7 +43,7 @@ export const useStore = create<AppState & StoreActions>()(
         ...defaultView(),
         theme: storedTheme.theme,
         accentColor: storedTheme.accentColor,
-        canvasColor: storedTheme.canvasColor,
+        canvasColor: canvasColorForTheme(storedTheme.theme, storedTheme.canvasColor),
         uiFontScale: storedTheme.uiFontScale,
       },
       history: [],

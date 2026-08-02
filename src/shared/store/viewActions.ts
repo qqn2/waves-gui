@@ -8,7 +8,7 @@ import type {
 } from '../types';
 import type { WavedromColorIndex } from '../../wavedromBridge/wavedromColors';
 import { MIN_ZOOM, MAX_ZOOM } from '../constants';
-import { saveThemeSettings, themeSettingsFromView } from '../theme';
+import { canvasColorForTheme, saveThemeSettings, themeSettingsFromView } from '../theme';
 import {
   clampLabelColumnWidth,
   saveLabelColumnWidth,
@@ -191,6 +191,7 @@ export function createViewActions(set: ImmerSet): Pick<
     setTheme(theme: Theme) {
       set((s) => {
         s.view.theme = theme;
+        s.view.canvasColor = canvasColorForTheme(theme, s.view.canvasColor);
         persistTheme(s.view);
       });
     },

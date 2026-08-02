@@ -20,6 +20,7 @@ export function ThemeMenu() {
   const [open, setOpen] = useState(false);
 
   const activeAccent = accentColor ?? ACCENT_PRESETS[0]!.hex;
+  const activeCanvas = canvasColor ?? (theme === 'dark' ? '#111418' : '#fafafa');
 
   return (
     <div className={styles.addWrap}>
@@ -114,7 +115,7 @@ export function ThemeMenu() {
               <label className={styles.themeColorCustom} title="Custom canvas">
                 <input
                   type="color"
-                  value={canvasColor ?? '#fafafa'}
+                  value={activeCanvas}
                   aria-label="Custom canvas"
                   onChange={(e) => setCanvasColor(e.target.value.toLowerCase())}
                 />
