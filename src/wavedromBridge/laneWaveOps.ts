@@ -77,6 +77,7 @@ export function syncStatesFromWave(sig: Signal, targetLen: number): void {
 
 export function setBitLaneWave(sig: Signal, wave: string, targetLen: number): void {
   if (sig.type !== 'bit') return;
+  delete sig.sourceWaveData;
   sig.laneMode = 'wave';
   sig.wave = wave;
   delete sig.waveOverride;

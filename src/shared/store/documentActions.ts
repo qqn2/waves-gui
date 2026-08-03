@@ -345,6 +345,7 @@ interface PreservedIdMapping {
   signalIds: Map<string, string>;
   segmentIds: Map<string, string>;
   annotationIds: Map<string, string>;
+  overlayGroupIds: Map<string, string>;
 }
 
 function withoutIds(value: unknown): unknown {
@@ -395,6 +396,7 @@ function preserveSignalIds(
     signalIds: new Map(),
     segmentIds: new Map(),
     annotationIds: new Map(),
+    overlayGroupIds: new Map(),
   };
   const matchLevel = (oldItems: SignalOrGroup[], nextItems: SignalOrGroup[]) => {
     const exact = new Map<string, SignalOrGroup[]>();
@@ -485,23 +487,80 @@ function preserveAnnotationIds(
 ): void {
   if (!previous || !next) return;
   const used = new Set<string>();
-  next.forEach((annotation, index) => {
-    const exact = previous.find((candidate) => (
-      !used.has(candidate.id)
-      && candidate.type === annotation.type
-      && ('tick' in candidate ? candidate.tick : undefined)
-        === ('tick' in annotation ? annotation.tick : undefined)
-    ));
-    const fallback = previous[index];
-    const candidate = exact ?? (
-      fallback?.type === annotation.type && !used.has(fallback.id)
-        ? fallback
-        : undefined
+  const oldByKey = new Map<string, DiagramAnnotation[]>();
+  const nextByKey = new Map<string, DiagramAnnotation[]>();
+  const oldByFingerprint = new Map<string, DiagramAnnotation[]>();
+  const nextByFingerprint = new Map<string, DiagramAnnotation[]>();
+  const keyFor = (annotation: DiagramAnnotation) => `${annotation.type}:${
+    'tick' in annotation ? annotation.tick ?? '' : ''}`;
+  const add = (map: Map<string, DiagramAnnotation[]>, key: string, item: DiagramAnnotation) => {
+    const bucket = map.get(key) ?? [];
+    bucket.push(item);
+    map.set(key, bucket);
+  };
+  previous.forEach((annotation) => {
+    add(oldByKey, keyFor(annotation), annotation);
+    add(oldByFingerprint, JSON.stringify(withoutIds(annotation)), annotation);
+  });
+  next.forEach((annotation) => {
+    add(nextByKey, keyFor(annotation), annotation);
+    add(nextByFingerprint, JSON.stringify(withoutIds(annotation)), annotation);
+  });
+  const matches = new Map<DiagramAnnotation, DiagramAnnotation>();
+  nextByKey.forEach((items, key) => {
+    const candidates = oldByKey.get(key) ?? [];
+    if (items.length !== 1 || candidates.length !== 1) return;
+    matches.set(items[0]!, candidates[0]!);
+  });
+  nextByFingerprint.forEach((items, key) => {
+    const candidates = (oldByFingerprint.get(key) ?? []).filter(
+      (annotation) => ![...matches.values()].includes(annotation),
     );
+    if (items.length !== 1 || candidates.length !== 1 || matches.has(items[0]!)) return;
+    matches.set(items[0]!, candidates[0]!);
+  });
+  const oldByType = new Map<string, DiagramAnnotation[]>();
+  const nextByType = new Map<string, DiagramAnnotation[]>();
+  previous.forEach((annotation) => add(oldByType, annotation.type, annotation));
+  next.forEach((annotation) => add(nextByType, annotation.type, annotation));
+  next.forEach((annotation) => {
+    const uniqueTypeMatch = oldByType.get(annotation.type)?.length === 1
+      && nextByType.get(annotation.type)?.length === 1
+      ? oldByType.get(annotation.type)?.[0]
+      : undefined;
+    const candidate = matches.get(annotation) ?? uniqueTypeMatch;
     if (!candidate) return;
+    if (used.has(candidate.id)) return;
     used.add(candidate.id);
     mapping.annotationIds.set(annotation.id, candidate.id);
     annotation.id = candidate.id;
+  });
+}
+
+function preserveOverlayGroupIds(
+  previous: DiagramState['analogueOverlayGroups'],
+  next: DiagramState['analogueOverlayGroups'],
+  signalIds: Map<string, string>,
+  mapping: PreservedIdMapping,
+): void {
+  if (!previous || !next) return;
+  const used = new Set<string>();
+  next.forEach((group) => {
+    group.signalIds = group.signalIds.map((id) => signalIds.get(id) ?? id);
+    const candidate = previous.find((old) => (
+      !used.has(old.id)
+      && old.name === group.name
+      && old.signalIds.length === group.signalIds.length
+      && old.signalIds.every((id, index) => id === group.signalIds[index])
+    )) ?? previous.find((old) => (
+      !used.has(old.id)
+      && old.signalIds.length === group.signalIds.length
+      && old.signalIds.every((id, index) => id === group.signalIds[index])
+    ));
+    if (!candidate) return;
+    used.add(candidate.id);
+    mapping.overlayGroupIds.set(group.id, candidate.id);
+    group.id = candidate.id;
   });
 }
 
@@ -755,6 +814,12 @@ export function createDocumentActions(set: ImmerSet): Pick<
         const normalized = normalizeDiagram(diagram);
         const preservedIds = preserveSignalIds(s.diagram.signals, normalized.signals);
         preserveAnnotationIds(s.diagram.annotations, normalized.annotations, preservedIds);
+        preserveOverlayGroupIds(
+          s.diagram.analogueOverlayGroups,
+          normalized.analogueOverlayGroups,
+          preservedIds.signalIds,
+          preservedIds,
+        );
         if (normalized.compatibility?.opaqueUndulate) {
           normalized.compatibility.opaqueUndulate.signals = remapOpaqueRecords(
             normalized.compatibility.opaqueUndulate.signals,
@@ -768,8 +833,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         if (normalized.analogueOverlayGroups) {
           normalized.analogueOverlayGroups = normalized.analogueOverlayGroups.map((group) => ({
             ...group,
-            id: preservedIds.signalIds.get(group.id) ?? group.id,
-            signalIds: group.signalIds.map((id) => preservedIds.signalIds.get(id) ?? id),
+            id: preservedIds.overlayGroupIds.get(group.id) ?? group.id,
           }));
         }
         if (diagramsEqual(current(s.diagram), normalized)) return;

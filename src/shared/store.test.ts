@@ -128,6 +128,7 @@ describe('useStore', () => {
     const edited = structuredClone(useStore.getState().diagram);
     edited.signals[0]!.id = 'parsed-a';
     edited.signals[1]!.id = 'parsed-b';
+    edited.analogueOverlayGroups![0]!.id = 'parsed-overlay';
     edited.analogueOverlayGroups![0]!.signalIds = ['parsed-a', 'parsed-b'];
     edited.compatibility!.opaqueUndulate!.signals = {
       'parsed-a': { laneHint: 'first' },
@@ -144,6 +145,7 @@ describe('useStore', () => {
       'analogue-a',
       'analogue-b',
     ]);
+    expect(after.analogueOverlayGroups?.[0]?.id).toBe('overlay-1');
     expect(after.compatibility?.opaqueUndulate?.signals).toEqual({
       'analogue-a': { laneHint: 'first' },
       'analogue-b': { laneHint: 'second' },
@@ -198,6 +200,70 @@ describe('useStore', () => {
       'old-a',
       'old-b',
     ]);
+  });
+
+  it('preserves opaque annotation metadata by unique semantic content', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: {
+        extensionsEnabled: true,
+        opaqueUndulate: {
+          annotations: {
+            'arrow-a': { stroke: '#a00' },
+            'arrow-b': { stroke: '#0a0' },
+          },
+        },
+      },
+      config: { totalSteps: 4, hscale: 1 },
+      edges: [],
+      signals: [],
+      annotations: [
+        {
+          id: 'arrow-a',
+          type: 'arrow',
+          shape: '->',
+          from: { kind: 'point', x: 0, y: 0 },
+          to: { kind: 'point', x: 1, y: 0 },
+          text: 'A',
+        },
+        {
+          id: 'arrow-b',
+          type: 'arrow',
+          shape: '->',
+          from: { kind: 'point', x: 2, y: 0 },
+          to: { kind: 'point', x: 3, y: 0 },
+          text: 'B',
+        },
+      ],
+    });
+    const edited = structuredClone(useStore.getState().diagram);
+    edited.annotations!.unshift({
+      id: 'arrow-new',
+      type: 'arrow',
+      shape: '->',
+      from: { kind: 'point', x: 0, y: 1 },
+      to: { kind: 'point', x: 1, y: 1 },
+      text: 'X',
+    });
+    edited.annotations![1]!.id = 'parsed-a';
+    edited.annotations![2]!.id = 'parsed-b';
+    edited.compatibility!.opaqueUndulate!.annotations = {
+      'parsed-a': { stroke: '#a00' },
+      'parsed-b': { stroke: '#0a0' },
+    };
+
+    useStore.getState().applyDiagramEdit(edited);
+    const annotations = useStore.getState().diagram.annotations ?? [];
+    expect(annotations.map((annotation) => annotation.id)).toEqual([
+      'arrow-new',
+      'arrow-a',
+      'arrow-b',
+    ]);
+    expect(useStore.getState().diagram.compatibility?.opaqueUndulate?.annotations)
+      .toEqual({
+        'arrow-a': { stroke: '#a00' },
+        'arrow-b': { stroke: '#0a0' },
+      });
   });
 
   it('records head and foot edits once and preserves redo on no-op updates', () => {
@@ -1577,6 +1643,44 @@ describe('useStore', () => {
       expect.objectContaining({ startStep: 3, endStep: 5, value: 'A' }),
     ]);
     expect(vector.stepGaps).toBeUndefined();
+  });
+
+  it('does not create history for an empty ordinary vector erase', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      config: { totalSteps: 4, hscale: 1 },
+      edges: [],
+      signals: [{
+        id: 'vector-empty-erase',
+        name: 'vector-empty-erase',
+        type: 'vector',
+        states: [],
+        segments: [
+          { id: 'stable-segment-a', startStep: 0, endStep: 1, value: 'A' },
+          { id: 'stable-segment-b', startStep: 3, endStep: 4, value: 'B' },
+        ],
+        color: '#4A9EFF',
+        rowHeight: 40,
+      }],
+    });
+    const revision = useStore.getState().view.diagramRevision;
+    const historyLength = useStore.getState().history.length;
+    expect(useStore.getState().eraseSignalStateRange(
+      'vector-empty-erase',
+      1,
+      2,
+      'document',
+    )).toBe(false);
+    expect(useStore.getState().history.length).toBe(historyLength);
+    expect(useStore.getState().view.diagramRevision).toBe(revision);
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('vector');
+    if (signal?.type === 'vector') {
+      expect(signal.segments.map((segment) => segment.id)).toEqual([
+        'stable-segment-a',
+        'stable-segment-b',
+      ]);
+    }
   });
 
   it('prunes tail nodes, edges, curve controls and annotations when Steps shrinks', () => {

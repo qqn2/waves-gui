@@ -12,6 +12,7 @@ import {
 import { flushPendingCodeToDiagram, registerCodeFlush, cancelPendingCodeToDiagramDebounce, registerCodeDebounceCancel } from './flushRegistry';
 import { runAfterSourceFlush } from './sourceMutationGuard';
 import { toWavedromJSON } from '../wavedromBridge';
+import { useStore } from '../shared/store';
 
 function sampleDiagram(): DiagramState {
   const signal: Signal = {
@@ -367,6 +368,19 @@ describe('flushRegistry', () => {
       ok: false as const,
       error: 'invalid source',
     }));
+    expect(runAfterSourceFlush(() => { mutated = true; })).toBe(false);
+    expect(mutated).toBe(false);
+    unregister();
+  });
+
+  it('cancels a mutation when flushing replaces the diagram revision', () => {
+    let mutated = false;
+    const unregister = registerCodeFlush(() => {
+      useStore.setState((state) => {
+        state.view.diagramRevision += 1;
+      });
+      return { ok: true as const };
+    });
     expect(runAfterSourceFlush(() => { mutated = true; })).toBe(false);
     expect(mutated).toBe(false);
     unregister();

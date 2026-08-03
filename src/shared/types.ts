@@ -213,6 +213,11 @@ export interface Signal {
   laneMode?: 'states' | 'wave';
   /** Canonical WaveDrom wave for laneMode `'wave'` lanes. */
   wave?: string;
+  /** Original WaveDrom wave/data retained for unsupported mixed bus/scalar lanes. */
+  sourceWaveData?: {
+    wave: string;
+    data?: string | Array<string | string[]>;
+  };
   /** @deprecated Use laneMode `'wave'` and `wave`. Kept for loaded diagrams. */
   waveOverride?: string;
 }

@@ -927,6 +927,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   const preserveNativeCellCounts = rawSignals.some(hasNativeTimingFields);
   const diagram = fromWavedromJSON(wavedromCompatibleRoot(root), {
     padSignals: !preserveNativeCellCounts,
+    preserveMixedSource: false,
   });
   const parsedSignals = flattenDiagramSignals(diagram.signals);
   const ticksPerStep = timingResolution(timingValues(rawSignals));

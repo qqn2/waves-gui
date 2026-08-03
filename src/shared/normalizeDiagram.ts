@@ -161,7 +161,7 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     } else if (signal.type === 'bit' && signal.period !== undefined) {
       // Preserve period-bearing WaveDrom source cells; period is applied by
       // the renderer/exporter and must not be baked into the stored array.
-    } else if (signal.type === 'bit' && isWaveModeLane(signal)) {
+    } else if (signal.type === 'bit' && isWaveModeLane(signal) && !signal.sourceWaveData) {
       padWaveLaneToLength(signal, totalSteps, DEFAULT_HSCALE);
     } else {
       signal.states = padBitStatesToLength(signal.states, totalSteps);

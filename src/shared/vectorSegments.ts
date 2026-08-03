@@ -134,7 +134,16 @@ export function applyVectorSpan(
       };
     }
   }
-  return segmentsFromSteps(steps);
+  const rebuilt = segmentsFromSteps(steps);
+  return rebuilt.map((segment) => {
+    const existing = segments.find((candidate) => (
+      candidate.startStep === segment.startStep
+      && candidate.endStep === segment.endStep
+      && candidate.value === segment.value
+      && candidate.color === segment.color
+    ));
+    return existing ? { ...segment, id: existing.id } : segment;
+  });
 }
 
 /** WaveDrom `wave` + `data[]` for a vector lane (digits 2–9 encode bus fill). */

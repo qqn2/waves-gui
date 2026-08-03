@@ -25,14 +25,14 @@ function signalToEntry(
   if (sig.type === 'bit') {
     const sourceSteps = sourceStepsForPeriod(sig);
     const exportSteps = sourceSteps ?? totalSteps;
-    const wave = isWaveModeLane(sig)
+    const wave = sig.sourceWaveData?.wave ?? (isWaveModeLane(sig)
       ? padWaveForDiagram(sig, exportSteps, hscale)
       : encodeWaveStringForDiagram(
           sig.states,
           exportSteps,
           sig.stepGaps,
           sig.stepGlitches,
-        );
+        ));
     const entry: WdSignal = {
       name: sig.name,
       wave,
@@ -40,13 +40,16 @@ function signalToEntry(
     if (sig.phase !== undefined) entry.phase = sig.phase;
     if (sig.period !== undefined) entry.period = sig.period;
     if (sig.node !== undefined) entry.node = sig.node;
+    if (sig.sourceWaveData?.data !== undefined) entry.data = sig.sourceWaveData.data;
     return entry;
   }
   const steps = sourceStepsForPeriod(sig) ?? Math.max(
     totalSteps,
     sig.segments.length > 0 ? Math.max(...sig.segments.map((s) => s.endStep)) : 0,
   );
-  const { wave, data } = segmentsToWaveAndData(sig.segments, steps, sig.stepGaps);
+  const modeled = segmentsToWaveAndData(sig.segments, steps, sig.stepGaps);
+  const wave = sig.sourceWaveData?.wave ?? modeled.wave;
+  const data = sig.sourceWaveData?.data ?? modeled.data;
   const entry: WdSignal = { name: sig.name, wave, data };
   if (sig.node !== undefined) entry.node = sig.node;
   if (sig.phase !== undefined) entry.phase = sig.phase;

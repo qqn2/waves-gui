@@ -299,6 +299,7 @@ function applyEraseToSignal(
       null,
       totalSteps,
     );
+    delete target.sourceWaveData;
     clearStepGapsOnColumns(target, requestedLo, requestedHi);
     return { accepted: true, changed: before !== JSON.stringify(target) };
   }
@@ -453,6 +454,16 @@ function duplicateSignalInDraft(
         ...(item.laneMode !== undefined ? { laneMode: item.laneMode } : {}),
         ...(item.wave !== undefined ? { wave: item.wave } : {}),
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
+        ...(item.sourceWaveData
+          ? {
+              sourceWaveData: {
+                wave: item.sourceWaveData.wave,
+                ...(item.sourceWaveData.data !== undefined
+                  ? { data: JSON.parse(JSON.stringify(item.sourceWaveData.data)) }
+                  : {}),
+              },
+            }
+          : {}),
       };
       signals.splice(i + 1, 0, clone);
       return clone.id;
@@ -853,6 +864,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           const seg = sig.segments.find((x) => x.id === segmentId);
           if (seg && seg.value !== value) {
             pushHistory(s);
+            delete sig.sourceWaveData;
             seg.value = value;
             changed = true;
           }
@@ -866,6 +878,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
+          delete sig.sourceWaveData;
           sig.segments = applyVectorSpan(
             sig.segments,
             startStep,
@@ -889,6 +902,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           if (!seg) return;
           if (seg.color === color) return;
           pushHistory(s);
+          delete sig.sourceWaveData;
           if (color === undefined) delete seg.color;
           else seg.color = color;
           changed = true;

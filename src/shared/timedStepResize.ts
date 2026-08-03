@@ -62,18 +62,14 @@ export function resizeTimingToDuration(
 }
 
 function boundaryTick(timing: SignalTiming, majorIndex: number): number {
-  return Math.max(
-    0,
-    Math.min(
-      timingCellDuration(timing),
-      majorIndex * Math.max(1, timing.ticksPerStep) + timing.phaseTicks,
-    ),
-  );
+  return majorIndex * Math.max(1, timing.ticksPerStep) + timing.phaseTicks;
 }
 
 export type TimingBoundary =
+  | { kind: 'before'; index: 0; tick: number }
   | { kind: 'exact'; index: number; tick: number }
-  | { kind: 'inside'; index: number; offsetTicks: number; tick: number };
+  | { kind: 'inside'; index: number; offsetTicks: number; tick: number }
+  | { kind: 'after'; index: number; tick: number };
 
 /** Locate a document boundary without losing whether it splits a source cell. */
 export function timingBoundaryAtMajorStep(
@@ -81,6 +77,9 @@ export function timingBoundaryAtMajorStep(
   majorIndex: number,
 ): TimingBoundary {
   const target = boundaryTick(timing, majorIndex);
+  const total = timingCellDuration(timing);
+  if (target < 0) return { kind: 'before', index: 0, tick: target };
+  if (target > total) return { kind: 'after', index: timing.cells.length, tick: target };
   let cursor = 0;
   for (let index = 0; index < timing.cells.length; index++) {
     const duration = Math.max(1, Math.round(timing.cells[index]!.durationTicks));
@@ -144,6 +143,7 @@ export function majorStepBoundaryCellIndex(
 
 export function canInsertMajorStepInTiming(timing: SignalTiming, majorIndex: number): boolean {
   const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
+  if (boundary.kind === 'before' || boundary.kind === 'after') return true;
   if (boundary.kind === 'inside') return !isClockCell(timing.cells[boundary.index]!);
   return !isClockCell(timing.cells[boundary.index - 1]!)
     && !isClockCell(timing.cells[boundary.index]!);
@@ -157,6 +157,11 @@ export function insertMajorStepInTiming(
   const stepTicks = Math.max(1, timing.ticksPerStep);
   const cells = timing.cells.map((cell) => ({ ...cell }));
   const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
+  if (boundary.kind === 'before') {
+    timing.phaseTicks -= stepTicks;
+    return true;
+  }
+  if (boundary.kind === 'after') return false;
   const index = boundary.index;
   if (
     (boundary.kind === 'inside' && isClockCell(cells[index]!))

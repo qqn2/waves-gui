@@ -46,6 +46,10 @@ function isVectorWave(wave: string): boolean {
   return /[=2-9]/.test(wave) && !isUndulateExtendedDigitalWave(wave);
 }
 
+function isMixedBusScalarWave(wave: string): boolean {
+  return /[=2-9]/.test(wave) && /[01zZuUdDpPnNiImMhHlL]/.test(wave);
+}
+
 function normalizeDataLabel(entry: string | string[]): string {
   if (Array.isArray(entry)) return entry.map(String).join('\n');
   return String(entry);
@@ -167,6 +171,9 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       phase: sig.phase,
       period: sig.period,
       ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
+      ...(isMixedBusScalarWave(wave)
+        ? { sourceWaveData: { wave, ...(sig.data !== undefined ? { data: sig.data } : {}) } }
+        : {}),
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
     vectorAuthoredLengths.set(vector, wave.length);
@@ -188,6 +195,9 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     phase: sig.phase,
     period: sig.period,
     ...(waveMode ? { laneMode: 'wave' as const, wave } : {}),
+    ...(isMixedBusScalarWave(wave)
+      ? { sourceWaveData: { wave, ...(sig.data !== undefined ? { data: sig.data } : {}) } }
+      : {}),
     ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
     ...(stepGlitches.some(Boolean) ? { stepGlitches } : {}),
     ...(sig.node !== undefined ? { node: sig.node } : {}),
@@ -203,6 +213,7 @@ function maxSteps(signals: SignalOrGroup[]): number {
         const len = bitLaneStepCount(item, DEFAULT_HSCALE);
         max = Math.max(max, len);
       } else if (item.type === 'vector') {
+        max = Math.max(max, item.sourceWaveData?.wave.length ?? 0);
         max = Math.max(max, item.stepGaps?.length ?? 0);
         for (const seg of item.segments) {
           max = Math.max(max, seg.endStep);
@@ -229,6 +240,8 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
     if (s.node !== undefined) {
       s.node = padNode(s.node, totalSteps);
     }
+    // Preserve mixed bus/scalar source spelling and payload for lossless export.
+    if (s.sourceWaveData) return;
     if (s.type === 'bit') {
       if (isWaveModeLane(s)) {
         padWaveLaneToLength(s, totalSteps, DEFAULT_HSCALE);
@@ -297,6 +310,8 @@ export interface FromWavedromJSONOptions {
    * timed rows must retain their native cell counts until periods are applied.
    */
   padSignals?: boolean;
+  /** Keep unsupported mixed bus/scalar source payload for WaveDrom round-trips. */
+  preserveMixedSource?: boolean;
 }
 
 export function fromWavedromJSON(
@@ -311,6 +326,15 @@ export function fromWavedromJSON(
   const totalSteps = maxSteps(signals);
   if (options.padSignals !== false) {
     padSignals(signals, totalSteps);
+  }
+  if (options.preserveMixedSource === false) {
+    const clearMixedSource = (items: SignalOrGroup[]) => {
+      items.forEach((item) => {
+        if (item.type === 'group') clearMixedSource(item.children);
+        else delete item.sourceWaveData;
+      });
+    };
+    clearMixedSource(signals);
   }
   const config = {
     totalSteps,

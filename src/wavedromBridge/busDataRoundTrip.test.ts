@@ -107,4 +107,16 @@ describe('bus data[] round-trip', () => {
       expect.objectContaining({ startStep: 0, endStep: 1, value: 'A' }),
     ]);
   });
+
+  it('round-trips mixed bus/scalar waves with their data payload', () => {
+    const diagram = fromWavedromJSON({
+      signal: [
+        { name: 'bit-mix', wave: '=0', data: ['A'] },
+        { name: 'clock-mix', wave: '=P', data: ['B'] },
+      ],
+    });
+    const output = toWavedromJSON(diagram);
+    expect(output.signal[0]).toMatchObject({ wave: '=0', data: ['A'] });
+    expect(output.signal[1]).toMatchObject({ wave: '=P', data: ['B'] });
+  });
 });

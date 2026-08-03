@@ -327,6 +327,7 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
       const boundary = timingBoundaryAtMajorStep(sig.vectorTiming, clamped);
       const beforeCount = sig.vectorTiming.cells.length;
       if (!insertMajorStepInTiming(sig.vectorTiming, clamped)) return false;
+      delete sig.sourceWaveData;
       const inserted = sig.vectorTiming.cells.length - beforeCount;
       sig.stepGaps = fitTimingFlags(
         insertTimingFlags(sig.stepGaps, boundary, inserted),
@@ -367,6 +368,7 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
     }
 
     sig.stepGaps = spliceColumnFlags(sig.stepGaps, clamped, totalSteps + 1);
+    delete sig.sourceWaveData;
 
     return true;
 
@@ -424,6 +426,7 @@ export function deleteStepInSignal(
       }
       const deleted = deleteMajorStepInTiming(sig.vectorTiming, index, minSteps);
       if (!deleted) return false;
+      delete sig.sourceWaveData;
       if (rawEnd <= 0 || rawStart >= total) return true;
       sig.stepGaps = fitTimingFlags(
         deleteTimingFlags(sig.stepGaps, sourceCells, start, end),
@@ -470,6 +473,7 @@ export function deleteStepInSignal(
       Math.max(0, totalSteps - 1),
 
     );
+    delete sig.sourceWaveData;
 
     return true;
 
