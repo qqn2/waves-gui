@@ -37,6 +37,7 @@ import {
 } from '../annotations';
 import { canRescaleDiagramTiming, rescaleDiagramTiming } from '../fineTiming';
 import { toolState } from '../../tools/toolState';
+import { MIXED_WAVE_NOTICE } from '../mixedWave';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
@@ -341,6 +342,13 @@ function reconcileSignalSelection(
   return [...new Set(reconciled)];
 }
 
+function clearOpaqueMixedSources(signals: SignalOrGroup[]): void {
+  for (const signal of signals) {
+    if (signal.type === 'group') clearOpaqueMixedSources(signal.children);
+    else delete signal.sourceWaveData;
+  }
+}
+
 interface PreservedIdMapping {
   signalIds: Map<string, string>;
   segmentIds: Map<string, string>;
@@ -620,6 +628,10 @@ export function createEdgeActions(set: ImmerSet): Pick<
         const toSignal = findSignalInDiagram(s.diagram, to.signalId);
         if (!fromSignal || !toSignal) return;
         if (fromSignal.type === 'spacer' || toSignal.type === 'spacer') return;
+        if (fromSignal.sourceWaveData || toSignal.sourceWaveData) {
+          s.view.operationNotice = MIXED_WAVE_NOTICE;
+          return;
+        }
 
         const totalSteps = s.diagram.config.totalSteps;
         const fromSlots = nodeSlotCount(fromSignal, totalSteps);
@@ -903,6 +915,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.annotations = [];
         s.diagram.signals = removeAnalogueSignals(s.diagram.signals);
+        clearOpaqueMixedSources(s.diagram.signals);
         delete s.diagram.analogueOverlayGroups;
         removeExtendedDigitalStates(s.diagram.signals);
         removeDigitalTiming(s.diagram.signals, s.diagram.config.totalSteps);

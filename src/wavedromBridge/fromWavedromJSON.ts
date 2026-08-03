@@ -47,13 +47,14 @@ function isVectorWave(wave: string): boolean {
 }
 
 function isMixedBusScalarWave(wave: string): boolean {
-  // `=` is the canonical WaveDrom bus/data start marker. Bare digits can be
+  // Bus starts may use `=` or the palette digits 2–9. Bare digits can be
   // legitimate Undulate scalar states (for example `01234567`) and must not
-  // be mistaken for an opaque mixed bus lane. Extended Undulate states are
-  // handled by the normal feature-removal path rather than this fallback.
-  return wave.includes('=')
-    && /[01zZuUdDpPnN]/.test(wave)
-    && !/[iImMhHlL]/.test(wave);
+  // be mistaken for an opaque mixed bus lane.
+  const hasBusStart = wave.includes('=') || [...wave].some((char, index) => (
+    /[2-9]/.test(char)
+    && (index === 0 || wave[index - 1] === '.' || wave[index - 1] === '|')
+  ));
+  return hasBusStart && /[01zZuUdDpPnNiImMhHlL]/.test(wave);
 }
 
 function normalizeDataLabel(entry: string | string[]): string {

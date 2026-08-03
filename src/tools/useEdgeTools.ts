@@ -10,6 +10,7 @@ import {
 } from '../wavedromBridge/nodeString';
 import { flushPendingCodeToDiagram } from './codeFlush';
 import { edgeToolHint } from './edgeToolHint';
+import { MIXED_WAVE_NOTICE } from '../shared/mixedWave';
 
 const EDGE_TOOLS: Tool[] = ['arrow', 'timespan'];
 
@@ -67,14 +68,17 @@ export function useEdgeTools(): {
       const diagram = useStore.getState().diagram;
       const signal = findSignalInDiagram(diagram, signalId);
       if (!signal || signal.type === 'spacer') return null;
+      if (signal.sourceWaveData) {
+        useStore.getState().setOperationNotice(MIXED_WAVE_NOTICE);
+        return null;
+      }
 
       const existing = visibleNodeCharAt(signal, step, diagram.config.totalSteps);
       if (existing) return existing;
 
       const ch = allocateNodeChar(diagram);
       if (!ch) return null;
-      setSignalNodeAt(signalId, step, ch);
-      return ch;
+      return setSignalNodeAt(signalId, step, ch) ? ch : null;
     },
     [setSignalNodeAt],
   );
@@ -150,6 +154,11 @@ export function useEdgeTools(): {
       const diagram = useStore.getState().diagram;
       const signal = findSignalInDiagram(diagram, hit.signalId);
       if (!signal || signal.type === 'spacer') return;
+      if (signal.sourceWaveData) {
+        useStore.getState().setOperationNotice(MIXED_WAVE_NOTICE);
+        cancelEdgeEdit();
+        return;
+      }
       const char =
         visibleNodeCharAt(signal, hit.step, diagram.config.totalSteps)
         ?? allocateNodeChar(diagram);

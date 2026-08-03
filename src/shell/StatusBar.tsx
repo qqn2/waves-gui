@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useStore, findSignal } from '../shared/store';
 import { edgeToolHint } from '../tools/edgeToolHint';
 import type { HitTestResult } from '../renderer/hitTest';
-import type { SignalOrGroup, Tool } from '../shared/types';
+import type { Tool } from '../shared/types';
 import type { BitState } from '../shared/types';
 import { toggleBinaryBitState } from '../shared/bitToggle';
 import { countSignals } from './statusUtils';
 import styles from './shell.module.css';
 import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
+import { countOpaqueMixedWaves } from '../shared/mixedWave';
 
 export interface StatusBarProps {
   pointerHit?: HitTestResult | null;
@@ -30,14 +31,6 @@ function toolHelp(tool: Tool): string {
     default:
       return '';
   }
-}
-
-function hasMixedSourceLane(items: SignalOrGroup[]): boolean {
-  return items.some((item) => (
-    item.type === 'group'
-      ? hasMixedSourceLane(item.children)
-      : item.sourceWaveData !== undefined
-  ));
 }
 
 export function StatusBar({ pointerHit }: StatusBarProps) {
@@ -64,7 +57,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
     diagram.compatibility?.extensionsEnabled === true;
   const isEventCompressedVcd =
     diagram.compatibility?.importMode === 'event-compressed-vcd';
-  const hasMixedSource = hasMixedSourceLane(signals);
+  const hasMixedSource = countOpaqueMixedWaves(signals) > 0;
   const [editingEdge, setEditingEdge] = useState<number | null>(null);
   const [edgeDraft, setEdgeDraft] = useState('');
 
@@ -133,7 +126,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
           role="status"
           title="Mixed bus/scalar WaveDrom lanes retain source data but cannot be edited losslessly."
         >
-          Mixed bus/scalar lane: read-only
+          Mixed bus/scalar lane: read-only; visual exports are incomplete
         </span>
       ) : null}
       {edges.length > 0 ? (

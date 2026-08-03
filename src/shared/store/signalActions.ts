@@ -88,6 +88,11 @@ import {
   timingResolution,
 } from '../fineTiming';
 import { toolState } from '../../tools/toolState';
+import {
+  countOpaqueMixedWaves,
+  hasOpaqueMixedWave,
+  MIXED_WAVE_NOTICE,
+} from '../mixedWave';
 
 type TimingOutputRange = { start: number; end: number };
 
@@ -350,22 +355,15 @@ function diagramHasUnsupportedStructuralTiming(signals: SignalOrGroup[]): boolea
   return diagramHasNativeTiming(signals) || hasLegacyTimelineTiming(signals);
 }
 
-const MIXED_WAVE_NOTICE =
-  'Mixed bus/scalar waves are read-only because Draw cannot represent every source cell.';
-
-function hasOpaqueMixedWave(signals: SignalOrGroup[]): boolean {
-  let found = false;
-  walkSignals(signals, (signal) => {
-    if (signal.sourceWaveData) found = true;
-  });
-  return found;
+function diagramHasOpaqueMixedWave(signals: SignalOrGroup[]): boolean {
+  return countOpaqueMixedWaves(signals) > 0;
 }
 
 function rejectOpaqueMixedWave(
   signal: Signal,
   view: { operationNotice?: string | null },
 ): boolean {
-  if (!signal.sourceWaveData) return false;
+  if (!hasOpaqueMixedWave(signal)) return false;
   view.operationNotice = MIXED_WAVE_NOTICE;
   return true;
 }
@@ -374,7 +372,7 @@ function rejectOpaqueMixedWaveDocument(
   signals: SignalOrGroup[],
   view: { operationNotice?: string | null },
 ): boolean {
-  if (!hasOpaqueMixedWave(signals)) return false;
+  if (!diagramHasOpaqueMixedWave(signals)) return false;
   view.operationNotice = MIXED_WAVE_NOTICE;
   return true;
 }
@@ -963,16 +961,18 @@ export function createSignalActions(set: ImmerSet): Pick<
     },
 
     setSignalNodeAt(signalId, step, char) {
+      let changed = false;
       set((s) => {
-        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (rejectOpaqueMixedWave(sig, s.view)) return;
+          const before = sig.node;
           pushHistory(s);
           setNodeCharAt(sig, step, char, s.diagram.config.totalSteps);
-          changed = true;
+          changed = before !== sig.node;
         });
         if (changed) s.view.isDirty = true;
       });
+      return changed;
     },
 
     setSignalPhase(signalId, phase) {

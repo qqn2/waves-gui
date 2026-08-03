@@ -12,6 +12,7 @@ import {
   exportWavedromJSON,
 } from './exportJSON';
 import {
+  opaqueMixedWaveFindings,
   undulateCompatibilityFindings,
   waveDromCompatibilityFindings,
 } from '../shared/compatibility';
@@ -135,14 +136,25 @@ export function ExportDialog({
   }, [open, onClose]);
 
   const isImage = format === 'png' || format === 'jpg';
-  const compatibilityFindings =
-    format === 'json' || format === 'wavedrom-editor'
-      ? waveDromCompatibilityFindings(diagram)
-      : format === 'undulate-json'
-        || format === 'undulate-yaml'
-        || format === 'undulate-toml'
-        ? undulateCompatibilityFindings(diagram)
-        : [];
+  const compatibilityFindings = (() => {
+    const findings =
+      format === 'json' || format === 'wavedrom-editor'
+        ? waveDromCompatibilityFindings(diagram)
+        : format === 'undulate-json'
+          || format === 'undulate-yaml'
+          || format === 'undulate-toml'
+          ? undulateCompatibilityFindings(diagram)
+          : [];
+    const visualFormat = format === 'png'
+      || format === 'jpg'
+      || format === 'svg'
+      || format === 'pdf'
+      || format === 'eps'
+      || format === 'terminal';
+    return visualFormat
+      ? findings.concat(opaqueMixedWaveFindings(diagram))
+      : findings;
+  })();
 
   const handleExport = useCallback(async () => {
     setBusy(true);

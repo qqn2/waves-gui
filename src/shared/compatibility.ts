@@ -1,5 +1,6 @@
 import type { DiagramState } from './types';
 import { scanExtensionContent } from './annotations';
+import { countOpaqueMixedWaves } from './mixedWave';
 
 export type CompatibilityLevel =
   | 'exact'
@@ -14,6 +15,19 @@ export interface CompatibilityFinding {
   objectId?: string;
   message: string;
   consequence?: string;
+}
+
+export function opaqueMixedWaveFindings(
+  diagram: DiagramState,
+): CompatibilityFinding[] {
+  const count = countOpaqueMixedWaves(diagram.signals);
+  if (count === 0) return [];
+  return [{
+    level: 'unsupported',
+    feature: 'mixed-bus-scalar-wave',
+    message: `${count} mixed bus/scalar lane${count === 1 ? '' : 's'} are preserved as opaque source data.`,
+    consequence: 'Canvas and visual exports omit the unsupported scalar/clock cells; keep the lane read-only or edit the source explicitly.',
+  }];
 }
 
 export function waveDromCompatibilityFindings(
@@ -96,7 +110,7 @@ export function waveDromCompatibilityFindings(
       consequence: 'WaveDrom export cannot carry these preserved fields.',
     });
   }
-  return findings;
+  return findings.concat(opaqueMixedWaveFindings(diagram));
 }
 
 export function undulateCompatibilityFindings(
@@ -223,7 +237,7 @@ export function undulateCompatibilityFindings(
       consequence: 'Restore the affected signal or annotation before exporting to avoid omission.',
     });
   }
-  return findings;
+  return findings.concat(opaqueMixedWaveFindings(diagram));
 }
 
 export function hasBlockingFindings(

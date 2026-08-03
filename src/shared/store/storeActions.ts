@@ -154,7 +154,7 @@ export interface StoreActions {
     segmentId: string,
     color: string | undefined,
   ): void;
-  setSignalNodeAt(signalId: string, step: number, char: string | null): void;
+  setSignalNodeAt(signalId: string, step: number, char: string | null): boolean;
   setSignalPhase(signalId: string, phase: number | undefined): void;
   setSignalPeriod(signalId: string, period: number | undefined): void;
   setActiveSignalIds(ids: string[]): void;

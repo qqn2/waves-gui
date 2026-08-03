@@ -1694,6 +1694,12 @@ describe('useStore', () => {
     expect(signal?.type).toBe('vector');
     if (!signal || signal.type !== 'vector') return;
     expect(useStore.getState().setTotalSteps(3)).toBe(false);
+    expect(useStore.getState().setSignalNodeAt(signal.id, 0, 'a')).toBe(false);
+    useStore.getState().addDiagramArrow(
+      { signalId: signal.id, step: 0 },
+      { signalId: signal.id, step: 1 },
+    );
+    expect(useStore.getState().diagram.edges).toEqual([]);
     useStore.getState().updateVectorSegmentValue(signal.id, signal.segments[0]!.id, 'B');
     expect(toWavedromJSON(useStore.getState().diagram)).toEqual(before);
     expect(useStore.getState().view.operationNotice).toContain('read-only');

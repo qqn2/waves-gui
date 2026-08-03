@@ -119,4 +119,14 @@ describe('bus data[] round-trip', () => {
     expect(output.signal[0]).toMatchObject({ wave: '=0', data: ['A'] });
     expect(output.signal[1]).toMatchObject({ wave: '=P', data: ['B'] });
   });
+
+  it('preserves palette bus starts mixed with extended scalar cells', () => {
+    const signal = [
+      { name: 'clock', wave: '2P', data: ['A'] },
+      { name: 'impulse', wave: '2i', data: ['B'] },
+      { name: 'meta', wave: '=M', data: ['C'] },
+      { name: 'held', wave: '=h', data: ['D'] },
+    ];
+    expect(toWavedromJSON(fromWavedromJSON({ signal })).signal).toEqual(signal);
+  });
 });

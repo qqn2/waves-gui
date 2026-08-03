@@ -163,4 +163,17 @@ describe('source compatibility findings', () => {
       expect.objectContaining({ feature: 'extended-edge-markers', level: 'exact' }),
     ]));
   });
+
+  it('warns that opaque mixed lanes are incomplete in visual exports', () => {
+    const diagram = createDefaultDiagram();
+    const signal = diagram.signals[0];
+    if (!signal || signal.type === 'group') throw new Error('Expected signal');
+    signal.sourceWaveData = { wave: '=P', data: ['clk'] };
+    expect(waveDromCompatibilityFindings(diagram)).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        feature: 'mixed-bus-scalar-wave',
+        consequence: expect.stringContaining('visual exports'),
+      }),
+    ]));
+  });
 });
