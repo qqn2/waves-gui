@@ -19,6 +19,7 @@ import * as analoguePaint from './analoguePaintTool';
 import * as erase from './eraseTool';
 import * as select from './selectTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import { useEdgeTools } from './useEdgeTools';
 import { useTimeAxisContextMenu } from '../shell/TimeAxisContextMenu';
 import { copyStepSelection, pasteStepSelection } from './stepClipboard';
@@ -130,8 +131,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         const t = useStore.getState().view.selectedTool;
         if (t === 'cursor' || t === 'select') {
           e.preventDefault();
-          if (!flushPendingCodeToDiagram().ok) return;
-          select.deleteSelection();
+          runAfterSourceFlush(() => select.deleteSelection());
         }
         return;
       }

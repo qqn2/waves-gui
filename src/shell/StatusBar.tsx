@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore, findSignal } from '../shared/store';
 import { edgeToolHint } from '../tools/edgeToolHint';
 import type { HitTestResult } from '../renderer/hitTest';
-import type { Tool } from '../shared/types';
+import type { SignalOrGroup, Tool } from '../shared/types';
 import type { BitState } from '../shared/types';
 import { toggleBinaryBitState } from '../shared/bitToggle';
 import { countSignals } from './statusUtils';
@@ -32,6 +32,14 @@ function toolHelp(tool: Tool): string {
   }
 }
 
+function hasMixedSourceLane(items: SignalOrGroup[]): boolean {
+  return items.some((item) => (
+    item.type === 'group'
+      ? hasMixedSourceLane(item.children)
+      : item.sourceWaveData !== undefined
+  ));
+}
+
 export function StatusBar({ pointerHit }: StatusBarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const edgeAnchorPending = useStore((s) => s.view.edgeAnchorPending);
@@ -56,6 +64,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
     diagram.compatibility?.extensionsEnabled === true;
   const isEventCompressedVcd =
     diagram.compatibility?.importMode === 'event-compressed-vcd';
+  const hasMixedSource = hasMixedSourceLane(signals);
   const [editingEdge, setEditingEdge] = useState<number | null>(null);
   const [edgeDraft, setEdgeDraft] = useState('');
 
@@ -116,6 +125,15 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
           title="VCD timestamps are displayed as equal-width event columns."
         >
           VCD: event-compressed preview
+        </span>
+      ) : null}
+      {hasMixedSource ? (
+        <span
+          className={styles.operationNotice}
+          role="status"
+          title="Mixed bus/scalar WaveDrom lanes retain source data but cannot be edited losslessly."
+        >
+          Mixed bus/scalar lane: read-only
         </span>
       ) : null}
       {edges.length > 0 ? (

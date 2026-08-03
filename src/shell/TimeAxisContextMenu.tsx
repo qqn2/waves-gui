@@ -7,7 +7,7 @@ import {
   hasLegacyTimelineTiming,
   walkSignals,
 } from '../shared/store/stepColumnHelpers';
-import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import { confirmStructuralReferenceLoss } from '../tools/structuralEditGuard';
 import styles from './TimeAxisContextMenu.module.css';
 
@@ -84,12 +84,14 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
         type="button"
         role="menuitem"
         onClick={() => {
-          if (!flushPendingCodeToDiagram().ok) return;
-          if (!canInsert()) return;
-          if (!confirmStructuralReferenceLoss('Inserting a column')) return;
-          insertStepAt(step);
-          onClose();
-        }}
+          const ran = runAfterSourceFlush(() => {
+            if (!canInsert()) return;
+            if (!confirmStructuralReferenceLoss('Inserting a column')) return;
+            insertStepAt(step);
+            onClose();
+          });
+          if (!ran) onClose();
+        }}
       >
         Insert column at step {step}
       </button>
@@ -98,12 +100,14 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
         role="menuitem"
         disabled={totalSteps <= 1}
         onClick={() => {
-          if (!flushPendingCodeToDiagram().ok) return;
-          if (!canDelete()) return;
-          if (!confirmStructuralReferenceLoss('Deleting a column')) return;
-          deleteStepAt(step);
-          onClose();
-        }}
+          const ran = runAfterSourceFlush(() => {
+            if (!canDelete()) return;
+            if (!confirmStructuralReferenceLoss('Deleting a column')) return;
+            deleteStepAt(step);
+            onClose();
+          });
+          if (!ran) onClose();
+        }}
       >
         Delete column at step {step}
       </button>

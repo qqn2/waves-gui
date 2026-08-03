@@ -5,6 +5,7 @@ import { applyVectorSpan } from '../shared/vectorSegments';
 import type { BitState, VectorSegment } from '../shared/types';
 import { toolState } from './toolState';
 import { flushPendingCodeToDiagram } from './codeFlush';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export interface StepRangeClipboard {
   bitStates: BitState[][];
@@ -28,13 +29,20 @@ export function copyStepSelection(): boolean {
   }
 
   let hasNativeTiming = false;
+  let hasOpaqueMixedWave = false;
   for (const signalId of view.activeSignalIds) {
     findSignal(diagram.signals, signalId, (sig) => {
       if (sig.digitalTiming || sig.vectorTiming) hasNativeTiming = true;
+      if (sig.sourceWaveData) hasOpaqueMixedWave = true;
     });
   }
-  if (hasNativeTiming) {
+  if (hasNativeTiming || hasOpaqueMixedWave) {
     internalClipboard = null;
+    if (hasOpaqueMixedWave) {
+      useStore.getState().setOperationNotice(
+        'Mixed bus/scalar waves are read-only because Draw cannot represent every source cell.',
+      );
+    }
     return false;
   }
 
@@ -78,19 +86,27 @@ export function copyStepSelection(): boolean {
   return true;
 }
 
-export function pasteStepSelection(atStep?: number): boolean {
-  if (!flushPendingCodeToDiagram().ok) return false;
+function pasteStepSelectionWithoutSourceFlush(atStep?: number): boolean {
   const clip = internalClipboard;
   if (!clip) return false;
 
   const { view, diagram } = useStore.getState();
   let hasNativeTiming = false;
+  let hasOpaqueMixedWave = false;
   for (const signalId of view.activeSignalIds) {
     findSignal(diagram.signals, signalId, (sig) => {
       if (sig.digitalTiming || sig.vectorTiming) hasNativeTiming = true;
+      if (sig.sourceWaveData) hasOpaqueMixedWave = true;
     });
   }
-  if (hasNativeTiming) return false;
+  if (hasNativeTiming || hasOpaqueMixedWave) {
+    if (hasOpaqueMixedWave) {
+      useStore.getState().setOperationNotice(
+        'Mixed bus/scalar waves are read-only because Draw cannot represent every source cell.',
+      );
+    }
+    return false;
+  }
   const steps = toolState.getStepSelection();
   const pasteAt = atStep ?? steps?.start ?? 0;
 
@@ -144,4 +160,12 @@ export function pasteStepSelection(atStep?: number): boolean {
   });
 
   return true;
+}
+
+export function pasteStepSelection(atStep?: number): boolean {
+  let pasted = false;
+  const ran = runAfterSourceFlush(() => {
+    pasted = pasteStepSelectionWithoutSourceFlush(atStep);
+  });
+  return ran && pasted;
 }

@@ -231,7 +231,11 @@ function nativeCellsForMajorRange(
 interface AppliedEraseResult {
   accepted: boolean;
   changed: boolean;
-  reason?: 'partial-clock-macro' | 'unsupported-native-vector' | 'unsupported-legacy-timing';
+  reason?:
+    | 'partial-clock-macro'
+    | 'unsupported-native-vector'
+    | 'unsupported-legacy-timing'
+    | 'unsupported-mixed-wave';
 }
 
 /** Apply one erase range to a draft signal without recording history. */
@@ -241,6 +245,9 @@ function applyEraseToSignal(
   requestedHi: number,
   coordinate: 'native' | 'document',
 ): AppliedEraseResult {
+  if (target.sourceWaveData) {
+    return { accepted: false, changed: false, reason: 'unsupported-mixed-wave' };
+  }
   if (coordinate === 'document' && target.digitalTiming) {
     const timing = target.digitalTiming;
     const erased = eraseDigitalTimingTicksWithMapping(
@@ -341,6 +348,35 @@ function diagramHasNativeTiming(signals: SignalOrGroup[]): boolean {
 /** Structural column edits need a source-cell-to-document mapping. */
 function diagramHasUnsupportedStructuralTiming(signals: SignalOrGroup[]): boolean {
   return diagramHasNativeTiming(signals) || hasLegacyTimelineTiming(signals);
+}
+
+const MIXED_WAVE_NOTICE =
+  'Mixed bus/scalar waves are read-only because Draw cannot represent every source cell.';
+
+function hasOpaqueMixedWave(signals: SignalOrGroup[]): boolean {
+  let found = false;
+  walkSignals(signals, (signal) => {
+    if (signal.sourceWaveData) found = true;
+  });
+  return found;
+}
+
+function rejectOpaqueMixedWave(
+  signal: Signal,
+  view: { operationNotice?: string | null },
+): boolean {
+  if (!signal.sourceWaveData) return false;
+  view.operationNotice = MIXED_WAVE_NOTICE;
+  return true;
+}
+
+function rejectOpaqueMixedWaveDocument(
+  signals: SignalOrGroup[],
+  view: { operationNotice?: string | null },
+): boolean {
+  if (!hasOpaqueMixedWave(signals)) return false;
+  view.operationNotice = MIXED_WAVE_NOTICE;
+  return true;
 }
 
 function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
@@ -518,6 +554,9 @@ function eraseSignalRanges(
       return { target, result };
     });
     if (previews.some(({ result }) => !result.accepted)) {
+      if (previews.some(({ result }) => result.reason === 'unsupported-mixed-wave')) {
+        s.view.operationNotice = MIXED_WAVE_NOTICE;
+      }
       accepted = false;
       return;
     }
@@ -840,11 +879,18 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         let currentStyle: Signal['style'];
         let nextStyle: Signal['style'];
+        let blocked = false;
         const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           currentStyle = normalizeSignalStyle(sig.style ?? {});
           nextStyle = normalizeSignalStyle({ ...(sig.style ?? {}), ...patch });
         });
         if (
+          blocked
+          ||
           !found
           || JSON.stringify(currentStyle ?? {}) === JSON.stringify(nextStyle ?? {})
         ) return;
@@ -861,6 +907,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
+          if (rejectOpaqueMixedWave(sig, s.view)) return;
           const seg = sig.segments.find((x) => x.id === segmentId);
           if (seg && seg.value !== value) {
             pushHistory(s);
@@ -875,9 +922,11 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     setVectorSpanRange(signalId, startStep, endStepInclusive, value, busColorFill, options) {
       set((s) => {
-        pushHistory(s);
+        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
+          if (rejectOpaqueMixedWave(sig, s.view)) return;
+          pushHistory(s);
           delete sig.sourceWaveData;
           sig.segments = applyVectorSpan(
             sig.segments,
@@ -888,8 +937,9 @@ export function createSignalActions(set: ImmerSet): Pick<
             busColorFill,
             options,
           );
+          changed = true;
         });
-        s.view.isDirty = true;
+        if (changed) s.view.isDirty = true;
       });
     },
 
@@ -898,6 +948,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
+          if (rejectOpaqueMixedWave(sig, s.view)) return;
           const seg = sig.segments.find((x) => x.id === segmentId);
           if (!seg) return;
           if (seg.color === color) return;
@@ -913,11 +964,14 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     setSignalNodeAt(signalId, step, char) {
       set((s) => {
-        pushHistory(s);
+        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) return;
+          pushHistory(s);
           setNodeCharAt(sig, step, char, s.diagram.config.totalSteps);
+          changed = true;
         });
-        s.view.isDirty = true;
+        if (changed) s.view.isDirty = true;
       });
     },
 
@@ -925,10 +979,15 @@ export function createSignalActions(set: ImmerSet): Pick<
       if (phase !== undefined && !Number.isFinite(phase)) return;
       set((s) => {
         let previous: number | undefined;
+        let blocked = false;
         const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           previous = sig.phase;
         });
-        if (!found || previous === phase) return;
+        if (!found || blocked || previous === phase) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (phase === undefined) delete sig.phase;
@@ -942,10 +1001,15 @@ export function createSignalActions(set: ImmerSet): Pick<
       const next = period === undefined || period < 1 ? undefined : Math.floor(period);
       set((s) => {
         let previous: number | undefined;
+        let blocked = false;
         const found = findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           previous = sig.period;
         });
-        if (!found || previous === next) return;
+        if (!found || blocked || previous === next) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (next === undefined) delete sig.period;
@@ -1182,6 +1246,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (s.diagram.compatibility?.extensionsEnabled !== true) return;
         findSignal(s.diagram.signals, signalId, (signal) => {
           if (signal.type !== 'bit') return;
+          if (rejectOpaqueMixedWave(signal, s.view)) return;
           if (signal.digitalTiming) {
             enabled = true;
             return;
@@ -1214,9 +1279,10 @@ export function createSignalActions(set: ImmerSet): Pick<
     updateDigitalTimingCell(signalId, index, patch) {
       set((s) => {
         if (s.diagram.compatibility?.extensionsEnabled !== true) return;
-        pushHistory(s);
         findSignal(s.diagram.signals, signalId, (signal) => {
           if (signal.type !== 'bit') return;
+          if (rejectOpaqueMixedWave(signal, s.view)) return;
+          pushHistory(s);
           if (!signal.digitalTiming) {
             const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
             signal.digitalTiming = {
@@ -1252,9 +1318,10 @@ export function createSignalActions(set: ImmerSet): Pick<
     updateDigitalTimingSignal(signalId, patch) {
       set((s) => {
         if (s.diagram.compatibility?.extensionsEnabled !== true) return;
-        pushHistory(s);
         findSignal(s.diagram.signals, signalId, (signal) => {
           if (signal.type !== 'bit') return;
+          if (rejectOpaqueMixedWave(signal, s.view)) return;
+          pushHistory(s);
           if (!signal.digitalTiming) {
             const ticksPerStep = s.diagram.config.ticksPerStep ?? 1;
             signal.digitalTiming = {
@@ -1289,12 +1356,17 @@ export function createSignalActions(set: ImmerSet): Pick<
     setSignalState(signalId, step, bitState) {
       set((s) => {
         let valid = false;
+        let blocked = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           valid = sig.type === 'bit'
             && Number.isInteger(step)
             && step >= 0 && step < sig.states.length;
         });
-        if (!valid) return;
+        if (!valid || blocked) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
@@ -1308,11 +1380,16 @@ export function createSignalActions(set: ImmerSet): Pick<
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         let valid = false;
+        let blocked = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           valid = sig.type === 'bit' && Number.isFinite(lo) && Number.isFinite(hi)
             && hi >= 0 && lo < sig.states.length;
         });
-        if (!valid) return;
+        if (!valid || blocked) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           const nativeRange = nativeCellsForMajorRange(
@@ -1333,6 +1410,11 @@ export function createSignalActions(set: ImmerSet): Pick<
     paintBitStateRange(signalId, startStep, endStep, bitState, paintStyle) {
       set((s) => {
         let blocked = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          blocked = rejectOpaqueMixedWave(sig, s.view);
+        });
+        if (blocked) return;
+        blocked = false;
         if (paintStyle === 'additive') {
           blocked = diagramHasUnsupportedStructuralTiming(s.diagram.signals);
         }
@@ -1400,6 +1482,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         let changed = false;
         findSignal(s.diagram.signals, signalId, (signal) => {
           if (signal.type !== 'bit' || !signal.digitalTiming) return;
+          if (rejectOpaqueMixedWave(signal, s.view)) return;
           const painted = paintDigitalTimingTicksWithMapping(
             signal.digitalTiming,
             startTick,
@@ -1431,10 +1514,15 @@ export function createSignalActions(set: ImmerSet): Pick<
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         let valid = false;
+        let blocked = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) {
+            blocked = true;
+            return;
+          }
           valid = sig.type === 'bit' && hi >= 0 && lo < sig.states.length;
         });
-        if (!valid) return;
+        if (!valid || blocked) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
@@ -1454,6 +1542,11 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     paintToggleRange(signalId, startStep, endStep, paintStyle) {
       set((s) => {
+        let blocked = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          blocked = rejectOpaqueMixedWave(sig, s.view);
+        });
+        if (blocked) return;
         pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
@@ -1485,6 +1578,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         set((s) => {
           const n = hi - lo + 1;
           if (n === 0) return;
+          if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
           if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
           if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
           pushHistory(s);
@@ -1497,6 +1591,11 @@ export function createSignalActions(set: ImmerSet): Pick<
         return;
       }
       set((s) => {
+        let blocked = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          blocked = rejectOpaqueMixedWave(sig, s.view);
+        });
+        if (blocked) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           toggleGapColumnsOnSignal(sig, lo, hi);
@@ -1508,6 +1607,11 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     toggleStepGlitchRange(signalId, startStep, endStep) {
       set((s) => {
+        let blocked = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          blocked = rejectOpaqueMixedWave(sig, s.view);
+        });
+        if (blocked) return;
         pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
@@ -1536,6 +1640,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const n = Math.max(0, count);
         if (n === 0) return;
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
         if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
         pushHistory(s);
@@ -1551,6 +1656,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
         pushHistory(s);
         const removed = removeGapColumnsOnDiagram(
@@ -1576,11 +1682,14 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
-        pushHistory(s);
+        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
+          if (rejectOpaqueMixedWave(sig, s.view)) return;
+          pushHistory(s);
           clearStepGapsOnColumns(sig, lo, hi);
+          changed = true;
         });
-        s.view.isDirty = true;
+        if (changed) s.view.isDirty = true;
       });
     },
 
@@ -1591,6 +1700,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           target = sig;
         });
         if (!target || step < 0 || step >= target.states.length) return;
+        if (rejectOpaqueMixedWave(target, s.view)) return;
         pushHistory(s);
 
         if (target.stepGaps?.[step]) {
@@ -1730,6 +1840,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           accepted = true;
           return;
         }
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         if (!canResizeAllStates(s.diagram.signals, next)) return;
         pushHistory(s);
@@ -1787,6 +1898,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const total = s.diagram.config.totalSteps;
         if (total >= MAX_TOTAL_STEPS) return;
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         const at = Math.max(0, Math.min(index, total));
         let blocked = false;
@@ -1807,6 +1919,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const total = s.diagram.config.totalSteps;
         if (total <= MIN_TOTAL_STEPS) return;
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         const at = Math.max(0, Math.min(index, total - 1));
         let blocked = false;
@@ -1841,6 +1954,7 @@ export function createSignalActions(set: ImmerSet): Pick<
     toggleStepGapAt(column) {
       set((s) => {
         if (s.diagram.config.totalSteps >= MAX_TOTAL_STEPS) return;
+        if (rejectOpaqueMixedWaveDocument(s.diagram.signals, s.view)) return;
         if (
           diagramHasNativeTiming(s.diagram.signals)
           || hasLegacyTimelineTiming(s.diagram.signals)

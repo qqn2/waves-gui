@@ -48,6 +48,16 @@ describe('Undulate JSON bridge', () => {
     expect(toUndulateJSON(fromUndulateJSON(root))).toEqual(root);
   });
 
+  it('preserves mixed bus/scalar wave data on immediate Undulate export', () => {
+    const root: UndulateRoot = {
+      signal: [
+        { name: 'mixed-bit', wave: '=0', data: ['A'] },
+        { name: 'mixed-clock', wave: '=P', data: ['B'] },
+      ],
+    };
+    expect(toUndulateJSON(fromUndulateJSON(root)).signal).toEqual(root.signal);
+  });
+
   it('exports and reimports text annotations semantically', () => {
     const diagram = createDefaultDiagram();
     const signal = diagram.signals.find((item) => item.type === 'bit')!;

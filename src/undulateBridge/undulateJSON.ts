@@ -387,11 +387,13 @@ function vectorToUndulateEntry(signal: Signal): WdSignal {
     signal.stepGaps?.length ?? 0,
     signal.segments.reduce((end, segment) => Math.max(end, segment.endStep), 0),
   );
-  const { wave, data } = segmentsToWaveAndData(
+  const modeled = segmentsToWaveAndData(
     signal.segments,
     totalSteps,
     signal.stepGaps,
   );
+  const wave = signal.sourceWaveData?.wave ?? modeled.wave;
+  const data = signal.sourceWaveData?.data ?? modeled.data;
   const entry: WdSignal = {
     name: signal.name,
     wave,
@@ -927,7 +929,7 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
   const preserveNativeCellCounts = rawSignals.some(hasNativeTimingFields);
   const diagram = fromWavedromJSON(wavedromCompatibleRoot(root), {
     padSignals: !preserveNativeCellCounts,
-    preserveMixedSource: false,
+    preserveMixedSource: true,
   });
   const parsedSignals = flattenDiagramSignals(diagram.signals);
   const ticksPerStep = timingResolution(timingValues(rawSignals));

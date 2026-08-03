@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import type { BitState, DiagramState } from './types';
 import { DEFAULT_STEPS } from './constants';
 import { createDefaultDiagram } from './defaultDiagram';
-import { toWavedromJSON } from '../wavedromBridge';
+import { fromWavedromJSON, toWavedromJSON } from '../wavedromBridge';
 import {
   diagramToCodeString,
   parseCodeToDiagram,
@@ -1681,6 +1681,32 @@ describe('useStore', () => {
         'stable-segment-b',
       ]);
     }
+  });
+
+  it('treats mixed bus/scalar lanes as read-only', () => {
+    useStore.getState().loadDiagram(fromWavedromJSON({
+      signal: [
+        { name: 'mixed', wave: '=P', data: ['A'] },
+      ],
+    }));
+    const before = toWavedromJSON(useStore.getState().diagram);
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('vector');
+    if (!signal || signal.type !== 'vector') return;
+    expect(useStore.getState().setTotalSteps(3)).toBe(false);
+    useStore.getState().updateVectorSegmentValue(signal.id, signal.segments[0]!.id, 'B');
+    expect(toWavedromJSON(useStore.getState().diagram)).toEqual(before);
+    expect(useStore.getState().view.operationNotice).toContain('read-only');
+
+    useStore.getState().loadDiagram(fromWavedromJSON({
+      signal: [{ name: 'mixed-bit', wave: '=0', data: ['A'] }],
+    }));
+    const bitBefore = toWavedromJSON(useStore.getState().diagram);
+    const bit = useStore.getState().diagram.signals[0];
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    useStore.getState().setSignalState(bit.id, 0, '1');
+    expect(toWavedromJSON(useStore.getState().diagram)).toEqual(bitBefore);
   });
 
   it('prunes tail nodes, edges, curve controls and annotations when Steps shrinks', () => {
