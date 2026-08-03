@@ -199,7 +199,7 @@ export function sampleAssetUrl(file: string): string {
 
 function confirmDiscardIfDirty(): boolean {
   const { view } = useStore.getState();
-  if (!view.isDirty) return true;
+  if (!view.isDirty && view.sourceDraftDirty !== true) return true;
   return window.confirm('Discard unsaved changes and load the sample?');
 }
 

@@ -22,6 +22,7 @@ import {
   type AnalogueContext,
 } from './analogueExpressions';
 import { reconcileAnalogueOverlayGroups } from './analogueOverlayGroups';
+import { normalizeTimedVectorSegments } from './vectorSegments';
 
 function normalizeAnalogueContext(value: unknown): AnalogueContext | undefined {
   if (!value || typeof value !== 'object') return undefined;
@@ -123,6 +124,10 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (signal.vectorTiming) {
       normalizeSignalTiming(signal.vectorTiming);
       if (signal.vectorTiming.cells.length === 0) delete signal.vectorTiming;
+      else signal.segments = normalizeTimedVectorSegments(
+        signal.segments,
+        signal.vectorTiming.cells.length,
+      );
     }
     return;
   }
@@ -136,9 +141,18 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
       && signal.digitalTiming
       && signal.digitalTiming.cells.length > 0;
     if (hasDigitalTiming) {
-      signal.states = signal.digitalTiming!.cells.map((cell, index) =>
-        cell.state ?? signal.states[index] ?? '0'
-      );
+      // Native timing is the authoritative representation for timed bit
+      // lanes.  Older drafts may only have the compatibility `states` cache,
+      // so use it only to fill a missing cell state, never to overwrite an
+      // authored native state during normalization/save/reload.
+      signal.digitalTiming!.cells = signal.digitalTiming!.cells.map((cell, index) => ({
+        ...cell,
+        state: cell.state ?? signal.states[index] ?? '0',
+      }));
+      signal.states = signal.digitalTiming!.cells.map((cell) => cell.state);
+    } else if (signal.type === 'bit' && signal.period !== undefined) {
+      // Preserve period-bearing WaveDrom source cells; period is applied by
+      // the renderer/exporter and must not be baked into the stored array.
     } else if (signal.type === 'bit' && isWaveModeLane(signal)) {
       padWaveLaneToLength(signal, totalSteps, DEFAULT_HSCALE);
     } else {
@@ -150,16 +164,16 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     if (signal.type === 'bit' && signal.digitalTiming) {
       normalizeSignalTiming(signal.digitalTiming);
       const ticksPerStep = signal.digitalTiming.ticksPerStep;
-      signal.digitalTiming.cells = signal.states.map((state, index) => {
-        const source = signal.digitalTiming!.cells?.[index];
+      signal.digitalTiming.cells = signal.digitalTiming.cells.map((source, index) => {
         const durationTicks = Math.max(
           1,
-          Math.round(source?.durationTicks || ticksPerStep),
+          Math.round(source.durationTicks || ticksPerStep),
         );
         return {
-          state,
+          ...source,
+          state: source.state ?? signal.states[index] ?? '0',
           durationTicks,
-          ...(source?.dutyTicks !== undefined
+          ...(source.dutyTicks !== undefined
             ? {
                 dutyTicks: Math.max(
                   0,
@@ -169,6 +183,13 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
           : {}),
         };
       });
+      signal.states = signal.digitalTiming.cells.map((cell) => cell.state);
+      if (signal.stepGaps) {
+        signal.stepGaps.length = signal.digitalTiming.cells.length;
+      }
+      if (signal.stepGlitches) {
+        signal.stepGlitches.length = Math.max(0, signal.digitalTiming.cells.length - 1);
+      }
       if (signal.digitalTiming.sourceFields) {
         signal.digitalTiming.sourceFields = {
           ...signal.digitalTiming.sourceFields,

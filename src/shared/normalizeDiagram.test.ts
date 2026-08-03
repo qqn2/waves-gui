@@ -122,4 +122,36 @@ describe('normalizeDiagram', () => {
       expect(bus.segments[0]!.endStep).toBe(4);
     }
   });
+
+  it('keeps native timed bit states authoritative over the compatibility cache', () => {
+    const normalized = normalizeDiagram({
+      version: 2,
+      signals: [{
+        id: 'timed',
+        name: 'timed',
+        type: 'bit',
+        states: ['0', '0'],
+        segments: [],
+        color: '#4a9eff',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 1,
+          phaseTicks: 0,
+          cells: [
+            { state: '1', durationTicks: 1 },
+            { state: 'x', durationTicks: 1 },
+          ],
+        },
+      }],
+      config: { totalSteps: 2, hscale: 1 },
+      edges: [],
+    });
+
+    const signal = normalized.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (signal?.type === 'bit') {
+      expect(signal.states).toEqual(['1', 'x']);
+      expect(signal.digitalTiming?.cells.map((cell) => cell.state)).toEqual(['1', 'x']);
+    }
+  });
 });

@@ -46,4 +46,29 @@ describe('phase and period bridge', () => {
     );
     expect(labels).toEqual(new Set(['head', 'body', 'tail', 'data']));
   });
+
+  it('keeps period-bearing source cells when another lane is longer', () => {
+    const diagram = fromWavedromJSON({
+      signal: [
+        { name: 'long', wave: '01010101' },
+        { name: 'slow', wave: '01', period: 2 },
+      ],
+    });
+    const slow = diagram.signals[1];
+    expect(slow.type).toBe('bit');
+    if (slow.type !== 'bit') return;
+    expect(slow.states).toHaveLength(2);
+    const exported = toWavedromJSON(diagram).signal[1] as { wave: string; period?: number };
+    expect(exported.wave).toBe('01');
+    expect(exported.period).toBe(2);
+  });
+
+  it('persists app-only edge curve controls through both bridges', () => {
+    const diagram = fromWavedromJSON({ signal: [{ name: 'a', wave: '0' }] });
+    diagram.edges = ['a~>b'];
+    diagram.edgeCurveControls = { 0: { c1x: 0.2, c2x: 0.8 } };
+    const wavedrom = toWavedromJSON(diagram);
+    expect(wavedrom['x-waves-gui']?.edgeCurveControls?.['0']).toEqual({ c1x: 0.2, c2x: 0.8 });
+    expect(fromWavedromJSON(wavedrom).edgeCurveControls).toEqual(diagram.edgeCurveControls);
+  });
 });

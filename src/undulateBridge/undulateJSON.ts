@@ -634,6 +634,7 @@ export function toUndulateJSON(
     && (
       diagram.config.analogueContext !== undefined
       || diagram.config.analogueRandomSeed !== undefined
+      || (diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0)
     )
   ) {
     root['x-waves-gui'] = {
@@ -642,6 +643,11 @@ export function toUndulateJSON(
         : {}),
       ...(diagram.config.analogueRandomSeed !== undefined
         ? { randomSeed: diagram.config.analogueRandomSeed >>> 0 }
+        : {}),
+      ...(diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0
+        ? { edgeCurveControls: Object.fromEntries(
+          Object.entries(diagram.edgeCurveControls).map(([index, control]) => [index, { ...control }]),
+        ) }
         : {}),
     };
   } else {

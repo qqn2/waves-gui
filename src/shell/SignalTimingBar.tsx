@@ -58,7 +58,11 @@ export function SignalTimingBar() {
     findSignal(signals, id, (s) => {
       found = s;
     });
-    if (!found || (found.type !== 'bit' && found.type !== 'vector')) return null;
+    if (
+      !found
+      || (found.type !== 'bit' && found.type !== 'vector')
+      || found.vectorTiming
+    ) return null;
     return { id, signal: found };
   }, [activeIds, signals]);
 

@@ -11,6 +11,11 @@ type Change = {
   value: string;
 };
 
+const MAX_VCD_BYTES = 5_000_000;
+const MAX_VCD_VARIABLES = 512;
+const MAX_VCD_EVENTS = 100_000;
+const MAX_VCD_TIMESTAMPS = 4_096;
+
 function cleanName(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
@@ -42,6 +47,9 @@ function parseVars(vcd: string): VcdVar[] {
     const name = cleanName(parts.slice(3).join(' '));
     if (!id || !name || !Number.isFinite(width)) continue;
     vars.push({ id, name, width: Math.max(1, width) });
+    if (vars.length > MAX_VCD_VARIABLES) {
+      throw new Error(`VCD contains more than ${MAX_VCD_VARIABLES} signals.`);
+    }
   }
   return vars;
 }
@@ -60,6 +68,7 @@ function parseChanges(vcd: string, vars: VcdVar[]): Map<string, Change[]> {
   for (const v of vars) changes.set(v.id, []);
 
   let time = 0;
+  let eventCount = 0;
   for (const rawLine of bodyAfterDefinitions(vcd).split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith('$')) continue;
@@ -72,14 +81,26 @@ function parseChanges(vcd: string, vars: VcdVar[]): Map<string, Change[]> {
     const vector = /^(?:[br])([01xXzZ]+)\s+(\S+)$/.exec(line);
     if (vector) {
       const [, value, id] = vector;
-      if (knownIds.has(id)) changes.get(id)?.push({ time, value: vectorLabel(value) });
+      if (knownIds.has(id)) {
+        changes.get(id)?.push({ time, value: vectorLabel(value) });
+        eventCount += 1;
+      }
+      if (eventCount > MAX_VCD_EVENTS) {
+        throw new Error(`VCD contains more than ${MAX_VCD_EVENTS} value changes.`);
+      }
       continue;
     }
 
     const scalar = /^([01xXzZ])(.+)$/.exec(line);
     if (scalar) {
       const [, value, id] = scalar;
-      if (knownIds.has(id)) changes.get(id)?.push({ time, value: scalarToWaveChar(value) });
+      if (knownIds.has(id)) {
+        changes.get(id)?.push({ time, value: scalarToWaveChar(value) });
+        eventCount += 1;
+      }
+      if (eventCount > MAX_VCD_EVENTS) {
+        throw new Error(`VCD contains more than ${MAX_VCD_EVENTS} value changes.`);
+      }
     }
   }
   return changes;
@@ -89,6 +110,9 @@ function timelineFromChanges(changes: Map<string, Change[]>): number[] {
   const times = new Set<number>([0]);
   for (const list of changes.values()) {
     for (const change of list) times.add(change.time);
+  }
+  if (times.size > MAX_VCD_TIMESTAMPS) {
+    throw new Error(`VCD contains more than ${MAX_VCD_TIMESTAMPS} timestamps.`);
   }
   return [...times].sort((a, b) => a - b);
 }
@@ -132,6 +156,9 @@ function vectorSignal(v: VcdVar, list: Change[], timeline: number[]): WdSignal {
 }
 
 export function vcdToWavedromJSON(vcd: string): WdRoot {
+  if (vcd.length > MAX_VCD_BYTES) {
+    throw new Error(`VCD exceeds the ${MAX_VCD_BYTES.toLocaleString()} byte limit.`);
+  }
   const vars = parseVars(vcd);
   if (vars.length === 0) throw new Error('No VCD variables found.');
   const changes = parseChanges(vcd, vars);

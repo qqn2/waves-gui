@@ -201,9 +201,17 @@ export function parseCodeToDiagram(
     ? validateUndulateJSON(parsed)
     : validateWavedromJSON(parsed);
   if (err) return { ok: false, error: err };
-  const diagram = undulate
-    ? fromUndulateJSON(parsed as UndulateRoot)
-    : fromWavedromJSON(parsed as WdRoot);
+  let diagram: DiagramState;
+  try {
+    diagram = undulate
+      ? fromUndulateJSON(parsed as UndulateRoot)
+      : fromWavedromJSON(parsed as WdRoot);
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'Could not convert source document',
+    };
+  }
   diagram.compatibility = {
     ...diagram.compatibility,
     extensionsEnabled:

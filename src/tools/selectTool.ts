@@ -1,10 +1,10 @@
-import type { DiagramState, SignalOrGroup, ViewState } from '../shared/types';
+import type { DiagramAnnotation, DiagramState, SignalOrGroup, ViewState } from '../shared/types';
 import {
   CELL_WIDTH,
   ROW_HEIGHT,
   TIME_AXIS_HEIGHT,
 } from '../shared/constants';
-import { findSignal, useStore } from '../shared/store';
+import { findSignal, isDocumentDirty, useStore } from '../shared/store';
 import { buildRowLayout } from '../renderer/rowLayout';
 import {
   canvasToLogicalX,
@@ -29,6 +29,7 @@ interface AnnotationDrag {
   id: string;
   arrowEndpoint?: 'from' | 'to';
   historyRecorded: boolean;
+  original: DiagramAnnotation;
 }
 
 let annotationDrag: AnnotationDrag | null = null;
@@ -59,6 +60,27 @@ function releasePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void
   if (canvas.hasPointerCapture(e.pointerId)) {
     canvas.releasePointerCapture(e.pointerId);
   }
+}
+
+function documentStepForTimedCell(
+  signal: import('../shared/types').Signal,
+  cellIndex: number,
+  totalSteps: number,
+): number {
+  const timing = signal.digitalTiming ?? signal.vectorTiming;
+  if (!timing) return Math.max(0, Math.min(totalSteps - 1, cellIndex));
+  let start = -timing.phaseTicks;
+  for (let index = 0; index < timing.cells.length; index++) {
+    const end = start + timing.cells[index]!.durationTicks;
+    if (index === cellIndex) {
+      return Math.max(
+        0,
+        Math.min(totalSteps - 1, Math.floor((start + end) / 2 / timing.ticksPerStep)),
+      );
+    }
+    start = end;
+  }
+  return Math.max(0, Math.min(totalSteps - 1, cellIndex));
 }
 
 function applyRectSelection(
@@ -108,14 +130,22 @@ function applyClickSelection(hit: HitTestResult, diagram: DiagramState): void {
   if (hit.signalId && hit.signalType !== 'group' && hit.signalType !== null) {
     setActiveSignalIds([hit.signalId]);
     let hasFineTiming = false;
+    let selectedDocumentStep = hit.step ?? 0;
     findSignal(diagram.signals, hit.signalId, (signal) => {
       hasFineTiming = Boolean(signal.digitalTiming);
+      if (hit.step !== null) {
+        selectedDocumentStep = documentStepForTimedCell(
+          signal,
+          hit.step,
+          diagram.config.totalSteps,
+        );
+      }
     });
     useStore.getState().setActiveTimingCellIndex(
       hasFineTiming && hit.step !== null ? hit.step : null,
     );
     if (hit.step !== null) {
-      toolState.setStepSelection({ start: hit.step, end: hit.step });
+      toolState.setStepSelection({ start: selectedDocumentStep, end: selectedDocumentStep });
     } else {
       toolState.setStepSelection({
         start: 0,
@@ -140,6 +170,7 @@ export function selectPointerDown(
     const annotation = state.diagram.annotations?.find(
       (candidate) => candidate.id === hit.annotationId,
     );
+    if (!annotation) return;
     let arrowEndpoint: 'from' | 'to' | undefined;
     if (annotation?.type === 'arrow') {
       const transform = viewTransform(state.diagram, state.view);
@@ -169,6 +200,7 @@ export function selectPointerDown(
       id: hit.annotationId,
       arrowEndpoint,
       historyRecorded: false,
+      original: JSON.parse(JSON.stringify(annotation)) as DiagramAnnotation,
     };
     if (canvas) canvas.setPointerCapture(e.pointerId);
     return;
@@ -284,7 +316,21 @@ export function selectPointerUp(
 
 export function selectCancel(canvas: HTMLCanvasElement | null): void {
   if (annotationDrag) {
+    const original = annotationDrag.original;
+    const dragId = annotationDrag.id;
+    useStore.setState((s) => {
+      const annotations = s.diagram.annotations;
+      const index = annotations?.findIndex((candidate) => candidate.id === dragId) ?? -1;
+      if (index < 0 || !annotations) return;
+      annotations[index] = original;
+      s.view.isDirty = isDocumentDirty(s);
+    });
+    const captured = toolState.getCapturedPointerId();
+    if (canvas && captured !== null && canvas.hasPointerCapture(captured)) {
+      canvas.releasePointerCapture(captured);
+    }
     annotationDrag = null;
+    return;
   }
   if (!toolState.isSelectDragging()) return;
   const pid = toolState.getCapturedPointerId();

@@ -403,7 +403,7 @@ export interface DiagramState {
   annotations?: DiagramAnnotation[];
   /** WaveDrom edge[] dependency arrow strings */
   edges: string[];
-  /** Per-edge cubic control bias for ~ curves (not exported to WaveDrom JSON). */
+  /** Per-edge cubic control bias for ~ curves, persisted in x-waves-gui metadata. */
   edgeCurveControls?: Record<number, { c1x: number; c2x: number }>;
 }
 
@@ -478,6 +478,11 @@ export interface ViewState {
   uiFontScale: number;
   /** Derived cache: true when diagram differs from AppState.savedDiagram. */
   isDirty: boolean;
+  /** Source editor contains text that has not been successfully applied. */
+  sourceDraftDirty?: boolean;
+  sourceDraft?: string | null;
+  /** Last source parse/apply error, if the draft is invalid. */
+  sourceDraftError?: string | null;
   fileName: string | null;
   /** Ephemeral paint/erase preview during pointer drag — never pushed to undo history */
   paintDraft: PaintDraft | null;

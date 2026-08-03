@@ -34,6 +34,15 @@ let retainedFileFormat: Extract<
   'wavedrom-json' | 'undulate-json' | 'undulate-yaml' | 'undulate-toml'
 > | null = null;
 
+function hasUnsavedWork(): boolean {
+  const { view } = useStore.getState();
+  return view.isDirty || view.sourceDraftDirty;
+}
+
+function confirmDiscardUnsavedWork(): boolean {
+  return !hasUnsavedWork() || window.confirm('Discard unsaved changes?');
+}
+
 export function forgetCurrentFileHandle(): void {
   retainedFileHandle = null;
   retainedFileFormat = null;
@@ -87,10 +96,18 @@ function parseDiagramJSON(
       ? validateUndulateJSON(value)
       : validateWavedromJSON(value);
   if (error) return { error };
-  const diagram =
-    format === 'undulate-json'
+  let diagram: DiagramState;
+  try {
+    diagram = format === 'undulate-json'
       ? fromUndulateJSON(value as UndulateRoot)
       : fromWavedromJSON(value as Parameters<typeof fromWavedromJSON>[0]);
+  } catch (conversionError) {
+    return {
+      error: conversionError instanceof Error
+        ? conversionError.message
+        : 'Could not convert waveform document',
+    };
+  }
   if (sourceText !== undefined) {
     diagram.compatibility = {
       ...diagram.compatibility,
@@ -270,6 +287,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
         window.alert(parsed.error);
         return;
       }
+      if (!confirmDiscardUnsavedWork()) return;
       useStore.getState().loadDiagram(parsed.diagram);
       useStore.getState().markClean(handle.name);
       retainedFileHandle = handle;
@@ -278,6 +296,7 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
       return;
     } catch (e) {
       if ((e as DOMException).name === 'AbortError') return;
+      window.alert(e instanceof Error ? e.message : 'Could not open file');
     }
   }
 
@@ -298,6 +317,10 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
         const parsed = await parseDiagramFile(file, text, kind);
         if ('error' in parsed) window.alert(parsed.error);
         else {
+          if (!confirmDiscardUnsavedWork()) {
+            resolve();
+            return;
+          }
           useStore.getState().loadDiagram(parsed.diagram);
           useStore.getState().markClean(file.name);
           forgetCurrentFileHandle();
@@ -371,7 +394,13 @@ export async function saveDiagramFile(
 
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = existingName ?? 'diagram.json';
+  a.download = existingName ?? (
+    format === 'undulate-yaml'
+      ? 'diagram.undulate.yaml'
+      : format === 'undulate-toml'
+        ? 'diagram.undulate.toml'
+        : 'diagram.json'
+  );
   a.click();
   URL.revokeObjectURL(a.href);
   // A download click is only a request: the browser may block or cancel it.
@@ -379,14 +408,18 @@ export async function saveDiagramFile(
 }
 
 export async function saveCurrentDiagramFile(): Promise<void> {
-  flushPendingCodeToDiagram();
+  const flushed = flushPendingCodeToDiagram();
+  if (flushed.ok !== true) {
+    window.alert(`Cannot save source draft: ${flushed.error}`);
+    return;
+  }
   const { diagram, view } = useStore.getState();
   await saveDiagramFile(diagram, view.fileName);
 }
 
 export function newDiagramFile(): void {
-  const { view, loadDiagram } = useStore.getState();
-  if (view.isDirty && !window.confirm('Discard unsaved changes?')) return;
+  const { loadDiagram } = useStore.getState();
+  if (!confirmDiscardUnsavedWork()) return;
   loadDiagram(createDefaultDiagram());
   forgetCurrentFileHandle();
   clearDraft();

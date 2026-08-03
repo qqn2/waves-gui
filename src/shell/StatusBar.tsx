@@ -41,7 +41,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   const zoom = useStore((s) => s.view.zoom);
   const signals = useStore((s) => s.diagram.signals);
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
-  const isDirty = useStore((s) => s.view.isDirty);
+  const isDirty = useStore((s) => s.view.isDirty || s.view.sourceDraftDirty === true);
   const diagram = useStore((s) => s.diagram);
   const edges = diagram.edges ?? [];
   const removeDiagramEdge = useStore((s) => s.removeDiagramEdge);

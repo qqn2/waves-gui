@@ -66,6 +66,7 @@ export type UndulateAnalogueValue =
 export interface WavesGuiUndulateMetadata {
   analogueContext?: { vssa: number; vdda: number };
   randomSeed?: number;
+  edgeCurveControls?: Record<string, { c1x: number; c2x: number }>;
 }
 
 export interface UndulateRoot extends WdRoot {

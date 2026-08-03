@@ -51,6 +51,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setAccentColor'
   | 'setCanvasColor'
   | 'setUiFontScale'
+  | 'setSourceDraftStatus'
 > {
   return {
     setZoom(zoom) {
@@ -214,6 +215,15 @@ export function createViewActions(set: ImmerSet): Pick<
       set((s) => {
         s.view.uiFontScale = Math.max(0.9, Math.min(1.15, scale));
         persistTheme(s.view);
+      });
+    },
+
+    setSourceDraftStatus(dirty, error = null, draft) {
+      set((s) => {
+        s.view.sourceDraftDirty = dirty;
+        s.view.sourceDraftError = dirty ? error : null;
+        if (draft !== undefined) s.view.sourceDraft = dirty ? draft : null;
+        else if (!dirty) s.view.sourceDraft = null;
       });
     },
   };

@@ -3,11 +3,15 @@ import type { BitState, DiagramState } from '../../shared/types';
 import { DEFAULT_STEPS } from '../../shared/constants';
 import {
   clearDraft,
+  clearSourceDraft,
   DRAFT_ENVELOPE_VERSION,
   DRAFT_STORAGE_KEY,
+  loadSourceDraft,
   isDiagramEmpty,
   loadDraft,
   saveDraft,
+  saveSourceDraft,
+  SOURCE_DRAFT_STORAGE_KEY,
   serializeDraftEnvelope,
   type StorageLike,
 } from './localDraft';
@@ -135,6 +139,16 @@ describe('localDraft', () => {
     saveDraft(sampleDiagram(), storage);
     clearDraft(storage);
     expect(storage.getItem(DRAFT_STORAGE_KEY)).toBeNull();
+  });
+
+  it('round-trips and clears an unapplied source draft', () => {
+    saveSourceDraft('{ signal: [{ name: "clk", wave: "0" }] }', 'Invalid wave', storage);
+    expect(loadSourceDraft(storage)).toMatchObject({
+      code: '{ signal: [{ name: "clk", wave: "0" }] }',
+      error: 'Invalid wave',
+    });
+    clearSourceDraft(storage);
+    expect(storage.getItem(SOURCE_DRAFT_STORAGE_KEY)).toBeNull();
   });
 
   it('does not throw when storage getItem/setItem fails', () => {

@@ -45,6 +45,7 @@ import type {
   SignalOrGroup,
 } from '../types';
 import { normalizeSignalStyle } from '../signalStyles';
+import { parseUndulateEdge } from '../edgeSyntax';
 import { applyAnalogueBrushRange, normalizeAnalogueSignal } from '../analogue';
 import {
   DEFAULT_ANALOGUE_CONTEXT,
@@ -75,6 +76,7 @@ import {
   pushHistory,
   removeFromTree,
   reorderSiblingLevel,
+  canResizeAllStates,
   resizeAllStates,
 } from './helpers';
 import {
@@ -178,6 +180,46 @@ function demoteWaveLaneOnStatesEdit(sig: Signal): void {
   }
 }
 
+/** Timed bit lanes keep their native cells authoritative after every state edit. */
+function syncTimedBitStateSource(sig: Signal): void {
+  if (sig.type !== 'bit' || !sig.digitalTiming) return;
+  sig.digitalTiming.cells.forEach((cell, index) => {
+    if (sig.states[index] !== undefined) cell.state = sig.states[index]!;
+  });
+  sig.states = sig.digitalTiming.cells.map((cell) => cell.state);
+}
+
+function nativeCellsForMajorRange(
+  sig: Signal,
+  lo: number,
+  hi: number,
+): { start: number; end: number } | null {
+  const timing = sig.digitalTiming;
+  if (!timing) return null;
+  const rangeStart = lo * timing.ticksPerStep + timing.phaseTicks;
+  const rangeEnd = (hi + 1) * timing.ticksPerStep + timing.phaseTicks;
+  let cursor = 0;
+  let start: number | null = null;
+  let end = -1;
+  timing.cells.forEach((cell, index) => {
+    const cellEnd = cursor + cell.durationTicks;
+    if (cellEnd > rangeStart && cursor < rangeEnd) {
+      start ??= index;
+      end = index;
+    }
+    cursor = cellEnd;
+  });
+  return start === null ? null : { start, end };
+}
+
+function diagramHasNativeTiming(signals: SignalOrGroup[]): boolean {
+  let timed = false;
+  walkSignals(signals, (sig) => {
+    if (sig.digitalTiming || sig.vectorTiming) timed = true;
+  });
+  return timed;
+}
+
 function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
   if (sig.type !== 'bit') return;
   if (isWaveModeLane(sig)) {
@@ -196,6 +238,7 @@ function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
         decoded.stepGlitches[i] = false;
       }
     }, sig.states.length);
+    syncTimedBitStateSource(sig);
     return;
   }
   demoteWaveLaneOnStatesEdit(sig);
@@ -203,6 +246,7 @@ function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
     sig.states[i] = i > 0 ? sig.states[i - 1]! : '0';
     clearStepGlitchesTouchingRange(sig, i, i);
   }
+  syncTimedBitStateSource(sig);
 }
 
 function applyBitStateInRange(
@@ -228,6 +272,7 @@ function applyBitStateInRange(
         for (let i = lo; i <= hi; i++) decoded.states[i] = bitState;
       }
     }, len);
+    syncTimedBitStateSource(sig);
     return;
   }
 
@@ -243,12 +288,13 @@ function applyBitStateInRange(
   } else {
     for (let i = lo; i <= hi; i++) sig.states[i] = bitState;
   }
+  syncTimedBitStateSource(sig);
 }
 
 function duplicateSignalInDraft(
   signals: SignalOrGroup[],
   id: string,
-): boolean {
+): string | null {
   for (let i = 0; i < signals.length; i++) {
     const item = signals[i]!;
     if (item.type !== 'group' && item.id === id) {
@@ -287,14 +333,13 @@ function duplicateSignalInDraft(
         ...(item.waveOverride !== undefined ? { waveOverride: item.waveOverride } : {}),
       };
       signals.splice(i + 1, 0, clone);
-      return true;
+      return clone.id;
     } else if (item.type === 'group') {
-      if (duplicateSignalInDraft(item.children, id)) {
-        return true;
-      }
+      const cloneId = duplicateSignalInDraft(item.children, id);
+      if (cloneId) return cloneId;
     }
   }
-  return false;
+  return null;
 }
 
 type SignalLocation = {
@@ -466,8 +511,15 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     duplicateSignal(id) {
       set((s) => {
+        let exists = false;
+        findSignal(s.diagram.signals, id, () => { exists = true; });
+        if (!exists) return;
         pushHistory(s);
-        duplicateSignalInDraft(s.diagram.signals, id);
+        const cloneId = duplicateSignalInDraft(s.diagram.signals, id);
+        const opaqueSignals = s.diagram.compatibility?.opaqueUndulate?.signals;
+        if (cloneId && opaqueSignals?.[id]) {
+          opaqueSignals[cloneId] = JSON.parse(JSON.stringify(opaqueSignals[id]));
+        }
         reconcileAnalogueOverlayGroups(s.diagram);
       });
     },
@@ -492,10 +544,73 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     removeSignal(id) {
       set((s) => {
+        const removedIds = new Set<string>();
+        const removedNodeNames = new Set<string>();
+        const collect = (items: SignalOrGroup[]) => {
+          for (const item of items) {
+            if (item.id === id) {
+              const add = (entry: SignalOrGroup) => {
+                removedIds.add(entry.id);
+                if (entry.type === 'group') entry.children.forEach(add);
+                else {
+                  if (entry.node) {
+                    for (const char of entry.node) {
+                      if (char !== '.' && char !== ' ') removedNodeNames.add(char);
+                    }
+                  }
+                  Object.values(entry.nodeNames ?? {}).forEach((name) => removedNodeNames.add(name));
+                }
+              };
+              add(item);
+              return true;
+            }
+            if (item.type === 'group' && collect(item.children)) return true;
+          }
+          return false;
+        };
+        if (!collect(s.diagram.signals)) return;
         pushHistory(s);
         s.diagram.signals = removeFromTree(s.diagram.signals, id);
+        const opaqueSignals = s.diagram.compatibility?.opaqueUndulate?.signals;
+        if (opaqueSignals) {
+          for (const removedId of removedIds) delete opaqueSignals[removedId];
+          if (Object.keys(opaqueSignals).length === 0) {
+            delete s.diagram.compatibility!.opaqueUndulate!.signals;
+          }
+        }
+        const nextEdges: string[] = [];
+        const nextCurveControls: Record<number, { c1x: number; c2x: number }> = {};
+        s.diagram.edges.forEach((edge, index) => {
+          const parsed = parseUndulateEdge(edge);
+          if (parsed && (removedNodeNames.has(parsed.from) || removedNodeNames.has(parsed.to))) return;
+          const nextIndex = nextEdges.length;
+          nextEdges.push(edge);
+          const control = s.diagram.edgeCurveControls?.[index];
+          if (control) nextCurveControls[nextIndex] = control;
+        });
+        s.diagram.edges = nextEdges;
+        if (Object.keys(nextCurveControls).length > 0) s.diagram.edgeCurveControls = nextCurveControls;
+        else delete s.diagram.edgeCurveControls;
+        s.diagram.annotations = (s.diagram.annotations ?? []).filter((annotation) => {
+          if ('signalId' in annotation && annotation.signalId !== undefined && removedIds.has(annotation.signalId)) {
+            return false;
+          }
+          if (annotation.type === 'arrow') {
+            const fromRemoved = annotation.from.kind === 'node' && removedNodeNames.has(annotation.from.node);
+            const toRemoved = annotation.to.kind === 'node' && removedNodeNames.has(annotation.to.node);
+            if (fromRemoved || toRemoved) return false;
+          }
+          return true;
+        });
+        if (
+          s.view.activeAnnotationId
+          && !s.diagram.annotations.some((annotation) => annotation.id === s.view.activeAnnotationId)
+        ) {
+          s.view.activeAnnotationId = null;
+        }
+        s.view.activeSignalIds = s.view.activeSignalIds.filter((signalId) => !removedIds.has(signalId));
         s.view.collapsedGroupIds = s.view.collapsedGroupIds.filter(
-          (groupId) => groupId !== id,
+          (groupId) => !removedIds.has(groupId),
         );
         reconcileAnalogueOverlayGroups(s.diagram);
       });
@@ -551,13 +666,17 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     updateVectorSegmentValue(signalId, segmentId, value) {
       set((s) => {
-        pushHistory(s);
+        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
           const seg = sig.segments.find((x) => x.id === segmentId);
-          if (seg) seg.value = value;
+          if (seg && seg.value !== value) {
+            pushHistory(s);
+            seg.value = value;
+            changed = true;
+          }
         });
-        s.view.isDirty = true;
+        if (changed) s.view.isDirty = true;
       });
     },
 
@@ -582,15 +701,18 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     updateVectorSegmentColor(signalId, segmentId, color) {
       set((s) => {
-        pushHistory(s);
+        let changed = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'vector') return;
           const seg = sig.segments.find((x) => x.id === segmentId);
           if (!seg) return;
+          if (seg.color === color) return;
+          pushHistory(s);
           if (color === undefined) delete seg.color;
           else seg.color = color;
+          changed = true;
         });
-        s.view.isDirty = true;
+        if (changed) s.view.isDirty = true;
       });
     },
 
@@ -971,6 +1093,13 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     setSignalState(signalId, step, bitState) {
       set((s) => {
+        let valid = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          valid = sig.type === 'bit'
+            && Number.isInteger(step)
+            && step >= 0 && step < sig.states.length;
+        });
+        if (!valid) return;
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
@@ -981,17 +1110,38 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     setSignalStateRange(signalId, startStep, endStep, bitState) {
       set((s) => {
-        pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
+        let valid = false;
         findSignal(s.diagram.signals, signalId, (sig) => {
-          applyBitStateInRange(sig, lo, hi, bitState);
+          valid = sig.type === 'bit' && Number.isFinite(lo) && Number.isFinite(hi)
+            && hi >= 0 && lo < sig.states.length;
+        });
+        if (!valid) return;
+        pushHistory(s);
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          const nativeRange = nativeCellsForMajorRange(
+            sig,
+            lo,
+            hi,
+          );
+          applyBitStateInRange(
+            sig,
+            nativeRange?.start ?? lo,
+            nativeRange?.end ?? hi,
+            bitState,
+          );
         });
       });
     },
 
     paintBitStateRange(signalId, startStep, endStep, bitState, paintStyle) {
       set((s) => {
+        let blocked = false;
+        if (paintStyle === 'additive') {
+          blocked = diagramHasNativeTiming(s.diagram.signals);
+        }
+        if (blocked) return;
         pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
@@ -1002,6 +1152,8 @@ export function createSignalActions(set: ImmerSet): Pick<
             applyBitStateInRange(sig, lo, hi, bitState);
             return;
           }
+
+          if (sig.digitalTiming) return;
 
           const wasGap: boolean[] = [];
           for (let i = lo; i <= hi; i++) {
@@ -1027,6 +1179,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           }
           if (inserted > 0) {
             clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+            delete s.diagram.edgeCurveControls;
             s.diagram.config.totalSteps += inserted;
           }
 
@@ -1040,6 +1193,7 @@ export function createSignalActions(set: ImmerSet): Pick<
               }
             }
           }, sig.states.length);
+          syncTimedBitStateSource(sig);
         });
         s.view.isDirty = true;
       });
@@ -1079,9 +1233,14 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     toggleSignalStateRange(signalId, startStep, endStep) {
       set((s) => {
-        pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
+        let valid = false;
+        findSignal(s.diagram.signals, signalId, (sig) => {
+          valid = sig.type === 'bit' && hi >= 0 && lo < sig.states.length;
+        });
+        if (!valid) return;
+        pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           if (sig.type !== 'bit') return;
           applyDecodedEditToLane(sig, (decoded) => {
@@ -1093,6 +1252,7 @@ export function createSignalActions(set: ImmerSet): Pick<
               }
             }
           }, sig.states.length);
+          syncTimedBitStateSource(sig);
         });
       });
     },
@@ -1117,6 +1277,7 @@ export function createSignalActions(set: ImmerSet): Pick<
               decoded.states[i] = toggleBinaryBitState(decoded.states[i]!);
             }
           }, sig.states.length);
+          syncTimedBitStateSource(sig);
         });
         s.view.isDirty = true;
       });
@@ -1129,10 +1290,12 @@ export function createSignalActions(set: ImmerSet): Pick<
         set((s) => {
           const n = hi - lo + 1;
           if (n === 0) return;
+          if (diagramHasNativeTiming(s.diagram.signals)) return;
           if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
           pushHistory(s);
           insertGapColumnsOnDiagram(s.diagram.signals, lo, n, signalId);
           clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          delete s.diagram.edgeCurveControls;
           s.diagram.config.totalSteps += n;
           s.view.isDirty = true;
         });
@@ -1142,6 +1305,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         findSignal(s.diagram.signals, signalId, (sig) => {
           toggleGapColumnsOnSignal(sig, lo, hi);
+          syncTimedBitStateSource(sig);
         });
         s.view.isDirty = true;
       });
@@ -1177,10 +1341,12 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const n = Math.max(0, count);
         if (n === 0) return;
+        if (diagramHasNativeTiming(s.diagram.signals)) return;
         if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
         pushHistory(s);
         insertGapColumnsOnDiagram(s.diagram.signals, column, n, signalId);
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps += n;
         s.view.isDirty = true;
       });
@@ -1190,6 +1356,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
+        if (diagramHasNativeTiming(s.diagram.signals)) return;
         pushHistory(s);
         const removed = removeGapColumnsOnDiagram(
           s.diagram.signals,
@@ -1200,6 +1367,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         );
         if (removed > 0) {
           clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          delete s.diagram.edgeCurveControls;
           s.diagram.config.totalSteps = Math.max(
             MIN_TOTAL_STEPS,
             s.diagram.config.totalSteps - removed,
@@ -1223,12 +1391,12 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     eraseSignalState(signalId, step) {
       set((s) => {
-        pushHistory(s);
         let target: Signal | undefined;
         findSignal(s.diagram.signals, signalId, (sig) => {
           target = sig;
         });
-        if (!target) return;
+        if (!target || step < 0 || step >= target.states.length) return;
+        pushHistory(s);
 
         if (target.stepGaps?.[step]) {
           clearStepGapsOnColumns(target, step, step);
@@ -1245,14 +1413,14 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     eraseSignalStateRange(signalId, startStep, endStep) {
       set((s) => {
-        pushHistory(s);
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
         let target: Signal | undefined;
         findSignal(s.diagram.signals, signalId, (sig) => {
           target = sig;
         });
-        if (!target) return;
+        if (!target || hi < 0 || lo >= target.states.length) return;
+        pushHistory(s);
 
         const gapCols: number[] = [];
         const valueCols: number[] = [];
@@ -1278,6 +1446,20 @@ export function createSignalActions(set: ImmerSet): Pick<
 
     reorderSignals(orderedIds, parentId) {
       set((s) => {
+        let siblings: SignalOrGroup[] | null = parentId === undefined
+          ? s.diagram.signals
+          : null;
+        if (parentId !== undefined) {
+          findGroup(s.diagram.signals, parentId, (group) => {
+            siblings = group.children;
+          });
+        }
+        if (!siblings || orderedIds.length !== siblings.length) return;
+        const expected = new Set(siblings.map((item) => item.id));
+        if (
+          new Set(orderedIds).size !== orderedIds.length
+          || orderedIds.some((id) => !expected.has(id))
+        ) return;
         pushHistory(s);
         if (parentId === undefined) {
           s.diagram.signals = reorderSiblingLevel(s.diagram.signals, orderedIds);
@@ -1297,6 +1479,21 @@ export function createSignalActions(set: ImmerSet): Pick<
           isSignal = true;
         });
         if (!isSignal) return;
+        if (beforeId === signalId) return;
+        if (parentId !== undefined) {
+          let validParent = false;
+          let validBefore = beforeId === undefined;
+          findGroup(s.diagram.signals, parentId, (group) => {
+            validParent = true;
+            if (beforeId !== undefined) {
+              validBefore = group.children.some((child) => child.id === beforeId);
+            }
+          });
+          if (!validParent || !validBefore) return;
+        } else if (
+          beforeId !== undefined
+          && !s.diagram.signals.some((item) => item.id === beforeId)
+        ) return;
 
         pushHistory(s);
         let removed: Signal | null = null;
@@ -1351,18 +1548,26 @@ export function createSignalActions(set: ImmerSet): Pick<
     },
 
     setTotalSteps(steps) {
+      if (!Number.isFinite(steps)) return false;
+      let accepted = false;
       set((s) => {
         const next = Math.max(
           MIN_TOTAL_STEPS,
           Math.min(MAX_TOTAL_STEPS, Math.floor(steps)),
         );
         const old = s.diagram.config.totalSteps;
-        if (next === old) return;
+        if (next === old) {
+          accepted = true;
+          return;
+        }
+        if (!canResizeAllStates(s.diagram.signals, next)) return;
         pushHistory(s);
         s.diagram.config.totalSteps = next;
         resizeAllStates(s.diagram.signals, next, old);
         s.view.isDirty = true;
+        accepted = true;
       });
+      return accepted;
     },
 
     setHscale(hscale) {
@@ -1410,6 +1615,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at, total));
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps = total + 1;
         s.view.isDirty = true;
       });
@@ -1443,6 +1649,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           deleteStepInSignal(sig, at, total, MIN_TOTAL_STEPS);
         });
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps = total - 1;
         s.view.isDirty = true;
       });
@@ -1451,10 +1658,12 @@ export function createSignalActions(set: ImmerSet): Pick<
     toggleStepGapAt(column) {
       set((s) => {
         if (s.diagram.config.totalSteps >= MAX_TOTAL_STEPS) return;
+        if (diagramHasNativeTiming(s.diagram.signals)) return;
         const at = Math.max(0, Math.min(column, s.diagram.config.totalSteps));
         pushHistory(s);
         insertGapColumnOnDiagram(s.diagram.signals, at, null);
         clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps += 1;
         s.view.isDirty = true;
       });

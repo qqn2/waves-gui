@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canResizeTimingToDuration,
+  deleteMajorStepInTiming,
   insertMajorStepInTiming,
   timingBoundaryAtMajorStep,
 } from './timedStepResize';
@@ -41,5 +43,20 @@ describe('native timing boundaries', () => {
     expect(timingBoundaryAtMajorStep(value, 1)).toMatchObject({ kind: 'inside', index: 0, offsetTicks: 1, tick: 1 });
     expect(insertMajorStepInTiming(value, 1)).toBe(true);
     expect(value.cells.map((cell) => cell.durationTicks)).toEqual([1, 2, 1, 2]);
+  });
+
+  it('rejects insertion adjacent to a clock macro instead of creating another cycle', () => {
+    const value = timing([2], ['P']);
+    expect(insertMajorStepInTiming(value, 0)).toBe(false);
+    expect(insertMajorStepInTiming(value, 1)).toBe(false);
+    expect(value.cells).toHaveLength(1);
+  });
+
+  it('rejects resizing through a clock macro and ignores outside-lane deletes', () => {
+    const value = timing([2, 2], ['P', '0']);
+    expect(canResizeTimingToDuration(value, 1)).toBe(false);
+    const before = value.cells.map((cell) => ({ ...cell }));
+    expect(deleteMajorStepInTiming(value, 5, 1)).toBe(false);
+    expect(value.cells).toEqual(before);
   });
 });

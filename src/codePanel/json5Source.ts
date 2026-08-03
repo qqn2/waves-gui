@@ -1,6 +1,10 @@
 import { parse, tokenize, type Token } from 'jju/lib/parse.js';
 import { update } from 'jju/lib/document.js';
 
+const MAX_JSON5_SOURCE_BYTES = 2_000_000;
+const MAX_JSON5_DEPTH = 32;
+const MAX_JSON5_NODES = 100_000;
+
 function json5Options() {
   return {
     mode: 'json5' as const,
@@ -15,7 +19,23 @@ function json5Options() {
  * accept the same syntax.
  */
 export function parseJSON5Source(source: string): unknown {
-  return parse(source, json5Options()) as unknown;
+  if (source.length > MAX_JSON5_SOURCE_BYTES) {
+    throw new Error(`JSON/JSON5 source exceeds the ${MAX_JSON5_SOURCE_BYTES.toLocaleString()} byte limit.`);
+  }
+  const value = parse(source, json5Options()) as unknown;
+  let nodes = 0;
+  const visit = (current: unknown, depth: number): void => {
+    if (depth > MAX_JSON5_DEPTH || ++nodes > MAX_JSON5_NODES) {
+      throw new Error('JSON/JSON5 document complexity exceeds the supported limit.');
+    }
+    if (Array.isArray(current)) {
+      current.forEach((item) => visit(item, depth + 1));
+    } else if (current && typeof current === 'object') {
+      Object.values(current).forEach((item) => visit(item, depth + 1));
+    }
+  };
+  visit(value, 0);
+  return value;
 }
 
 /**

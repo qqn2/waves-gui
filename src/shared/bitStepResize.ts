@@ -37,40 +37,65 @@ function fitTimingFlags(flags: boolean[] | undefined, length: number): boolean[]
   return out.some(Boolean) ? out : undefined;
 }
 
-function insertTimingFlags(
+export function insertTimingFlags(
   flags: boolean[] | undefined,
   boundary: ReturnType<typeof timingBoundaryAtMajorStep>,
+  inserted: number,
+  boundaryDecorations = false,
 ): boolean[] | undefined {
   if (!flags?.length) return undefined;
-  const out = [...flags];
-  if (boundary.kind === 'inside') {
-    const value = out[boundary.index] ?? false;
-    out.splice(boundary.index, 1, value, value, value);
-  } else {
-    out.splice(boundary.index, 0, false);
+  const sourceLength = flags.length;
+  const ranges: Array<{ start: number; end: number }> = [];
+  for (let index = 0; index < sourceLength; index++) {
+    if (boundary.kind === 'inside' && index === boundary.index) {
+      ranges.push({ start: index, end: index + inserted + 1 });
+    } else {
+      const shift = index >= boundary.index ? inserted : 0;
+      ranges.push({ start: index + shift, end: index + shift + 1 });
+    }
   }
-  return fitTimingFlags(out, out.length);
+  const outputLength = sourceLength + inserted;
+  const out = Array<boolean>(boundaryDecorations ? Math.max(0, outputLength - 1) : outputLength).fill(false);
+  flags.forEach((value, index) => {
+    if (!value) return;
+    const range = ranges[index]!;
+    const output = boundaryDecorations ? range.end - 1 : range.start;
+    if (output >= 0 && output < out.length) out[output] = true;
+  });
+  return out.some(Boolean) ? out : undefined;
 }
 
-function deleteTimingFlags(
+export function deleteTimingFlags(
   flags: boolean[] | undefined,
   sourceCells: { durationTicks: number }[],
   start: number,
   end: number,
+  boundaryDecorations = false,
 ): boolean[] | undefined {
   if (!flags?.length) return undefined;
-  const out: boolean[] = [];
+  const ranges: Array<{ start: number; end: number }> = [];
+  let outputIndex = 0;
   let cursor = 0;
   sourceCells.forEach((cell, index) => {
     const duration = Math.max(1, Math.round(cell.durationTicks));
     const cellEnd = cursor + duration;
     const before = Math.max(0, Math.min(cellEnd, start) - cursor);
     const after = Math.max(0, cellEnd - Math.max(cursor, end));
-    if (before > 0) out.push(flags[index] ?? false);
-    if (after > 0) out.push(flags[index] ?? false);
+    const rangeStart = outputIndex;
+    if (before > 0) outputIndex += 1;
+    if (after > 0) outputIndex += 1;
+    ranges[index] = { start: rangeStart, end: outputIndex };
     cursor = cellEnd;
   });
-  return fitTimingFlags(out, out.length);
+  const out = Array<boolean>(boundaryDecorations ? Math.max(0, outputIndex - 1) : outputIndex).fill(false);
+  flags.forEach((value, index) => {
+    if (!value) return;
+    const range = ranges[index];
+    if (!range || range.end <= range.start) return;
+    const output = boundaryDecorations ? range.end - 1 : range.start;
+    if (output >= 0 && output < out.length) out[output] = true;
+  });
+  return out.some(Boolean) ? out : undefined;
 }
 
 function syncTimedBitSource(sig: Signal): void {
@@ -79,7 +104,7 @@ function syncTimedBitSource(sig: Signal): void {
   const states = timing.cells.map((cell) => cell.state);
   sig.states = states;
   sig.stepGaps = fitTimingFlags(sig.stepGaps, states.length);
-  sig.stepGlitches = fitTimingFlags(sig.stepGlitches, states.length);
+  sig.stepGlitches = fitTimingFlags(sig.stepGlitches, Math.max(0, states.length - 1));
   if (isWaveModeLane(sig)) {
     setBitLaneWave(
       sig,
@@ -106,12 +131,16 @@ export function resizeBitSignalToLength(
   if (sig.type !== 'bit' || newLen < 0) return;
 
   if (sig.digitalTiming) {
-    resizeTimingToDuration(
+    const resized = resizeTimingToDuration(
       sig.digitalTiming,
       newLen * Math.max(1, sig.digitalTiming.ticksPerStep),
     );
+    if (!resized) return;
     sig.stepGaps = fitTimingFlags(sig.stepGaps, sig.digitalTiming.cells.length);
-    sig.stepGlitches = fitTimingFlags(sig.stepGlitches, sig.digitalTiming.cells.length);
+    sig.stepGlitches = fitTimingFlags(
+      sig.stepGlitches,
+      Math.max(0, sig.digitalTiming.cells.length - 1),
+    );
     syncTimedBitSource(sig);
     return;
   }
@@ -144,12 +173,14 @@ export function insertBitStepAt(sig: Signal, index: number): boolean {
   if (sig.type !== 'bit') return false;
   if (sig.digitalTiming) {
     const boundary = timingBoundaryAtMajorStep(sig.digitalTiming, index);
+    const beforeCount = sig.digitalTiming.cells.length;
     const previousGaps = sig.stepGaps;
     const previousGlitches = sig.stepGlitches;
-    const inserted = insertMajorStepInTiming(sig.digitalTiming, index);
-    if (!inserted) return false;
-    sig.stepGaps = insertTimingFlags(previousGaps, boundary);
-    sig.stepGlitches = insertTimingFlags(previousGlitches, boundary);
+    const insertedOk = insertMajorStepInTiming(sig.digitalTiming, index);
+    if (!insertedOk) return false;
+    const inserted = sig.digitalTiming.cells.length - beforeCount;
+    sig.stepGaps = insertTimingFlags(previousGaps, boundary, inserted);
+    sig.stepGlitches = insertTimingFlags(previousGlitches, boundary, inserted, true);
     syncTimedBitSource(sig);
     return true;
   }
@@ -192,7 +223,7 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
     const deleted = deleteMajorStepInTiming(sig.digitalTiming, index, minLen);
     if (deleted) {
       sig.stepGaps = deleteTimingFlags(previousGaps, sourceCells, start, end);
-      sig.stepGlitches = deleteTimingFlags(previousGlitches, sourceCells, start, end);
+      sig.stepGlitches = deleteTimingFlags(previousGlitches, sourceCells, start, end, true);
       syncTimedBitSource(sig);
     }
     return deleted;

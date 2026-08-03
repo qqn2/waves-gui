@@ -218,6 +218,9 @@ function padNode(node: string | undefined, totalSteps: number): string | undefin
 
 function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
   const padSignal = (s: Signal) => {
+    // WaveDrom period multiplies source cells at render time. Keep the
+    // authored source-cell sequence independent of another lane's duration.
+    if (s.period !== undefined) return;
     if (s.node !== undefined) {
       s.node = padNode(s.node, totalSteps);
     }
@@ -295,6 +298,19 @@ export function fromWavedromJSON(
     head: wd.head ?? wd.config?.head,
     foot: wd.foot ?? wd.config?.foot,
   };
+  const rawCurveControls = wd['x-waves-gui']?.edgeCurveControls;
+  const edgeCurveControls = rawCurveControls
+    ? Object.fromEntries(
+      Object.entries(rawCurveControls).filter(([index, value]) => (
+        /^\d+$/.test(index)
+        && value !== null
+        && Number.isFinite(value.c1x)
+        && Number.isFinite(value.c2x)
+        && value.c1x >= 0 && value.c1x <= 1
+        && value.c2x >= 0 && value.c2x <= 1
+      )),
+    )
+    : undefined;
   return {
     version: 2,
     compatibility: {
@@ -305,5 +321,8 @@ export function fromWavedromJSON(
     config,
     annotations: [],
     edges: wd.edge ? [...wd.edge] : [],
+    ...(edgeCurveControls && Object.keys(edgeCurveControls).length > 0
+      ? { edgeCurveControls }
+      : {}),
   };
 }

@@ -35,6 +35,7 @@ import {
   normalizeArrowAnnotation,
 } from '../annotations';
 import { canRescaleDiagramTiming, rescaleDiagramTiming } from '../fineTiming';
+import { toolState } from '../../tools/toolState';
 
 function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.scrollX = 0;
@@ -44,6 +45,10 @@ function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.edgeAnchorPending = null;
   s.view.structuredArrowPending = null;
   s.view.edgeToolHover = null;
+  s.view.activeSignalIds = [];
+  s.view.activeAnnotationId = null;
+  s.view.activeTimingCellIndex = null;
+  toolState.cancelAll();
 }
 
 function disableExtensionView(s: AppState & StoreActions): void {
@@ -161,7 +166,15 @@ function removeDigitalTiming(signals: SignalOrGroup[], totalSteps: number): void
       && firstDuration % timing.ticksPerStep === 0
       ? firstDuration / timing.ticksPerStep
       : null;
-    const representable = exactIntegerPeriod !== null && exactIntegerPeriod >= 1;
+    const hasNonDefaultDuty = timing.cells.some((cell) => (
+      cell.dutyTicks !== undefined
+      && cell.dutyTicks * 2 !== cell.durationTicks
+    ));
+    const hasSlew = timing.slewing !== undefined && timing.slewing !== 0;
+    const representable = exactIntegerPeriod !== null
+      && exactIntegerPeriod >= 1
+      && !hasNonDefaultDuty
+      && !hasSlew;
     if (representable) {
       signal.period = exactIntegerPeriod;
       const phase = timing.phaseTicks / timing.ticksPerStep;
@@ -528,6 +541,9 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.diagram = normalized;
         s.savedDiagram = normalizeDiagram(normalized);
         s.view.isDirty = false;
+        s.view.sourceDraftDirty = false;
+        s.view.sourceDraft = null;
+        s.view.sourceDraftError = null;
         resetTransientDocumentView(s);
       });
     },
@@ -539,6 +555,9 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.history = [];
         s.future = [];
         s.diagram = normalizeDiagram(diagram);
+        s.view.sourceDraftDirty = false;
+        s.view.sourceDraft = null;
+        s.view.sourceDraftError = null;
         resetTransientDocumentView(s);
       });
     },
@@ -555,9 +574,13 @@ export function createDocumentActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram = normalized;
         s.view.activeSignalIds = activeSignalIds;
+        s.view.activeAnnotationId = null;
+        s.view.activeTimingCellIndex = null;
         s.view.paintDraft = null;
         s.view.edgeAnchorPending = null;
+        s.view.structuredArrowPending = null;
         s.view.edgeToolHover = null;
+        toolState.cancelAll();
       });
     },
 
@@ -584,10 +607,12 @@ export function createDocumentActions(set: ImmerSet): Pick<
     },
 
     setTicksPerStep(ticksPerStep) {
+      if (!Number.isFinite(ticksPerStep)) return false;
       let changed = false;
       set((s) => {
         if (s.diagram.compatibility?.extensionsEnabled !== true) return;
         const next = Math.floor(ticksPerStep);
+        if (next < 1) return;
         if (s.diagram.config.ticksPerStep === next) {
           changed = true;
           return;
@@ -635,6 +660,9 @@ export function createDocumentActions(set: ImmerSet): Pick<
       set((s) => {
         s.savedDiagram = normalizeDiagram(current(s.diagram));
         s.view.isDirty = false;
+        s.view.sourceDraftDirty = false;
+        s.view.sourceDraft = null;
+        s.view.sourceDraftError = null;
         s.view.fileName = fileName;
       });
     },
@@ -646,6 +674,10 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.future.push(current(s.diagram));
         s.diagram = normalizeDiagram(s.history.pop()!);
         s.view.paintDraft = null;
+        s.view.activeSignalIds = [];
+        s.view.activeAnnotationId = null;
+        s.view.activeTimingCellIndex = null;
+        toolState.cancelAll();
         s.view.diagramRevision += 1;
       });
     },
@@ -657,6 +689,10 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.history.push(current(s.diagram));
         s.diagram = normalizeDiagram(s.future.pop()!);
         s.view.paintDraft = null;
+        s.view.activeSignalIds = [];
+        s.view.activeAnnotationId = null;
+        s.view.activeTimingCellIndex = null;
+        toolState.cancelAll();
         s.view.diagramRevision += 1;
       });
     },

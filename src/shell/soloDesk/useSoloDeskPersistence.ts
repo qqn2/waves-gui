@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useStore } from '../../shared/store';
-import { clearDraft, isDiagramEmpty, loadDraft, saveDraft } from './localDraft';
+import {
+  clearDraft,
+  clearSourceDraft,
+  isDiagramEmpty,
+  loadDraft,
+  loadSourceDraft,
+  saveDraft,
+  saveSourceDraft,
+} from './localDraft';
 
 const DRAFT_DEBOUNCE_MS = 1000;
 
@@ -12,6 +20,9 @@ const DRAFT_DEBOUNCE_MS = 1000;
  */
 export function useSoloDeskPersistence(): void {
   const diagram = useStore((s) => s.diagram);
+  const sourceDraft = useStore((s) => s.view.sourceDraft);
+  const sourceDraftError = useStore((s) => s.view.sourceDraftError ?? null);
+  const setSourceDraftStatus = useStore((s) => s.setSourceDraftStatus);
   const restoreDraft = useStore((s) => s.restoreDraft);
   const [autosaveEnabled, setAutosaveEnabled] = useState(false);
   const restoreCheckedRef = useRef(false);
@@ -28,11 +39,13 @@ export function useSoloDeskPersistence(): void {
 
     try {
       const draft = loadDraft();
+      const source = loadSourceDraft();
       if (draft) {
         if (isDiagramEmpty(draft)) {
           clearDraft();
         } else restoreDraft(draft);
       }
+      if (source) setSourceDraftStatus(true, source.error ?? null, source.code);
     } catch (err) {
       console.warn('[soloDesk] draft restore failed', err);
       try {
@@ -43,21 +56,25 @@ export function useSoloDeskPersistence(): void {
     }
 
     setAutosaveEnabled(true);
-  }, [restoreDraft]);
+  }, [restoreDraft, setSourceDraftStatus]);
 
   useEffect(() => {
     if (!autosaveEnabled) {
       return;
     }
     debouncedSave(diagram);
+    if (sourceDraft !== null && sourceDraft !== undefined) {
+      saveSourceDraft(sourceDraft, sourceDraftError);
+    } else clearSourceDraft();
     return () => {
       debouncedSave.cancel();
     };
-  }, [autosaveEnabled, diagram, debouncedSave]);
+  }, [autosaveEnabled, diagram, debouncedSave, sourceDraft, sourceDraftError]);
 
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!useStore.getState().view.isDirty) {
+      const { view } = useStore.getState();
+      if (!view.isDirty && !view.sourceDraftDirty) {
         return;
       }
       event.preventDefault();

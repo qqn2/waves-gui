@@ -29,4 +29,7 @@ export interface WdRoot {
   head?: { text?: string; tick?: number; every?: number };
   foot?: { text?: string; tock?: number; every?: number };
   edge?: string[];
+  'x-waves-gui'?: {
+    edgeCurveControls?: Record<string, { c1x: number; c2x: number }>;
+  };
 }

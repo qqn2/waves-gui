@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DiagramState, ViewState } from '../shared/types';
 import { exportImage } from './exportImage';
 import { exportSVG, buildSVGString } from './exportSVG';
@@ -82,14 +82,57 @@ export function ExportDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (open) {
+      openerRef.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
       setBackground(defaultBackground());
       setError(null);
       setCopied(null);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const focusable = () => Array.from(dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), select:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ));
+    const first = focusable()[0] ?? dialog;
+    first.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = focusable();
+      if (items.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const current = document.activeElement;
+      const index = items.indexOf(current as HTMLElement);
+      const next = event.shiftKey
+        ? (index <= 0 ? items.length - 1 : index - 1)
+        : (index === items.length - 1 ? 0 : index + 1);
+      event.preventDefault();
+      items[next]!.focus();
+    };
+    dialog.addEventListener('keydown', onKeyDown);
+    return () => {
+      dialog.removeEventListener('keydown', onKeyDown);
+      openerRef.current?.focus();
+      openerRef.current = null;
+    };
+  }, [open, onClose]);
 
   const isImage = format === 'png' || format === 'jpg';
   const compatibilityFindings =
@@ -210,10 +253,12 @@ export function ExportDialog({
       }}
     >
       <div
+        ref={dialogRef}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
         aria-labelledby="export-dialog-title"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="export-dialog-title" className={styles.title}>

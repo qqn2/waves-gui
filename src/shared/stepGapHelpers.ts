@@ -36,6 +36,15 @@ function holdState(states: BitState[], index: number): BitState {
   return states[0] ?? '0';
 }
 
+function vectorColumnCount(signal: Signal): number {
+  if (signal.type !== 'vector') return 0;
+  return Math.max(
+    signal.stepGaps?.length ?? 0,
+    ...signal.segments.map((segment) => segment.endStep),
+    0,
+  );
+}
+
 function spliceColumnFlag(
   flags: boolean[] | undefined,
   index: number,
@@ -72,7 +81,7 @@ export function insertGapColumnOnDiagram(
   walkSignals(signals, (sig) => {
     if (sig.type === 'spacer') return;
     const newLen =
-      sig.type === 'bit' ? sig.states.length + 1 : gapColumnCount(sig.stepGaps?.length ?? 0) + 1;
+      sig.type === 'bit' ? sig.states.length + 1 : vectorColumnCount(sig) + 1;
 
     if (sig.type === 'bit') {
       const isGap = gapSignalId === null || sig.id === gapSignalId;
@@ -184,7 +193,7 @@ function deleteGapColumnOnDiagram(
           else seg.endStep--;
         }
       }
-      const newLen = Math.max(0, (sig.stepGaps?.length ?? 0) - 1);
+      const newLen = Math.max(0, vectorColumnCount(sig) - 1);
       sig.stepGaps = removeColumnFlag(sig.stepGaps, index, newLen);
     }
   });
@@ -195,7 +204,7 @@ function deleteGapColumnOnDiagram(
 export function toggleGapColumnsOnSignal(signal: Signal, lo: number, hi: number): void {
   if (signal.type === 'spacer') return;
   const len =
-    signal.type === 'bit' ? signal.states.length : Math.max(signal.stepGaps?.length ?? 0, 0);
+    signal.type === 'bit' ? signal.states.length : vectorColumnCount(signal);
   if (len === 0) return;
   const clampLo = Math.max(0, lo);
   const clampHi = Math.min(hi, len - 1);
@@ -275,7 +284,7 @@ export function insertValueColumnOnDiagram(
   walkSignals(signals, (sig) => {
     if (sig.type === 'spacer') return;
     const newLen =
-      sig.type === 'bit' ? sig.states.length + 1 : gapColumnCount(sig.stepGaps?.length ?? 0) + 1;
+      sig.type === 'bit' ? sig.states.length + 1 : vectorColumnCount(sig) + 1;
 
     if (sig.type === 'bit') {
       const value = sig.id === valueSignalId ? bitState : holdState(sig.states, clamped);

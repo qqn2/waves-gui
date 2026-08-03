@@ -1,6 +1,11 @@
 import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
 import type { Signal, SignalOrGroup } from '../types';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
+import { normalizeTimedVectorSegments } from '../vectorSegments';
+import {
+  deleteTimingFlags,
+  insertTimingFlags,
+} from '../bitStepResize';
 import {
   canDeleteMajorStepInTiming,
   canInsertMajorStepInTiming,
@@ -93,42 +98,6 @@ export function canInsertStepInSignal(sig: Signal, index: number, totalSteps: nu
   return sig.type !== 'bit' || !sig.digitalTiming || canInsertMajorStepInTiming(sig.digitalTiming, clamped);
 }
 
-function insertTimingFlags(
-  flags: boolean[] | undefined,
-  boundary: ReturnType<typeof timingBoundaryAtMajorStep>,
-): boolean[] | undefined {
-  if (!flags?.length) return undefined;
-  const out = [...flags];
-  if (boundary.kind === 'inside') {
-    const value = out[boundary.index] ?? false;
-    out.splice(boundary.index, 1, value, value, value);
-  } else {
-    out.splice(boundary.index, 0, false);
-  }
-  return pruneStepGaps(out);
-}
-
-function deleteTimingFlags(
-  flags: boolean[] | undefined,
-  sourceCells: { durationTicks: number }[],
-  start: number,
-  end: number,
-): boolean[] | undefined {
-  if (!flags?.length) return undefined;
-  const out: boolean[] = [];
-  let cursor = 0;
-  sourceCells.forEach((cell, index) => {
-    const duration = Math.max(1, Math.round(cell.durationTicks));
-    const cellEnd = cursor + duration;
-    const before = Math.max(0, Math.min(cellEnd, start) - cursor);
-    const after = Math.max(0, cellEnd - Math.max(cursor, end));
-    if (before > 0) out.push(flags[index] ?? false);
-    if (after > 0) out.push(flags[index] ?? false);
-    cursor = cellEnd;
-  });
-  return pruneStepGaps(out);
-}
-
 export function canDeleteStepInSignal(
   sig: Signal,
   index: number,
@@ -165,7 +134,7 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
       const beforeCount = sig.vectorTiming.cells.length;
       if (!insertMajorStepInTiming(sig.vectorTiming, clamped)) return false;
       const inserted = sig.vectorTiming.cells.length - beforeCount;
-      sig.stepGaps = insertTimingFlags(sig.stepGaps, boundary);
+      sig.stepGaps = insertTimingFlags(sig.stepGaps, boundary, inserted);
       for (const seg of sig.segments) {
         if (boundary.kind === 'inside') {
           if (seg.startStep > boundary.index) {
@@ -179,10 +148,14 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
         } else if (seg.startStep >= boundary.index) {
           seg.startStep += inserted;
           seg.endStep += inserted;
-        } else if (seg.endStep === boundary.index) {
+        } else if (seg.endStep >= boundary.index) {
           seg.endStep += inserted;
         }
       }
+      sig.segments = normalizeTimedVectorSegments(
+        sig.segments,
+        sig.vectorTiming.cells.length,
+      );
       return true;
     }
 
@@ -259,6 +232,10 @@ export function deleteStepInSignal(
         seg.endStep = remappedBoundaries[Math.max(0, Math.min(seg.endStep, sourceCells.length))]!;
       }
       sig.segments = sig.segments.filter((seg) => seg.endStep > seg.startStep);
+      sig.segments = normalizeTimedVectorSegments(
+        sig.segments,
+        sig.vectorTiming.cells.length,
+      );
       return true;
     }
 

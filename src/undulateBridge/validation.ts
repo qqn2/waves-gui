@@ -888,6 +888,7 @@ function structuralError(root: Record<string, unknown>): string | null {
       if (
         field !== 'analogueContext'
         && field !== 'randomSeed'
+        && field !== 'edgeCurveControls'
       ) {
         return `x-waves-gui.${field} is not supported`;
       }
@@ -917,6 +918,25 @@ function structuralError(root: Record<string, unknown>): string | null {
       )
     ) {
       return 'x-waves-gui.randomSeed must be an integer from 0 to 4294967295';
+    }
+    if (appMetadata.edgeCurveControls !== undefined) {
+      if (!isRecord(appMetadata.edgeCurveControls)) {
+        return 'x-waves-gui.edgeCurveControls must be an object';
+      }
+      for (const [index, control] of Object.entries(appMetadata.edgeCurveControls)) {
+        if (
+          !/^\d+$/.test(index)
+          || !isRecord(control)
+          || typeof control.c1x !== 'number'
+          || !Number.isFinite(control.c1x)
+          || typeof control.c2x !== 'number'
+          || !Number.isFinite(control.c2x)
+          || control.c1x < 0 || control.c1x > 1
+          || control.c2x < 0 || control.c2x > 1
+        ) {
+          return `x-waves-gui.edgeCurveControls.${index} is invalid`;
+        }
+      }
     }
   }
   if (root.edge !== undefined && root.edges !== undefined) {

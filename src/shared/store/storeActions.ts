@@ -149,7 +149,7 @@ export interface StoreActions {
   setActiveSignalIds(ids: string[]): void;
   setActiveTimingCellIndex(index: number | null): void;
   setActiveAnnotationId(id: string | null): void;
-  setTotalSteps(steps: number): void;
+  setTotalSteps(steps: number): boolean;
   setHscale(hscale: number): void;
   updateDiagramHead(patch: Partial<NonNullable<DiagramConfig['head']>>): void;
   updateDiagramFoot(patch: Partial<NonNullable<DiagramConfig['foot']>>): void;
@@ -234,6 +234,7 @@ export interface StoreActions {
   redo(): void;
   setPaintDraft(draft: PaintDraft): void;
   clearPaintDraft(): void;
+  setSourceDraftStatus(dirty: boolean, error?: string | null, draft?: string | null): void;
 
   // ── View (not saved to file) ──
   setZoom(zoom: number): void;

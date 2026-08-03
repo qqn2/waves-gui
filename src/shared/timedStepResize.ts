@@ -23,8 +23,9 @@ export function timingCellDuration(timing: SignalTiming): number {
 export function resizeTimingToDuration(
   timing: SignalTiming,
   targetDurationTicks: number,
-): void {
+): boolean {
   const target = Math.max(1, Math.floor(targetDurationTicks));
+  if (!canResizeTimingToDuration(timing, target)) return false;
   const source = timing.cells.map((cell) => ({ ...cell }));
   const cells: TimedCell[] = [];
   let remaining = target;
@@ -41,13 +42,23 @@ export function resizeTimingToDuration(
   const fallback = source.at(-1);
   while (remaining > 0) {
     const duration = Math.min(Math.max(1, timing.ticksPerStep), remaining);
+    const dutyTicks = fallback?.dutyTicks === undefined
+      ? undefined
+      : Math.max(
+        0,
+        Math.min(
+          duration,
+          Math.round((fallback.dutyTicks / Math.max(1, fallback.durationTicks)) * duration),
+        ),
+      );
     cells.push({
-      ...(fallback ? { ...fallback, dutyTicks: undefined } : {}),
+      ...(fallback ? { ...fallback, ...(dutyTicks === undefined ? {} : { dutyTicks }) } : {}),
       durationTicks: duration,
     });
     remaining -= duration;
   }
   timing.cells = cells;
+  return true;
 }
 
 function boundaryTick(timing: SignalTiming, majorIndex: number): number {
@@ -82,8 +93,12 @@ export function timingBoundaryAtMajorStep(
   return { kind: 'exact', index: timing.cells.length, tick: target };
 }
 
-function isClockCell(cell: TimedCell): boolean {
-  return 'state' in cell && isClockBitState((cell as TimedCell & { state: BitState }).state);
+function isClockCell(cell: TimedCell | undefined): boolean {
+  return Boolean(
+    cell
+    && 'state' in cell
+    && isClockBitState((cell as TimedCell & { state: BitState }).state),
+  );
 }
 
 function rangeSplitsClockCell(timing: SignalTiming, start: number, end: number): boolean {
@@ -101,6 +116,24 @@ function rangeSplitsClockCell(timing: SignalTiming, start: number, end: number):
   return false;
 }
 
+/**
+ * Native resizing is intentionally conservative: a document-length edit must
+ * never cut a clock macro or manufacture another complete clock cycle.
+ */
+export function canResizeTimingToDuration(
+  timing: SignalTiming,
+  targetDurationTicks: number,
+): boolean {
+  const target = Math.max(1, Math.floor(targetDurationTicks));
+  const total = timingCellDuration(timing);
+  if (target === total) return true;
+  if (target < total) {
+    return !rangeSplitsClockCell(timing, target, total);
+  }
+  const fallback = timing.cells.at(-1);
+  return !fallback || !isClockCell(fallback);
+}
+
 /** Source-cell index at a major-step boundary (before that cell, if exact). */
 export function majorStepBoundaryCellIndex(
   timing: SignalTiming,
@@ -111,7 +144,9 @@ export function majorStepBoundaryCellIndex(
 
 export function canInsertMajorStepInTiming(timing: SignalTiming, majorIndex: number): boolean {
   const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
-  return boundary.kind !== 'inside' || !isClockCell(timing.cells[boundary.index]!);
+  if (boundary.kind === 'inside') return !isClockCell(timing.cells[boundary.index]!);
+  return !isClockCell(timing.cells[boundary.index - 1]!)
+    && !isClockCell(timing.cells[boundary.index]!);
 }
 
 /** Insert one major step at its document-tick boundary. */
@@ -123,7 +158,11 @@ export function insertMajorStepInTiming(
   const cells = timing.cells.map((cell) => ({ ...cell }));
   const boundary = timingBoundaryAtMajorStep(timing, majorIndex);
   const index = boundary.index;
-  if (boundary.kind === 'inside' && isClockCell(cells[index]!)) return false;
+  if (
+    (boundary.kind === 'inside' && isClockCell(cells[index]!))
+    || (boundary.kind === 'exact'
+      && (isClockCell(cells[index - 1]!) || isClockCell(cells[index]!)))
+  ) return false;
 
   if (boundary.kind === 'inside') {
     const cell = cells[index]!;
@@ -157,8 +196,9 @@ export function canDeleteMajorStepInTiming(
   const stepTicks = Math.max(1, timing.ticksPerStep);
   const total = timingCellDuration(timing);
   if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
-  const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundaryTick(timing, majorIndex)));
-  const end = Math.min(total, start + stepTicks);
+  const start = majorIndex * stepTicks + timing.phaseTicks;
+  const end = start + stepTicks;
+  if (start < 0 || end > total) return false;
   return !rangeSplitsClockCell(timing, start, end);
 }
 
@@ -171,8 +211,9 @@ export function deleteMajorStepInTiming(
   const stepTicks = Math.max(1, timing.ticksPerStep);
   const total = timingCellDuration(timing);
   if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
-  const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundaryTick(timing, majorIndex)));
-  const end = Math.min(total, start + stepTicks);
+  const start = majorIndex * stepTicks + timing.phaseTicks;
+  const end = start + stepTicks;
+  if (start < 0 || end > total) return false;
   if (rangeSplitsClockCell(timing, start, end)) return false;
   const cells: TimedCell[] = [];
   let cursor = 0;

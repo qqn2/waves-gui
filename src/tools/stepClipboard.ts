@@ -24,6 +24,14 @@ export function copyStepSelection(): boolean {
   const steps = toolState.getStepSelection();
   if (!steps || view.activeSignalIds.length === 0) return false;
 
+  let hasNativeTiming = false;
+  for (const signalId of view.activeSignalIds) {
+    findSignal(diagram.signals, signalId, (sig) => {
+      if (sig.digitalTiming || sig.vectorTiming) hasNativeTiming = true;
+    });
+  }
+  if (hasNativeTiming) return false;
+
   const lo = Math.min(steps.start, steps.end);
   const hi = Math.max(steps.start, steps.end);
   const stepCount = hi - lo + 1;
@@ -66,7 +74,14 @@ export function pasteStepSelection(atStep?: number): boolean {
   const clip = internalClipboard;
   if (!clip) return false;
 
-  const { view } = useStore.getState();
+  const { view, diagram } = useStore.getState();
+  let hasNativeTiming = false;
+  for (const signalId of view.activeSignalIds) {
+    findSignal(diagram.signals, signalId, (sig) => {
+      if (sig.digitalTiming || sig.vectorTiming) hasNativeTiming = true;
+    });
+  }
+  if (hasNativeTiming) return false;
   const steps = toolState.getStepSelection();
   const pasteAt = atStep ?? steps?.start ?? 0;
 
@@ -84,6 +99,12 @@ export function pasteStepSelection(atStep?: number): boolean {
           const lo = Math.max(0, pasteAt);
           for (let i = 0; i < src.length && lo + i < sig.states.length; i++) {
             sig.states[lo + i] = src[i]!;
+          }
+          if (sig.digitalTiming) {
+            sig.digitalTiming.cells.forEach((cell, index) => {
+              if (sig.states[index] !== undefined) cell.state = sig.states[index]!;
+            });
+            sig.states = sig.digitalTiming.cells.map((cell) => cell.state);
           }
           clearWaveMode(sig);
         } else if (sig.type === 'vector') {

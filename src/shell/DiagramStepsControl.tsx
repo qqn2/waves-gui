@@ -20,6 +20,7 @@ export function DiagramStepsControl() {
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
   const setTotalSteps = useStore((s) => s.setTotalSteps);
   const [draft, setDraft] = useState(String(totalSteps));
+  const [rejected, setRejected] = useState(false);
   const cancelBlurRef = useRef(false);
 
   useEffect(() => setDraft(String(totalSteps)), [totalSteps]);
@@ -32,14 +33,15 @@ export function DiagramStepsControl() {
     const next = parseSteps(draft);
     if (next === null) {
       setDraft(String(totalSteps));
+      setRejected(false);
       return;
     }
-    setTotalSteps(next);
+    setRejected(!setTotalSteps(next));
   }, [draft, setTotalSteps, totalSteps]);
 
   const bump = useCallback(
     (delta: number) => {
-      setTotalSteps(totalSteps + delta);
+      setRejected(!setTotalSteps(totalSteps + delta));
     },
     [setTotalSteps, totalSteps],
   );
@@ -59,9 +61,11 @@ export function DiagramStepsControl() {
       </button>
       <input
         type="text"
-        className={styles.stepsNum}
+        className={`${styles.stepsNum} ${rejected ? styles.stepsNumRejected : ''}`}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
+        aria-invalid={rejected}
+        onFocus={() => setRejected(false)}
         onBlur={commitDraft}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -70,6 +74,7 @@ export function DiagramStepsControl() {
           } else if (e.key === 'Escape') {
             cancelBlurRef.current = true;
             setDraft(String(totalSteps));
+            setRejected(false);
             e.currentTarget.blur();
           }
         }}
@@ -87,6 +92,11 @@ export function DiagramStepsControl() {
       >
         +
       </button>
+      {rejected ? (
+        <span className={styles.subStepsError} role="status">
+          Timing edit would split a native cell
+        </span>
+      ) : null}
     </div>
   );
 }

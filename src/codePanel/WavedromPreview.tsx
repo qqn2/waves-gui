@@ -148,9 +148,9 @@ export function WavedromPreview({
   return (
     <div className={styles.previewWrap}>
       <span className={styles.previewLabel}>
-        {format === 'undulate' && extensionsEnabled
+        {format !== 'wavedrom' && extensionsEnabled
           ? 'Undulate render (local)'
-          : format === 'undulate'
+          : format !== 'wavedrom'
             ? 'WaveDrom compatibility render (local)'
           : 'WaveDrom render (local)'}
       </span>
@@ -188,7 +188,9 @@ export function WavedromPreview({
       </div>
       {error ? (
         <div className={styles.preview}>
-          <p className={styles.previewError}>Fix JSON to preview: {error}</p>
+          <p className={styles.previewError}>
+            Fix {format === 'wavedrom' ? 'JSON' : format === 'undulate-yaml' ? 'YAML' : format === 'undulate-toml' ? 'TOML' : 'JSON'} to preview: {error}
+          </p>
         </div>
       ) : (
         <div ref={containerRef} className={styles.preview} />

@@ -795,6 +795,11 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   Timing grid: {signal.digitalTiming.ticksPerStep} divisions per step.
                 </p>
               </>
+            ) : signal.vectorTiming ? (
+              <p className={styles.inspectorFieldHint}>
+                Native vector timing is active. Period and phase are controlled
+                by the timing cells and cannot be edited as legacy WaveDrom fields.
+              </p>
             ) : (
               <>
             {signal.type === 'bit' && extensionsEnabled ? (

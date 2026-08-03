@@ -1,12 +1,13 @@
 import { current } from 'immer';
 import { resizeBitSignalToLength } from '../bitStepResize';
 import { resizeAnalogueCells } from '../analogue';
-import { resizeTimingToDuration } from '../timedStepResize';
+import { canResizeTimingToDuration, resizeTimingToDuration } from '../timedStepResize';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
 import { MAX_HISTORY } from '../constants';
 import { createDefaultDiagram } from '../defaultDiagram';
 import { loadLabelColumnWidth } from '../../shell/labelColumnLayout';
 import type { ViewState } from '../types';
+import { normalizeTimedVectorSegments } from '../vectorSegments';
 
 /** Notify derived views after a diagram mutation without creating undo history. */
 export function markDiagramChanged(state: AppState): void {
@@ -64,6 +65,9 @@ export function defaultView(): ViewState {
     canvasColor: null,
     uiFontScale: 1,
     isDirty: false,
+    sourceDraftDirty: false,
+    sourceDraft: null,
+    sourceDraftError: null,
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
@@ -158,13 +162,10 @@ export function resizeAllStates(
           sg.vectorTiming,
           newLen * Math.max(1, sg.vectorTiming.ticksPerStep),
         );
-        const cellCount = sg.vectorTiming.cells.length;
-        for (const seg of sg.segments) {
-          if (seg.endStep > cellCount) seg.endStep = cellCount;
-          if (seg.startStep >= cellCount) seg.startStep = Math.max(0, cellCount - 1);
-        }
-        const last = sg.segments[sg.segments.length - 1];
-        if (last && last.endStep < cellCount) last.endStep = cellCount;
+        sg.segments = normalizeTimedVectorSegments(
+          sg.segments,
+          sg.vectorTiming.cells.length,
+        );
         continue;
       }
       for (const seg of sg.segments) {
@@ -177,6 +178,24 @@ export function resizeAllStates(
       resizeAnalogueCells(sg, newLen);
     }
   }
+}
+
+export function canResizeAllStates(
+  signals: SignalOrGroup[],
+  newLen: number,
+): boolean {
+  return signals.every((sg) => {
+    if (sg.type === 'group') return canResizeAllStates(sg.children, newLen);
+    const timing = sg.type === 'bit'
+      ? sg.digitalTiming
+      : sg.type === 'vector'
+        ? sg.vectorTiming
+        : undefined;
+    return !timing || canResizeTimingToDuration(
+      timing,
+      newLen * Math.max(1, timing.ticksPerStep),
+    );
+  });
 }
 
 export function reorderSiblingLevel(

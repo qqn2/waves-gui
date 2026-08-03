@@ -5,6 +5,7 @@ import { getSafeStorage, type StorageLike } from './safeStorage';
 export { type StorageLike } from './safeStorage';
 
 export const DRAFT_STORAGE_KEY = 'wavedrom-gui-draft';
+export const SOURCE_DRAFT_STORAGE_KEY = 'wavedrom-gui-source-draft';
 
 export const DRAFT_ENVELOPE_VERSION = 1 as const;
 
@@ -77,8 +78,57 @@ export function loadDraft(storage: StorageLike = getSafeStorage()): DiagramState
 export function clearDraft(storage: StorageLike = getSafeStorage()): void {
   try {
     storage.removeItem(DRAFT_STORAGE_KEY);
+    storage.removeItem(SOURCE_DRAFT_STORAGE_KEY);
   } catch (err) {
     console.warn('[soloDesk] clearDraft failed', err);
+  }
+}
+
+export interface SourceDraftEnvelope {
+  version: 1;
+  savedAt: number;
+  code: string;
+  error?: string | null;
+}
+
+export function saveSourceDraft(
+  code: string,
+  error: string | null = null,
+  storage: StorageLike = getSafeStorage(),
+): void {
+  try {
+    storage.setItem(SOURCE_DRAFT_STORAGE_KEY, JSON.stringify({
+      version: 1,
+      savedAt: Date.now(),
+      code,
+      error,
+    } satisfies SourceDraftEnvelope));
+  } catch (err) {
+    console.warn('[soloDesk] source draft save failed', err);
+  }
+}
+
+export function loadSourceDraft(
+  storage: StorageLike = getSafeStorage(),
+): SourceDraftEnvelope | null {
+  try {
+    const parsed: unknown = JSON.parse(storage.getItem(SOURCE_DRAFT_STORAGE_KEY) ?? 'null');
+    if (
+      !parsed || typeof parsed !== 'object'
+      || (parsed as SourceDraftEnvelope).version !== 1
+      || typeof (parsed as SourceDraftEnvelope).code !== 'string'
+    ) return null;
+    return parsed as SourceDraftEnvelope;
+  } catch {
+    return null;
+  }
+}
+
+export function clearSourceDraft(storage: StorageLike = getSafeStorage()): void {
+  try {
+    storage.removeItem(SOURCE_DRAFT_STORAGE_KEY);
+  } catch (err) {
+    console.warn('[soloDesk] source draft clear failed', err);
   }
 }
 

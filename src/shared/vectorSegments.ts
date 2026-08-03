@@ -64,6 +64,45 @@ export function segmentAtStep(
   return segments.find((seg) => step >= seg.startStep && step < seg.endStep);
 }
 
+/** Keep native-timed vector segments ordered, contiguous and within the cell track. */
+export function normalizeTimedVectorSegments(
+  segments: VectorSegment[],
+  cellCount: number,
+): VectorSegment[] {
+  const count = Math.max(1, Math.floor(cellCount));
+  const sorted = segments
+    .map((segment) => ({
+      ...segment,
+      startStep: Math.max(0, Math.min(count, Math.floor(segment.startStep))),
+      endStep: Math.max(0, Math.min(count, Math.floor(segment.endStep))),
+    }))
+    .sort((a, b) => a.startStep - b.startStep || a.endStep - b.endStep);
+  const out: VectorSegment[] = [];
+  let cursor = 0;
+  for (const segment of sorted) {
+    const start = Math.max(cursor, segment.startStep);
+    const end = Math.max(start, segment.endStep);
+    if (start > cursor) {
+      const previous = out.at(-1);
+      if (previous) {
+        previous.endStep = start;
+      } else {
+        out.push({ id: nanoid(), startStep: 0, endStep: start, value: '' });
+      }
+    }
+    if (end <= start) continue;
+    out.push({ ...segment, startStep: start, endStep: end });
+    cursor = end;
+  }
+  if (out.length === 0) {
+    return [{ id: nanoid(), startStep: 0, endStep: count, value: '' }];
+  }
+  if (out[0]!.startStep > 0) out[0]!.startStep = 0;
+  const last = out.at(-1)!;
+  if (last.endStep < count) last.endStep = count;
+  return out;
+}
+
 export interface ApplyVectorSpanOptions {
   /** Keep labels (and colors) on steps that already hold bus data. */
   preserveExistingLabels?: boolean;
