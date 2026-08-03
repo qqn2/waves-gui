@@ -485,6 +485,8 @@ export interface ViewState {
   sourceDraft?: string | null;
   /** Last source parse/apply error, if the draft is invalid. */
   sourceDraftError?: string | null;
+  /** Feedback for an operation that was rejected or deferred. */
+  operationNotice?: string | null;
   fileName: string | null;
   /** Ephemeral paint/erase preview during pointer drag — never pushed to undo history */
   paintDraft: PaintDraft | null;

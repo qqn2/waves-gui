@@ -195,11 +195,16 @@ export function canDeleteMajorStepInTiming(
 ): boolean {
   const stepTicks = Math.max(1, timing.ticksPerStep);
   const total = timingCellDuration(timing);
-  if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
   const start = majorIndex * stepTicks + timing.phaseTicks;
   const end = start + stepTicks;
-  if (start < 0 || end > total) return false;
-  return !rangeSplitsClockCell(timing, start, end);
+  // A lane can legitimately be empty before or after the deleted document
+  // column. Let the global edit proceed and leave that lane untouched (or
+  // advance a delayed phase in the before-lane case).
+  if (end <= 0 || start >= total) return true;
+  if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
+  const overlapStart = Math.max(0, start);
+  const overlapEnd = Math.min(total, end);
+  return !rangeSplitsClockCell(timing, overlapStart, overlapEnd);
 }
 
 /** Delete one major step, preserving partial cells on either side. */
@@ -210,23 +215,32 @@ export function deleteMajorStepInTiming(
 ): boolean {
   const stepTicks = Math.max(1, timing.ticksPerStep);
   const total = timingCellDuration(timing);
-  if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
   const start = majorIndex * stepTicks + timing.phaseTicks;
   const end = start + stepTicks;
-  if (start < 0 || end > total) return false;
-  if (rangeSplitsClockCell(timing, start, end)) return false;
+  if (end <= 0) {
+    timing.phaseTicks += stepTicks;
+    return true;
+  }
+  if (start >= total) return false;
+  if (total <= Math.max(1, minimumMajorSteps) * stepTicks) return false;
+  const overlapStart = Math.max(0, start);
+  const overlapEnd = Math.min(total, end);
+  if (rangeSplitsClockCell(timing, overlapStart, overlapEnd)) return false;
   const cells: TimedCell[] = [];
   let cursor = 0;
   for (const source of timing.cells) {
     const cellStart = cursor;
     const cellEnd = cursor + source.durationTicks;
-    const before = Math.max(0, Math.min(cellEnd, start) - cellStart);
-    const after = Math.max(0, cellEnd - Math.max(cellStart, end));
+    const before = Math.max(0, Math.min(cellEnd, overlapStart) - cellStart);
+    const after = Math.max(0, cellEnd - Math.max(cellStart, overlapEnd));
     if (before > 0) cells.push(cloneCell(source, before));
     if (after > 0) cells.push(cloneCell(source, after, source.durationTicks - after));
     cursor = cellEnd;
   }
   if (cells.length === 0) return false;
   timing.cells = cells;
+  // If the deleted document interval began before this lane, its remaining
+  // source now starts at the new document origin.
+  if (start < 0) timing.phaseTicks = 0;
   return true;
 }

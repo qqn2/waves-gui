@@ -52,6 +52,7 @@ export function createViewActions(set: ImmerSet): Pick<
   | 'setCanvasColor'
   | 'setUiFontScale'
   | 'setSourceDraftStatus'
+  | 'setOperationNotice'
 > {
   return {
     setZoom(zoom) {
@@ -224,6 +225,12 @@ export function createViewActions(set: ImmerSet): Pick<
         s.view.sourceDraftError = dirty ? error : null;
         if (draft !== undefined) s.view.sourceDraft = dirty ? draft : null;
         else if (!dirty) s.view.sourceDraft = null;
+      });
+    },
+
+    setOperationNotice(message) {
+      set((s) => {
+        s.view.operationNotice = message;
       });
     },
   };

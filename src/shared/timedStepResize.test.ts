@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canDeleteMajorStepInTiming,
   canResizeTimingToDuration,
   deleteMajorStepInTiming,
   insertMajorStepInTiming,
@@ -58,5 +59,21 @@ describe('native timing boundaries', () => {
     const before = value.cells.map((cell) => ({ ...cell }));
     expect(deleteMajorStepInTiming(value, 5, 1)).toBe(false);
     expect(value.cells).toEqual(before);
+  });
+
+  it('consumes an empty delayed prefix by advancing the lane phase', () => {
+    const value = timing([2, 2], ['0', '1'], -2);
+    expect(canDeleteMajorStepInTiming(value, 0, 1)).toBe(true);
+    expect(deleteMajorStepInTiming(value, 0, 1)).toBe(true);
+    expect(value.phaseTicks).toBe(0);
+    expect(value.cells.map((cell) => cell.durationTicks)).toEqual([2, 2]);
+  });
+
+  it('allows a global delete after a positive-phase lane without touching it', () => {
+    const value = timing([2, 2], ['0', '1'], 2);
+    expect(canDeleteMajorStepInTiming(value, 2, 1)).toBe(true);
+    expect(deleteMajorStepInTiming(value, 2, 1)).toBe(false);
+    expect(value.phaseTicks).toBe(2);
+    expect(value.cells.map((cell) => cell.durationTicks)).toEqual([2, 2]);
   });
 });

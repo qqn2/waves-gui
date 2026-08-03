@@ -23,6 +23,7 @@ import {
 } from './analogueExpressions';
 import { reconcileAnalogueOverlayGroups } from './analogueOverlayGroups';
 import { normalizeTimedVectorSegments } from './vectorSegments';
+import { fitTimingFlags } from './bitStepResize';
 
 function normalizeAnalogueContext(value: unknown): AnalogueContext | undefined {
   if (!value || typeof value !== 'object') return undefined;
@@ -123,11 +124,18 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
     }
     if (signal.vectorTiming) {
       normalizeSignalTiming(signal.vectorTiming);
-      if (signal.vectorTiming.cells.length === 0) delete signal.vectorTiming;
-      else signal.segments = normalizeTimedVectorSegments(
-        signal.segments,
-        signal.vectorTiming.cells.length,
-      );
+      if (signal.vectorTiming.cells.length === 0) {
+        delete signal.vectorTiming;
+      } else {
+        signal.segments = normalizeTimedVectorSegments(
+          signal.segments,
+          signal.vectorTiming.cells.length,
+        );
+        signal.stepGaps = fitTimingFlags(
+          signal.stepGaps,
+          signal.vectorTiming.cells.length,
+        );
+      }
     }
     return;
   }

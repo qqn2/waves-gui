@@ -44,6 +44,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
   const isDirty = useStore((s) => s.view.isDirty || s.view.sourceDraftDirty === true);
   const sourceDraftError = useStore((s) => s.view.sourceDraftError ?? null);
+  const operationNotice = useStore((s) => s.view.operationNotice ?? null);
   const diagram = useStore((s) => s.diagram);
   const edges = diagram.edges ?? [];
   const removeDiagramEdge = useStore((s) => s.removeDiagramEdge);
@@ -102,6 +103,11 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
       {sourceDraftError ? (
         <span className={styles.subStepsError} role="alert" title={sourceDraftError}>
           Source error: {sourceDraftError}
+        </span>
+      ) : null}
+      {operationNotice ? (
+        <span className={styles.operationNotice} role="status">
+          {operationNotice}
         </span>
       ) : null}
       {isEventCompressedVcd ? (

@@ -1335,6 +1335,11 @@
   font-size: 0.85em;
 }
 
+.operationNotice {
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .edgeListLabel {
   font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;

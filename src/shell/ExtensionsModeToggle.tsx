@@ -75,14 +75,20 @@ export function ExtensionsModeToggle() {
               annotation{summary.annotationCount === 1 ? '' : 's'} and{' '}
               {summary.analogueSignalCount} analogue signal
               {summary.analogueSignalCount === 1 ? '' : 's'}, and{' '}
-              {summary.extendedDigitalSignalCount} digital signal
+              {summary.extendedDigitalSignalCount} timed or extended digital/vector lane
               {summary.extendedDigitalSignalCount === 1 ? '' : 's'} with
-              Undulate wave characters, and {summary.expandedNodeCount} expanded
+              native timing or Undulate wave characters, and {summary.expandedNodeCount} expanded
               node identifier{summary.expandedNodeCount === 1 ? '' : 's'}.
               {' '}{summary.extendedEdgeCount} dependency edge
               {summary.extendedEdgeCount === 1 ? '' : 's'} use Undulate endpoint
               markers.
             </p>
+            {summary.extendedDigitalSignalCount > 0 ? (
+              <p>
+                Fine timing will be sampled at major-step boundaries. Substep
+                transitions, custom duty cycles and slew settings may be lost.
+              </p>
+            ) : null}
             <p>
               You can hide the features while preserving the Undulate JSON, or
               remove them from the document and return to WaveDrom JSON.

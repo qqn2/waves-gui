@@ -1,5 +1,5 @@
 import { current } from 'immer';
-import { resizeBitSignalToLength } from '../bitStepResize';
+import { fitTimingFlags, resizeBitSignalToLength } from '../bitStepResize';
 import { resizeAnalogueCells } from '../analogue';
 import { canResizeTimingToDuration, resizeTimingToDuration } from '../timedStepResize';
 import type { AppState, DiagramState, Signal, SignalGroup, SignalOrGroup } from '../types';
@@ -68,6 +68,7 @@ export function defaultView(): ViewState {
     sourceDraftDirty: false,
     sourceDraft: null,
     sourceDraftError: null,
+    operationNotice: null,
     fileName: null,
     paintDraft: null,
     edgeAnchorPending: null,
@@ -162,6 +163,7 @@ export function resizeAllStates(
           sg.vectorTiming,
           newLen * Math.max(1, sg.vectorTiming.ticksPerStep),
         );
+        sg.stepGaps = fitTimingFlags(sg.stepGaps, sg.vectorTiming.cells.length);
         sg.segments = normalizeTimedVectorSegments(
           sg.segments,
           sg.vectorTiming.cells.length,

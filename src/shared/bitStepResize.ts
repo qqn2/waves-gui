@@ -30,7 +30,8 @@ function hasGapColumns(sig: Signal): boolean {
   return Boolean(sig.stepGaps?.some(Boolean));
 }
 
-function fitTimingFlags(flags: boolean[] | undefined, length: number): boolean[] | undefined {
+/** Keep cell decorations aligned with a native timing track. */
+export function fitTimingFlags(flags: boolean[] | undefined, length: number): boolean[] | undefined {
   if (!flags?.length) return undefined;
   const out = flags.slice(0, length);
   while (out.length < length) out.push(false);
@@ -213,17 +214,20 @@ export function deleteBitStepAt(sig: Signal, index: number, minLen: number): boo
   if (sig.type !== 'bit') return false;
   if (sig.digitalTiming) {
     const sourceCells = sig.digitalTiming.cells.map((cell) => ({ ...cell }));
-    const boundary = timingBoundaryAtMajorStep(sig.digitalTiming, index);
     const total = timingCellDuration(sig.digitalTiming);
     const stepTicks = Math.max(1, sig.digitalTiming.ticksPerStep);
-    const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundary.tick));
-    const end = Math.min(total, start + stepTicks);
+    const rawStart = index * stepTicks + sig.digitalTiming.phaseTicks;
+    const rawEnd = rawStart + stepTicks;
+    const start = Math.max(0, rawStart);
+    const end = Math.min(total, rawEnd);
     const previousGaps = sig.stepGaps;
     const previousGlitches = sig.stepGlitches;
     const deleted = deleteMajorStepInTiming(sig.digitalTiming, index, minLen);
     if (deleted) {
-      sig.stepGaps = deleteTimingFlags(previousGaps, sourceCells, start, end);
-      sig.stepGlitches = deleteTimingFlags(previousGlitches, sourceCells, start, end, true);
+      if (rawEnd > 0 && rawStart < total) {
+        sig.stepGaps = deleteTimingFlags(previousGaps, sourceCells, start, end);
+        sig.stepGlitches = deleteTimingFlags(previousGlitches, sourceCells, start, end, true);
+      }
       syncTimedBitSource(sig);
     }
     return deleted;

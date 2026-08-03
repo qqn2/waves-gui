@@ -1,4 +1,4 @@
-import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
+import { deleteBitStepAt, fitTimingFlags, insertBitStepAt } from '../bitStepResize';
 import type {
   DiagramAnnotation,
   DiagramState,
@@ -328,7 +328,10 @@ export function insertStepInSignal(sig: Signal, index: number, totalSteps: numbe
       const beforeCount = sig.vectorTiming.cells.length;
       if (!insertMajorStepInTiming(sig.vectorTiming, clamped)) return false;
       const inserted = sig.vectorTiming.cells.length - beforeCount;
-      sig.stepGaps = insertTimingFlags(sig.stepGaps, boundary, inserted);
+      sig.stepGaps = fitTimingFlags(
+        insertTimingFlags(sig.stepGaps, boundary, inserted),
+        sig.vectorTiming.cells.length,
+      );
       for (const seg of sig.segments) {
         if (boundary.kind === 'inside') {
           if (seg.startStep > boundary.index) {
@@ -398,14 +401,15 @@ export function deleteStepInSignal(
 
     if (sig.vectorTiming) {
       const sourceCells = sig.vectorTiming.cells.map((cell) => ({ ...cell }));
-      const boundary = timingBoundaryAtMajorStep(sig.vectorTiming, index);
       const total = sourceCells.reduce(
         (sum, cell) => sum + Math.max(1, Math.round(cell.durationTicks)),
         0,
       );
       const stepTicks = Math.max(1, sig.vectorTiming.ticksPerStep);
-      const start = Math.max(0, Math.min(Math.max(0, total - stepTicks), boundary.tick));
-      const end = Math.min(total, start + stepTicks);
+      const rawStart = index * stepTicks + sig.vectorTiming.phaseTicks;
+      const rawEnd = rawStart + stepTicks;
+      const start = Math.max(0, rawStart);
+      const end = Math.min(total, rawEnd);
       const remappedBoundaries = [0];
       let cursor = 0;
       for (const cell of sourceCells) {
@@ -420,7 +424,11 @@ export function deleteStepInSignal(
       }
       const deleted = deleteMajorStepInTiming(sig.vectorTiming, index, minSteps);
       if (!deleted) return false;
-      sig.stepGaps = deleteTimingFlags(sig.stepGaps, sourceCells, start, end);
+      if (rawEnd <= 0 || rawStart >= total) return true;
+      sig.stepGaps = fitTimingFlags(
+        deleteTimingFlags(sig.stepGaps, sourceCells, start, end),
+        sig.vectorTiming.cells.length,
+      );
       for (const seg of sig.segments) {
         seg.startStep = remappedBoundaries[Math.max(0, Math.min(seg.startStep, sourceCells.length))]!;
         seg.endStep = remappedBoundaries[Math.max(0, Math.min(seg.endStep, sourceCells.length))]!;

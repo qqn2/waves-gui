@@ -178,6 +178,33 @@ describe('bitStepResize via diagram step controls', () => {
     expect(restored.vectorTiming.cells.map((cell) => cell.durationTicks)).toEqual(durations);
   });
 
+  it('resizes native vector gap flags with the timing-cell track', () => {
+    const diagram = fromUndulateJSON({
+      signal: [{
+        name: 'bus',
+        wave: '=.=.=.=.',
+        data: ['A', 'B', 'C', 'D'],
+        period: 0.5,
+      }],
+    } as UndulateRoot);
+    const source = diagram.signals[0];
+    if (!source || source.type !== 'vector' || !source.vectorTiming) {
+      throw new Error('expected timed vector');
+    }
+    source.stepGaps = [false, false, false, false, false, true, false, true];
+    useStore.getState().loadDiagram(diagram);
+    expect(useStore.getState().setTotalSteps(3)).toBe(true);
+
+    const resized = useStore.getState().diagram.signals[0];
+    if (!resized || resized.type !== 'vector' || !resized.vectorTiming) {
+      throw new Error('expected resized timed vector');
+    }
+    expect(resized.vectorTiming.cells).toHaveLength(6);
+    expect(resized.stepGaps).toEqual([false, false, false, false, false, true]);
+    expect((toWavedromJSON(useStore.getState().diagram).signal[0] as { wave: string }).wave)
+      .toHaveLength(6);
+  });
+
   it('remaps timed vector segments at an exact source-cell boundary', () => {
     const diagram = fromUndulateJSON({
       signal: [{ name: 'bus', wave: '=.=.', data: ['A', 'B'], period: 0.5 }],

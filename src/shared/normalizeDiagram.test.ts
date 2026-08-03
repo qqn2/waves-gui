@@ -154,4 +154,31 @@ describe('normalizeDiagram', () => {
       expect(signal.digitalTiming?.cells.map((cell) => cell.state)).toEqual(['1', 'x']);
     }
   });
+
+  it('fits native vector gap flags to the timing-cell track', () => {
+    const normalized = normalizeDiagram({
+      version: 2,
+      signals: [{
+        id: 'timed-bus',
+        name: 'timed-bus',
+        type: 'vector',
+        states: [],
+        segments: [{ id: 'seg', startStep: 0, endStep: 6, value: 'A' }],
+        stepGaps: [false, false, false, false, true, false, true, true],
+        color: '#4a9eff',
+        rowHeight: 40,
+        vectorTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 0,
+          cells: Array.from({ length: 6 }, () => ({ durationTicks: 1 })),
+        },
+      }],
+      config: { totalSteps: 3, hscale: 1 },
+      edges: [],
+    });
+    const signal = normalized.signals[0];
+    expect(signal?.type).toBe('vector');
+    if (signal?.type !== 'vector') return;
+    expect(signal.stepGaps).toEqual([false, false, false, false, true, false]);
+  });
 });

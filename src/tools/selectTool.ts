@@ -414,7 +414,18 @@ export function deleteSelection(): void {
   if (steps && view.activeSignalIds.length > 0) {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
-    eraseSignalStateRanges(view.activeSignalIds, lo, hi, 'document');
+    const changed = eraseSignalStateRanges(view.activeSignalIds, lo, hi, 'document');
+    if (!changed && view.activeSignalIds.some((id) => {
+      let nativeVector = false;
+      findSignal(diagram.signals, id, (signal) => {
+        nativeVector = signal.type === 'vector' && signal.vectorTiming !== undefined;
+      });
+      return nativeVector;
+    })) {
+      useStore.getState().setOperationNotice(
+        'Fine-timed bus ranges cannot be erased; edit the native cells individually or remove native timing first.',
+      );
+    }
     return;
   }
 
@@ -436,7 +447,18 @@ export function deleteSelection(): void {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
     const allIds = collectSignalIds(diagram.signals);
-    eraseSignalStateRanges(allIds, lo, hi, 'document');
+    const changed = eraseSignalStateRanges(allIds, lo, hi, 'document');
+    if (!changed && allIds.some((id) => {
+      let nativeVector = false;
+      findSignal(diagram.signals, id, (signal) => {
+        nativeVector = signal.type === 'vector' && signal.vectorTiming !== undefined;
+      });
+      return nativeVector;
+    })) {
+      useStore.getState().setOperationNotice(
+        'Fine-timed bus ranges cannot be erased; edit the native cells individually or remove native timing first.',
+      );
+    }
   }
 }
 

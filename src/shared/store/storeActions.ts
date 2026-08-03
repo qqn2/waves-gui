@@ -246,6 +246,7 @@ export interface StoreActions {
   setPaintDraft(draft: PaintDraft): void;
   clearPaintDraft(): void;
   setSourceDraftStatus(dirty: boolean, error?: string | null, draft?: string | null): void;
+  setOperationNotice(message: string | null): void;
 
   // ── View (not saved to file) ──
   setZoom(zoom: number): void;

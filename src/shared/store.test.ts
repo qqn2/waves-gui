@@ -1366,6 +1366,40 @@ describe('useStore', () => {
     ]);
   });
 
+  it('deletes a global column before a delayed native lane without deleting its cells', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 4, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [{
+        id: 'delayed-lane',
+        name: 'delayed-lane',
+        type: 'bit',
+        states: ['0', '1'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: -2,
+          cells: [
+            { state: '0', durationTicks: 2 },
+            { state: '1', durationTicks: 2 },
+          ],
+        },
+      }],
+    });
+
+    expect(useStore.getState().deleteStepAt(0)).toBeUndefined();
+    const signal = useStore.getState().diagram.signals[0];
+    expect(useStore.getState().diagram.config.totalSteps).toBe(3);
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.phaseTicks).toBe(0);
+    expect(signal.digitalTiming?.cells.map((cell) => cell.state)).toEqual(['0', '1']);
+  });
+
   it('propagates hold-fill through adjacent fully erased native cells', () => {
     useStore.getState().loadDiagram({
       version: 2,
