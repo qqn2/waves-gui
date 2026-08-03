@@ -87,6 +87,7 @@ import {
   rescaleDiagramTiming,
   timingResolution,
 } from '../fineTiming';
+import { toolState } from '../../tools/toolState';
 
 type TimingOutputRange = { start: number; end: number };
 
@@ -284,6 +285,24 @@ function applyEraseToSignal(
     return { accepted: false, changed: false, reason: 'unsupported-native-vector' };
   }
 
+  if (coordinate === 'document' && target.type === 'vector') {
+    const totalSteps = Math.max(
+      requestedHi + 1,
+      ...target.segments.map((segment) => segment.endStep),
+      0,
+    );
+    const before = JSON.stringify(target);
+    target.segments = applyVectorSpan(
+      target.segments,
+      requestedLo,
+      requestedHi,
+      null,
+      totalSteps,
+    );
+    clearStepGapsOnColumns(target, requestedLo, requestedHi);
+    return { accepted: true, changed: before !== JSON.stringify(target) };
+  }
+
   const nativeRange = coordinate === 'document'
     ? nativeCellsForMajorRange(target, requestedLo, requestedHi)
     : null;
@@ -316,6 +335,11 @@ function diagramHasNativeTiming(signals: SignalOrGroup[]): boolean {
     if (sig.digitalTiming || sig.vectorTiming) timed = true;
   });
   return timed;
+}
+
+/** Structural column edits need a source-cell-to-document mapping. */
+function diagramHasUnsupportedStructuralTiming(signals: SignalOrGroup[]): boolean {
+  return diagramHasNativeTiming(signals) || hasLegacyTimelineTiming(signals);
 }
 
 function holdFillErasedSteps(sig: Signal, lo: number, hi: number): void {
@@ -1296,7 +1320,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         let blocked = false;
         if (paintStyle === 'additive') {
-          blocked = diagramHasNativeTiming(s.diagram.signals);
+          blocked = diagramHasUnsupportedStructuralTiming(s.diagram.signals);
         }
         if (blocked) return;
         pushHistory(s);
@@ -1447,7 +1471,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         set((s) => {
           const n = hi - lo + 1;
           if (n === 0) return;
-          if (diagramHasNativeTiming(s.diagram.signals)) return;
+          if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
           if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
           pushHistory(s);
           insertGapColumnsOnDiagram(s.diagram.signals, lo, n, signalId);
@@ -1498,7 +1522,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const n = Math.max(0, count);
         if (n === 0) return;
-        if (diagramHasNativeTiming(s.diagram.signals)) return;
+        if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
         if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
         pushHistory(s);
         insertGapColumnsOnDiagram(s.diagram.signals, column, n, signalId);
@@ -1513,7 +1537,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const lo = Math.min(startStep, endStep);
         const hi = Math.max(startStep, endStep);
-        if (diagramHasNativeTiming(s.diagram.signals)) return;
+        if (diagramHasUnsupportedStructuralTiming(s.diagram.signals)) return;
         pushHistory(s);
         const removed = removeGapColumnsOnDiagram(
           s.diagram.signals,
@@ -1697,7 +1721,16 @@ export function createSignalActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram.config.totalSteps = next;
         resizeAllStates(s.diagram.signals, next, old);
-        if (next < old) pruneReferencesBeyondSteps(s.diagram, next);
+        if (next < old) {
+          pruneReferencesBeyondSteps(s.diagram, next);
+          s.view.activeAnnotationId = null;
+          s.view.activeTimingCellIndex = null;
+          s.view.paintDraft = null;
+          s.view.edgeAnchorPending = null;
+          s.view.structuredArrowPending = null;
+          s.view.edgeToolHover = null;
+          toolState.cancelAll();
+        }
         s.view.isDirty = true;
         accepted = true;
       });

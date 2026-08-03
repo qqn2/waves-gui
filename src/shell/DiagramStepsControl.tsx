@@ -37,12 +37,13 @@ export function DiagramStepsControl() {
       cancelBlurRef.current = false;
       return;
     }
-    const next = parseSteps(draft);
-    if (next === null) {
+    const parsed = parseSteps(draft);
+    if (parsed === null) {
       setDraft(String(totalSteps));
       setRejected(false);
       return;
     }
+    const next = Math.max(MIN_TOTAL_STEPS, Math.min(MAX_TOTAL_STEPS, parsed));
     let accepted = false;
     let cancelled = false;
     if (!runAfterSourceFlush(() => {

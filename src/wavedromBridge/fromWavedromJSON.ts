@@ -23,6 +23,9 @@ import {
 import { hasSubcycleSyntax, waveColumnCount } from './subcycleWave';
 import type { WdGroup, WdRoot, WdSignal, WdSignalEntry } from './wdTypes';
 
+/** Authored source length for vectors, kept only during this import pass. */
+const vectorAuthoredLengths = new WeakMap<Signal, number>();
+
 function isGroup(entry: WdSignalEntry): entry is WdGroup {
   return Array.isArray(entry) && typeof entry[0] === 'string';
 }
@@ -153,7 +156,7 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
     );
     const totalSteps = wave.length;
     const { segments, stepGaps } = parseVectorSegments(wave, rawData, totalSteps);
-    return {
+    const vector: Signal = {
       id: nanoid(),
       name: sig.name ?? 'bus',
       type: 'vector',
@@ -166,6 +169,8 @@ function parseEntry(entry: WdSignalEntry): SignalOrGroup | null {
       ...(stepGaps.some(Boolean) ? { stepGaps } : {}),
       ...(sig.node !== undefined ? { node: sig.node } : {}),
     };
+    vectorAuthoredLengths.set(vector, wave.length);
+    return vector;
   }
   const { states, stepGaps, stepGlitches } = decodeWaveDetail(wave);
   const waveMode = shouldImportAsWaveMode(wave);
@@ -261,7 +266,13 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       // remaining document columns so the canvas and re-export match the
       // WaveDrom interpretation (for example AXI's trailing `x`).
       const lastSegment = s.segments.at(-1);
-      if (lastSegment && lastSegment.endStep < totalSteps) {
+      const authoredLength = vectorAuthoredLengths.get(s);
+      if (
+        lastSegment
+        && authoredLength !== undefined
+        && lastSegment.endStep === authoredLength
+        && lastSegment.endStep < totalSteps
+      ) {
         lastSegment.endStep = totalSteps;
       }
       if (s.stepGaps?.length) {

@@ -8,6 +8,7 @@ import {
   parseCodeToDiagram,
 } from '../codePanel/codeSync';
 import { useStore } from './store';
+import { toolState } from '../tools/toolState';
 
 function emptyDiagram(): DiagramState {
   return {
@@ -75,6 +76,128 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.signals[0]?.id).toBe('stable-signal');
     expect((useStore.getState().diagram.signals[0] as { states: BitState[] }).states)
       .toEqual(['0', '0']);
+  });
+
+  it('remaps Source metadata and analogue overlays with preserved signal IDs', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: {
+        extensionsEnabled: true,
+        opaqueUndulate: {
+          signals: {
+            'analogue-a': { laneHint: 'first' },
+            'analogue-b': { laneHint: 'second' },
+          },
+          annotations: {
+            note: { customStyle: 'keep' },
+          },
+        },
+      },
+      config: { totalSteps: 2, hscale: 1 },
+      edges: [],
+      analogueOverlayGroups: [{
+        id: 'overlay-1',
+        name: 'Overlay 1',
+        signalIds: ['analogue-a', 'analogue-b'],
+      }],
+      annotations: [{ id: 'note', type: 'text', text: 'note', tick: 0 }],
+      signals: [
+        {
+          id: 'analogue-a',
+          name: 'A',
+          type: 'analogue',
+          states: [],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          analogueCells: [],
+        },
+        {
+          id: 'analogue-b',
+          name: 'B',
+          type: 'analogue',
+          states: [],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          analogueCells: [],
+        },
+      ],
+    });
+
+    const edited = structuredClone(useStore.getState().diagram);
+    edited.signals[0]!.id = 'parsed-a';
+    edited.signals[1]!.id = 'parsed-b';
+    edited.analogueOverlayGroups![0]!.signalIds = ['parsed-a', 'parsed-b'];
+    edited.compatibility!.opaqueUndulate!.signals = {
+      'parsed-a': { laneHint: 'first' },
+      'parsed-b': { laneHint: 'second' },
+    };
+    edited.annotations![0]!.id = 'parsed-note';
+    edited.compatibility!.opaqueUndulate!.annotations = {
+      'parsed-note': { customStyle: 'keep' },
+    };
+
+    useStore.getState().applyDiagramEdit(edited);
+    const after = useStore.getState().diagram;
+    expect(after.analogueOverlayGroups?.[0]?.signalIds).toEqual([
+      'analogue-a',
+      'analogue-b',
+    ]);
+    expect(after.compatibility?.opaqueUndulate?.signals).toEqual({
+      'analogue-a': { laneHint: 'first' },
+      'analogue-b': { laneHint: 'second' },
+    });
+    expect(after.compatibility?.opaqueUndulate?.annotations).toEqual({
+      note: { customStyle: 'keep' },
+    });
+  });
+
+  it('does not assign an existing ID to an ambiguous duplicate Source signal', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      config: { totalSteps: 1, hscale: 1 },
+      edges: [],
+      signals: [
+        {
+          id: 'old-a',
+          name: 'data',
+          type: 'bit',
+          states: ['0'],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+        },
+        {
+          id: 'old-b',
+          name: 'data',
+          type: 'bit',
+          states: ['1'],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+        },
+      ],
+    });
+    const edited = structuredClone(useStore.getState().diagram);
+    edited.signals.splice(0, 0, {
+      id: 'new-data',
+      name: 'data',
+      type: 'bit',
+      states: ['x'],
+      segments: [],
+      color: '#4A9EFF',
+      rowHeight: 40,
+    });
+    edited.signals[1]!.id = 'parsed-a';
+    edited.signals[2]!.id = 'parsed-b';
+
+    useStore.getState().applyDiagramEdit(edited);
+    expect(useStore.getState().diagram.signals.map((signal) => signal.id)).toEqual([
+      'new-data',
+      'old-a',
+      'old-b',
+    ]);
   });
 
   it('records head and foot edits once and preserves redo on no-op updates', () => {
@@ -1383,6 +1506,43 @@ describe('useStore', () => {
     expect(useStore.getState().diagram.config.totalSteps).toBe(8);
     useStore.getState().insertStepAt(2);
     expect(useStore.getState().diagram.config.totalSteps).toBe(8);
+    useStore.getState().paintGapRange('period-lane', 2, 2, 'additive');
+    useStore.getState().insertGapColumnsRange('period-lane', 2, 1);
+    useStore.getState().removeGapColumnsRange('period-lane', 2, 2);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(8);
+  });
+
+  it('selection erase clears ordinary vector spans and gap flags', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      config: { totalSteps: 5, hscale: 1 },
+      edges: [],
+      signals: [{
+        id: 'vector-erase',
+        name: 'vector-erase',
+        type: 'vector',
+        states: [],
+        segments: [{ id: 'bus-a', startStep: 0, endStep: 5, value: 'A' }],
+        stepGaps: [false, true, true, false, false],
+        color: '#4A9EFF',
+        rowHeight: 40,
+      }],
+    });
+
+    expect(useStore.getState().eraseSignalStateRange(
+      'vector-erase',
+      1,
+      2,
+      'document',
+    )).toBe(true);
+    const vector = useStore.getState().diagram.signals[0];
+    expect(vector?.type).toBe('vector');
+    if (!vector || vector.type !== 'vector') return;
+    expect(vector.segments).toEqual([
+      expect.objectContaining({ startStep: 0, endStep: 1, value: 'A' }),
+      expect.objectContaining({ startStep: 3, endStep: 5, value: 'A' }),
+    ]);
+    expect(vector.stepGaps).toBeUndefined();
   });
 
   it('prunes tail nodes, edges, curve controls and annotations when Steps shrinks', () => {
@@ -1438,6 +1598,50 @@ describe('useStore', () => {
     expect(after.edgeCurveControls).toBeUndefined();
     expect(after.annotations).toBeUndefined();
     expect((after.signals[0] as { node?: string }).node).toBeUndefined();
+  });
+
+  it('conservatively clears native-timing node references on Steps shrink', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 4, hscale: 1, ticksPerStep: 2 },
+      edges: ['a->h'],
+      annotations: [{
+        id: 'native-node-arrow',
+        type: 'arrow',
+        shape: '->',
+        from: { kind: 'node', node: 'a' },
+        to: { kind: 'node', node: 'h' },
+      }],
+      signals: [{
+        id: 'native-node-lane',
+        name: 'native-node-lane',
+        type: 'bit',
+        states: new Array<BitState>(8).fill('0'),
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        node: 'abcdefgh',
+        nodeNames: { 0: 'a', 7: 'h' },
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 0,
+          cells: new Array(8).fill(null).map(() => ({ state: '0' as const, durationTicks: 1 })),
+        },
+      }],
+    });
+    useStore.getState().setActiveAnnotationId('native-node-arrow');
+    useStore.getState().setActiveTimingCellIndex(7);
+    toolState.setStepSelection({ start: 2, end: 3 });
+
+    expect(useStore.getState().setTotalSteps(3)).toBe(true);
+    const after = useStore.getState();
+    expect(after.diagram.edges).toEqual([]);
+    expect(after.diagram.annotations).toBeUndefined();
+    expect((after.diagram.signals[0] as { node?: string }).node).toBeUndefined();
+    expect(after.view.activeAnnotationId).toBeNull();
+    expect(after.view.activeTimingCellIndex).toBeNull();
+    expect(toolState.getStepSelection()).toBeNull();
   });
 
   it('erase gap on one lane clears flag without removing timeline columns', () => {

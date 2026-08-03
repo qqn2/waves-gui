@@ -341,33 +341,98 @@ function reconcileSignalSelection(
   return [...new Set(reconciled)];
 }
 
+interface PreservedIdMapping {
+  signalIds: Map<string, string>;
+  segmentIds: Map<string, string>;
+  annotationIds: Map<string, string>;
+}
+
+function withoutIds(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(withoutIds);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => key !== 'id')
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, item]) => [key, withoutIds(item)]),
+  );
+}
+
+function matchUniqueFingerprints(
+  previous: SignalOrGroup[],
+  next: SignalOrGroup[],
+  used: Set<string>,
+  matches: Map<SignalOrGroup, SignalOrGroup>,
+): void {
+  const oldBuckets = new Map<string, SignalOrGroup[]>();
+  const nextBuckets = new Map<string, SignalOrGroup[]>();
+  previous.forEach((item) => {
+    const key = JSON.stringify(withoutIds(item));
+    const bucket = oldBuckets.get(key) ?? [];
+    bucket.push(item);
+    oldBuckets.set(key, bucket);
+  });
+  next.forEach((item) => {
+    if (matches.has(item)) return;
+    const key = JSON.stringify(withoutIds(item));
+    const bucket = nextBuckets.get(key) ?? [];
+    bucket.push(item);
+    nextBuckets.set(key, bucket);
+  });
+  nextBuckets.forEach((items, key) => {
+    const candidates = (oldBuckets.get(key) ?? []).filter((item) => !used.has(item.id));
+    if (items.length !== 1 || candidates.length !== 1) return;
+    matches.set(items[0]!, candidates[0]!);
+  });
+}
+
 function preserveSignalIds(
   previous: SignalOrGroup[],
   next: SignalOrGroup[],
-): void {
+): PreservedIdMapping {
   const used = new Set<string>();
+  const mapping: PreservedIdMapping = {
+    signalIds: new Map(),
+    segmentIds: new Map(),
+    annotationIds: new Map(),
+  };
   const matchLevel = (oldItems: SignalOrGroup[], nextItems: SignalOrGroup[]) => {
     const exact = new Map<string, SignalOrGroup[]>();
+    const nextCounts = new Map<string, number>();
     oldItems.forEach((item) => {
       const key = `${item.type}:${item.name}`;
       const bucket = exact.get(key) ?? [];
       bucket.push(item);
       exact.set(key, bucket);
     });
+    nextItems.forEach((item) => {
+      const key = `${item.type}:${item.name}`;
+      nextCounts.set(key, (nextCounts.get(key) ?? 0) + 1);
+    });
 
     const matches = new Map<SignalOrGroup, SignalOrGroup>();
     nextItems.forEach((item) => {
       const bucket = exact.get(`${item.type}:${item.name}`) ?? [];
-      const candidate = bucket.find((old) => !used.has(old.id));
-      if (candidate) {
-        used.add(candidate.id);
-        matches.set(item, candidate);
-      }
+      if (bucket.length !== 1 || nextCounts.get(`${item.type}:${item.name}`) !== 1) return;
+      const candidate = bucket[0];
+      if (!candidate || used.has(candidate.id)) return;
+      used.add(candidate.id);
+      matches.set(item, candidate);
     });
+    matchUniqueFingerprints(oldItems, nextItems, used, matches);
+    matches.forEach((candidate) => used.add(candidate.id));
     nextItems.forEach((item, index) => {
       if (matches.has(item)) return;
       const candidate = oldItems[index];
-      if (!candidate || candidate.type !== item.type || used.has(candidate.id)) return;
+      const itemKey = `${item.type}:${item.name}`;
+      const candidateKey = candidate ? `${candidate.type}:${candidate.name}` : '';
+      if (
+        !candidate
+        || candidate.type !== item.type
+        || used.has(candidate.id)
+        || (exact.get(candidateKey)?.length ?? 0) !== 1
+        || nextCounts.get(itemKey) !== 1
+      ) return;
       used.add(candidate.id);
       matches.set(item, candidate);
     });
@@ -375,18 +440,24 @@ function preserveSignalIds(
     nextItems.forEach((item) => {
       const candidate = matches.get(item);
       if (!candidate) return;
+      mapping.signalIds.set(item.id, candidate.id);
       item.id = candidate.id;
       if (item.type === 'group' && candidate.type === 'group') {
         matchLevel(candidate.children, item.children);
       } else if (item.type === 'vector' && candidate.type === 'vector') {
-        preserveVectorSegmentIds(candidate, item);
+        preserveVectorSegmentIds(candidate, item, mapping);
       }
     });
   };
   matchLevel(previous, next);
+  return mapping;
 }
 
-function preserveVectorSegmentIds(previous: Signal, next: Signal): void {
+function preserveVectorSegmentIds(
+  previous: Signal,
+  next: Signal,
+  mapping: PreservedIdMapping,
+): void {
   if (previous.type !== 'vector' || next.type !== 'vector') return;
   const used = new Set<string>();
   next.segments.forEach((segment, index) => {
@@ -402,6 +473,7 @@ function preserveVectorSegmentIds(previous: Signal, next: Signal): void {
     );
     if (!candidate) return;
     used.add(candidate.id);
+    mapping.segmentIds.set(segment.id, candidate.id);
     segment.id = candidate.id;
   });
 }
@@ -409,6 +481,7 @@ function preserveVectorSegmentIds(previous: Signal, next: Signal): void {
 function preserveAnnotationIds(
   previous: DiagramAnnotation[] | undefined,
   next: DiagramAnnotation[] | undefined,
+  mapping: PreservedIdMapping,
 ): void {
   if (!previous || !next) return;
   const used = new Set<string>();
@@ -427,8 +500,32 @@ function preserveAnnotationIds(
     );
     if (!candidate) return;
     used.add(candidate.id);
+    mapping.annotationIds.set(annotation.id, candidate.id);
     annotation.id = candidate.id;
   });
+}
+
+function remapOpaqueRecords(
+  records: Record<string, Record<string, unknown>> | undefined,
+  mapping: Map<string, string>,
+): Record<string, Record<string, unknown>> | undefined {
+  if (!records) return records;
+  return Object.fromEntries(
+    Object.entries(records).map(([id, value]) => [mapping.get(id) ?? id, value]),
+  );
+}
+
+function collectGroupIds(signals: SignalOrGroup[]): Set<string> {
+  const ids = new Set<string>();
+  const walk = (items: SignalOrGroup[]) => {
+    items.forEach((item) => {
+      if (item.type !== 'group') return;
+      ids.add(item.id);
+      walk(item.children);
+    });
+  };
+  walk(signals);
+  return ids;
 }
 
 export function createEdgeActions(set: ImmerSet): Pick<
@@ -656,8 +753,25 @@ export function createDocumentActions(set: ImmerSet): Pick<
     applyDiagramEdit(diagram: DiagramState) {
       set((s) => {
         const normalized = normalizeDiagram(diagram);
-        preserveSignalIds(s.diagram.signals, normalized.signals);
-        preserveAnnotationIds(s.diagram.annotations, normalized.annotations);
+        const preservedIds = preserveSignalIds(s.diagram.signals, normalized.signals);
+        preserveAnnotationIds(s.diagram.annotations, normalized.annotations, preservedIds);
+        if (normalized.compatibility?.opaqueUndulate) {
+          normalized.compatibility.opaqueUndulate.signals = remapOpaqueRecords(
+            normalized.compatibility.opaqueUndulate.signals,
+            preservedIds.signalIds,
+          );
+          normalized.compatibility.opaqueUndulate.annotations = remapOpaqueRecords(
+            normalized.compatibility.opaqueUndulate.annotations,
+            preservedIds.annotationIds,
+          );
+        }
+        if (normalized.analogueOverlayGroups) {
+          normalized.analogueOverlayGroups = normalized.analogueOverlayGroups.map((group) => ({
+            ...group,
+            id: preservedIds.signalIds.get(group.id) ?? group.id,
+            signalIds: group.signalIds.map((id) => preservedIds.signalIds.get(id) ?? id),
+          }));
+        }
         if (diagramsEqual(current(s.diagram), normalized)) return;
         const activeSignalIds = reconcileSignalSelection(
           s.diagram.signals,
@@ -667,6 +781,8 @@ export function createDocumentActions(set: ImmerSet): Pick<
         pushHistory(s);
         s.diagram = normalized;
         s.view.activeSignalIds = activeSignalIds;
+        const validGroupIds = collectGroupIds(normalized.signals);
+        s.view.collapsedGroupIds = s.view.collapsedGroupIds.filter((id) => validGroupIds.has(id));
         s.view.activeAnnotationId = null;
         s.view.activeTimingCellIndex = null;
         s.view.paintDraft = null;

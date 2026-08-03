@@ -7,7 +7,10 @@ import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX, timingTickAtCanvasX } from './pointerUtils';
 import * as vectorPaint from './vectorPaintTool';
 import { confirmStructuralReferenceLoss } from './structuralEditGuard';
-import { hasNativeTiming } from '../shared/store/stepColumnHelpers';
+import {
+  hasLegacyTimelineTiming,
+  hasNativeTiming,
+} from '../shared/store/stepColumnHelpers';
 
 function capturePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void {
   if (!canvas) return;
@@ -137,7 +140,8 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
     useStore.getState().toggleStepGlitchRange(draft.signalId, lo, hi);
   } else if (draft.apply === 'gap') {
     if (paintStyle === 'additive') {
-      if (hasNativeTiming(useStore.getState().diagram.signals)) {
+      const signals = useStore.getState().diagram.signals;
+      if (hasNativeTiming(signals) || hasLegacyTimelineTiming(signals)) {
         useStore.getState().clearPaintDraft();
         return;
       }

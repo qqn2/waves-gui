@@ -94,4 +94,17 @@ describe('bus data[] round-trip', () => {
     expect(sig.wave).toBe('=...=...');
     expect(sig.data).toEqual(['', '0']);
   });
+
+  it('does not extend a bus segment across a trailing scalar lane cell', () => {
+    const diagram = fromWavedromJSON({
+      signal: [
+        { name: 'mixed', wave: '=P', data: ['A'] },
+        { name: 'long', wave: 'P...' },
+      ],
+    });
+    const mixed = findVectorSignal(diagram, 'mixed');
+    expect(mixed?.segments).toEqual([
+      expect.objectContaining({ startStep: 0, endStep: 1, value: 'A' }),
+    ]);
+  });
 });

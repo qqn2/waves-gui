@@ -107,6 +107,10 @@ function collectRemovedNodeNames(
 ): { names: Set<string>; nodeAnchors: number } {
   const names = new Set<string>();
   let nodeAnchors = 0;
+  // Native timing cells use source-cell coordinates, which are not the same
+  // as document major steps. Until resize returns a source-cell mapping,
+  // treat every native-timing node anchor as potentially affected by a shrink.
+  const conservativeNativeTiming = hasNativeTiming(diagram.signals);
   const walk = (items: SignalOrGroup[]) => {
     for (const item of items) {
       if (item.type === 'group') {
@@ -114,7 +118,8 @@ function collectRemovedNodeNames(
         continue;
       }
       const positions = new Set<number>();
-      for (let index = Math.max(0, nextTotalSteps); index < (item.node?.length ?? 0); index++) {
+      const firstRemovedIndex = conservativeNativeTiming ? 0 : Math.max(0, nextTotalSteps);
+      for (let index = firstRemovedIndex; index < (item.node?.length ?? 0); index++) {
         const char = item.node?.[index];
         if (char && char !== '.' && char !== ' ') {
           names.add(char);
@@ -122,7 +127,7 @@ function collectRemovedNodeNames(
         }
       }
       for (const [rawIndex, name] of Object.entries(item.nodeNames ?? {})) {
-        if (Number(rawIndex) < nextTotalSteps) continue;
+        if (!conservativeNativeTiming && Number(rawIndex) < nextTotalSteps) continue;
         names.add(name);
         positions.add(Number(rawIndex));
       }
@@ -184,6 +189,7 @@ export function pruneReferencesBeyondSteps(
 ): StructuralReferenceImpact {
   const impact = structuralReferenceImpactForStepShrink(diagram, nextTotalSteps);
   const { names } = collectRemovedNodeNames(diagram, nextTotalSteps);
+  const conservativeNativeTiming = hasNativeTiming(diagram.signals);
 
   const trimSignals = (items: SignalOrGroup[]) => {
     for (const item of items) {
@@ -191,7 +197,10 @@ export function pruneReferencesBeyondSteps(
         trimSignals(item.children);
         continue;
       }
-      if (item.node && item.node.length > nextTotalSteps) {
+      if (conservativeNativeTiming) {
+        delete item.node;
+        delete item.nodeNames;
+      } else if (item.node && item.node.length > nextTotalSteps) {
         item.node = item.node.slice(0, Math.max(0, nextTotalSteps));
         if (/^[. ]*$/u.test(item.node)) delete item.node;
       }
