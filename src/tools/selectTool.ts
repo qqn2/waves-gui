@@ -163,7 +163,7 @@ export function selectPointerDown(
   canvas: HTMLCanvasElement | null,
   hit: HitTestResult,
 ): void {
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
   if (hit.annotationId) {
     const state = useStore.getState();
     state.setActiveAnnotationId(hit.annotationId);
@@ -415,7 +415,7 @@ export function deleteSelection(): void {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
     for (const signalId of view.activeSignalIds) {
-      eraseSignalStateRange(signalId, lo, hi);
+      eraseSignalStateRange(signalId, lo, hi, 'document');
     }
     return;
   }
@@ -439,7 +439,7 @@ export function deleteSelection(): void {
     const hi = Math.max(steps.start, steps.end);
     const allIds = collectSignalIds(diagram.signals);
     for (const signalId of allIds) {
-      eraseSignalStateRange(signalId, lo, hi);
+      eraseSignalStateRange(signalId, lo, hi, 'document');
     }
   }
 }

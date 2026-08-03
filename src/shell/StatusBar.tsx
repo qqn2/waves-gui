@@ -42,6 +42,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   const signals = useStore((s) => s.diagram.signals);
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
   const isDirty = useStore((s) => s.view.isDirty || s.view.sourceDraftDirty === true);
+  const sourceDraftError = useStore((s) => s.view.sourceDraftError ?? null);
   const diagram = useStore((s) => s.diagram);
   const edges = diagram.edges ?? [];
   const removeDiagramEdge = useStore((s) => s.removeDiagramEdge);
@@ -51,6 +52,8 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
   );
   const extensionsEnabled =
     diagram.compatibility?.extensionsEnabled === true;
+  const isEventCompressedVcd =
+    diagram.compatibility?.importMode === 'event-compressed-vcd';
   const [editingEdge, setEditingEdge] = useState<number | null>(null);
   const [edgeDraft, setEdgeDraft] = useState('');
 
@@ -95,6 +98,19 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
         {signalCount} sig · {totalSteps} steps
       </span>
       {isDirty ? <span className={styles.dirty}>unsaved</span> : null}
+      {sourceDraftError ? (
+        <span className={styles.subStepsError} role="alert" title={sourceDraftError}>
+          Source error: {sourceDraftError}
+        </span>
+      ) : null}
+      {isEventCompressedVcd ? (
+        <span
+          className={styles.vcdPreview}
+          title="VCD timestamps are displayed as equal-width event columns."
+        >
+          VCD: event-compressed preview
+        </span>
+      ) : null}
       {edges.length > 0 ? (
         <>
           <span className={styles.statusSep}>|</span>

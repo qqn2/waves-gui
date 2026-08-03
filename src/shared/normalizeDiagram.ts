@@ -226,6 +226,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
     ...(d.compatibility?.sourceFormat
       ? { sourceFormat: d.compatibility.sourceFormat }
       : {}),
+    ...(d.compatibility?.importMode === 'event-compressed-vcd'
+      ? { importMode: d.compatibility.importMode }
+      : {}),
     ...(d.compatibility?.sourceRevision
       ? { sourceRevision: d.compatibility.sourceRevision }
       : {}),

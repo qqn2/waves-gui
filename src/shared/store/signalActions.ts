@@ -1411,15 +1411,22 @@ export function createSignalActions(set: ImmerSet): Pick<
       });
     },
 
-    eraseSignalStateRange(signalId, startStep, endStep) {
+    eraseSignalStateRange(signalId, startStep, endStep, coordinate = 'native') {
       set((s) => {
-        const lo = Math.min(startStep, endStep);
-        const hi = Math.max(startStep, endStep);
+        const requestedLo = Math.min(startStep, endStep);
+        const requestedHi = Math.max(startStep, endStep);
         let target: Signal | undefined;
         findSignal(s.diagram.signals, signalId, (sig) => {
           target = sig;
         });
-        if (!target || hi < 0 || lo >= target.states.length) return;
+        if (!target) return;
+        const nativeRange = coordinate === 'document'
+          ? nativeCellsForMajorRange(target, requestedLo, requestedHi)
+          : null;
+        const lo = nativeRange?.start ?? requestedLo;
+        const hi = nativeRange?.end ?? requestedHi;
+        if (coordinate === 'document' && target.digitalTiming && !nativeRange) return;
+        if (hi < 0 || lo >= target.states.length) return;
         pushHistory(s);
 
         const gapCols: number[] = [];

@@ -25,7 +25,7 @@ export function erasePointerDown(
   canvas: HTMLCanvasElement | null,
 ): void {
   if (hit.edgeIndex !== null) {
-    flushPendingCodeToDiagram();
+    if (!flushPendingCodeToDiagram().ok) return;
     useStore.getState().setPaintDraft({
       signalId: '',
       startStep: 0,
@@ -48,7 +48,7 @@ export function erasePointerDown(
   }
   if (hit.signalType !== 'bit') return;
 
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
 
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,

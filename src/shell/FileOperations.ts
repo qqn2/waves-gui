@@ -140,8 +140,14 @@ async function parseDiagramFile(
     const root = vcdToWavedromJSON(text);
     const error = validateWavedromJSON(root);
     if (error) return { error };
+    const diagram = fromWavedromJSON(root);
+    diagram.compatibility = {
+      ...diagram.compatibility,
+      sourceFormat: 'wavedrom-json',
+      importMode: 'event-compressed-vcd',
+    };
     return {
-      diagram: fromWavedromJSON(root),
+      diagram,
       format: 'wavedrom-json',
     };
   }

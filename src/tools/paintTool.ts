@@ -6,6 +6,7 @@ import { toolState } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX, timingTickAtCanvasX } from './pointerUtils';
 import * as vectorPaint from './vectorPaintTool';
+import { confirmStructuralReferenceLoss } from './structuralEditGuard';
 
 function capturePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void {
   if (!canvas) return;
@@ -34,7 +35,7 @@ export function paintPointerDown(
   if (hit.signalType !== 'bit') return;
   if (e.button === 2) return;
 
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
 
   const { diagram, view } = useStore.getState();
   const apply: 'toggle' | 'set' | 'glitch' | 'gap' =
@@ -134,6 +135,10 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   if (draft.apply === 'glitch') {
     useStore.getState().toggleStepGlitchRange(draft.signalId, lo, hi);
   } else if (draft.apply === 'gap') {
+    if (paintStyle === 'additive' && !confirmStructuralReferenceLoss('Adding gap columns')) {
+      useStore.getState().clearPaintDraft();
+      return;
+    }
     useStore.getState().paintGapRange(draft.signalId, lo, hi, paintStyle);
   } else if (draft.apply === 'toggle') {
     useStore.getState().paintToggleRange(draft.signalId, lo, hi, paintStyle);

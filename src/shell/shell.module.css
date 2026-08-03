@@ -1330,6 +1330,11 @@
   color: var(--accent);
 }
 
+.vcdPreview {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
 .edgeListLabel {
   font-size: calc(10px * var(--ui-font-scale, 1));
   font-weight: 600;

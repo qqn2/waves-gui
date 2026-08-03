@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '../shared/store';
+import { useStore } from '../shared/store';
+import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
+import { confirmStructuralReferenceLoss } from '../tools/structuralEditGuard';
 import styles from './TimeAxisContextMenu.module.css';
 
 export interface TimeAxisContextMenuProps {
@@ -41,9 +43,11 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
       <button
         type="button"
         role="menuitem"
-        onClick={() => {
-          insertStepAt(step);
-          onClose();
+        onClick={() => {
+          if (!flushPendingCodeToDiagram().ok) return;
+          if (!confirmStructuralReferenceLoss('Inserting a column')) return;
+          insertStepAt(step);
+          onClose();
         }}
       >
         Insert column at step {step}
@@ -52,9 +56,11 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
         type="button"
         role="menuitem"
         disabled={totalSteps <= 1}
-        onClick={() => {
-          deleteStepAt(step);
-          onClose();
+        onClick={() => {
+          if (!flushPendingCodeToDiagram().ok) return;
+          if (!confirmStructuralReferenceLoss('Deleting a column')) return;
+          deleteStepAt(step);
+          onClose();
         }}
       >
         Delete column at step {step}

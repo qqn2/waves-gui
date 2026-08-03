@@ -276,6 +276,8 @@ export interface OpaqueUndulateData {
 export interface DiagramCompatibility {
   extensionsEnabled: boolean;
   sourceFormat?: DiagramSourceFormat;
+  /** VCD imports are intentionally event-compressed previews, not delta-time traces. */
+  importMode?: 'event-compressed-vcd';
   sourceRevision?: string;
   /**
    * Original source text. JSON5 uses it for CST-preserving edits; YAML and

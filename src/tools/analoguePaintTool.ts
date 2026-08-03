@@ -26,7 +26,7 @@ export function analoguePaintPointerDown(
     || hit.step === null
   ) return;
 
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
   const { view } = useStore.getState();
   useStore.getState().setActiveSignalIds([hit.signalId]);
   useStore.getState().setPaintDraft({

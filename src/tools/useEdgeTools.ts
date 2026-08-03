@@ -82,7 +82,7 @@ export function useEdgeTools(): {
   const onPointerDown = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
       if (!isEdgeTool(tool)) return;
-      flushPendingCodeToDiagram();
+      if (!flushPendingCodeToDiagram().ok) return;
       if (e.button === 2) return;
 
       const pending = useStore.getState().view.edgeAnchorPending;

@@ -126,7 +126,12 @@ export interface StoreActions {
     endStep: number,
   ): void;
   eraseSignalState(signalId: string, step: number): void;
-  eraseSignalStateRange(signalId: string, startStep: number, endStep: number): void;
+  eraseSignalStateRange(
+    signalId: string,
+    startStep: number,
+    endStep: number,
+    coordinate?: 'native' | 'document',
+  ): void;
   reorderSignals(orderedIds: string[], parentId?: string): void;
   moveSignalToParent(signalId: string, parentId?: string, beforeId?: string): void;
   updateVectorSegmentValue(signalId: string, segmentId: string, value: string): void;

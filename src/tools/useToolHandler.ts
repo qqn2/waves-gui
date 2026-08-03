@@ -100,9 +100,11 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
           select.selectAllSignals();
         } else if (e.key === 'z' && !e.shiftKey) {
           e.preventDefault();
+          if (!flushPendingCodeToDiagram().ok) return;
           undo();
         } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
           e.preventDefault();
+          if (!flushPendingCodeToDiagram().ok) return;
           redo();
         } else if (e.key === 'c' || e.key === 'C') {
           e.preventDefault();
@@ -127,6 +129,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         const t = useStore.getState().view.selectedTool;
         if (t === 'cursor' || t === 'select') {
           e.preventDefault();
+          if (!flushPendingCodeToDiagram().ok) return;
           select.deleteSelection();
         }
         return;
@@ -138,6 +141,7 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         || e.key === 'ArrowUp'
         || e.key === 'ArrowDown'
       ) {
+        if (!flushPendingCodeToDiagram().ok) return;
         if (select.nudgeSelectedAnnotation(e.key, e.shiftKey)) {
           e.preventDefault();
           return;
@@ -239,8 +243,8 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
 
   const onPointerDown = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
+      if (!flushPendingCodeToDiagram().ok) return;
       if (curveDrag.onPointerDown(e)) return;
-      flushPendingCodeToDiagram();
       const el = canvasRef.current;
       if (tool === 'paint') paint.paintPointerDown(e, hit, el);
       else if (tool === 'analogue-paint') {

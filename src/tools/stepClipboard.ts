@@ -19,7 +19,7 @@ export function getStepClipboard(): StepRangeClipboard | null {
 }
 
 export function copyStepSelection(): boolean {
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return false;
   const { diagram, view } = useStore.getState();
   const steps = toolState.getStepSelection();
   if (!steps || view.activeSignalIds.length === 0) return false;
@@ -48,7 +48,7 @@ export function copyStepSelection(): boolean {
 
     if (sig.type === 'bit') {
       bitStates.push(sig.states.slice(lo, hi + 1));
-    } else {
+    } else if (sig.type === 'vector') {
       const segments: VectorSegment[] = [];
       for (const seg of sig.segments) {
         if (seg.endStep <= lo || seg.startStep > hi) continue;
@@ -70,7 +70,7 @@ export function copyStepSelection(): boolean {
 }
 
 export function pasteStepSelection(atStep?: number): boolean {
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return false;
   const clip = internalClipboard;
   if (!clip) return false;
 

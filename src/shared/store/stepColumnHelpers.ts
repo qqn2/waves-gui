@@ -1,5 +1,5 @@
 import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
-import type { Signal, SignalOrGroup } from '../types';
+import type { DiagramState, Signal, SignalOrGroup } from '../types';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
 import { normalizeTimedVectorSegments } from '../vectorSegments';
 import {
@@ -39,6 +39,33 @@ export function clearNodesAndEdges(signals: SignalOrGroup[], edges: string[]): v
 
   edges.length = 0;
 
+}
+
+export interface StructuralReferenceImpact {
+  nodeAnchors: number;
+  dependencyEdges: number;
+}
+
+/** References that current column edits cannot safely remap yet. */
+export function structuralReferenceImpact(diagram: DiagramState): StructuralReferenceImpact {
+  let nodeAnchors = 0;
+  const walk = (items: SignalOrGroup[]) => {
+    for (const item of items) {
+      if (item.type === 'group') {
+        walk(item.children);
+        continue;
+      }
+      const positions = new Set<number>();
+      for (let index = 0; index < (item.node?.length ?? 0); index++) {
+        const char = item.node?.[index];
+        if (char && char !== '.' && char !== ' ') positions.add(index);
+      }
+      Object.keys(item.nodeNames ?? {}).forEach((index) => positions.add(Number(index)));
+      nodeAnchors += positions.size;
+    }
+  };
+  walk(diagram.signals);
+  return { nodeAnchors, dependencyEdges: diagram.edges?.length ?? 0 };
 }
 
 

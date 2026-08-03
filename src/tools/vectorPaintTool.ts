@@ -4,6 +4,7 @@ import { flushPendingCodeToDiagram } from './codeFlush';
 import { toolState } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX } from './pointerUtils';
+import { confirmStructuralReferenceLoss } from './structuralEditGuard';
 
 function capturePointer(
   canvas: HTMLCanvasElement | null,
@@ -45,7 +46,7 @@ export function vectorPaintPointerDown(
   if (hit.signalId === null || hit.signalType !== 'vector' || hit.step === null) return;
   if (e.button === 2) return;
 
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
 
   const { view } = useStore.getState();
   const gapMode = view.paintMode === 'gap';
@@ -86,11 +87,16 @@ export function vectorPaintPointerUp(
   const lo = Math.min(draft.startStep, draft.endStep);
   const hi = Math.max(draft.startStep, draft.endStep);
   if (draft.apply === 'gap') {
+    const paintStyle = useStore.getState().view.paintStyle;
+    if (paintStyle === 'additive' && !confirmStructuralReferenceLoss('Adding gap columns')) {
+      useStore.getState().clearPaintDraft();
+      return;
+    }
     useStore.getState().paintGapRange(
       draft.signalId,
       lo,
       hi,
-      useStore.getState().view.paintStyle,
+      paintStyle,
     );
   } else {
     useStore.getState().setVectorSpanRange(
@@ -121,7 +127,7 @@ export function vectorErasePointerDown(
 ): void {
   if (hit.signalId === null || hit.signalType !== 'vector' || hit.step === null) return;
 
-  flushPendingCodeToDiagram();
+  if (!flushPendingCodeToDiagram().ok) return;
 
   useStore.getState().setPaintDraft({
     signalId: hit.signalId,

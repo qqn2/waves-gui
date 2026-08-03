@@ -1095,6 +1095,52 @@ describe('useStore', () => {
     expect(clkWaveAfter).toBe(clkWaveBefore);
   });
 
+  it('maps document-step deletion onto native timed cells', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 4, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [{
+        id: 'timed-delete',
+        name: 'timed-delete',
+        type: 'bit',
+        states: ['0', '1', '0', '1', '1', '0', '1', '0'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 0,
+          cells: [
+            { state: '0', durationTicks: 1 },
+            { state: '1', durationTicks: 1 },
+            { state: '0', durationTicks: 1 },
+            { state: '1', durationTicks: 1 },
+            { state: '1', durationTicks: 1 },
+            { state: '0', durationTicks: 1 },
+            { state: '1', durationTicks: 1 },
+            { state: '0', durationTicks: 1 },
+          ],
+        },
+      }],
+    });
+
+    useStore.getState().eraseSignalStateRange(
+      'timed-delete',
+      2,
+      2,
+      'document',
+    );
+
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.cells.map((cell) => cell.state)).toEqual([
+      '0', '1', '0', '1', '1', '1', '1', '0',
+    ]);
+  });
+
   it('erase gap on one lane clears flag without removing timeline columns', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     const reset = useStore.getState().diagram.signals[1] as { id: string };
