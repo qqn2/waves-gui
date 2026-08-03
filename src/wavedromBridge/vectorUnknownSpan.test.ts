@@ -38,4 +38,16 @@ describe('vector x. continuation on import', () => {
     expect(prdata?.type).toBe('vector');
     expect(unknownSpans(prdata!)[0]).toMatchObject({ startStep: 0, endStep: 3 });
   });
+
+  it('extends a trailing x bus span to the longest document lane', () => {
+    const raw = readFileSync(join(samplesDir, 'amba-axi-read.json'), 'utf8');
+    const diagram = fromWavedromJSON(JSON.parse(raw) as WdRoot);
+
+    const araddr = findVector(diagram, 'ARADDR');
+    expect(araddr?.type).toBe('vector');
+    expect(unknownSpans(araddr!)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ startStep: 0, endStep: 3 }),
+      expect.objectContaining({ startStep: 4, endStep: diagram.config.totalSteps }),
+    ]));
+  });
 });

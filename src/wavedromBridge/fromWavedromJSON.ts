@@ -255,10 +255,20 @@ function padSignals(signals: SignalOrGroup[], totalSteps: number): void {
       }
       return;
     }
-    if (s.type === 'vector' && s.stepGaps?.length) {
-      while (s.stepGaps.length < totalSteps) s.stepGaps.push(false);
-      if (s.stepGaps.length > totalSteps) s.stepGaps.length = totalSteps;
-      if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
+    if (s.type === 'vector') {
+      // WaveDrom's `.` continues the previous bus value. When a vector wave
+      // is shorter than the longest lane, carry its final segment through the
+      // remaining document columns so the canvas and re-export match the
+      // WaveDrom interpretation (for example AXI's trailing `x`).
+      const lastSegment = s.segments.at(-1);
+      if (lastSegment && lastSegment.endStep < totalSteps) {
+        lastSegment.endStep = totalSteps;
+      }
+      if (s.stepGaps?.length) {
+        while (s.stepGaps.length < totalSteps) s.stepGaps.push(false);
+        if (s.stepGaps.length > totalSteps) s.stepGaps.length = totalSteps;
+        if (!s.stepGaps.some(Boolean)) delete s.stepGaps;
+      }
     }
   };
   const walk = (list: SignalOrGroup[]) => {
