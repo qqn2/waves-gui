@@ -28,3 +28,19 @@ select,
 textarea {
   font: inherit;
 }
+
+/* Keep native select popovers readable when the browser does not inherit the
+   theme's color-scheme for individual option rows. */
+select option {
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+select option:checked {
+  background-color: var(--accent);
+  color: var(--bg-canvas);
+}
+
+select option:disabled {
+  color: var(--text-muted);
+}
