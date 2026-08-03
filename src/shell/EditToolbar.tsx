@@ -16,6 +16,7 @@ import {
 import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 type ToolMode = {
   id: Tool;
@@ -51,7 +52,7 @@ export function EditToolbar() {
     (s) => s.diagram.compatibility?.extensionsEnabled === true,
   );
   const addAnalogueSignal = () => {
-    addSignal('analogue');
+    if (!runAfterSourceFlush(() => addSignal('analogue'))) return;
     const added = useStore.getState().diagram.signals.at(-1);
     if (added && added.type !== 'group') setActiveSignalIds([added.id]);
   };
@@ -82,15 +83,15 @@ export function EditToolbar() {
 
       <div className={styles.editRailGroup} role="group" aria-label="Insert">
         <span className={styles.editRailLabel}>Insert</span>
-        <button type="button" className={styles.railBtn} onClick={() => addSignal('bit')}>
+        <button type="button" className={styles.railBtn} onClick={() => runAfterSourceFlush(() => addSignal('bit'))}>
           <Plus size={21} strokeWidth={1.8} aria-hidden />
           <span>Signal</span>
         </button>
-        <button type="button" className={styles.railBtn} onClick={() => addSignal('vector')}>
+        <button type="button" className={styles.railBtn} onClick={() => runAfterSourceFlush(() => addSignal('vector'))}>
           <Rows3 size={21} strokeWidth={1.8} aria-hidden />
           <span>Bus</span>
         </button>
-        <button type="button" className={styles.railBtn} onClick={() => addGroup()}>
+        <button type="button" className={styles.railBtn} onClick={() => runAfterSourceFlush(() => addGroup())}>
           <Group size={21} strokeWidth={1.8} aria-hidden />
           <span>Group</span>
         </button>

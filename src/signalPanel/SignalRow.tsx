@@ -6,6 +6,7 @@ import { OverflowText } from '../shared/OverflowText';
 import { DragHandle } from './DragHandle';
 import { InlineEditor } from './InlineEditor';
 import styles from './SignalPanel.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export interface SignalRowProps {
   signal: Signal;
@@ -86,7 +87,7 @@ export function SignalRow({
         <InlineEditor
           value={signal.name}
           onCommit={(name) => {
-            renameSignal(signal.id, name);
+            runAfterSourceFlush(() => renameSignal(signal.id, name));
             setEditing(false);
             onEditEnd?.();
           }}

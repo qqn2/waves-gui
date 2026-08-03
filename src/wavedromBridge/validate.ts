@@ -110,6 +110,12 @@ export function validateWavedromJSON(
     return 'Root must be an object';
   }
   const root = json as WdRoot;
+  if (
+    root['x-waves-gui']?.importMode !== undefined
+    && root['x-waves-gui'].importMode !== 'event-compressed-vcd'
+  ) {
+    return 'x-waves-gui.importMode is unsupported';
+  }
   if (!Array.isArray(root.signal)) {
     return 'Missing or invalid signal array';
   }

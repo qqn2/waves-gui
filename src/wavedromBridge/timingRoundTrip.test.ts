@@ -71,4 +71,16 @@ describe('phase and period bridge', () => {
     expect(wavedrom['x-waves-gui']?.edgeCurveControls?.['0']).toEqual({ c1x: 0.2, c2x: 0.8 });
     expect(fromWavedromJSON(wavedrom).edgeCurveControls).toEqual(diagram.edgeCurveControls);
   });
+
+  it('persists event-compressed VCD provenance through WaveDrom JSON', () => {
+    const diagram = fromWavedromJSON({ signal: [{ name: 'a', wave: '0' }] });
+    diagram.compatibility = {
+      ...diagram.compatibility,
+      importMode: 'event-compressed-vcd',
+    };
+    const wavedrom = toWavedromJSON(diagram);
+    expect(wavedrom['x-waves-gui']?.importMode).toBe('event-compressed-vcd');
+    expect(fromWavedromJSON(wavedrom).compatibility?.importMode)
+      .toBe('event-compressed-vcd');
+  });
 });

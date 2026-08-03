@@ -10,6 +10,7 @@ import {
   parseCodeToDiagram,
 } from './codeSync';
 import { flushPendingCodeToDiagram, registerCodeFlush, cancelPendingCodeToDiagramDebounce, registerCodeDebounceCancel } from './flushRegistry';
+import { runAfterSourceFlush } from './sourceMutationGuard';
 import { toWavedromJSON } from '../wavedromBridge';
 
 function sampleDiagram(): DiagramState {
@@ -358,6 +359,17 @@ describe('flushRegistry', () => {
     flushed = false;
     flushPendingCodeToDiagram();
     expect(flushed).toBe(false);
+  });
+
+  it('runAfterSourceFlush blocks mutations when Source parsing fails', () => {
+    let mutated = false;
+    const unregister = registerCodeFlush(() => ({
+      ok: false as const,
+      error: 'invalid source',
+    }));
+    expect(runAfterSourceFlush(() => { mutated = true; })).toBe(false);
+    expect(mutated).toBe(false);
+    unregister();
   });
 
   it('cancelPendingCodeToDiagramDebounce is no-op when nothing registered', () => {

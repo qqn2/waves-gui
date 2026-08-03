@@ -20,6 +20,7 @@ import { segmentLabelFit, segmentLabelOverflows } from '../shared/vectorLabelFit
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 
 import styles from './SignalPanel.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 
 
@@ -370,13 +371,13 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
       if (typeof updateVectorSegmentValue === 'function') {
 
-        updateVectorSegmentValue(signalId, segmentId, value);
+        runAfterSourceFlush(() => updateVectorSegmentValue(signalId, segmentId, value));
 
         return;
 
       }
 
-      useStore.setState((s) => {
+      runAfterSourceFlush(() => useStore.setState((s) => {
 
         const sig = findSignalInTree(s.diagram.signals, signalId);
 
@@ -388,7 +389,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
         s.view.isDirty = true;
 
-      });
+      }));
 
     },
 
@@ -402,7 +403,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
     (segmentId: string, fillHex: string) => {
 
-      updateVectorSegmentColor(signalId, segmentId, fillHex);
+      runAfterSourceFlush(() => updateVectorSegmentColor(signalId, segmentId, fillHex));
 
     },
 
@@ -416,7 +417,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
     (targetHscale: number) => {
 
-      setHscale(targetHscale);
+      runAfterSourceFlush(() => setHscale(targetHscale));
 
     },
 

@@ -31,6 +31,7 @@ import { HeadFootFields } from './HeadFootFields';
 import { DiagramStepsControl } from './DiagramStepsControl';
 import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import {
   ToolbarBusSection,
   ToolbarAnaloguePaintSection,
@@ -131,7 +132,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
       setLocalHscale(String(diagram.config.hscale));
       return;
     }
-    setHscale(val);
+    runAfterSourceFlush(() => setHscale(val));
   };
 
   const handleHscaleKeyDown = (e: React.KeyboardEvent) => {
@@ -214,10 +215,10 @@ export function Toolbar({ onExport }: ToolbarProps) {
           onClose={() => setFileOpen(false)}
           onExport={onExport}
         />
-        <button type="button" className={styles.toolBtn} onClick={() => undo()} title="Undo (Ctrl+Z)">
+        <button type="button" className={styles.toolBtn} onClick={() => runAfterSourceFlush(undo)} title="Undo (Ctrl+Z)">
           <Undo2 size={16} aria-hidden /><span>Undo</span>
         </button>
-        <button type="button" className={styles.toolBtn} onClick={() => redo()} title="Redo (Ctrl+Shift+Z)">
+        <button type="button" className={styles.toolBtn} onClick={() => runAfterSourceFlush(redo)} title="Redo (Ctrl+Shift+Z)">
           <Redo2 size={16} aria-hidden /><span>Redo</span>
         </button>
 
@@ -277,7 +278,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
                   value={diagramSkin ?? 'default'}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setDiagramSkin(value === 'default' ? undefined : value);
+                    runAfterSourceFlush(() => setDiagramSkin(value === 'default' ? undefined : value));
                   }}
                 >
                   <option value="default">default</option>

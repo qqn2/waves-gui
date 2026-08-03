@@ -90,7 +90,7 @@ const unifiedHistoryKeymap = [
   {
     key: 'Mod-z',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return true;
+      if (!flushPendingCodeToDiagram().ok) return false;
       useStore.getState().undo();
       return true;
     },
@@ -98,7 +98,7 @@ const unifiedHistoryKeymap = [
   {
     key: 'Mod-y',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return true;
+      if (!flushPendingCodeToDiagram().ok) return false;
       useStore.getState().redo();
       return true;
     },
@@ -106,7 +106,7 @@ const unifiedHistoryKeymap = [
   {
     key: 'Mod-Shift-z',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return true;
+      if (!flushPendingCodeToDiagram().ok) return false;
       useStore.getState().redo();
       return true;
     },

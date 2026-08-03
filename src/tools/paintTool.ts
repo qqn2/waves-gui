@@ -7,6 +7,7 @@ import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX, timingTickAtCanvasX } from './pointerUtils';
 import * as vectorPaint from './vectorPaintTool';
 import { confirmStructuralReferenceLoss } from './structuralEditGuard';
+import { hasNativeTiming } from '../shared/store/stepColumnHelpers';
 
 function capturePointer(canvas: HTMLCanvasElement | null, e: PointerEvent): void {
   if (!canvas) return;
@@ -135,14 +136,34 @@ export function paintPointerUp(e: PointerEvent, canvas: HTMLCanvasElement | null
   if (draft.apply === 'glitch') {
     useStore.getState().toggleStepGlitchRange(draft.signalId, lo, hi);
   } else if (draft.apply === 'gap') {
-    if (paintStyle === 'additive' && !confirmStructuralReferenceLoss('Adding gap columns')) {
-      useStore.getState().clearPaintDraft();
-      return;
+    if (paintStyle === 'additive') {
+      if (hasNativeTiming(useStore.getState().diagram.signals)) {
+        useStore.getState().clearPaintDraft();
+        return;
+      }
+      if (!confirmStructuralReferenceLoss('Adding gap columns')) {
+        useStore.getState().clearPaintDraft();
+        return;
+      }
     }
     useStore.getState().paintGapRange(draft.signalId, lo, hi, paintStyle);
   } else if (draft.apply === 'toggle') {
     useStore.getState().paintToggleRange(draft.signalId, lo, hi, paintStyle);
   } else {
+    if (paintStyle === 'additive') {
+      let fillsGap = false;
+      findSignal(useStore.getState().diagram.signals, draft.signalId, (signal) => {
+        if (signal.type === 'bit' && !signal.digitalTiming) {
+          fillsGap = signal.stepGaps?.some(
+            (gap, index) => index >= lo && index <= hi && gap,
+          ) ?? false;
+        }
+      });
+      if (fillsGap && !confirmStructuralReferenceLoss('Filling gap columns')) {
+        useStore.getState().clearPaintDraft();
+        return;
+      }
+    }
     useStore.getState().paintBitStateRange(
       draft.signalId,
       lo,

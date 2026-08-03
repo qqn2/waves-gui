@@ -1141,6 +1141,81 @@ describe('useStore', () => {
     ]);
   });
 
+  it('splits a long static timing cell for document-step deletion', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 3, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [{
+        id: 'long-delete',
+        name: 'long-delete',
+        type: 'bit',
+        states: ['1', '0'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 0,
+          cells: [
+            { state: '1', durationTicks: 4 },
+            { state: '0', durationTicks: 2 },
+          ],
+        },
+      }],
+    });
+
+    useStore.getState().eraseSignalStateRange('long-delete', 1, 1, 'document');
+
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.cells).toEqual([
+      { state: '1', durationTicks: 2 },
+      { state: '0', durationTicks: 2 },
+      { state: '0', durationTicks: 2 },
+    ]);
+  });
+
+  it('maps document-step deletion through a phased timing lane', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 3, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [{
+        id: 'phased-delete',
+        name: 'phased-delete',
+        type: 'bit',
+        states: ['1', '0'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 1,
+          cells: [
+            { state: '1', durationTicks: 4 },
+            { state: '0', durationTicks: 2 },
+          ],
+        },
+      }],
+    });
+
+    useStore.getState().eraseSignalStateRange('phased-delete', 1, 1, 'document');
+
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.cells).toEqual([
+      { state: '1', durationTicks: 3 },
+      { state: '0', durationTicks: 1 },
+      { state: '1', durationTicks: 1 },
+      { state: '0', durationTicks: 1 },
+    ]);
+  });
+
   it('erase gap on one lane clears flag without removing timeline columns', () => {
     useStore.getState().loadDiagram(createDefaultDiagram());
     const reset = useStore.getState().diagram.signals[1] as { id: string };

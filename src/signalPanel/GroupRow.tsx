@@ -7,6 +7,7 @@ import { OverflowText } from '../shared/OverflowText';
 import { DragHandle } from './DragHandle';
 import { InlineEditor } from './InlineEditor';
 import styles from './SignalPanel.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export interface GroupRowProps {
   group: SignalGroup;
@@ -82,7 +83,7 @@ export function GroupRow({
         <InlineEditor
           value={group.name}
           onCommit={(name) => {
-            renameGroup(group.id, name);
+            runAfterSourceFlush(() => renameGroup(group.id, name));
             setEditing(false);
             onEditEnd?.();
           }}

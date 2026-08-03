@@ -299,6 +299,7 @@ export function fromWavedromJSON(
     foot: wd.foot ?? wd.config?.foot,
   };
   const rawCurveControls = wd['x-waves-gui']?.edgeCurveControls;
+  const importMode = wd['x-waves-gui']?.importMode;
   const edgeCurveControls = rawCurveControls
     ? Object.fromEntries(
       Object.entries(rawCurveControls).filter(([index, value]) => (
@@ -316,6 +317,7 @@ export function fromWavedromJSON(
     compatibility: {
       extensionsEnabled: false,
       sourceFormat: 'wavedrom-json',
+      ...(importMode === 'event-compressed-vcd' ? { importMode } : {}),
     },
     signals,
     config,

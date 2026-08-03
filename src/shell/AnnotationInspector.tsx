@@ -24,6 +24,7 @@ import type {
 import { annotationXCells, annotationYLogical } from '../renderer/annotationLayout';
 import { buildRowLayout } from '../renderer/rowLayout';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 function AnnotationTypographyFields({
   style,
@@ -87,6 +88,9 @@ function ArrowAnnotationInspector({
   const [from, setFrom] = useState(formatAnnotationAnchor(annotation.from));
   const [to, setTo] = useState(formatAnnotationAnchor(annotation.to));
   const [stroke, setStroke] = useState(annotation.style?.stroke ?? '');
+  const runMutation = (action: () => void) => {
+    runAfterSourceFlush(action);
+  };
 
   useEffect(() => {
     setShape(annotation.shape);
@@ -108,16 +112,16 @@ function ArrowAnnotationInspector({
       else setTo(original);
       return;
     }
-    updateArrowAnnotation(annotation.id, { [field]: parsed });
+    runMutation(() => updateArrowAnnotation(annotation.id, { [field]: parsed }));
   };
   const endpoint = splitEdgeConnector(annotation.shape);
   const updateEndpoint = (
     side: 'start' | 'end',
     decoration: EdgeEndpointDecoration,
   ) => {
-    updateArrowAnnotation(annotation.id, {
+    runMutation(() => updateArrowAnnotation(annotation.id, {
       shape: withEdgeEndpointDecoration(annotation.shape, side, decoration),
-    });
+    }));
   };
 
   return (
@@ -141,7 +145,7 @@ function ArrowAnnotationInspector({
               onChange={(event) => setShape(event.target.value)}
               onBlur={() => {
                 const next = shape.trim();
-                if (next) updateArrowAnnotation(annotation.id, { shape: next });
+                if (next) runMutation(() => updateArrowAnnotation(annotation.id, { shape: next }));
                 else setShape(annotation.shape);
               }}
               aria-label="Arrow shape"
@@ -184,9 +188,9 @@ function ArrowAnnotationInspector({
             <input
               value={text}
               onChange={(event) => setText(event.target.value)}
-              onBlur={() => updateArrowAnnotation(annotation.id, {
+              onBlur={() => runMutation(() => updateArrowAnnotation(annotation.id, {
                 text: text.trim() || undefined,
-              })}
+              }))}
               aria-label="Arrow text"
             />
           </label>
@@ -219,9 +223,9 @@ function ArrowAnnotationInspector({
               type="number"
               step="any"
               value={annotation.dx ?? 0}
-              onChange={(event) => updateArrowAnnotation(annotation.id, {
+              onChange={(event) => runMutation(() => updateArrowAnnotation(annotation.id, {
                 dx: Number(event.target.value),
-              })}
+              }))}
               aria-label="Arrow label X offset"
             />
           </label>
@@ -231,9 +235,9 @@ function ArrowAnnotationInspector({
               type="number"
               step="any"
               value={annotation.dy ?? 0}
-              onChange={(event) => updateArrowAnnotation(annotation.id, {
+              onChange={(event) => runMutation(() => updateArrowAnnotation(annotation.id, {
                 dy: Number(event.target.value),
-              })}
+              }))}
               aria-label="Arrow label Y offset"
             />
           </label>
@@ -252,9 +256,9 @@ function ArrowAnnotationInspector({
                   setStroke(annotation.style?.stroke ?? '');
                   return;
                 }
-                updateArrowAnnotation(annotation.id, {
+                runMutation(() => updateArrowAnnotation(annotation.id, {
                   style: { ...annotation.style, stroke: next || undefined },
-                });
+                }));
               }}
               aria-label="Annotation stroke"
             />
@@ -267,14 +271,14 @@ function ArrowAnnotationInspector({
               max={32}
               step={0.5}
               value={annotation.style?.strokeWidth ?? ''}
-              onChange={(event) => updateArrowAnnotation(annotation.id, {
+              onChange={(event) => runMutation(() => updateArrowAnnotation(annotation.id, {
                 style: {
                   ...annotation.style,
                   strokeWidth: event.target.value === ''
                     ? undefined
                     : Number(event.target.value),
                 },
-              })}
+              }))}
               aria-label="Annotation stroke width"
             />
           </label>
@@ -286,32 +290,32 @@ function ArrowAnnotationInspector({
               max={96}
               step={1}
               value={annotation.style?.fontSize ?? ''}
-              onChange={(event) => updateArrowAnnotation(annotation.id, {
+              onChange={(event) => runMutation(() => updateArrowAnnotation(annotation.id, {
                 style: {
                   ...annotation.style,
                   fontSize: event.target.value === ''
                     ? undefined
                     : Number(event.target.value),
                 },
-              })}
+              }))}
               aria-label="Annotation font size"
             />
           </label>
           <AnnotationTypographyFields
             style={annotation.style}
-            onChange={(style) => updateArrowAnnotation(annotation.id, { style })}
+            onChange={(style) => runMutation(() => updateArrowAnnotation(annotation.id, { style }))}
           />
           <label className={styles.inspectorField}>
             <span>Text background</span>
             <input
               type="checkbox"
               checked={annotation.style?.textBackground !== false}
-              onChange={(event) => updateArrowAnnotation(annotation.id, {
+              onChange={(event) => runMutation(() => updateArrowAnnotation(annotation.id, {
                 style: {
                   ...annotation.style,
                   textBackground: event.target.checked ? undefined : false,
                 },
-              })}
+              }))}
               aria-label="Annotation text background"
             />
           </label>
@@ -321,7 +325,7 @@ function ArrowAnnotationInspector({
             type="button"
             className={styles.inspectorDanger}
             onClick={() => {
-              removeAnnotation(annotation.id);
+              runMutation(() => removeAnnotation(annotation.id));
               close();
             }}
           >
@@ -375,6 +379,9 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const [dashDraft, setDashDraft] = useState('');
   const [rangeFromDraft, setRangeFromDraft] = useState('');
   const [rangeToDraft, setRangeToDraft] = useState('');
+  const runMutation = (action: () => void) => {
+    runAfterSourceFlush(action);
+  };
 
   useEffect(() => {
     setTextDraft(textAnnotation?.text ?? '');
@@ -399,26 +406,26 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
   const updateStyle = (style: AnnotationStyle) => {
     if (!annotation) return;
     if (annotation.type === 'text') {
-      updateTextAnnotation(annotation.id, { style });
+      runMutation(() => updateTextAnnotation(annotation.id, { style }));
     } else if (annotation.type === 'vertical-line') {
-      updateVerticalLineAnnotation(annotation.id, { style });
+      runMutation(() => updateVerticalLineAnnotation(annotation.id, { style }));
     } else if (annotation.type === 'horizontal-line') {
-      updateHorizontalLineAnnotation(annotation.id, { style });
+      runMutation(() => updateHorizontalLineAnnotation(annotation.id, { style }));
     } else {
-      updateGlobalCompressionAnnotation(annotation.id, { style });
+      runMutation(() => updateGlobalCompressionAnnotation(annotation.id, { style }));
     }
   };
 
   const updatePosition = (patch: Partial<DiagramAnnotation>) => {
     if (!annotation) return;
     if (annotation.type === 'text') {
-      updateTextAnnotation(annotation.id, patch);
+      runMutation(() => updateTextAnnotation(annotation.id, patch));
     } else if (annotation.type === 'vertical-line') {
-      updateVerticalLineAnnotation(annotation.id, patch);
+      runMutation(() => updateVerticalLineAnnotation(annotation.id, patch));
     } else if (annotation.type === 'horizontal-line') {
-      updateHorizontalLineAnnotation(annotation.id, patch);
+      runMutation(() => updateHorizontalLineAnnotation(annotation.id, patch));
     } else {
-      updateGlobalCompressionAnnotation(annotation.id, patch);
+      runMutation(() => updateGlobalCompressionAnnotation(annotation.id, patch));
     }
   };
 
@@ -478,7 +485,7 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                   onChange={(event) => setTextDraft(event.target.value)}
                   onBlur={() => {
                     if (textDraft !== textAnnotation.text) {
-                      updateTextAnnotation(textAnnotation.id, { text: textDraft });
+                      runMutation(() => updateTextAnnotation(textAnnotation.id, { text: textDraft }));
                     }
                   }}
                   aria-label="Annotation text"
@@ -595,9 +602,9 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
                 onChange={(event) => {
                   const patch = { yOffset: Number(event.target.value) };
                   if (annotation.type === 'text') {
-                    updateTextAnnotation(annotation.id, patch);
+                    runMutation(() => updateTextAnnotation(annotation.id, patch));
                   } else {
-                    updateHorizontalLineAnnotation(annotation.id, patch);
+                    runMutation(() => updateHorizontalLineAnnotation(annotation.id, patch));
                   }
                 }}
                 aria-label="Annotation vertical offset"
@@ -776,7 +783,7 @@ export function AnnotationInspector({ onClose }: { onClose: () => void }) {
               type="button"
               className={styles.inspectorDanger}
               onClick={() => {
-                removeAnnotation(annotation.id);
+                runMutation(() => removeAnnotation(annotation.id));
                 close();
               }}
             >

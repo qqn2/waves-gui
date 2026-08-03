@@ -21,6 +21,25 @@ describe('step column actions', () => {
     expect(after.edges).toEqual([]);
   });
 
+  it('removes node-anchored annotations when structural references are cleared', () => {
+    const diagram = createDefaultDiagram();
+    const signal = diagram.signals[0];
+    if (signal?.type !== 'bit') return;
+    signal.node = 'a';
+    diagram.annotations = [{
+      id: 'arrow-1',
+      type: 'arrow',
+      shape: '->',
+      from: { kind: 'node', node: 'a' },
+      to: { kind: 'point', x: 1, y: 1 },
+    }];
+    useStore.setState({ diagram });
+
+    useStore.getState().insertStepAt(1);
+
+    expect(useStore.getState().diagram.annotations).toEqual([]);
+  });
+
   it('deleteStepAt removes a column', () => {
     useStore.getState().insertStepAt(0);
     const steps = useStore.getState().diagram.config.totalSteps;

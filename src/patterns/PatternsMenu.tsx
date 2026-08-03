@@ -15,6 +15,7 @@ import {
 } from './patternDefs';
 import { BitPreview, VectorPreview } from './PatternPreview';
 import styles from './PatternsMenu.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export type { PatternId } from './patternDefs';
 export { PATTERN_DEFS } from './patternDefs';
@@ -43,21 +44,21 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
   );
 
   const handleInsert = () => {
-    addSignal(def.signalKind);
+    if (!runAfterSourceFlush(() => addSignal(def.signalKind))) return;
     const signalId = lastTopLevelSignalId(useStore.getState().diagram.signals);
     if (!signalId) return;
 
-    renameSignal(signalId, def.defaultName);
+    runAfterSourceFlush(() => renameSignal(signalId, def.defaultName));
 
     if (def.signalKind === 'bit') {
-      applyBitPatternToSignal(signalId, preview as BitState[]);
+      runAfterSourceFlush(() => applyBitPatternToSignal(signalId, preview as BitState[]));
       if (selectedId === 'clock') {
         const { setSignalPeriod, setSignalPhase } = useStore.getState();
-        setSignalPeriod(signalId, fieldNum(cfg, 'period'));
-        setSignalPhase(signalId, fieldNum(cfg, 'phase'));
+        runAfterSourceFlush(() => setSignalPeriod(signalId, fieldNum(cfg, 'period')));
+        runAfterSourceFlush(() => setSignalPhase(signalId, fieldNum(cfg, 'phase')));
       }
     } else {
-      applyVectorPatternToSignal(signalId, preview as VectorSegment[]);
+      runAfterSourceFlush(() => applyVectorPatternToSignal(signalId, preview as VectorSegment[]));
     }
 
     onInserted?.(selectedId, signalId);
@@ -86,14 +87,14 @@ export function PatternsMenu({ onInserted, onClose }: PatternsMenuProps) {
   const handleApplyToSelected = () => {
     if (!selectedSignal || !canApplyToSelected) return;
     if (def.signalKind === 'bit') {
-      applyBitPatternToSignal(selectedSignal.id, preview as BitState[]);
+      if (!runAfterSourceFlush(() => applyBitPatternToSignal(selectedSignal.id, preview as BitState[]))) return;
       if (selectedId === 'clock') {
         const { setSignalPeriod, setSignalPhase } = useStore.getState();
-        setSignalPeriod(selectedSignal.id, fieldNum(cfg, 'period'));
-        setSignalPhase(selectedSignal.id, fieldNum(cfg, 'phase'));
+        runAfterSourceFlush(() => setSignalPeriod(selectedSignal.id, fieldNum(cfg, 'period')));
+        runAfterSourceFlush(() => setSignalPhase(selectedSignal.id, fieldNum(cfg, 'phase')));
       }
     } else {
-      applyVectorPatternToSignal(selectedSignal.id, preview as VectorSegment[]);
+      runAfterSourceFlush(() => applyVectorPatternToSignal(selectedSignal.id, preview as VectorSegment[]));
     }
     onInserted?.(selectedId, selectedSignal.id);
     onClose?.();

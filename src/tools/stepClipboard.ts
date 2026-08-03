@@ -30,7 +30,10 @@ export function copyStepSelection(): boolean {
       if (sig.digitalTiming || sig.vectorTiming) hasNativeTiming = true;
     });
   }
-  if (hasNativeTiming) return false;
+  if (hasNativeTiming) {
+    internalClipboard = null;
+    return false;
+  }
 
   const lo = Math.min(steps.start, steps.end);
   const hi = Math.max(steps.start, steps.end);

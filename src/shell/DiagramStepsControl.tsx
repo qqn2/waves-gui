@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '../shared/store';
 import { MAX_TOTAL_STEPS, MIN_TOTAL_STEPS } from '../shared/constants';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import styles from './shell.module.css';
 
 const STEPS_TITLE =
@@ -36,12 +37,26 @@ export function DiagramStepsControl() {
       setRejected(false);
       return;
     }
-    setRejected(!setTotalSteps(next));
+    let accepted = false;
+    if (!runAfterSourceFlush(() => {
+      accepted = setTotalSteps(next);
+    })) {
+      setRejected(false);
+      return;
+    }
+    setRejected(!accepted);
   }, [draft, setTotalSteps, totalSteps]);
 
   const bump = useCallback(
     (delta: number) => {
-      setRejected(!setTotalSteps(totalSteps + delta));
+      let accepted = false;
+      if (!runAfterSourceFlush(() => {
+        accepted = setTotalSteps(totalSteps + delta);
+      })) {
+        setRejected(false);
+        return;
+      }
+      setRejected(!accepted);
     },
     [setTotalSteps, totalSteps],
   );

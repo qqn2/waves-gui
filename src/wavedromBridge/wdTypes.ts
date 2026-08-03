@@ -31,5 +31,6 @@ export interface WdRoot {
   edge?: string[];
   'x-waves-gui'?: {
     edgeCurveControls?: Record<string, { c1x: number; c2x: number }>;
+    importMode?: 'event-compressed-vcd';
   };
 }

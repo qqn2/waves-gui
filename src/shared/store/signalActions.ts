@@ -80,6 +80,7 @@ import {
   resizeAllStates,
 } from './helpers';
 import {
+  eraseDigitalTimingTicksWithMapping,
   paintDigitalTimingTicksWithMapping,
   rescaleDiagramTiming,
   timingResolution,
@@ -1178,7 +1179,7 @@ export function createSignalActions(set: ImmerSet): Pick<
             inserted++;
           }
           if (inserted > 0) {
-            clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+            clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
             delete s.diagram.edgeCurveControls;
             s.diagram.config.totalSteps += inserted;
           }
@@ -1294,7 +1295,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
           pushHistory(s);
           insertGapColumnsOnDiagram(s.diagram.signals, lo, n, signalId);
-          clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
           delete s.diagram.edgeCurveControls;
           s.diagram.config.totalSteps += n;
           s.view.isDirty = true;
@@ -1345,7 +1346,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (s.diagram.config.totalSteps + n > MAX_TOTAL_STEPS) return;
         pushHistory(s);
         insertGapColumnsOnDiagram(s.diagram.signals, column, n, signalId);
-        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
         delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps += n;
         s.view.isDirty = true;
@@ -1366,7 +1367,7 @@ export function createSignalActions(set: ImmerSet): Pick<
           MIN_TOTAL_STEPS,
         );
         if (removed > 0) {
-          clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+          clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
           delete s.diagram.edgeCurveControls;
           s.diagram.config.totalSteps = Math.max(
             MIN_TOTAL_STEPS,
@@ -1420,6 +1421,37 @@ export function createSignalActions(set: ImmerSet): Pick<
           target = sig;
         });
         if (!target) return;
+        if (coordinate === 'document' && target.digitalTiming) {
+          const timing = target.digitalTiming;
+          const selectedSources = nativeCellsForMajorRange(
+            target,
+            requestedLo,
+            requestedHi,
+          );
+          const erased = eraseDigitalTimingTicksWithMapping(
+            timing,
+            requestedLo * timing.ticksPerStep,
+            (requestedHi + 1) * timing.ticksPerStep,
+          );
+          if (JSON.stringify(erased.cells) === JSON.stringify(timing.cells)) return;
+          pushHistory(s);
+          timing.cells = erased.cells;
+          target.states = erased.cells.map((cell) => cell.state);
+          remapTimingDecorations(target, erased.sourceCellRanges, erased.cells);
+          if (selectedSources && target.stepGaps) {
+            for (let index = selectedSources.start; index <= selectedSources.end; index++) {
+              const range = erased.sourceCellRanges[index];
+              if (!range) continue;
+              for (let outputIndex = range.start; outputIndex < range.end; outputIndex++) {
+                target.stepGaps[outputIndex] = false;
+              }
+            }
+            if (!target.stepGaps.some(Boolean)) delete target.stepGaps;
+          }
+          target.digitalTimingStatesEdited = true;
+          s.view.isDirty = true;
+          return;
+        }
         const nativeRange = coordinate === 'document'
           ? nativeCellsForMajorRange(target, requestedLo, requestedHi)
           : null;
@@ -1621,7 +1653,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         if (blocked) return;
         pushHistory(s);
         walkSignals(s.diagram.signals, (sig) => insertStepInSignal(sig, at, total));
-        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
         delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps = total + 1;
         s.view.isDirty = true;
@@ -1655,7 +1687,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         walkSignals(s.diagram.signals, (sig) => {
           deleteStepInSignal(sig, at, total, MIN_TOTAL_STEPS);
         });
-        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
         delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps = total - 1;
         s.view.isDirty = true;
@@ -1669,7 +1701,7 @@ export function createSignalActions(set: ImmerSet): Pick<
         const at = Math.max(0, Math.min(column, s.diagram.config.totalSteps));
         pushHistory(s);
         insertGapColumnOnDiagram(s.diagram.signals, at, null);
-        clearNodesAndEdges(s.diagram.signals, s.diagram.edges);
+        clearNodesAndEdges(s.diagram.signals, s.diagram.edges, s.diagram.annotations);
         delete s.diagram.edgeCurveControls;
         s.diagram.config.totalSteps += 1;
         s.view.isDirty = true;

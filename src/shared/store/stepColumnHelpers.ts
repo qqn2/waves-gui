@@ -1,5 +1,10 @@
 import { deleteBitStepAt, insertBitStepAt } from '../bitStepResize';
-import type { DiagramState, Signal, SignalOrGroup } from '../types';
+import type {
+  DiagramAnnotation,
+  DiagramState,
+  Signal,
+  SignalOrGroup,
+} from '../types';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
 import { normalizeTimedVectorSegments } from '../vectorSegments';
 import {
@@ -18,7 +23,11 @@ import {
 
 /** Clear node anchors and dependency edges after column insert/delete (node shift is error-prone). */
 
-export function clearNodesAndEdges(signals: SignalOrGroup[], edges: string[]): void {
+export function clearNodesAndEdges(
+  signals: SignalOrGroup[],
+  edges: string[],
+  annotations?: DiagramAnnotation[],
+): void {
 
   const walk = (list: SignalOrGroup[]) => {
 
@@ -39,11 +48,24 @@ export function clearNodesAndEdges(signals: SignalOrGroup[], edges: string[]): v
 
   edges.length = 0;
 
+  if (annotations) {
+    for (let index = annotations.length - 1; index >= 0; index--) {
+      const annotation = annotations[index];
+      if (
+        annotation?.type === 'arrow'
+        && (annotation.from.kind === 'node' || annotation.to.kind === 'node')
+      ) {
+        annotations.splice(index, 1);
+      }
+    }
+  }
+
 }
 
 export interface StructuralReferenceImpact {
   nodeAnchors: number;
   dependencyEdges: number;
+  nodeAnchoredAnnotations: number;
 }
 
 /** References that current column edits cannot safely remap yet. */
@@ -65,7 +87,15 @@ export function structuralReferenceImpact(diagram: DiagramState): StructuralRefe
     }
   };
   walk(diagram.signals);
-  return { nodeAnchors, dependencyEdges: diagram.edges?.length ?? 0 };
+  const nodeAnchoredAnnotations = (diagram.annotations ?? []).filter(
+    (annotation) => annotation.type === 'arrow'
+      && (annotation.from.kind === 'node' || annotation.to.kind === 'node'),
+  ).length;
+  return {
+    nodeAnchors,
+    dependencyEdges: diagram.edges?.length ?? 0,
+    nodeAnchoredAnnotations,
+  };
 }
 
 
@@ -318,4 +348,12 @@ export function walkSignals(signals: SignalOrGroup[], fn: (sig: Signal) => void)
 
   }
 
+}
+
+export function hasNativeTiming(signals: SignalOrGroup[]): boolean {
+  let timed = false;
+  walkSignals(signals, (signal) => {
+    if (signal.digitalTiming || signal.vectorTiming) timed = true;
+  });
+  return timed;
 }

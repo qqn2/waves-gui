@@ -4,6 +4,7 @@ import {
   MAX_TICKS_PER_STEP,
 } from '../shared/fineTiming';
 import { useStore } from '../shared/store';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import styles from './shell.module.css';
 
 const TITLE =
@@ -29,7 +30,13 @@ export function DiagramSubStepsControl() {
   useEffect(() => setDraft(String(ticksPerStep)), [ticksPerStep]);
 
   const apply = useCallback((next: number) => {
-    const accepted = setTicksPerStep(next);
+    let accepted = false;
+    if (!runAfterSourceFlush(() => {
+      accepted = setTicksPerStep(next);
+    })) {
+      setRejected(false);
+      return;
+    }
     setRejected(!accepted);
   }, [setTicksPerStep]);
 

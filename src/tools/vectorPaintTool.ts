@@ -5,6 +5,7 @@ import { toolState } from './toolState';
 import type { HitTestResult } from '../renderer/hitTest';
 import { stepAtCanvasX } from './pointerUtils';
 import { confirmStructuralReferenceLoss } from './structuralEditGuard';
+import { hasNativeTiming } from '../shared/store/stepColumnHelpers';
 
 function capturePointer(
   canvas: HTMLCanvasElement | null,
@@ -88,9 +89,15 @@ export function vectorPaintPointerUp(
   const hi = Math.max(draft.startStep, draft.endStep);
   if (draft.apply === 'gap') {
     const paintStyle = useStore.getState().view.paintStyle;
-    if (paintStyle === 'additive' && !confirmStructuralReferenceLoss('Adding gap columns')) {
-      useStore.getState().clearPaintDraft();
-      return;
+    if (paintStyle === 'additive') {
+      if (hasNativeTiming(useStore.getState().diagram.signals)) {
+        useStore.getState().clearPaintDraft();
+        return;
+      }
+      if (!confirmStructuralReferenceLoss('Adding gap columns')) {
+        useStore.getState().clearPaintDraft();
+        return;
+      }
     }
     useStore.getState().paintGapRange(
       draft.signalId,

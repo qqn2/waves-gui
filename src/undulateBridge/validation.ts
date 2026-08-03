@@ -889,6 +889,7 @@ function structuralError(root: Record<string, unknown>): string | null {
         field !== 'analogueContext'
         && field !== 'randomSeed'
         && field !== 'edgeCurveControls'
+        && field !== 'importMode'
       ) {
         return `x-waves-gui.${field} is not supported`;
       }
@@ -937,6 +938,12 @@ function structuralError(root: Record<string, unknown>): string | null {
           return `x-waves-gui.edgeCurveControls.${index} is invalid`;
         }
       }
+    }
+    if (
+      appMetadata.importMode !== undefined
+      && appMetadata.importMode !== 'event-compressed-vcd'
+    ) {
+      return 'x-waves-gui.importMode is unsupported';
     }
   }
   if (root.edge !== undefined && root.edges !== undefined) {

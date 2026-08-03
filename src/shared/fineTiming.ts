@@ -278,6 +278,71 @@ function slicedTimingCell(
   };
 }
 
+function eraseStateForCell(current: BitState, previous: BitState): BitState {
+  if (current === 'p' || current === 'P') return '0';
+  if (current === 'n' || current === 'N') return '1';
+  return previous;
+}
+
+/**
+ * Erase a document-time interval without changing native time outside it.
+ * Boundary cells are split when necessary; clock macros are rejected when a
+ * selection would cut through only part of their represented cycle.
+ */
+export function eraseDigitalTimingTicksWithMapping(
+  timing: DigitalTiming,
+  startTick: number,
+  endTick: number,
+): PaintedDigitalTiming {
+  const lo = Math.min(Math.floor(startTick), Math.floor(endTick));
+  const hiExclusive = Math.max(Math.floor(startTick), Math.floor(endTick));
+  const output: DigitalTimingCell[] = [];
+  const sourceCellRanges: TimingCellOutputRange[] = [];
+  let cursor = -timing.phaseTicks;
+  let previousState: BitState = '0';
+
+  for (const cell of timing.cells) {
+    const outputStart = output.length;
+    const cellStart = cursor;
+    const cellEnd = cursor + Math.max(1, Math.round(cell.durationTicks));
+    cursor = cellEnd;
+    const overlapStart = Math.max(cellStart, lo);
+    const overlapEnd = Math.min(cellEnd, hiExclusive);
+    if (overlapStart >= overlapEnd) {
+      output.push({ ...cell });
+      sourceCellRanges.push({ start: outputStart, end: output.length });
+      previousState = cell.state;
+      continue;
+    }
+
+    const isClock = isClockBitState(cell.state);
+    const fullyCovered = overlapStart <= cellStart && overlapEnd >= cellEnd;
+    if (isClock && !fullyCovered) {
+      return {
+        cells: timing.cells.map((candidate) => ({ ...candidate })),
+        sourceCellRanges: timing.cells.map((_, index) => ({
+          start: index,
+          end: index + 1,
+        })),
+      };
+    }
+
+    const erasedState = eraseStateForCell(cell.state, previousState);
+    const before = overlapStart - cellStart;
+    const erased = overlapEnd - overlapStart;
+    const after = cellEnd - overlapEnd;
+    if (before > 0) output.push(slicedTimingCell(cell, 0, before));
+    output.push({ state: erasedState, durationTicks: erased });
+    if (after > 0) {
+      output.push(slicedTimingCell(cell, before + erased, after));
+    }
+    sourceCellRanges.push({ start: outputStart, end: output.length });
+    previousState = cell.state;
+  }
+
+  return { cells: output, sourceCellRanges };
+}
+
 function timingRangeIntersectsClockMacro(
   timing: DigitalTiming,
   startTick: number,

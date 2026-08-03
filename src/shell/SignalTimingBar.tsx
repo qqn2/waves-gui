@@ -3,6 +3,7 @@ import { useStore, findSignal } from '../shared/store';
 import { OverflowText } from '../shared/OverflowText';
 import type { Signal } from '../shared/types';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 function parseOptionalNumber(raw: string): number | undefined {
   const t = raw.trim();
@@ -15,33 +16,37 @@ function formatOptionalNumber(n: number | undefined): string {
   return n === undefined ? '' : String(n);
 }
 
-function applyPhase(signalId: string, phase: number | undefined): void {
-  const { setSignalPhase } = useStore.getState();
-  if (typeof setSignalPhase === 'function') {
-    setSignalPhase(signalId, phase);
-    return;
-  }
-  useStore.setState((s) => {
-    findSignal(s.diagram.signals, signalId, (sig) => {
-      if (phase === undefined) delete sig.phase;
-      else sig.phase = phase;
+function applyPhase(signalId: string, phase: number | undefined): boolean {
+  return runAfterSourceFlush(() => {
+    const { setSignalPhase } = useStore.getState();
+    if (typeof setSignalPhase === 'function') {
+      setSignalPhase(signalId, phase);
+      return;
+    }
+    useStore.setState((s) => {
+      findSignal(s.diagram.signals, signalId, (sig) => {
+        if (phase === undefined) delete sig.phase;
+        else sig.phase = phase;
+      });
+      s.view.isDirty = true;
     });
-    s.view.isDirty = true;
   });
 }
 
-function applyPeriod(signalId: string, period: number | undefined): void {
-  const { setSignalPeriod } = useStore.getState();
-  if (typeof setSignalPeriod === 'function') {
-    setSignalPeriod(signalId, period);
-    return;
-  }
-  useStore.setState((s) => {
-    findSignal(s.diagram.signals, signalId, (sig) => {
-      if (period === undefined || period < 1) delete sig.period;
-      else sig.period = Math.floor(period);
+function applyPeriod(signalId: string, period: number | undefined): boolean {
+  return runAfterSourceFlush(() => {
+    const { setSignalPeriod } = useStore.getState();
+    if (typeof setSignalPeriod === 'function') {
+      setSignalPeriod(signalId, period);
+      return;
+    }
+    useStore.setState((s) => {
+      findSignal(s.diagram.signals, signalId, (sig) => {
+        if (period === undefined || period < 1) delete sig.period;
+        else sig.period = Math.floor(period);
+      });
+      s.view.isDirty = true;
     });
-    s.view.isDirty = true;
   });
 }
 
@@ -79,33 +84,28 @@ export function SignalTimingBar() {
   const commitPhase = useCallback(() => {
     if (!target) return;
     const val = parseOptionalNumber(localPhase);
-    applyPhase(target.id, val);
-    setLocalPhase(formatOptionalNumber(val));
+    if (applyPhase(target.id, val)) setLocalPhase(formatOptionalNumber(val));
   }, [target, localPhase]);
 
   const commitPeriod = useCallback(() => {
     if (!target) return;
     const val = parseOptionalNumber(localPeriod);
     if (val === undefined) {
-      applyPeriod(target.id, undefined);
-      setLocalPeriod('');
+      if (applyPeriod(target.id, undefined)) setLocalPeriod('');
     } else {
       const period = Math.max(1, Math.floor(val));
-      applyPeriod(target.id, period);
-      setLocalPeriod(String(period));
+      if (applyPeriod(target.id, period)) setLocalPeriod(String(period));
     }
   }, [target, localPeriod]);
 
   const clearPhase = useCallback(() => {
     if (!target) return;
-    applyPhase(target.id, undefined);
-    setLocalPhase('');
+    if (applyPhase(target.id, undefined)) setLocalPhase('');
   }, [target]);
 
   const clearPeriod = useCallback(() => {
     if (!target) return;
-    applyPeriod(target.id, undefined);
-    setLocalPeriod('');
+    if (applyPeriod(target.id, undefined)) setLocalPeriod('');
   }, [target]);
 
   const handleKeyDown = (e: React.KeyboardEvent, commitFn: () => void) => {

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../shared/store';
+import { MAX_TOTAL_STEPS, MIN_TOTAL_STEPS } from '../shared/constants';
+import {
+  canDeleteStepInSignal,
+  canInsertStepInSignal,
+  walkSignals,
+} from '../shared/store/stepColumnHelpers';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
 import { confirmStructuralReferenceLoss } from '../tools/structuralEditGuard';
 import styles from './TimeAxisContextMenu.module.css';
@@ -15,7 +21,38 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
   const insertStepAt = useStore((s) => s.insertStepAt);
   const deleteStepAt = useStore((s) => s.deleteStepAt);
   const totalSteps = useStore((s) => s.diagram.config.totalSteps);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const canInsert = () => {
+    const { diagram } = useStore.getState();
+    if (diagram.config.totalSteps >= MAX_TOTAL_STEPS) return false;
+    const at = Math.max(0, Math.min(step, diagram.config.totalSteps));
+    let allowed = true;
+    walkSignals(diagram.signals, (signal) => {
+      if (!canInsertStepInSignal(signal, at, diagram.config.totalSteps)) allowed = false;
+    });
+    return allowed;
+  };
+
+  const canDelete = () => {
+    const { diagram } = useStore.getState();
+    if (diagram.config.totalSteps <= MIN_TOTAL_STEPS) return false;
+    const at = Math.max(0, Math.min(step, diagram.config.totalSteps - 1));
+    let allowed = true;
+    walkSignals(diagram.signals, (signal) => {
+      if (!canDeleteStepInSignal(signal, at, MIN_TOTAL_STEPS)) allowed = false;
+      if (signal.type === 'vector' && !signal.vectorTiming) {
+        for (const segment of signal.segments) {
+          if (
+            segment.startStep <= at
+            && segment.endStep > at
+            && segment.endStep - segment.startStep <= 1
+          ) allowed = false;
+        }
+      }
+    });
+    return allowed;
+  };
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -45,6 +82,7 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
         role="menuitem"
         onClick={() => {
           if (!flushPendingCodeToDiagram().ok) return;
+          if (!canInsert()) return;
           if (!confirmStructuralReferenceLoss('Inserting a column')) return;
           insertStepAt(step);
           onClose();
@@ -58,6 +96,7 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
         disabled={totalSteps <= 1}
         onClick={() => {
           if (!flushPendingCodeToDiagram().ok) return;
+          if (!canDelete()) return;
           if (!confirmStructuralReferenceLoss('Deleting a column')) return;
           deleteStepAt(step);
           onClose();

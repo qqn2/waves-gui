@@ -67,6 +67,7 @@ export interface WavesGuiUndulateMetadata {
   analogueContext?: { vssa: number; vdda: number };
   randomSeed?: number;
   edgeCurveControls?: Record<string, { c1x: number; c2x: number }>;
+  importMode?: 'event-compressed-vcd';
 }
 
 export interface UndulateRoot extends WdRoot {

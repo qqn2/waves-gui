@@ -25,6 +25,7 @@ import {
   reorderSiblingIds,
 } from './panelTree';
 import styles from './SignalPanel.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 
 export type { ScrollSyncHandles } from './scrollSyncTypes';
@@ -228,13 +229,13 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
 
     if (dragRow.kind === 'signal') {
       if (targetRow.kind === 'group') {
-        moveSignalToParent(drag.id, targetId);
+        runAfterSourceFlush(() => moveSignalToParent(drag.id, targetId));
         onDragEnd();
         return;
       }
       const targetParent = targetRow.parentId;
       if (drag.parentId !== targetParent) {
-        moveSignalToParent(drag.id, targetParent, targetId);
+        runAfterSourceFlush(() => moveSignalToParent(drag.id, targetParent, targetId));
         onDragEnd();
         return;
       }
@@ -248,7 +249,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
     const siblings = getSiblingIds(signals, parentId);
     if (!siblings) return;
     const ordered = reorderSiblingIds(siblings, drag.id, targetId);
-    if (ordered) reorderSignals(ordered, parentId);
+    if (ordered) runAfterSourceFlush(() => reorderSignals(ordered, parentId));
     onDragEnd();
   };
 
@@ -351,7 +352,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  addSignal('bit');
+                  runAfterSourceFlush(() => addSignal('bit'));
                   setAddOpen(false);
                 }}
               >
@@ -361,7 +362,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  addSignal('vector');
+                  runAfterSourceFlush(() => addSignal('vector'));
                   setAddOpen(false);
                 }}
               >
@@ -371,7 +372,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  addSignal('spacer');
+                  runAfterSourceFlush(() => addSignal('spacer'));
                   setAddOpen(false);
                 }}
               >
@@ -381,7 +382,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
                 type="button"
                 role="menuitem"
                 onClick={() => {
-                  addGroup();
+                  runAfterSourceFlush(() => addGroup());
                   setAddOpen(false);
                 }}
               >
@@ -401,48 +402,48 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           closeMenu();
         }}
         onDelete={() => {
-          if (menuSignalId) removeSignal(menuSignalId);
+          if (menuSignalId) runAfterSourceFlush(() => removeSignal(menuSignalId));
           closeMenu();
         }}
         onDuplicate={() => {
-          if (menuSignalId) duplicateSignal(menuSignalId);
+          if (menuSignalId) runAfterSourceFlush(() => duplicateSignal(menuSignalId));
           closeMenu();
         }}
         onAddAbove={(type) => {
           if (menuSignalId) {
             const parentId = parentForId(menuSignalId);
-            addSignal(type, { parentId, beforeId: menuSignalId });
+            runAfterSourceFlush(() => addSignal(type, { parentId, beforeId: menuSignalId }));
           }
           closeMenu();
         }}
         onAddBelow={(type) => {
           if (menuSignalId) {
-            addSignal(type, {
+            runAfterSourceFlush(() => addSignal(type, {
               parentId: parentForId(menuSignalId),
               afterId: menuSignalId,
-            });
+            }));
           }
           closeMenu();
         }}
         onSetAll={(state) => {
           if (menuSignalId && menuSignal?.type === 'bit') {
-            setSignalStateRange(
+            runAfterSourceFlush(() => setSignalStateRange(
               menuSignalId,
               0,
               totalSteps - 1,
               state,
-            );
+            ));
           }
           closeMenu();
         }}
         parentGroupId={menuParentId}
         groups={sectionOptions}
         onMoveToGroup={(groupId) => {
-          if (menuSignalId) moveSignalToParent(menuSignalId, groupId);
+          if (menuSignalId) runAfterSourceFlush(() => moveSignalToParent(menuSignalId, groupId));
           closeMenu();
         }}
         onRemoveFromGroup={() => {
-          if (menuSignalId) moveSignalToParent(menuSignalId, undefined);
+          if (menuSignalId) runAfterSourceFlush(() => moveSignalToParent(menuSignalId, undefined));
           closeMenu();
         }}
       />
@@ -455,7 +456,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           closeMenu();
         }}
         onDelete={() => {
-          if (menuGroup) removeSignal(menuGroup.id);
+          if (menuGroup) runAfterSourceFlush(() => removeSignal(menuGroup.id));
           closeMenu();
         }}
       />

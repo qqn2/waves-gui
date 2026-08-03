@@ -15,6 +15,7 @@ import {
 import { VectorSegmentEditor } from '../signalPanel/VectorSegmentEditor';
 import styles from './shell.module.css';
 import overlayStyles from './AnalogueOverlayGroup.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 function selectedSignal(signals: ReturnType<typeof useStore.getState>['diagram']['signals'], ids: string[]) {
   if (ids.length !== 1) return null;
@@ -75,6 +76,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
   const [fontSizeDraft, setFontSizeDraft] = useState('');
   const [periodDraft, setPeriodDraft] = useState('');
   const [phaseDraft, setPhaseDraft] = useState('');
+  const runMutation = (action: () => void) => {
+    runAfterSourceFlush(action);
+  };
 
   useEffect(() => {
     setNameDraft(signal?.name ?? '');
@@ -161,7 +165,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 value={nameDraft}
                 onChange={(event) => setNameDraft(event.target.value)}
                 onBlur={() => {
-                  if (nameDraft !== signal.name) renameSignal(signal.id, nameDraft);
+                  if (nameDraft !== signal.name) runMutation(() => renameSignal(signal.id, nameDraft));
                 }}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') event.currentTarget.blur();
@@ -203,9 +207,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onBlur={() => {
                   const next = strokeDraft.trim();
                   if (next === '' || isSafeAnnotationColor(next)) {
-                    updateSignalStyle(signal.id, {
+                    runMutation(() => updateSignalStyle(signal.id, {
                       stroke: next === '' ? undefined : next,
-                    });
+                    }));
                   } else {
                     setStrokeDraft(signal.style?.stroke ?? '');
                   }
@@ -224,9 +228,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onBlur={() => {
                   const next = fillDraft.trim();
                   if (next === '' || isSafeAnnotationColor(next)) {
-                    updateSignalStyle(signal.id, {
+                    runMutation(() => updateSignalStyle(signal.id, {
                       fill: next === '' ? undefined : next,
-                    });
+                    }));
                   } else {
                     setFillDraft(signal.style?.fill ?? '');
                   }
@@ -253,7 +257,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     parsed === undefined
                     || (Number.isFinite(parsed) && parsed >= 0 && parsed <= 32)
                   ) {
-                    updateSignalStyle(signal.id, { strokeWidth: parsed });
+                    runMutation(() => updateSignalStyle(signal.id, { strokeWidth: parsed }));
                   } else {
                     setStrokeWidthDraft(
                       signal.style?.strokeWidth === undefined
@@ -288,7 +292,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     ? undefined
                     : text.split(',').map((part) => Number(part.trim()));
                   if (values === undefined || isSafeAnnotationDasharray(values)) {
-                    updateSignalStyle(signal.id, { strokeDasharray: values });
+                    runMutation(() => updateSignalStyle(signal.id, { strokeDasharray: values }));
                   } else {
                     setDashDraft(signal.style?.strokeDasharray?.join(', ') ?? '');
                   }
@@ -313,7 +317,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     parsed === undefined
                     || (Number.isFinite(parsed) && parsed >= 6 && parsed <= 96)
                   ) {
-                    updateSignalStyle(signal.id, { fontSize: parsed });
+                    runMutation(() => updateSignalStyle(signal.id, { fontSize: parsed }));
                   } else {
                     setFontSizeDraft(
                       signal.style?.fontSize === undefined
@@ -339,13 +343,13 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               <select
                 value={signal.style?.fontFamily ?? ''}
                 aria-label="Signal value font family"
-                onChange={(event) => updateSignalStyle(signal.id, {
+                onChange={(event) => runMutation(() => updateSignalStyle(signal.id, {
                   fontFamily: event.target.value === ''
                     ? undefined
                     : event.target.value as NonNullable<
                       NonNullable<Signal['style']>['fontFamily']
                     >,
-                })}
+                }))}
               >
                 <option value="">Default</option>
                 <option value="sans-serif">Sans serif</option>
@@ -358,11 +362,11 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
               <select
                 value={signal.style?.fontWeight ?? ''}
                 aria-label="Signal value font weight"
-                onChange={(event) => updateSignalStyle(signal.id, {
+                onChange={(event) => runMutation(() => updateSignalStyle(signal.id, {
                   fontWeight: event.target.value === ''
                     ? undefined
                     : Number(event.target.value),
-                })}
+                }))}
               >
                 <option value="">Default</option>
                 {[100, 200, 300, 400, 500, 600, 700, 800, 900].map(
@@ -432,9 +436,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     aria-label="Analog cell value"
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueCell(signal.id, analogueCellIndex, {
+                        runMutation(() => updateAnalogueCell(signal.id, analogueCellIndex, {
                           value: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -444,14 +448,14 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   <select
                     value={analogueCell?.kind ?? 'hold'}
                     aria-label="Analog cell transition"
-                    onChange={(event) => updateAnalogueCell(
+                    onChange={(event) => runMutation(() => updateAnalogueCell(
                       signal.id,
                       analogueCellIndex,
                       {
                         kind: event.target.value as
                           NonNullable<typeof analogueCell>['kind'],
                       },
-                    )}
+                    ))}
                   >
                     <option value="hold">Hold</option>
                     <option value="step">Step</option>
@@ -491,7 +495,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                                 ? { ...candidate, offset: Number(event.target.value) }
                                 : candidate,
                             );
-                            updateAnalogueCell(signal.id, analogueCellIndex, { samples });
+                            runMutation(() => updateAnalogueCell(signal.id, analogueCellIndex, { samples }));
                           }}
                         />
                         <input
@@ -505,17 +509,17 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                                 ? { ...candidate, value: Number(event.target.value) }
                                 : candidate,
                             );
-                            updateAnalogueCell(signal.id, analogueCellIndex, {
+                            runMutation(() => updateAnalogueCell(signal.id, analogueCellIndex, {
                               samples,
                               ...(pointIndex === samples.length - 1
                                 ? { value: Number(event.target.value) }
                                 : {}),
-                            });
+                            }));
                           }}
                         />
                         <button
                           type="button"
-                          onClick={() => updateAnalogueCell(
+                          onClick={() => runMutation(() => updateAnalogueCell(
                             signal.id,
                             analogueCellIndex,
                             {
@@ -523,7 +527,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                                 (_, index) => index !== pointIndex,
                               ),
                             },
-                          )}
+                          ))}
                         >
                           Remove
                         </button>
@@ -538,7 +542,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                           offset: last ? Math.min(1, last.offset + 0.1) : 0,
                           value: last?.value ?? analogueCell.value,
                         });
-                        updateAnalogueCell(signal.id, analogueCellIndex, { samples });
+                        runMutation(() => updateAnalogueCell(signal.id, analogueCellIndex, { samples }));
                       }}
                     >
                       Add point
@@ -558,9 +562,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     aria-label="Analog context VSSA"
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueContext({
+                        runMutation(() => updateAnalogueContext({
                           vssa: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -574,9 +578,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     aria-label="Analog context VDDA"
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueContext({
+                        runMutation(() => updateAnalogueContext({
                           vdda: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -591,7 +595,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     <output>
                       {diagram.config.analogueRandomSeed ?? 'Stable default'}
                     </output>
-                    <button type="button" onClick={refreshAnalogueRandomSeed}>
+                    <button type="button" onClick={() => runMutation(refreshAnalogueRandomSeed)}>
                       Refresh
                     </button>
                   </div>
@@ -610,9 +614,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     value={signal.vscale ?? 1}
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueSignal(signal.id, {
+                        runMutation(() => updateAnalogueSignal(signal.id, {
                           vscale: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -626,9 +630,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     value={signal.slewing ?? 0}
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueSignal(signal.id, {
+                        runMutation(() => updateAnalogueSignal(signal.id, {
                           slewing: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -655,7 +659,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     type="button"
                     className={overlayStyles.action}
                     disabled={!overlayCandidate}
-                    onClick={() => extendAnalogueOverlayGroup(signal.id)}
+                    onClick={() => runMutation(() => extendAnalogueOverlayGroup(signal.id))}
                     title={overlayCandidate
                       ? `Add ${overlayCandidate.name} to the shared plot`
                       : 'Place another ungrouped analogue lane immediately after this group'}
@@ -666,7 +670,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     <button
                       type="button"
                       className={overlayStyles.action}
-                      onClick={() => dissolveAnalogueOverlayGroup(overlayGroup.id)}
+                      onClick={() => runMutation(() => dissolveAnalogueOverlayGroup(overlayGroup.id))}
                     >
                       Dissolve group
                     </button>
@@ -682,9 +686,9 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     value={signal.order ?? 0}
                     onChange={(event) => {
                       if (event.target.value) {
-                        updateAnalogueSignal(signal.id, {
+                        runMutation(() => updateAnalogueSignal(signal.id, {
                           order: Number(event.target.value),
-                        });
+                        }));
                       }
                     }}
                   />
@@ -726,14 +730,14 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     step={1 / signal.digitalTiming.ticksPerStep}
                     value={(timingCell?.durationTicks ?? signal.digitalTiming.ticksPerStep)
                       / signal.digitalTiming.ticksPerStep}
-                    onChange={(event) => updateDigitalTimingCell(
+                    onChange={(event) => runMutation(() => updateDigitalTimingCell(
                       signal.id,
                       timingCellIndex,
                       {
                         durationTicks: Number(event.target.value)
                           * signal.digitalTiming!.ticksPerStep,
                       },
-                    )}
+                    ))}
                     aria-label="Cell period"
                   />
                 </label>
@@ -748,7 +752,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                       ? ''
                       : timingCell.dutyTicks / timingCell.durationTicks}
                     placeholder="0.5"
-                    onChange={(event) => updateDigitalTimingCell(
+                    onChange={(event) => runMutation(() => updateDigitalTimingCell(
                       signal.id,
                       timingCellIndex,
                       {
@@ -757,7 +761,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                           : Number(event.target.value)
                             * (timingCell?.durationTicks ?? 1),
                       },
-                    )}
+                    ))}
                     aria-label="Cell duty cycle"
                   />
                 </label>
@@ -768,10 +772,10 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     step={1 / signal.digitalTiming.ticksPerStep}
                     value={signal.digitalTiming.phaseTicks
                       / signal.digitalTiming.ticksPerStep}
-                    onChange={(event) => updateDigitalTimingSignal(signal.id, {
+                    onChange={(event) => runMutation(() => updateDigitalTimingSignal(signal.id, {
                       phaseTicks: Number(event.target.value)
                         * signal.digitalTiming!.ticksPerStep,
-                    })}
+                    }))}
                     aria-label="Fine timing phase"
                   />
                 </label>
@@ -783,11 +787,11 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     step="any"
                     value={signal.digitalTiming.slewing ?? ''}
                     placeholder="0"
-                    onChange={(event) => updateDigitalTimingSignal(signal.id, {
+                    onChange={(event) => runMutation(() => updateDigitalTimingSignal(signal.id, {
                       slewing: event.target.value === ''
                         ? null
                         : Number(event.target.value),
-                    })}
+                    }))}
                     aria-label="Digital slew"
                   />
                 </label>
@@ -811,7 +815,10 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 <button
                   type="button"
                   onClick={() => {
-                    setTimingSetupRejected(!enableDigitalTiming(signal.id));
+                    let accepted = false;
+                    if (runAfterSourceFlush(() => {
+                      accepted = enableDigitalTiming(signal.id);
+                    })) setTimingSetupRejected(!accepted);
                   }}
                 >
                   Enable fine timing for selected signal
@@ -838,7 +845,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                     period === undefined
                     || (Number.isFinite(period) && period >= 1)
                   ) {
-                    setSignalPeriod(signal.id, period);
+                    runMutation(() => setSignalPeriod(signal.id, period));
                   } else {
                     setPeriodDraft(signal.period === undefined ? '' : String(signal.period));
                   }
@@ -863,7 +870,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 onBlur={() => {
                   const phase = phaseDraft === '' ? undefined : Number(phaseDraft);
                   if (phase === undefined || Number.isFinite(phase)) {
-                    setSignalPhase(signal.id, phase);
+                    runMutation(() => setSignalPhase(signal.id, phase));
                   } else {
                     setPhaseDraft(signal.phase === undefined ? '' : String(signal.phase));
                   }

@@ -7,6 +7,7 @@ import type { BitState } from '../shared/types';
 import { toggleBinaryBitState } from '../shared/bitToggle';
 import { countSignals } from './statusUtils';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export interface StatusBarProps {
   pointerHit?: HitTestResult | null;
@@ -127,7 +128,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
                     onBlur={() => {
                       const trimmed = edgeDraft.trim();
                       if (trimmed && trimmed !== edge) {
-                        updateDiagramEdge(i, trimmed);
+                        runAfterSourceFlush(() => updateDiagramEdge(i, trimmed));
                       }
                       setEditingEdge(null);
                     }}
@@ -157,7 +158,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
                     className={`${styles.edgeChipDelete} ${styles.edgeChipPromote}`}
                     aria-label={`Style edge ${edge}`}
                     title="Convert to a styled Undulate arrow"
-                    onClick={() => promoteDiagramEdgeToAnnotation(i)}
+                    onClick={() => runAfterSourceFlush(() => promoteDiagramEdgeToAnnotation(i))}
                   >
                     ↗
                   </button>
@@ -166,7 +167,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
                   type="button"
                   className={styles.edgeChipDelete}
                   aria-label={`Remove edge ${edge}`}
-                  onClick={() => removeDiagramEdge(i)}
+                  onClick={() => runAfterSourceFlush(() => removeDiagramEdge(i))}
                 >
                   ×
                 </button>

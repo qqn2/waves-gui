@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type InputHTMLAttributes } from 'react';
 import { useStore } from '../shared/store';
 import type { DiagramConfig } from '../shared/types';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 function parseOptionalNumber(raw: string): number | undefined | null {
   const t = raw.trim();
@@ -48,7 +49,10 @@ function CommitInput({
       cancelBlurRef.current = false;
       return;
     }
-    if (onCommit(draft) === false) setDraft(value);
+    let accepted = true;
+    if (!runAfterSourceFlush(() => {
+      accepted = onCommit(draft) !== false;
+    }) || !accepted) setDraft(value);
   };
 
   return (

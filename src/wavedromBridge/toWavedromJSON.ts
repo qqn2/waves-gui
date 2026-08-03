@@ -81,11 +81,19 @@ export function toWavedromJSON(diagram: DiagramState): WdRoot {
   if (edges.length > 0) {
     root.edge = [...edges];
   }
-  if (diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0) {
+  if (
+    diagram.compatibility?.importMode === 'event-compressed-vcd'
+    || (diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0)
+  ) {
     root['x-waves-gui'] = {
-      edgeCurveControls: Object.fromEntries(
-        Object.entries(diagram.edgeCurveControls).map(([index, control]) => [index, { ...control }]),
-      ),
+      ...(diagram.compatibility?.importMode === 'event-compressed-vcd'
+        ? { importMode: diagram.compatibility.importMode }
+        : {}),
+      ...(diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0
+        ? { edgeCurveControls: Object.fromEntries(
+          Object.entries(diagram.edgeCurveControls).map(([index, control]) => [index, { ...control }]),
+        ) }
+        : {}),
     };
   }
   return root;

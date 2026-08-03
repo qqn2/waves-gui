@@ -634,6 +634,7 @@ export function toUndulateJSON(
     && (
       diagram.config.analogueContext !== undefined
       || diagram.config.analogueRandomSeed !== undefined
+      || diagram.compatibility?.importMode === 'event-compressed-vcd'
       || (diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0)
     )
   ) {
@@ -643,6 +644,9 @@ export function toUndulateJSON(
         : {}),
       ...(diagram.config.analogueRandomSeed !== undefined
         ? { randomSeed: diagram.config.analogueRandomSeed >>> 0 }
+        : {}),
+      ...(diagram.compatibility?.importMode === 'event-compressed-vcd'
+        ? { importMode: diagram.compatibility.importMode }
         : {}),
       ...(diagram.edgeCurveControls && Object.keys(diagram.edgeCurveControls).length > 0
         ? { edgeCurveControls: Object.fromEntries(
@@ -1149,6 +1153,9 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
         ),
       sourceFormat: 'undulate-json',
       sourceRevision: UNDULATE_TARGET_REVISION,
+      ...(appMetadata?.importMode === 'event-compressed-vcd'
+        ? { importMode: appMetadata.importMode }
+        : {}),
       ...(
         hasOpaque
           ? {

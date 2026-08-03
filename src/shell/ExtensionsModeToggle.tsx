@@ -3,6 +3,7 @@ import { scanExtensionContent } from '../shared/annotations';
 import { useStore } from '../shared/store';
 import dialogStyles from './ExtensionsModeDialog.module.css';
 import styles from './shell.module.css';
+import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 export function ExtensionsModeToggle() {
   const titleId = useId();
@@ -30,11 +31,11 @@ export function ExtensionsModeToggle() {
 
   const requestModeChange = (nextEnabled: boolean) => {
     if (nextEnabled) {
-      setExtensionsEnabled(true);
+      runAfterSourceFlush(() => setExtensionsEnabled(true));
     } else if (summary.hasExtensions) {
       setConfirmOpen(true);
     } else {
-      setExtensionsEnabled(false);
+      runAfterSourceFlush(() => setExtensionsEnabled(false));
     }
   };
 
@@ -91,8 +92,9 @@ export function ExtensionsModeToggle() {
                 type="button"
                 className={dialogStyles.primary}
                 onClick={() => {
-                  setExtensionsEnabled(false);
-                  setConfirmOpen(false);
+                  if (runAfterSourceFlush(() => setExtensionsEnabled(false))) {
+                    setConfirmOpen(false);
+                  }
                 }}
               >
                 Hide features and preserve JSON
@@ -109,8 +111,9 @@ export function ExtensionsModeToggle() {
                 type="button"
                 className={dialogStyles.danger}
                 onClick={() => {
-                  removeUndulateFeatures();
-                  setConfirmOpen(false);
+                  if (runAfterSourceFlush(removeUndulateFeatures)) {
+                    setConfirmOpen(false);
+                  }
                 }}
               >
                 Remove Undulate features
