@@ -4,6 +4,7 @@ import { MAX_TOTAL_STEPS, MIN_TOTAL_STEPS } from '../shared/constants';
 import {
   canDeleteStepInSignal,
   canInsertStepInSignal,
+  hasLegacyTimelineTiming,
   walkSignals,
 } from '../shared/store/stepColumnHelpers';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
@@ -26,6 +27,7 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
   const canInsert = () => {
     const { diagram } = useStore.getState();
     if (diagram.config.totalSteps >= MAX_TOTAL_STEPS) return false;
+    if (hasLegacyTimelineTiming(diagram.signals)) return false;
     const at = Math.max(0, Math.min(step, diagram.config.totalSteps));
     let allowed = true;
     walkSignals(diagram.signals, (signal) => {
@@ -37,6 +39,7 @@ export function TimeAxisContextMenu({ step, x, y, onClose }: TimeAxisContextMenu
   const canDelete = () => {
     const { diagram } = useStore.getState();
     if (diagram.config.totalSteps <= MIN_TOTAL_STEPS) return false;
+    if (hasLegacyTimelineTiming(diagram.signals)) return false;
     const at = Math.max(0, Math.min(step, diagram.config.totalSteps - 1));
     let allowed = true;
     walkSignals(diagram.signals, (signal) => {

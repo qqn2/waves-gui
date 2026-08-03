@@ -32,6 +32,7 @@ import { useStore } from './shared/store';
 import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
+import { flushPendingCodeToDiagram } from './codePanel/flushRegistry';
 import './App.css';
 
 const ExportDialog = lazy(() =>
@@ -187,6 +188,11 @@ function App() {
     [activeAnnotationId, diagram.annotations],
   );
 
+  const openExport = useCallback(() => {
+    if (!flushPendingCodeToDiagram().ok) return;
+    setExportOpen(true);
+  }, []);
+
   useLayoutEffect(() => {
     applyThemeSettings(
       themeSettingsFromView({ theme, accentColor, canvasColor, uiFontScale }),
@@ -198,7 +204,7 @@ function App() {
       <div className="appRoot" data-theme={theme}>
         <header className="shellHeader">
           <Toolbar
-            onExport={() => setExportOpen(true)}
+            onExport={openExport}
           />
         </header>
         <div className="mainArea">

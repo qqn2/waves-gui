@@ -293,11 +293,12 @@ export function eraseDigitalTimingTicksWithMapping(
   timing: DigitalTiming,
   startTick: number,
   endTick: number,
-): PaintedDigitalTiming {
+): DigitalTimingEraseResult {
   const lo = Math.min(Math.floor(startTick), Math.floor(endTick));
   const hiExclusive = Math.max(Math.floor(startTick), Math.floor(endTick));
   const output: DigitalTimingCell[] = [];
   const sourceCellRanges: TimingCellOutputRange[] = [];
+  const erasedOutputCells: number[] = [];
   let cursor = -timing.phaseTicks;
   let previousState: BitState = '0';
 
@@ -318,13 +319,7 @@ export function eraseDigitalTimingTicksWithMapping(
     const isClock = isClockBitState(cell.state);
     const fullyCovered = overlapStart <= cellStart && overlapEnd >= cellEnd;
     if (isClock && !fullyCovered) {
-      return {
-        cells: timing.cells.map((candidate) => ({ ...candidate })),
-        sourceCellRanges: timing.cells.map((_, index) => ({
-          start: index,
-          end: index + 1,
-        })),
-      };
+      return { ok: false, reason: 'partial-clock-macro' };
     }
 
     const erasedState = eraseStateForCell(cell.state, previousState);
@@ -332,15 +327,20 @@ export function eraseDigitalTimingTicksWithMapping(
     const erased = overlapEnd - overlapStart;
     const after = cellEnd - overlapEnd;
     if (before > 0) output.push(slicedTimingCell(cell, 0, before));
+    const erasedOutputIndex = output.length;
     output.push({ state: erasedState, durationTicks: erased });
+    erasedOutputCells.push(erasedOutputIndex);
     if (after > 0) {
       output.push(slicedTimingCell(cell, before + erased, after));
     }
     sourceCellRanges.push({ start: outputStart, end: output.length });
-    previousState = cell.state;
+    // When the selection reaches the cell's right boundary, the erased
+    // hold-fill value is what the following cell should inherit. An
+    // untouched tail keeps the original cell value for the next source cell.
+    previousState = after > 0 ? cell.state : erasedState;
   }
 
-  return { cells: output, sourceCellRanges };
+  return { ok: true, cells: output, sourceCellRanges, erasedOutputCells };
 }
 
 function timingRangeIntersectsClockMacro(
@@ -390,6 +390,15 @@ export interface PaintedDigitalTiming {
   /** Maps every original source-cell index to its output-cell interval. */
   sourceCellRanges: TimingCellOutputRange[];
 }
+
+export interface ErasedDigitalTiming extends PaintedDigitalTiming {
+  /** Output cells whose represented interval was actually erased. */
+  erasedOutputCells: number[];
+}
+
+export type DigitalTimingEraseResult =
+  | (ErasedDigitalTiming & { ok: true })
+  | { ok: false; reason: 'partial-clock-macro' };
 
 /**
  * Paint an inclusive absolute document-tick range while preserving total lane

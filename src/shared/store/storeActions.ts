@@ -131,7 +131,13 @@ export interface StoreActions {
     startStep: number,
     endStep: number,
     coordinate?: 'native' | 'document',
-  ): void;
+  ): boolean;
+  eraseSignalStateRanges(
+    signalIds: string[],
+    startStep: number,
+    endStep: number,
+    coordinate?: 'native' | 'document',
+  ): boolean;
   reorderSignals(orderedIds: string[], parentId?: string): void;
   moveSignalToParent(signalId: string, parentId?: string, beforeId?: string): void;
   updateVectorSegmentValue(signalId: string, segmentId: string, value: string): void;

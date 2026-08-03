@@ -65,7 +65,9 @@ import {
   canDeleteStepInSignal,
   canInsertStepInSignal,
   deleteStepInSignal,
+  hasLegacyTimelineTiming,
   insertStepInSignal,
+  pruneReferencesBeyondSteps,
   walkSignals,
 } from './stepColumnHelpers';
 import {
@@ -122,13 +124,18 @@ function remapTimingDecorations(
   signal: Signal,
   sourceCellRanges: TimingOutputRange[],
   cells: DigitalTimingCell[],
+  erasedOutputCells: ReadonlySet<number> = new Set(),
 ): void {
   const outputLength = cells.length;
   const sourceGaps = signal.stepGaps;
   if (sourceGaps) {
     const gaps = Array<boolean>(outputLength).fill(false);
     sourceCellRanges.forEach((range, sourceIndex) => {
-      if (sourceGaps[sourceIndex] && range.start < outputLength) {
+      if (
+        sourceGaps[sourceIndex]
+        && range.start < outputLength
+        && !erasedOutputCells.has(range.start)
+      ) {
         // A WaveDrom gap belongs to the cell it decorates, so use its first
         // fragment after a precision split.
         gaps[range.start] = true;
@@ -144,7 +151,14 @@ function remapTimingDecorations(
       if (!sourceGlitches[sourceIndex]) continue;
       const range = sourceCellRanges[sourceIndex];
       const boundary = range ? range.end - 1 : -1;
-      if (boundary >= 0 && boundary < glitches.length) glitches[boundary] = true;
+      if (
+        boundary >= 0
+        && boundary < glitches.length
+        && !erasedOutputCells.has(boundary)
+        && !erasedOutputCells.has(boundary + 1)
+      ) {
+        glitches[boundary] = true;
+      }
     }
     signal.stepGlitches = glitches.some(Boolean) ? glitches : undefined;
   }
@@ -211,6 +225,89 @@ function nativeCellsForMajorRange(
     cursor = cellEnd;
   });
   return start === null ? null : { start, end };
+}
+
+interface AppliedEraseResult {
+  accepted: boolean;
+  changed: boolean;
+  reason?: 'partial-clock-macro' | 'unsupported-native-vector' | 'unsupported-legacy-timing';
+}
+
+/** Apply one erase range to a draft signal without recording history. */
+function applyEraseToSignal(
+  target: Signal,
+  requestedLo: number,
+  requestedHi: number,
+  coordinate: 'native' | 'document',
+): AppliedEraseResult {
+  if (coordinate === 'document' && target.digitalTiming) {
+    const timing = target.digitalTiming;
+    const erased = eraseDigitalTimingTicksWithMapping(
+      timing,
+      requestedLo * timing.ticksPerStep,
+      (requestedHi + 1) * timing.ticksPerStep,
+    );
+    if (!erased.ok) {
+      return {
+        accepted: false,
+        changed: false,
+        reason: 'reason' in erased ? erased.reason : 'partial-clock-macro',
+      };
+    }
+    if (JSON.stringify(erased.cells) === JSON.stringify(timing.cells)) {
+      return { accepted: true, changed: false };
+    }
+    timing.cells = erased.cells;
+    target.states = erased.cells.map((cell) => cell.state);
+    remapTimingDecorations(
+      target,
+      erased.sourceCellRanges,
+      erased.cells,
+      new Set(erased.erasedOutputCells),
+    );
+    target.digitalTimingStatesEdited = true;
+    return { accepted: true, changed: true };
+  }
+
+  if (
+    coordinate === 'document'
+    && ((target.period !== undefined && target.period !== 1)
+      || (target.phase !== undefined && target.phase !== 0))
+  ) {
+    return { accepted: false, changed: false, reason: 'unsupported-legacy-timing' };
+  }
+
+  // Vector native cells have no bit-state hold-fill semantics. Refuse a
+  // document-coordinate erase rather than indexing their source cells as
+  // though they were major columns.
+  if (coordinate === 'document' && target.vectorTiming) {
+    return { accepted: false, changed: false, reason: 'unsupported-native-vector' };
+  }
+
+  const nativeRange = coordinate === 'document'
+    ? nativeCellsForMajorRange(target, requestedLo, requestedHi)
+    : null;
+  const lo = nativeRange?.start ?? requestedLo;
+  const hi = nativeRange?.end ?? requestedHi;
+  if (coordinate === 'document' && target.digitalTiming && !nativeRange) {
+    return { accepted: true, changed: false };
+  }
+  if (hi < 0 || lo >= target.states.length) {
+    return { accepted: true, changed: false };
+  }
+
+  const before = JSON.stringify(target);
+  const gapCols: number[] = [];
+  const valueCols: number[] = [];
+  for (let index = lo; index <= hi; index++) {
+    if (target.stepGaps?.[index]) gapCols.push(index);
+    else valueCols.push(index);
+  }
+  for (const index of gapCols) clearStepGapsOnColumns(target, index, index);
+  if (valueCols.length > 0) {
+    holdFillErasedSteps(target, Math.min(...valueCols), Math.max(...valueCols));
+  }
+  return { accepted: true, changed: before !== JSON.stringify(target) };
 }
 
 function diagramHasNativeTiming(signals: SignalOrGroup[]): boolean {
@@ -349,6 +446,64 @@ type SignalLocation = {
   afterId?: string;
 };
 
+function eraseSignalRanges(
+  set: ImmerSet,
+  signalIds: string[],
+  startStep: number,
+  endStep: number,
+  coordinate: 'native' | 'document',
+): boolean {
+  const requestedLo = Math.min(startStep, endStep);
+  const requestedHi = Math.max(startStep, endStep);
+  let accepted = true;
+  let changed = false;
+
+  set((s) => {
+    const targets: Signal[] = [];
+    for (const signalId of signalIds) {
+      findSignal(s.diagram.signals, signalId, (signal) => {
+        targets.push(signal);
+      });
+    }
+    if (targets.length === 0) {
+      accepted = false;
+      return;
+    }
+
+    // Preflight every lane before touching any of them. This keeps a partial
+    // clock-macro rejection from leaving a mixed selection half-erased.
+    const previews = targets.map((target) => {
+      const preview = JSON.parse(JSON.stringify(target)) as Signal;
+      const result = applyEraseToSignal(
+        preview,
+        requestedLo,
+        requestedHi,
+        coordinate,
+      );
+      return { target, result };
+    });
+    if (previews.some(({ result }) => !result.accepted)) {
+      accepted = false;
+      return;
+    }
+    if (!previews.some(({ result }) => result.changed)) return;
+
+    pushHistory(s);
+    for (const target of targets) {
+      const result = applyEraseToSignal(
+        target,
+        requestedLo,
+        requestedHi,
+        coordinate,
+      );
+      changed = changed || result.changed;
+    }
+    if (changed) s.view.isDirty = true;
+  });
+
+  return accepted && changed;
+}
+
 function insertAtLocation(
   signals: SignalOrGroup[],
   item: SignalOrGroup,
@@ -430,6 +585,7 @@ export function createSignalActions(set: ImmerSet): Pick<
   | 'clearGapFlagsRange'
   | 'eraseSignalState'
   | 'eraseSignalStateRange'
+  | 'eraseSignalStateRanges'
   | 'reorderSignals'
   | 'moveSignalToParent'
   | 'updateVectorSegmentValue'
@@ -1413,74 +1569,11 @@ export function createSignalActions(set: ImmerSet): Pick<
     },
 
     eraseSignalStateRange(signalId, startStep, endStep, coordinate = 'native') {
-      set((s) => {
-        const requestedLo = Math.min(startStep, endStep);
-        const requestedHi = Math.max(startStep, endStep);
-        let target: Signal | undefined;
-        findSignal(s.diagram.signals, signalId, (sig) => {
-          target = sig;
-        });
-        if (!target) return;
-        if (coordinate === 'document' && target.digitalTiming) {
-          const timing = target.digitalTiming;
-          const selectedSources = nativeCellsForMajorRange(
-            target,
-            requestedLo,
-            requestedHi,
-          );
-          const erased = eraseDigitalTimingTicksWithMapping(
-            timing,
-            requestedLo * timing.ticksPerStep,
-            (requestedHi + 1) * timing.ticksPerStep,
-          );
-          if (JSON.stringify(erased.cells) === JSON.stringify(timing.cells)) return;
-          pushHistory(s);
-          timing.cells = erased.cells;
-          target.states = erased.cells.map((cell) => cell.state);
-          remapTimingDecorations(target, erased.sourceCellRanges, erased.cells);
-          if (selectedSources && target.stepGaps) {
-            for (let index = selectedSources.start; index <= selectedSources.end; index++) {
-              const range = erased.sourceCellRanges[index];
-              if (!range) continue;
-              for (let outputIndex = range.start; outputIndex < range.end; outputIndex++) {
-                target.stepGaps[outputIndex] = false;
-              }
-            }
-            if (!target.stepGaps.some(Boolean)) delete target.stepGaps;
-          }
-          target.digitalTimingStatesEdited = true;
-          s.view.isDirty = true;
-          return;
-        }
-        const nativeRange = coordinate === 'document'
-          ? nativeCellsForMajorRange(target, requestedLo, requestedHi)
-          : null;
-        const lo = nativeRange?.start ?? requestedLo;
-        const hi = nativeRange?.end ?? requestedHi;
-        if (coordinate === 'document' && target.digitalTiming && !nativeRange) return;
-        if (hi < 0 || lo >= target.states.length) return;
-        pushHistory(s);
+      return eraseSignalRanges(set, [signalId], startStep, endStep, coordinate);
+    },
 
-        const gapCols: number[] = [];
-        const valueCols: number[] = [];
-        for (let i = lo; i <= hi; i++) {
-          if (target.stepGaps?.[i]) gapCols.push(i);
-          else valueCols.push(i);
-        }
-
-        for (const i of gapCols) {
-          clearStepGapsOnColumns(target, i, i);
-        }
-
-        if (valueCols.length > 0) {
-          const vLo = Math.min(...valueCols);
-          const vHi = Math.max(...valueCols);
-          findSignal(s.diagram.signals, signalId, (sig) => {
-            holdFillErasedSteps(sig, vLo, vHi);
-          });
-        }
-        s.view.isDirty = true;
-      });
+    eraseSignalStateRanges(signalIds, startStep, endStep, coordinate = 'native') {
+      return eraseSignalRanges(set, signalIds, startStep, endStep, coordinate);
     },
 
     reorderSignals(orderedIds, parentId) {
@@ -1599,10 +1692,12 @@ export function createSignalActions(set: ImmerSet): Pick<
           accepted = true;
           return;
         }
+        if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         if (!canResizeAllStates(s.diagram.signals, next)) return;
         pushHistory(s);
         s.diagram.config.totalSteps = next;
         resizeAllStates(s.diagram.signals, next, old);
+        if (next < old) pruneReferencesBeyondSteps(s.diagram, next);
         s.view.isDirty = true;
         accepted = true;
       });
@@ -1645,6 +1740,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const total = s.diagram.config.totalSteps;
         if (total >= MAX_TOTAL_STEPS) return;
+        if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         const at = Math.max(0, Math.min(index, total));
         let blocked = false;
         walkSignals(s.diagram.signals, (sig) => {
@@ -1664,6 +1760,7 @@ export function createSignalActions(set: ImmerSet): Pick<
       set((s) => {
         const total = s.diagram.config.totalSteps;
         if (total <= MIN_TOTAL_STEPS) return;
+        if (hasLegacyTimelineTiming(s.diagram.signals)) return;
         const at = Math.max(0, Math.min(index, total - 1));
         let blocked = false;
         walkSignals(s.diagram.signals, (sig) => {
@@ -1697,7 +1794,10 @@ export function createSignalActions(set: ImmerSet): Pick<
     toggleStepGapAt(column) {
       set((s) => {
         if (s.diagram.config.totalSteps >= MAX_TOTAL_STEPS) return;
-        if (diagramHasNativeTiming(s.diagram.signals)) return;
+        if (
+          diagramHasNativeTiming(s.diagram.signals)
+          || hasLegacyTimelineTiming(s.diagram.signals)
+        ) return;
         const at = Math.max(0, Math.min(column, s.diagram.config.totalSteps));
         pushHistory(s);
         insertGapColumnOnDiagram(s.diagram.signals, at, null);

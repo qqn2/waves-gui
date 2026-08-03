@@ -15,6 +15,7 @@ import { timingCellDuration } from '../timedStepResize';
 import type {
   AppState,
   BitState,
+  DiagramAnnotation,
   DiagramState,
   EdgeAnchorPending,
   PaintDraft,
@@ -340,6 +341,96 @@ function reconcileSignalSelection(
   return [...new Set(reconciled)];
 }
 
+function preserveSignalIds(
+  previous: SignalOrGroup[],
+  next: SignalOrGroup[],
+): void {
+  const used = new Set<string>();
+  const matchLevel = (oldItems: SignalOrGroup[], nextItems: SignalOrGroup[]) => {
+    const exact = new Map<string, SignalOrGroup[]>();
+    oldItems.forEach((item) => {
+      const key = `${item.type}:${item.name}`;
+      const bucket = exact.get(key) ?? [];
+      bucket.push(item);
+      exact.set(key, bucket);
+    });
+
+    const matches = new Map<SignalOrGroup, SignalOrGroup>();
+    nextItems.forEach((item) => {
+      const bucket = exact.get(`${item.type}:${item.name}`) ?? [];
+      const candidate = bucket.find((old) => !used.has(old.id));
+      if (candidate) {
+        used.add(candidate.id);
+        matches.set(item, candidate);
+      }
+    });
+    nextItems.forEach((item, index) => {
+      if (matches.has(item)) return;
+      const candidate = oldItems[index];
+      if (!candidate || candidate.type !== item.type || used.has(candidate.id)) return;
+      used.add(candidate.id);
+      matches.set(item, candidate);
+    });
+
+    nextItems.forEach((item) => {
+      const candidate = matches.get(item);
+      if (!candidate) return;
+      item.id = candidate.id;
+      if (item.type === 'group' && candidate.type === 'group') {
+        matchLevel(candidate.children, item.children);
+      } else if (item.type === 'vector' && candidate.type === 'vector') {
+        preserveVectorSegmentIds(candidate, item);
+      }
+    });
+  };
+  matchLevel(previous, next);
+}
+
+function preserveVectorSegmentIds(previous: Signal, next: Signal): void {
+  if (previous.type !== 'vector' || next.type !== 'vector') return;
+  const used = new Set<string>();
+  next.segments.forEach((segment, index) => {
+    const exact = previous.segments.find((candidate) => (
+      !used.has(candidate.id)
+      && candidate.startStep === segment.startStep
+      && candidate.endStep === segment.endStep
+      && candidate.value === segment.value
+    ));
+    const fallback = previous.segments[index];
+    const candidate = exact ?? (
+      fallback && !used.has(fallback.id) ? fallback : undefined
+    );
+    if (!candidate) return;
+    used.add(candidate.id);
+    segment.id = candidate.id;
+  });
+}
+
+function preserveAnnotationIds(
+  previous: DiagramAnnotation[] | undefined,
+  next: DiagramAnnotation[] | undefined,
+): void {
+  if (!previous || !next) return;
+  const used = new Set<string>();
+  next.forEach((annotation, index) => {
+    const exact = previous.find((candidate) => (
+      !used.has(candidate.id)
+      && candidate.type === annotation.type
+      && ('tick' in candidate ? candidate.tick : undefined)
+        === ('tick' in annotation ? annotation.tick : undefined)
+    ));
+    const fallback = previous[index];
+    const candidate = exact ?? (
+      fallback?.type === annotation.type && !used.has(fallback.id)
+        ? fallback
+        : undefined
+    );
+    if (!candidate) return;
+    used.add(candidate.id);
+    annotation.id = candidate.id;
+  });
+}
+
 export function createEdgeActions(set: ImmerSet): Pick<
   StoreActions,
   | 'addDiagramEdge'
@@ -565,6 +656,8 @@ export function createDocumentActions(set: ImmerSet): Pick<
     applyDiagramEdit(diagram: DiagramState) {
       set((s) => {
         const normalized = normalizeDiagram(diagram);
+        preserveSignalIds(s.diagram.signals, normalized.signals);
+        preserveAnnotationIds(s.diagram.annotations, normalized.annotations);
         if (diagramsEqual(current(s.diagram), normalized)) return;
         const activeSignalIds = reconcileSignalSelection(
           s.diagram.signals,

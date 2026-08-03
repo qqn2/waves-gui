@@ -50,6 +50,33 @@ describe('useStore', () => {
     expect(useStore.getState().view.diagramRevision).toBe(revBeforeLoad + 1);
   });
 
+  it('preserves signal identity when a Source edit regenerates importer IDs', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      config: { totalSteps: 2, hscale: 1 },
+      edges: [],
+      signals: [{
+        id: 'stable-signal',
+        name: 'data',
+        type: 'bit',
+        states: ['0', '1'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+      }],
+    });
+    const edited = structuredClone(useStore.getState().diagram);
+    const signal = edited.signals[0];
+    if (signal?.type === 'bit') {
+      signal.id = 'regenerated-id';
+      signal.states[1] = '0';
+    }
+    useStore.getState().applyDiagramEdit(edited);
+    expect(useStore.getState().diagram.signals[0]?.id).toBe('stable-signal');
+    expect((useStore.getState().diagram.signals[0] as { states: BitState[] }).states)
+      .toEqual(['0', '0']);
+  });
+
   it('records head and foot edits once and preserves redo on no-op updates', () => {
     const revision = useStore.getState().view.diagramRevision;
     useStore.getState().updateDiagramHead({ text: 'Protocol timing' });
@@ -1211,9 +1238,206 @@ describe('useStore', () => {
     expect(signal.digitalTiming?.cells).toEqual([
       { state: '1', durationTicks: 3 },
       { state: '0', durationTicks: 1 },
-      { state: '1', durationTicks: 1 },
+      { state: '0', durationTicks: 1 },
       { state: '0', durationTicks: 1 },
     ]);
+  });
+
+  it('propagates hold-fill through adjacent fully erased native cells', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 2, hscale: 1, ticksPerStep: 1 },
+      edges: [],
+      signals: [{
+        id: 'adjacent-delete',
+        name: 'adjacent-delete',
+        type: 'bit',
+        states: ['1', '0'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        digitalTiming: {
+          ticksPerStep: 1,
+          phaseTicks: 0,
+          cells: [
+            { state: '1', durationTicks: 1 },
+            { state: '0', durationTicks: 1 },
+          ],
+        },
+      }],
+    });
+
+    expect(useStore.getState().eraseSignalStateRange(
+      'adjacent-delete',
+      0,
+      1,
+      'document',
+    )).toBe(true);
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.digitalTiming?.cells.map((cell) => cell.state)).toEqual(['0', '0']);
+  });
+
+  it('rejects a multi-lane erase before changing any lane when a clock is split', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 2, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [
+        {
+          id: 'ordinary-lane',
+          name: 'ordinary-lane',
+          type: 'bit',
+          states: ['1', '1'],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+        },
+        {
+          id: 'clock-lane',
+          name: 'clock-lane',
+          type: 'bit',
+          states: ['P'],
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          digitalTiming: {
+            ticksPerStep: 2,
+            phaseTicks: 0,
+            cells: [{ state: 'P', durationTicks: 4 }],
+          },
+        },
+      ],
+    });
+
+    const historyBefore = useStore.getState().history.length;
+    expect(useStore.getState().eraseSignalStateRanges(
+      ['ordinary-lane', 'clock-lane'],
+      1,
+      1,
+      'document',
+    )).toBe(false);
+    expect(useStore.getState().history.length).toBe(historyBefore);
+    expect((useStore.getState().diagram.signals[0] as { states: BitState[] }).states)
+      .toEqual(['1', '1']);
+    expect((useStore.getState().diagram.signals[1] as { states: BitState[] }).states)
+      .toEqual(['P']);
+  });
+
+  it('preserves a gap outside a partial timed erase and clears touched glitches', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 3, hscale: 1, ticksPerStep: 2 },
+      edges: [],
+      signals: [{
+        id: 'decorated-delete',
+        name: 'decorated-delete',
+        type: 'bit',
+        states: ['1', '0'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        stepGaps: [true],
+        stepGlitches: [true],
+        digitalTiming: {
+          ticksPerStep: 2,
+          phaseTicks: 0,
+          cells: [
+            { state: '1', durationTicks: 4 },
+            { state: '0', durationTicks: 2 },
+          ],
+        },
+      }],
+    });
+
+    useStore.getState().eraseSignalStateRange('decorated-delete', 1, 1, 'document');
+    const signal = useStore.getState().diagram.signals[0];
+    expect(signal?.type).toBe('bit');
+    if (!signal || signal.type !== 'bit') return;
+    expect(signal.stepGaps?.[0]).toBe(true);
+    expect(signal.stepGlitches).toBeUndefined();
+  });
+
+  it('rejects global timeline edits for legacy period lanes', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      config: { totalSteps: 8, hscale: 1 },
+      edges: [],
+      signals: [{
+        id: 'period-lane',
+        name: 'period-lane',
+        type: 'bit',
+        states: ['0', '1'],
+        segments: [],
+        color: '#4A9EFF',
+        rowHeight: 40,
+        period: 2,
+      }],
+    });
+
+    expect(useStore.getState().setTotalSteps(9)).toBe(false);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(8);
+    useStore.getState().insertStepAt(2);
+    expect(useStore.getState().diagram.config.totalSteps).toBe(8);
+  });
+
+  it('prunes tail nodes, edges, curve controls and annotations when Steps shrinks', () => {
+    useStore.getState().loadDiagram({
+      version: 2,
+      compatibility: { extensionsEnabled: true },
+      config: { totalSteps: 8, hscale: 1 },
+      edges: ['A->B'],
+      edgeCurveControls: { 0: { c1x: 0.2, c2x: 0.8 } },
+      annotations: [
+        {
+          id: 'tail-text',
+          type: 'text',
+          text: 'tail',
+          tick: 7,
+        },
+        {
+          id: 'tail-arrow',
+          type: 'arrow',
+          shape: '->',
+          from: { kind: 'node', node: 'A' },
+          to: { kind: 'node', node: 'B' },
+        },
+      ],
+      signals: [
+        {
+          id: 'tail-source',
+          name: 'tail-source',
+          type: 'bit',
+          states: new Array<BitState>(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          node: '.......A',
+        },
+        {
+          id: 'head-source',
+          name: 'head-source',
+          type: 'bit',
+          states: new Array<BitState>(8).fill('0'),
+          segments: [],
+          color: '#4A9EFF',
+          rowHeight: 40,
+          node: 'B.......',
+        },
+      ],
+    });
+
+    expect(useStore.getState().setTotalSteps(4)).toBe(true);
+    const after = useStore.getState().diagram;
+    expect(after.config.totalSteps).toBe(4);
+    expect(after.edges).toEqual([]);
+    expect(after.edgeCurveControls).toBeUndefined();
+    expect(after.annotations).toBeUndefined();
+    expect((after.signals[0] as { node?: string }).node).toBeUndefined();
   });
 
   it('erase gap on one lane clears flag without removing timeline columns', () => {

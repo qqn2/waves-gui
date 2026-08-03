@@ -22,7 +22,10 @@ export function copyStepSelection(): boolean {
   if (!flushPendingCodeToDiagram().ok) return false;
   const { diagram, view } = useStore.getState();
   const steps = toolState.getStepSelection();
-  if (!steps || view.activeSignalIds.length === 0) return false;
+  if (!steps || view.activeSignalIds.length === 0) {
+    internalClipboard = null;
+    return false;
+  }
 
   let hasNativeTiming = false;
   for (const signalId of view.activeSignalIds) {
@@ -66,7 +69,10 @@ export function copyStepSelection(): boolean {
     }
   }
 
-  if (bitStates.length === 0 && vectorSlices.length === 0) return false;
+  if (bitStates.length === 0 && vectorSlices.length === 0) {
+    internalClipboard = null;
+    return false;
+  }
 
   internalClipboard = { bitStates, vectorSlices, stepCount };
   return true;

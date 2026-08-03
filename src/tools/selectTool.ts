@@ -403,7 +403,7 @@ export function nudgeSelectedAnnotation(
 export function deleteSelection(): void {
   const { view, diagram } = useStore.getState();
   const steps = toolState.getStepSelection();
-  const { eraseSignalStateRange, removeSignal } = useStore.getState();
+  const { eraseSignalStateRanges, removeSignal } = useStore.getState();
 
   if (view.activeAnnotationId) {
     useStore.getState().removeAnnotation(view.activeAnnotationId);
@@ -414,9 +414,7 @@ export function deleteSelection(): void {
   if (steps && view.activeSignalIds.length > 0) {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
-    for (const signalId of view.activeSignalIds) {
-      eraseSignalStateRange(signalId, lo, hi, 'document');
-    }
+    eraseSignalStateRanges(view.activeSignalIds, lo, hi, 'document');
     return;
   }
 
@@ -438,9 +436,7 @@ export function deleteSelection(): void {
     const lo = Math.min(steps.start, steps.end);
     const hi = Math.max(steps.start, steps.end);
     const allIds = collectSignalIds(diagram.signals);
-    for (const signalId of allIds) {
-      eraseSignalStateRange(signalId, lo, hi, 'document');
-    }
+    eraseSignalStateRanges(allIds, lo, hi, 'document');
   }
 }
 

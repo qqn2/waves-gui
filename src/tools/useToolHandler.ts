@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import { useStore } from '../shared/store';
 import type { HitTestResult } from '../renderer/hitTest';
+import { hitTest } from '../renderer/hitTest';
 import type { SelectOverlayRect } from './toolState';
 import { toolState } from './toolState';
 import * as paint from './paintTool';
@@ -243,24 +244,37 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
 
   const onPointerDown = useCallback(
     (e: PointerEvent, hit: HitTestResult) => {
+      const revisionBeforeFlush = useStore.getState().view.diagramRevision;
       if (!flushPendingCodeToDiagram().ok) return;
+      // A successful Source apply can replace every signal ID. The canvas
+      // event's hit was computed against the previous diagram, so refresh it
+      // before any tool consumes signalId/step/edgeIndex.
+      const revisionAfterFlush = useStore.getState().view.diagramRevision;
+      const currentHit = revisionAfterFlush === revisionBeforeFlush
+        ? hit
+        : hitTest(
+          e.offsetX,
+          e.offsetY,
+          useStore.getState().diagram,
+          useStore.getState().view,
+        );
       if (curveDrag.onPointerDown(e)) return;
       const el = canvasRef.current;
-      if (tool === 'paint') paint.paintPointerDown(e, hit, el);
+      if (tool === 'paint') paint.paintPointerDown(e, currentHit, el);
       else if (tool === 'analogue-paint') {
-        analoguePaint.analoguePaintPointerDown(e, hit, el);
+        analoguePaint.analoguePaintPointerDown(e, currentHit, el);
       }
-      else if (tool === 'erase') erase.erasePointerDown(e, hit, el);
-      else if (tool === 'annotation') annotationPointerDown(e, hit);
-      else if (tool === 'vertical-line') verticalLinePointerDown(e, hit);
-      else if (tool === 'horizontal-line') horizontalLinePointerDown(e, hit);
-      else if (tool === 'global-compression') globalCompressionPointerDown(e, hit);
+      else if (tool === 'erase') erase.erasePointerDown(e, currentHit, el);
+      else if (tool === 'annotation') annotationPointerDown(e, currentHit);
+      else if (tool === 'vertical-line') verticalLinePointerDown(e, currentHit);
+      else if (tool === 'horizontal-line') horizontalLinePointerDown(e, currentHit);
+      else if (tool === 'global-compression') globalCompressionPointerDown(e, currentHit);
       else if (tool === 'structured-arrow') structuredArrowPointerDown(e);
       else if (tool === 'arrow' || tool === 'timespan') {
         if (tool === 'arrow' && e.button !== 2) el?.setPointerCapture(e.pointerId);
-        edge.onPointerDown(e, hit);
+        edge.onPointerDown(e, currentHit);
       } else if (tool === 'cursor' || tool === 'select') {
-        select.selectPointerDown(e, el, hit);
+        select.selectPointerDown(e, el, currentHit);
       }
     },
     [tool, canvasRef, edge, curveDrag],

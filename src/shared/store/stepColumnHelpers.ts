@@ -5,6 +5,7 @@ import type {
   Signal,
   SignalOrGroup,
 } from '../types';
+import { parseUndulateEdge } from '../edgeSyntax';
 import { ensureStepGaps, pruneStepGaps } from '../stepGapHelpers';
 import { normalizeTimedVectorSegments } from '../vectorSegments';
 import {
@@ -66,6 +67,7 @@ export interface StructuralReferenceImpact {
   nodeAnchors: number;
   dependencyEdges: number;
   nodeAnchoredAnnotations: number;
+  timelineAnnotations: number;
 }
 
 /** References that current column edits cannot safely remap yet. */
@@ -95,7 +97,133 @@ export function structuralReferenceImpact(diagram: DiagramState): StructuralRefe
     nodeAnchors,
     dependencyEdges: diagram.edges?.length ?? 0,
     nodeAnchoredAnnotations,
+    timelineAnnotations: 0,
   };
+}
+
+function collectRemovedNodeNames(
+  diagram: DiagramState,
+  nextTotalSteps: number,
+): { names: Set<string>; nodeAnchors: number } {
+  const names = new Set<string>();
+  let nodeAnchors = 0;
+  const walk = (items: SignalOrGroup[]) => {
+    for (const item of items) {
+      if (item.type === 'group') {
+        walk(item.children);
+        continue;
+      }
+      const positions = new Set<number>();
+      for (let index = Math.max(0, nextTotalSteps); index < (item.node?.length ?? 0); index++) {
+        const char = item.node?.[index];
+        if (char && char !== '.' && char !== ' ') {
+          names.add(char);
+          positions.add(index);
+        }
+      }
+      for (const [rawIndex, name] of Object.entries(item.nodeNames ?? {})) {
+        if (Number(rawIndex) < nextTotalSteps) continue;
+        names.add(name);
+        positions.add(Number(rawIndex));
+      }
+      nodeAnchors += positions.size;
+    }
+  };
+  walk(diagram.signals);
+  return { names, nodeAnchors };
+}
+
+function isOutOfRangeAnnotation(
+  annotation: DiagramAnnotation,
+  nextTotalSteps: number,
+  removedNodeNames: Set<string>,
+): boolean {
+  if (annotation.type === 'arrow') {
+    return (annotation.from.kind === 'node' && removedNodeNames.has(annotation.from.node))
+      || (annotation.to.kind === 'node' && removedNodeNames.has(annotation.to.node))
+      || (annotation.from.kind === 'point' && annotation.from.x >= nextTotalSteps)
+      || (annotation.to.kind === 'point' && annotation.to.x >= nextTotalSteps);
+  }
+  return 'tick' in annotation && annotation.tick >= nextTotalSteps;
+}
+
+/** References that a Steps shrink will remove from the truncated tail. */
+export function structuralReferenceImpactForStepShrink(
+  diagram: DiagramState,
+  nextTotalSteps: number,
+): StructuralReferenceImpact {
+  const { names, nodeAnchors } = collectRemovedNodeNames(diagram, nextTotalSteps);
+  const dependencyEdges = (diagram.edges ?? []).filter((edge) => {
+    const parsed = parseUndulateEdge(edge);
+    return parsed !== null && (names.has(parsed.from) || names.has(parsed.to));
+  }).length;
+  const annotations = diagram.annotations ?? [];
+  const nodeAnchoredAnnotations = annotations.filter(
+    (annotation) => annotation.type === 'arrow'
+      && ((annotation.from.kind === 'node' && names.has(annotation.from.node))
+        || (annotation.to.kind === 'node' && names.has(annotation.to.node))),
+  ).length;
+  const timelineAnnotations = annotations.filter(
+    (annotation) => isOutOfRangeAnnotation(annotation, nextTotalSteps, names)
+      && !(annotation.type === 'arrow'
+        && ((annotation.from.kind === 'node' && names.has(annotation.from.node))
+          || (annotation.to.kind === 'node' && names.has(annotation.to.node)))),
+  ).length;
+  return {
+    nodeAnchors,
+    dependencyEdges,
+    nodeAnchoredAnnotations,
+    timelineAnnotations,
+  };
+}
+
+/** Remove references anchored in the tail truncated by a Steps shrink. */
+export function pruneReferencesBeyondSteps(
+  diagram: DiagramState,
+  nextTotalSteps: number,
+): StructuralReferenceImpact {
+  const impact = structuralReferenceImpactForStepShrink(diagram, nextTotalSteps);
+  const { names } = collectRemovedNodeNames(diagram, nextTotalSteps);
+
+  const trimSignals = (items: SignalOrGroup[]) => {
+    for (const item of items) {
+      if (item.type === 'group') {
+        trimSignals(item.children);
+        continue;
+      }
+      if (item.node && item.node.length > nextTotalSteps) {
+        item.node = item.node.slice(0, Math.max(0, nextTotalSteps));
+        if (/^[. ]*$/u.test(item.node)) delete item.node;
+      }
+      if (item.nodeNames) {
+        for (const rawIndex of Object.keys(item.nodeNames)) {
+          if (Number(rawIndex) >= nextTotalSteps) delete item.nodeNames[Number(rawIndex)];
+        }
+        if (Object.keys(item.nodeNames).length === 0) delete item.nodeNames;
+      }
+    }
+  };
+  trimSignals(diagram.signals);
+
+  const nextEdges: string[] = [];
+  const nextControls: Record<number, { c1x: number; c2x: number }> = {};
+  for (const [index, edge] of (diagram.edges ?? []).entries()) {
+    const parsed = parseUndulateEdge(edge);
+    if (parsed && (names.has(parsed.from) || names.has(parsed.to))) continue;
+    const nextIndex = nextEdges.length;
+    nextEdges.push(edge);
+    const control = diagram.edgeCurveControls?.[index];
+    if (control) nextControls[nextIndex] = control;
+  }
+  diagram.edges = nextEdges;
+  diagram.edgeCurveControls = Object.keys(nextControls).length > 0 ? nextControls : undefined;
+  if (diagram.annotations) {
+    diagram.annotations = diagram.annotations.filter(
+      (annotation) => !isOutOfRangeAnnotation(annotation, nextTotalSteps, names),
+    );
+    if (diagram.annotations.length === 0) delete diagram.annotations;
+  }
+  return impact;
 }
 
 
@@ -356,4 +484,23 @@ export function hasNativeTiming(signals: SignalOrGroup[]): boolean {
     if (signal.digitalTiming || signal.vectorTiming) timed = true;
   });
   return timed;
+}
+
+/**
+ * Legacy WaveDrom period/phase lanes use source-cell coordinates while the
+ * document timeline uses rendered major columns. Structural timeline edits
+ * cannot safely resize or remap those lanes without first converting them to
+ * native timing.
+ */
+export function hasLegacyTimelineTiming(signals: SignalOrGroup[]): boolean {
+  let legacy = false;
+  walkSignals(signals, (signal) => {
+    if (
+      (signal.period !== undefined && signal.period !== 1)
+      || (signal.phase !== undefined && signal.phase !== 0)
+    ) {
+      legacy = true;
+    }
+  });
+  return legacy;
 }
