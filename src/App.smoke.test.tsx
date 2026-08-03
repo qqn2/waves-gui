@@ -68,6 +68,21 @@ describe('App smoke', () => {
     expect(diagramControlsToggle).not.toBeNull();
     expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('false');
     expect(host.querySelector('input[aria-label="Diagram step count"]')).not.toBeNull();
+    const busLabelInput = host.querySelector<HTMLInputElement>('input[aria-label="Bus label"]');
+    expect(busLabelInput).not.toBeNull();
+    expect(busLabelInput!.value).toBe(useStore.getState().view.activeBusLabel);
+    await act(async () => {
+      busLabelInput!.focus();
+      const valueSetter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set;
+      valueSetter?.call(busLabelInput, 'ARADDR');
+      busLabelInput!.dispatchEvent(new Event('input', { bubbles: true }));
+      busLabelInput!.dispatchEvent(new Event('change', { bubbles: true }));
+      busLabelInput!.blur();
+    });
+    expect(useStore.getState().view.activeBusLabel).toBe('ARADDR');
     const substeps = host.querySelector<HTMLInputElement>(
       'input[aria-label="Diagram substep count"]',
     );

@@ -58,6 +58,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const activeEdgeLabel = useStore((s) => s.view.activeEdgeLabel);
   const setActiveEdgeLabel = useStore((s) => s.setActiveEdgeLabel);
   const showAnchorLetters = useStore((s) => s.view.showAnchorLetters);
+  const activeBusLabel = useStore((s) => s.view.activeBusLabel);
+  const setActiveBusLabel = useStore((s) => s.setActiveBusLabel);
   const setShowAnchorLetters = useStore((s) => s.setShowAnchorLetters);
   const activeBusColorIndex = useStore((s) => s.view.activeBusColorIndex);
   const setActiveBusColorIndex = useStore((s) => s.setActiveBusColorIndex);
@@ -429,7 +431,9 @@ export function Toolbar({ onExport }: ToolbarProps) {
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (
           <ToolbarBusSection
+            activeBusLabel={activeBusLabel}
             activeBusColorIndex={activeBusColorIndex}
+            onBusLabel={setActiveBusLabel}
             onBusColorIndex={setActiveBusColorIndex}
           />
         )}

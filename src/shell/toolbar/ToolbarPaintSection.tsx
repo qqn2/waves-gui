@@ -158,7 +158,9 @@ export function ToolbarPaintSection({
 }
 
 export interface ToolbarBusSectionProps {
+  activeBusLabel: string;
   activeBusColorIndex: WavedromColorIndex;
+  onBusLabel: (label: string) => void;
   onBusColorIndex: (index: WavedromColorIndex) => void;
 }
 
@@ -246,12 +248,29 @@ export function ToolbarAnaloguePaintSection({
 }
 
 export function ToolbarBusSection({
+  activeBusLabel,
   activeBusColorIndex,
+  onBusLabel,
   onBusColorIndex,
 }: ToolbarBusSectionProps) {
   return (
     <>
       <span className={styles.toolGroupLabel}>Bus</span>
+      <label
+        className={styles.busLabelWrap}
+        title="Label applied to new bus spans"
+      >
+        <span className={styles.busLabelTag}>Label</span>
+        <input
+          type="text"
+          className={styles.busLabelInput}
+          value={activeBusLabel}
+          onChange={(event) => onBusLabel(event.target.value)}
+          placeholder="data"
+          aria-label="Bus label"
+          spellCheck={false}
+        />
+      </label>
       <span className={styles.busColorGroup} title="WaveDrom bus fill (wave digits 2–9)">
         {WAVEDROM_COLOR_INDEXES.map((idx) => (
           <button
