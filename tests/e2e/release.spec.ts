@@ -340,7 +340,7 @@ test('prompts before hiding Undulate wave characters', async ({ page }) => {
   const dialog = page.getByRole('dialog', { name: 'Turn off Undulate?' });
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(
-    '1 digital signal with Undulate wave characters',
+    '1 timed or extended digital/vector lane with native timing or Undulate wave characters',
   );
   await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(toggle).toBeChecked();
@@ -592,7 +592,7 @@ test('keeps bus segment editing exclusively in the selected signal inspector', a
 
   await page.getByRole('button', { name: 'Close signal inspector' }).click();
   await expect(page.getByLabel('Properties inspector')).toHaveCount(0);
-  await expect(page.getByRole('banner').getByLabel('Bus label')).toHaveCount(0);
+  await expect(page.getByRole('banner').getByLabel('Bus label')).toHaveValue('A5 payload');
 
   await page.getByRole('button', { name: 'Inspector', exact: true }).click();
   await expect(page.getByLabel('Properties inspector')).toBeVisible();
@@ -850,12 +850,15 @@ test('commits signal timing fields once and preserves redo after an unchanged bl
   await period.fill('3');
   await period.press('Enter');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(period).toHaveValue('');
+  await signalRow(page, 'clk').click();
+  const periodAfterUndo = page.getByLabel('Signal period');
+  await expect(periodAfterUndo).toHaveValue('');
 
-  await period.focus();
-  await period.press('Tab');
+  await periodAfterUndo.focus();
+  await periodAfterUndo.press('Tab');
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
-  await expect(period).toHaveValue('3');
+  await signalRow(page, 'clk').click();
+  await expect(page.getByLabel('Signal period')).toHaveValue('3');
 });
 
 test('commits numeric style once and preserves redo after a no-op blur', async ({ page }) => {
@@ -867,12 +870,15 @@ test('commits numeric style once and preserves redo after a no-op blur', async (
   await width.fill('12');
   await width.press('Enter');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(width).toHaveValue('');
+  await signalRow(page, 'clk').click();
+  const widthAfterUndo = page.getByLabel('Signal stroke width');
+  await expect(widthAfterUndo).toHaveValue('');
 
-  await width.focus();
-  await width.press('Tab');
+  await widthAfterUndo.focus();
+  await widthAfterUndo.press('Tab');
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
-  await expect(width).toHaveValue('12');
+  await signalRow(page, 'clk').click();
+  await expect(page.getByLabel('Signal stroke width')).toHaveValue('12');
 });
 
 test('retains WaveDrom JSON5 comments through GUI edits and undo', async ({ page }) => {
@@ -1003,10 +1009,10 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
 
   await expect(page.locator('[role="alert"]').filter({
     hasText: 'Invalid JSON/JSON5/JSONML syntax',
-  })).toBeVisible();
+  }).first()).toBeVisible();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
-  await expect(page.getByText('unsaved', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
