@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1064" height="716" viewBox="0 0 1064 716">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="716" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">AW channel</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">ACLK</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">AWADDR</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">AWLEN</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">AWVALID</text>
+<text x="20" y="256" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">AWREADY</text>
+<text x="8" y="296" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle"></text>
+<text x="8" y="330" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">W channel</text>
+<text x="20" y="364" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">WDATA</text>
+<text x="20" y="404" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">WLAST</text>
+<text x="20" y="444" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">WVALID</text>
+<text x="20" y="484" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">WREADY</text>
+<text x="8" y="524" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle"></text>
+<text x="8" y="558" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">B channel</text>
+<text x="20" y="592" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">BRESP</text>
+<text x="20" y="632" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">BVALID</text>
+<text x="20" y="672" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">BREADY</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="960" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="480" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">AXI4 single write (AW + W + B)</text>
+<text x="480" y="706" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">AWLEN=0, WLAST=1; channels may overlap; AXI4 write</text>
+<line x1="0" y1="48" x2="0" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="692" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,92 -3,98 3,98" fill="#4A9EFF"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,92 77,98 83,98" fill="#4A9EFF"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,92 157,98 163,98" fill="#4A9EFF"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,92 237,98 243,98" fill="#4A9EFF"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,92 317,98 323,98" fill="#4A9EFF"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,92 397,98 403,98" fill="#4A9EFF"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,92 477,98 483,98" fill="#4A9EFF"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,92 557,98 563,98" fill="#4A9EFF"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,92 637,98 643,98" fill="#4A9EFF"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="720,92 717,98 723,98" fill="#4A9EFF"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="800,92 797,98 803,98" fill="#4A9EFF"/>
+<path d="M880,108 L880,84 L920,84 L920,108 L960,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="880,92 877,98 883,98" fill="#4A9EFF"/>
+<path d="M0,136 L16,124 L224,124 L240,136 L224,148 L16,148 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="120" y="136" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M240,136 L256,124 L304,124 L320,136 L304,148 L256,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x40001000</text>
+<path d="M320,136 L336,124 L944,124 L960,136 L944,148 L336,148 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="640" y="136" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,176 L16,164 L224,164 L240,176 L224,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="120" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M240,176 L256,164 L304,164 L320,176 L304,188 L256,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M320,176 L336,164 L944,164 L960,176 L944,188 L336,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="640" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,228 L80,228 L160,228 L240,228 L246,228 L252,204 L320,204 L400,204 L480,204 L486,204 L492,228 L560,228 L640,228 L720,228 L800,228 L880,228 L960,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,268 L80,268 L160,268 L240,268 L320,268 L326,268 L332,244 L400,244 L480,244 L560,244 L566,244 L572,268 L640,268 L720,268 L800,268 L880,268 L960,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,364 L16,352 L384,352 L400,364 L384,376 L16,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="200" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M400,364 L416,352 L464,352 L480,364 L464,376 L416,376 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="364" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xCAFEBABE</text>
+<path d="M480,364 L496,352 L944,352 L960,364 L944,376 L496,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="720" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,416 L80,416 L160,416 L240,416 L320,416 L400,416 L406,416 L412,392 L480,392 L560,392 L566,392 L572,416 L640,416 L720,416 L800,416 L880,416 L960,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,456 L80,456 L160,456 L240,456 L320,456 L400,456 L406,456 L412,432 L480,432 L560,432 L566,432 L572,456 L640,456 L720,456 L800,456 L880,456 L960,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,496 L80,496 L160,496 L234,496 L237,472 L240,496 L320,496 L400,496 L406,496 L412,472 L480,472 L560,472 L640,472 L720,472 L800,472 L880,472 L886,472 L892,496 L960,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,592 L16,580 L544,580 L560,592 L544,604 L16,604 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="280" y="592" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M560,592 L576,580 L624,580 L640,592 L624,604 L576,604 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="592" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OKAY</text>
+<path d="M640,592 L656,580 L944,580 L960,592 L944,604 L656,604 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="800" y="592" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,644 L80,644 L160,644 L240,644 L320,644 L400,644 L480,644 L560,644 L566,644 L572,620 L640,620 L720,620 L726,620 L732,644 L800,644 L880,644 L960,644" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,684 L80,684 L160,684 L240,684 L320,684 L394,684 L397,660 L400,684 L480,684 L560,684 L566,684 L572,660 L640,660 L720,660 L800,660 L880,660 L886,660 L892,684 L960,684" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

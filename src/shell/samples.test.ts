@@ -45,4 +45,13 @@ describe('bundled sample diagrams', () => {
       'undulate/states-and-style',
     ]));
   });
+
+  it.each(SAMPLE_DIAGRAMS.flatMap((sample) => [
+    [sample.id, sample.file, 'dark'],
+    [sample.id, sample.file, 'light'],
+  ] as const))('%s has a generated %s static preview', (_id, file, theme) => {
+    const previewFile = file.replace(/\.json$/i, `.${theme}.svg`);
+    const preview = readFileSync(join(samplesDir, 'previews', previewFile), 'utf8');
+    expect(preview).toContain('<svg');
+  });
 });

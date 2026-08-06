@@ -197,36 +197,42 @@ export function sampleAssetUrl(file: string): string {
   return `${baseUrl}samples/${file}`;
 }
 
+export function sampleThumbnailUrl(file: string, theme: 'light' | 'dark'): string {
+  return `${baseUrl}samples/previews/${file.replace(/\.json$/i, `.${theme}.svg`)}`;
+}
+
 function confirmDiscardIfDirty(): boolean {
   const { view } = useStore.getState();
   if (!view.isDirty && view.sourceDraftDirty !== true) return true;
   return window.confirm('Discard unsaved changes and load the sample?');
 }
 
-export async function loadSampleDiagram(sampleId: string): Promise<void> {
+export async function loadSampleDiagram(sampleId: string): Promise<boolean> {
   const sample = findSampleById(sampleId);
   if (!sample) {
     window.alert(`Unknown sample: ${sampleId}`);
-    return;
+    return false;
   }
-  if (!confirmDiscardIfDirty()) return;
+  if (!confirmDiscardIfDirty()) return false;
 
   try {
     const res = await fetch(sampleAssetUrl(sample.file));
     if (!res.ok) {
       window.alert(`Could not load sample (${res.status})`);
-      return;
+      return false;
     }
     const source = await res.text();
     const parsed = parseCodeToDiagram(source);
     if (parsed.ok === false) {
       window.alert(parsed.error);
-      return;
+      return false;
     }
     useStore.getState().loadDiagram(parsed.diagram);
     useStore.getState().markClean(sample.file);
     forgetCurrentFileHandle();
+    return true;
   } catch {
     window.alert('Could not load sample diagram');
+    return false;
   }
 }

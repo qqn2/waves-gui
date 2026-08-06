@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="304" viewBox="0 0 384 304">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="304" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">Control</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">rst</text>
+<text x="8" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle"></text>
+<text x="8" y="210" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">Datapath</text>
+<text x="20" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">load</text>
+<text x="20" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">done</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="280" height="24" fill="#242424"/>
+<text x="20" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="180" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="220" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="260" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="140" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Grouped signals</text>
+<line x1="0" y1="48" x2="0" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="40" y1="48" x2="40" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="120" y1="48" x2="120" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="200" y1="48" x2="200" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="304" stroke="#333333" stroke-width="1"/>
+<line x1="280" y1="48" x2="280" y2="304" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L20,84 L20,108 L40,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,92 -3,98 3,98" fill="#4A9EFF"/>
+<path d="M40,108 L40,84 L60,84 L60,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="40,92 37,98 43,98" fill="#4A9EFF"/>
+<path d="M80,108 L80,84 L100,84 L100,108 L120,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,92 77,98 83,98" fill="#4A9EFF"/>
+<path d="M120,108 L120,84 L140,84 L140,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="120,92 117,98 123,98" fill="#4A9EFF"/>
+<path d="M160,108 L160,84 L180,84 L180,108 L200,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,92 157,98 163,98" fill="#4A9EFF"/>
+<path d="M200,108 L200,84 L220,84 L220,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="200,92 197,98 203,98" fill="#4A9EFF"/>
+<path d="M240,108 L240,84 L260,84 L260,108 L280,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,92 237,98 243,98" fill="#4A9EFF"/>
+<path d="M0,124 L40,124 L43,124 L46,148 L80,148 L120,148 L160,148 L200,148 L240,148 L280,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L40,256 L80,256 L83,256 L86,232 L120,232 L160,232 L163,232 L166,256 L200,256 L240,256 L280,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,296 L40,296 L80,296 L120,296 L160,296 L163,296 L166,272 L200,272 L240,272 L243,272 L246,296 L280,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

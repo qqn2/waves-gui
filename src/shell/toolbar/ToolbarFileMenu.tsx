@@ -1,6 +1,4 @@
 import { loadRecentFiles } from '../soloDesk/recentFiles';
-import { loadSampleDiagram } from '../samples';
-import { SampleLibraryMenu } from './SampleLibraryMenu';
 import {
   newDiagramFile,
   openDiagramFile,
@@ -14,6 +12,7 @@ export interface ToolbarFileMenuProps {
   onToggle: () => void;
   onClose: () => void;
   onExport: () => void;
+  onBrowseSamples: () => void;
 }
 
 export function ToolbarFileMenu({
@@ -21,6 +20,7 @@ export function ToolbarFileMenu({
   onToggle,
   onClose,
   onExport,
+  onBrowseSamples,
 }: ToolbarFileMenuProps) {
   const recentFiles = open ? loadRecentFiles() : [];
 
@@ -53,6 +53,15 @@ export function ToolbarFileMenu({
             <button type="button" onClick={() => { onExport(); onClose(); }}>
               Export…
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onBrowseSamples();
+              }}
+            >
+              Browse samples
+            </button>
             {recentFiles.length > 0 ? (
               <>
                 <div className={styles.menuSubheading}>Recent</div>
@@ -69,12 +78,6 @@ export function ToolbarFileMenu({
               </>
             ) : null}
           </div>
-          <SampleLibraryMenu
-            onPick={(id) => {
-              void loadSampleDiagram(id);
-              onClose();
-            }}
-          />
         </div>
       )}
     </div>

@@ -15,7 +15,7 @@
   "homepage": "https://github.com/qqn2/waves-gui#readme",
   "scripts": {
     "dev": "vite",
-    "prebuild": "npm run licenses:generate",
+    "prebuild": "npm run samples:previews && npm run licenses:generate",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -25,6 +25,7 @@
     "test:e2e": "playwright test",
     "confidentiality:check": "node scripts/check-confidentiality.mjs",
     "licenses:generate": "node scripts/generate-third-party-notices.mjs",
+    "samples:previews": "node scripts/generate-sample-previews.mjs",
     "licenses:check": "node scripts/check-production-artifact.mjs",
     "check": "npm run confidentiality:check && npm run lint && npm test && npm run test:visual && npm run test:security && npm run build && npm run licenses:check",
     "deploy": "npm run check && wrangler deploy"

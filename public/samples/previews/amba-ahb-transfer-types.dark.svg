@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="824" height="368" viewBox="0 0 824 368">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="368" fill="#242424"/>
+<text x="8" y="84" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HCLK</text>
+<text x="8" y="124" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HTRANS[1:0]</text>
+<text x="8" y="164" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HADDR[31:0]</text>
+<text x="8" y="204" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HWRITE</text>
+<text x="8" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HBURST[2:0]</text>
+<text x="8" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HREADY</text>
+<text x="8" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HRDATA[31:0]</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="720" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="360" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Figure 3-6 Transfer type examples (AHB, IHI0033C-style)</text>
+<text x="40" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="60" fill="#999999" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="360" y="358" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Use Preview in JSON panel for WaveDrom rendering; edit bus labels in panel or paint with Bus field</text>
+<line x1="0" y1="64" x2="0" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="64" x2="80" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="64" x2="160" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="64" x2="240" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="64" x2="320" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="64" x2="400" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="64" x2="480" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="64" x2="560" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="64" x2="640" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="64" x2="720" y2="344" stroke="#333333" stroke-width="1"/>
+<path d="M0,96 L0,72 L40,72 L40,96 L80,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,80 -3,86 3,86" fill="#4A9EFF"/>
+<path d="M80,96 L80,72 L120,72 L120,96 L160,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,80 77,86 83,86" fill="#4A9EFF"/>
+<path d="M160,96 L160,72 L200,72 L200,96 L240,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,80 157,86 163,86" fill="#4A9EFF"/>
+<path d="M240,96 L240,72 L280,72 L280,96 L320,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,80 237,86 243,86" fill="#4A9EFF"/>
+<path d="M320,96 L320,72 L360,72 L360,96 L400,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,80 317,86 323,86" fill="#4A9EFF"/>
+<path d="M400,96 L400,72 L440,72 L440,96 L480,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,80 397,86 403,86" fill="#4A9EFF"/>
+<path d="M480,96 L480,72 L520,72 L520,96 L560,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,80 477,86 483,86" fill="#4A9EFF"/>
+<path d="M560,96 L560,72 L600,72 L600,96 L640,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,80 557,86 563,86" fill="#4A9EFF"/>
+<path d="M640,96 L640,72 L680,72 L680,96 L720,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,80 637,86 643,86" fill="#4A9EFF"/>
+<path d="M0,124 L16,112 L144,112 L160,124 L144,136 L16,136 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="124" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,124 L176,112 L224,112 L240,124 L224,136 L176,136 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="124" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ</text>
+<path d="M240,124 L256,112 L384,112 L400,124 L384,136 L256,136 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="320" y="124" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">BUSY</text>
+<path d="M400,124 L416,112 L704,112 L720,124 L704,136 L416,136 Z" fill="#ffffb4" stroke="#000000" stroke-width="2"/>
+<text x="560" y="124" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">SEQ</text>
+<path d="M0,164 L16,152 L144,152 L160,164 L144,176 L16,176 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="164" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,164 L176,152 L224,152 L240,164 L224,176 L176,176 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="164" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x20</text>
+<path d="M240,164 L256,152 L384,152 L400,164 L384,176 L256,176 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="320" y="164" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M400,164 L416,152 L464,152 L480,164 L464,176 L416,176 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="164" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x24</text>
+<path d="M480,164 L496,152 L704,152 L720,164 L704,176 L496,176 Z" fill="#ffffb4" stroke="#000000" stroke-width="2"/>
+<text x="600" y="164" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x28</text>
+<path d="M0,192 L80,192 L160,192 L166,192 L172,216 L240,216 L320,216 L400,216 L406,216 L412,192 L480,192 L560,192 L640,192 L720,192" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,244 L16,232 L144,232 L160,244 L144,256 L16,256 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="244" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,244 L176,232 L704,232 L720,244 L704,256 L176,256 Z" fill="#ccfdfe" stroke="#000000" stroke-width="2"/>
+<text x="440" y="244" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">INCR</text>
+<path d="M0,272 L80,272 L160,272 L240,272 L246,272 L252,296 L320,296 L400,296 L406,296 L412,272 L480,272 L560,272 L640,272 L720,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,324 L16,312 L304,312 L320,324 L304,336 L16,336 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="160" y="324" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M320,324 L336,312 L384,312 L400,324 L384,336 L336,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">Data (0x20)</text>
+<path d="M400,324 L416,312 L704,312 L720,324 L704,336 L416,336 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="324" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+  </g>
+</svg>

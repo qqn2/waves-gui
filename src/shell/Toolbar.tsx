@@ -42,9 +42,10 @@ import styles from './shell.module.css';
 
 export interface ToolbarProps {
   onExport: () => void;
+  onBrowseSamples: () => void;
 }
 
-export function Toolbar({ onExport }: ToolbarProps) {
+export function Toolbar({ onExport, onBrowseSamples }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const paintMode = useStore((s) => s.view.paintMode);
   const paintStyle = useStore((s) => s.view.paintStyle);
@@ -216,6 +217,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
           })}
           onClose={() => setFileOpen(false)}
           onExport={onExport}
+          onBrowseSamples={onBrowseSamples}
         />
         <button type="button" className={styles.toolBtn} onClick={() => runAfterSourceFlush(undo)} title="Undo (Ctrl+Z)">
           <Undo2 size={16} aria-hidden /><span>Undo</span>

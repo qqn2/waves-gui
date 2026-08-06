@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="504" height="128" viewBox="0 0 504 128">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="128" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">mixed states</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">status</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="400" height="24" fill="#242424"/>
+<text x="20" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="180" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="220" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="260" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="300" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="340" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="380" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="200" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Use More states, style controls, nodes, and marked edges</text>
+<line x1="0" y1="48" x2="0" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="40" y1="48" x2="40" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="120" y1="48" x2="120" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="200" y1="48" x2="200" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="280" y1="48" x2="280" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="360" y1="48" x2="360" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="128" stroke="#333333" stroke-width="1"/>
+<path d="M0,80 L40,80" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="i" d="M40,80 L40,56 L60,56 L60,80 L60,56 L80,56" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="I" d="M80,56 L80,80 L100,80 L100,56 L100,80 L120,80" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="m" d="M120,80 L120,68 L121.07142857142857,69.06828569354272 L122.14285714285714,69.76236694382513 L123.21428571428571,69.71830159928004 L124.28571428571429,68.8730291798405 L125.35714285714286,67.52761941963443 L126.42857142857143,66.24894377328198 L127.5,65.63705989754968 L128.57142857142858,66.05091112238567 L129.64285714285714,67.41473151579405 L130.71428571428572,69.20399148248801 L131.78571428571428,70.63770122379887 L132.85714285714286,71.01130050136464 L133.92857142857142,70.03178019261546 L135,68 L136.07142857142858,65.738439169023 L137.14285714285714,64.26906915064458 L138.21428571428572,64.36235548577855 L139.28571428571428,66.15179721177432 L140.35714285714286,69.00002969648142 L141.42857142857142,71.7069860610518 L142.5,73.00234423614211 L143.57142857142858,72.12622118628911 L144.64285714285714,69.23901339078688 L145.71428571428572,65.45115001157137 L146.78571428571428,62.415986465398525 L147.85714285714286,61.62507678858528 L148.92857142857142,63.698721298479754 L150,68 C154,80 156,80 160,80" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="M" d="M160,80 L160,68 L161.07142857142858,66.93171430645728 L162.14285714285714,66.23763305617487 L163.21428571428572,66.28169840071996 L164.28571428571428,67.1269708201595 L165.35714285714286,68.47238058036557 L166.42857142857142,69.75105622671802 L167.5,70.36294010245032 L168.57142857142858,69.94908887761433 L169.64285714285714,68.58526848420595 L170.71428571428572,66.79600851751199 L171.78571428571428,65.36229877620113 L172.85714285714286,64.98869949863536 L173.92857142857142,65.96821980738454 L175,68 L176.07142857142858,70.261560830977 L177.14285714285714,71.73093084935542 L178.21428571428572,71.63764451422145 L179.28571428571428,69.84820278822568 L180.35714285714286,66.99997030351858 L181.42857142857142,64.2930139389482 L182.5,62.9976557638579 L183.57142857142858,63.87377881371089 L184.64285714285714,66.76098660921312 L185.71428571428572,70.54884998842863 L186.78571428571428,73.58401353460147 L187.85714285714286,74.37492321141471 L188.92857142857142,72.30127870152025 L190,68 C194,56 196,56 200,56" fill="none" stroke="#663399" stroke-width="2"/>
+<path d="M200,56 L240,56" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="h" d="M240,56 L280,56" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="H" d="M280,56 L320,56" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="l" d="M320,56 L320,80 L360,80" fill="none" stroke="#663399" stroke-width="2"/>
+<path data-wave-state="L" d="M360,80 L400,80" fill="none" stroke="#663399" stroke-width="2"/>
+<g stroke-dasharray="5 2"><path d="M0,120 L40,120 L80,120 L120,120 L123,120 L126,96 L160,96 L200,96 L240,96 L280,96 L320,96 L360,96 L400,96" fill="none" stroke="#228855" stroke-width="2"/></g>
+<defs><marker id="wd-export-arrow" viewBox="0 0 10 10" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#d4a84b"/></marker></defs>
+<path d="M 60 68 L 380 108" fill="none" stroke="#d4a84b" stroke-width="2" />
+<rect x="56" y="64" width="8" height="8" fill="#d4a84b"/>
+<circle cx="380" cy="108" r="4" fill="#d4a84b"/>
+<text x="220" y="84" fill="#d4a84b" font-size="11" font-family="sans-serif" text-anchor="middle">marked dependency</text>
+  </g>
+</svg>

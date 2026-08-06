@@ -82,14 +82,21 @@ function drawCaption(
 ): void {
   ctx.save();
   ctx.fillStyle = cssVar('--text-primary', '#eee');
-  ctx.font = '12px sans-serif';
+  const baseFontSize = 12;
+  const captionWidth = Math.max(1, Math.min(diagramWidth, canvasWidth));
+  ctx.font = `${baseFontSize}px sans-serif`;
+  const textWidth = ctx.measureText(text).width;
+  const fontSize = textWidth > captionWidth
+    ? baseFontSize * (captionWidth / textWidth)
+    : baseFontSize;
+  ctx.font = `${fontSize}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   const centerX = diagramWidth / 2 - scrollX;
   const clipLeft = 0;
   const clipRight = canvasWidth;
   if (centerX >= clipLeft - diagramWidth && centerX <= clipRight + diagramWidth) {
-    ctx.fillText(text, centerX, y);
+    ctx.fillText(text, centerX, y, captionWidth);
   }
   ctx.restore();
 }

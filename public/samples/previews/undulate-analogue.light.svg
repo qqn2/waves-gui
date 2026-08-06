@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="264" height="108" viewBox="0 0 264 108">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="108" fill="#f8fafc"/>
+<text x="8" y="78" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">reference</text>
+<text x="8" y="56.4" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">threshold</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="160" height="24" fill="#f8fafc"/>
+<text x="20" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="80" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Paint cells, edit sample points, and manage the overlay</text>
+<line x1="0" y1="48" x2="0" y2="108" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="40" y1="48" x2="40" y2="108" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="108" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="120" y1="48" x2="120" y2="108" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="108" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M 0 100 L 40 100 L 43.75 78 L 80 78 L 82.5 74.69749446878097 L 85 72.2813298074584 L 87.5 70.51362597912623 L 90 69.22034623096961 L 92.5 68.27416255461804 L 95 67.58191978914506 L 97.5 67.07546416289976 L 100 66.70493331137075 L 102.5 66.43384714938523 L 105 66.23551627648546 L 107.5 66.09041431016934 L 110 65.9842554438216 L 112.5 65.90658795805032 L 115 65.84976521159906 L 117.5 65.80819280221564 L 120 65.77777777777779 L 120 95.11111111111111 L 133.33333333333334 60.888888888888886 L 160 80.44444444444444" fill="none" stroke="#3366cc" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 0 100 L 0 78 L 40 78 L 80 78 L 120 78 L 160 78" fill="none" stroke="#cc6633" stroke-width="2" stroke-dasharray="4 2" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+</svg>

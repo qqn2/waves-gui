@@ -33,6 +33,8 @@ import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
 import { flushPendingCodeToDiagram } from './codePanel/flushRegistry';
+import { loadSampleDiagram } from './shell/samples';
+import { SampleBrowser } from './sampleLibrary/SampleBrowser';
 import './App.css';
 
 const ExportDialog = lazy(() =>
@@ -178,6 +180,7 @@ function App() {
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const [exportOpen, setExportOpen] = useState(false);
+  const [sampleBrowserOpen, setSampleBrowserOpen] = useState(false);
   const inspectorVisible = useStore((s) => s.view.showInspector);
   const toggleInspector = useStore((s) => s.toggleInspector);
   const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
@@ -193,6 +196,20 @@ function App() {
     setExportOpen(true);
   }, []);
 
+  const closeSampleBrowser = useCallback(() => {
+    setSampleBrowserOpen(false);
+  }, []);
+
+  const openSampleBrowser = useCallback(() => {
+    setSampleBrowserOpen(true);
+  }, []);
+
+  const pickSample = useCallback((sampleId: string) => {
+    void loadSampleDiagram(sampleId).then((loaded) => {
+      if (loaded) setSampleBrowserOpen(false);
+    });
+  }, []);
+
   useLayoutEffect(() => {
     applyThemeSettings(
       themeSettingsFromView({ theme, accentColor, canvasColor, uiFontScale }),
@@ -205,6 +222,7 @@ function App() {
         <header className="shellHeader">
           <Toolbar
             onExport={openExport}
+            onBrowseSamples={openSampleBrowser}
           />
         </header>
         <div className="mainArea">
@@ -243,6 +261,11 @@ function App() {
             />
           </Suspense>
         ) : null}
+        <SampleBrowser
+          open={sampleBrowserOpen}
+          onClose={closeSampleBrowser}
+          onPick={pickSample}
+        />
       </div>
     </CodePanelLayoutProvider>
   );
