@@ -1013,7 +1013,12 @@ test('invalid JSON never mutates the diagram or history', async ({ page }) => {
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
   await expect(page.getByText('unsaved', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+z' : 'Control+z');
+  await expect(page.locator('[role="alert"]').filter({
+    hasText: 'Invalid JSON/JSON5/JSONML syntax',
+  })).toHaveCount(0);
+  await expect(page.getByText('✓ Valid', { exact: true })).toBeVisible();
+  await expect(editor).toContainText('"signal"');
   await expect(signalRow(page, 'clk')).toBeVisible();
   await expect(steps).toHaveValue(before);
 });

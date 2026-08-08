@@ -1,5 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Compartment, EditorState, type Extension } from '@codemirror/state';
+import {
+  Compartment,
+  EditorState,
+  type Extension,
+  type StateCommand,
+} from '@codemirror/state';
 import {
   EditorView,
   keymap,
@@ -10,7 +15,12 @@ import { json } from '@codemirror/lang-json';
 import { yaml } from '@codemirror/lang-yaml';
 import { StreamLanguage } from '@codemirror/language';
 import { toml } from '@codemirror/legacy-modes/mode/toml';
-import { defaultKeymap } from '@codemirror/commands';
+import {
+  defaultKeymap,
+  history,
+  redo,
+  undo,
+} from '@codemirror/commands';
 import { linter, lintGutter } from '@codemirror/lint';
 import {
   validateCodeString,
@@ -86,30 +96,43 @@ function editorTheme(): Extension {
   );
 }
 
+function runUnifiedHistory(
+  view: EditorView,
+  editorCommand: StateCommand,
+  diagramCommand: () => void,
+): boolean {
+  // An invalid source draft cannot be applied to the diagram. Keep undo local
+  // to CodeMirror so the user can recover the last valid source immediately.
+  const flush = flushPendingCodeToDiagram();
+  if (!flush.ok) return editorCommand(view);
+  diagramCommand();
+  return true;
+}
+
 const unifiedHistoryKeymap = [
   {
     key: 'Mod-z',
-    run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().undo();
-      return true;
-    },
+    run: (view: EditorView) => runUnifiedHistory(
+      view,
+      undo,
+      () => useStore.getState().undo(),
+    ),
   },
   {
     key: 'Mod-y',
-    run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().redo();
-      return true;
-    },
+    run: (view: EditorView) => runUnifiedHistory(
+      view,
+      redo,
+      () => useStore.getState().redo(),
+    ),
   },
   {
     key: 'Mod-Shift-z',
-    run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().redo();
-      return true;
-    },
+    run: (view: EditorView) => runUnifiedHistory(
+      view,
+      redo,
+      () => useStore.getState().redo(),
+    ),
   },
 ];
 
@@ -141,6 +164,7 @@ export function CodeEditor({
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
+          history(),
           languageCompartmentRef.current.of(codeLanguage(format)),
           lintCompartmentRef.current.of(codeLinter(format)),
           lintGutter(),
