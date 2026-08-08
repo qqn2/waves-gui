@@ -404,7 +404,7 @@ export function deleteStepInSignal(
     if (sig.vectorTiming) {
       const sourceCells = sig.vectorTiming.cells.map((cell) => ({ ...cell }));
       const total = sourceCells.reduce(
-        (sum, cell) => sum + Math.max(1, Math.round(cell.durationTicks)),
+        (sum, cell) => sum + Math.max(0, Math.round(cell.durationTicks)),
         0,
       );
       const stepTicks = Math.max(1, sig.vectorTiming.ticksPerStep);
@@ -415,7 +415,7 @@ export function deleteStepInSignal(
       const remappedBoundaries = [0];
       let cursor = 0;
       for (const cell of sourceCells) {
-        const duration = Math.max(1, Math.round(cell.durationTicks));
+        const duration = Math.max(0, Math.round(cell.durationTicks));
         const cellEnd = cursor + duration;
         const before = Math.max(0, Math.min(cellEnd, start) - cursor);
         const after = Math.max(0, cellEnd - Math.max(cursor, end));

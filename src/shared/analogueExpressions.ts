@@ -10,13 +10,14 @@ export const DEFAULT_ANALOGUE_CONTEXT: AnalogueContext = {
 
 export const ANALOGUE_EXPRESSION_MAX_LENGTH = 2_000;
 export const ANALOGUE_CURVE_INTERVALS = 64;
+export const UNDULATE_SEQUENCE_MAX_VALUES = 10_000;
 const MAX_TOKENS = 512;
 const MAX_ABS_RESULT = 1_000_000_000;
 
 type Token =
   | { kind: 'number'; value: number }
   | { kind: 'identifier'; value: string }
-  | { kind: 'operator'; value: '+' | '-' | '*' | '/' | '**' }
+  | { kind: 'operator'; value: '+' | '-' | '*' | '/' | '%' | '**' }
   | { kind: 'left' | 'right' | 'comma' | 'end' };
 
 type ExpressionNode =
@@ -25,7 +26,7 @@ type ExpressionNode =
   | { kind: 'unary'; operator: '+' | '-'; value: ExpressionNode }
   | {
       kind: 'binary';
-      operator: '+' | '-' | '*' | '/' | '**';
+      operator: '+' | '-' | '*' | '/' | '%' | '**';
       left: ExpressionNode;
       right: ExpressionNode;
     }
@@ -72,7 +73,13 @@ function tokenize(source: string): Token[] {
       } else if (char === '*' && source[index + 1] === '*') {
         tokens.push({ kind: 'operator', value: '**' });
         index += 2;
-      } else if (char === '+' || char === '-' || char === '*' || char === '/') {
+      } else if (
+        char === '+'
+        || char === '-'
+        || char === '*'
+        || char === '/'
+        || char === '%'
+      ) {
         tokens.push({ kind: 'operator', value: char });
         index++;
       } else {
@@ -135,6 +142,8 @@ class Parser {
         left = { kind: 'binary', operator: '*', left, right: this.unary() };
       } else if (this.operator('/')) {
         left = { kind: 'binary', operator: '/', left, right: this.unary() };
+      } else if (this.operator('%')) {
+        left = { kind: 'binary', operator: '%', left, right: this.unary() };
       } else {
         return left;
       }
@@ -242,11 +251,15 @@ function evaluateNode(
     if (node.operator === '/' && right === 0) {
       throw new AnalogueExpressionError('division by zero');
     }
+    if (node.operator === '%' && right === 0) {
+      throw new AnalogueExpressionError('modulo by zero');
+    }
     const value = node.operator === '+' ? left + right
       : node.operator === '-' ? left - right
         : node.operator === '*' ? left * right
           : node.operator === '/' ? left / right
-            : left ** right;
+            : node.operator === '%' ? left % right
+              : left ** right;
     return finite(value);
   }
   const args = node.arguments.map((argument) => evaluateNode(argument, variables, random));
@@ -271,6 +284,33 @@ function parseExpression(source: string): ExpressionNode {
   return new Parser(tokenize(source)).parse();
 }
 
+function sequenceExpressionBody(source: string): { body: string; count: number } {
+  if (source.length > ANALOGUE_EXPRESSION_MAX_LENGTH) {
+    throw new AnalogueExpressionError(
+      `expression must contain 1 to ${ANALOGUE_EXPRESSION_MAX_LENGTH} characters`,
+    );
+  }
+  const match = source.trim().match(
+    /^\[\s*([\s\S]+?)\s+for\s+i\s+in\s+range\(\s*(\d+)\s*\)\s*\]$/,
+  );
+  if (!match) {
+    throw new AnalogueExpressionError(
+      'generated sequences must use [expression for i in range(N)]',
+    );
+  }
+  const count = Number(match[2]);
+  if (!Number.isSafeInteger(count) || count < 0 || count > UNDULATE_SEQUENCE_MAX_VALUES) {
+    throw new AnalogueExpressionError(
+      `generated sequence length must be from 0 to ${UNDULATE_SEQUENCE_MAX_VALUES}`,
+    );
+  }
+  return { body: match[1]!, count };
+}
+
+function rejectSequenceRandom(): number {
+  throw new AnalogueExpressionError('rnd() is not supported in generated sequences');
+}
+
 export function evaluateAnalogueScalar(
   source: string,
   context: AnalogueContext,
@@ -284,6 +324,36 @@ export function evaluateAnalogueScalar(
     pi: Math.PI,
     ...extraVariables,
   }, seededRandom(expressionSeed(source, documentSeed)));
+}
+
+export function evaluateUndulateSequence(
+  source: string,
+  context: AnalogueContext = DEFAULT_ANALOGUE_CONTEXT,
+): number[] {
+  const { body, count } = sequenceExpressionBody(source);
+  const tree = parseExpression(body);
+  const values: number[] = [];
+  for (let i = 0; i < count; i++) {
+    values.push(evaluateNode(tree, {
+      VDDA: context.vdda,
+      VSSA: context.vssa,
+      pi: Math.PI,
+      i,
+    }, rejectSequenceRandom));
+  }
+  return values;
+}
+
+export function validateUndulateSequence(
+  source: string,
+  context: AnalogueContext = DEFAULT_ANALOGUE_CONTEXT,
+): string | null {
+  try {
+    evaluateUndulateSequence(source, context);
+    return null;
+  } catch (error) {
+    return error instanceof Error ? error.message : 'invalid generated sequence';
+  }
 }
 
 export function curveExpressionBody(source: string): string | null {

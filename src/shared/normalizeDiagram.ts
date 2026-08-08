@@ -42,29 +42,42 @@ function cloneDiagram(diagram: DiagramState): DiagramState {
   return JSON.parse(JSON.stringify(diagram)) as DiagramState;
 }
 
+function normalizeDurationTicks(value: unknown, fallback: number): number {
+  if (value === 0) return 0;
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+    ? Math.max(1, Math.round(value))
+    : fallback;
+}
+
+function normalizeDutyTicks(value: unknown, durationTicks: number): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
+  return Math.max(0, Math.min(durationTicks, Math.round(value)));
+}
+
 function normalizeSignalTiming(timing: SignalTiming): void {
+  const rawTicksPerStep = timing.ticksPerStep;
   timing.ticksPerStep = Math.max(
     1,
-    Math.min(1024, Math.floor(timing.ticksPerStep || 1)),
+    Math.min(
+      1024,
+      typeof rawTicksPerStep === 'number' && Number.isFinite(rawTicksPerStep)
+        ? Math.floor(rawTicksPerStep)
+        : 1,
+    ),
   );
-  timing.phaseTicks = Math.round(timing.phaseTicks || 0);
+  timing.phaseTicks = typeof timing.phaseTicks === 'number' && Number.isFinite(timing.phaseTicks)
+    ? Math.round(timing.phaseTicks)
+    : 0;
   timing.cells = (timing.cells ?? []).map((source) => {
-    const durationTicks = Math.max(
-      1,
-      Math.round(source?.durationTicks || timing.ticksPerStep),
-    );
-    return {
+    const durationTicks = normalizeDurationTicks(source?.durationTicks, timing.ticksPerStep);
+    const normalized = {
       ...source,
       durationTicks,
-      ...(source?.dutyTicks !== undefined
-        ? {
-            dutyTicks: Math.max(
-              0,
-              Math.min(durationTicks, Math.round(source.dutyTicks)),
-            ),
-          }
-        : {}),
     };
+    const dutyTicks = normalizeDutyTicks(source?.dutyTicks, durationTicks);
+    if (dutyTicks === undefined) delete normalized.dutyTicks;
+    else normalized.dutyTicks = dutyTicks;
+    return normalized;
   });
   if (timing.sourceFields) {
     timing.sourceFields = { ...timing.sourceFields };
@@ -173,23 +186,16 @@ function normalizeSignal(signal: Signal, totalSteps: number): void {
       normalizeSignalTiming(signal.digitalTiming);
       const ticksPerStep = signal.digitalTiming.ticksPerStep;
       signal.digitalTiming.cells = signal.digitalTiming.cells.map((source, index) => {
-        const durationTicks = Math.max(
-          1,
-          Math.round(source.durationTicks || ticksPerStep),
-        );
-        return {
+        const durationTicks = normalizeDurationTicks(source.durationTicks, ticksPerStep);
+        const normalized = {
           ...source,
           state: source.state ?? signal.states[index] ?? '0',
           durationTicks,
-          ...(source.dutyTicks !== undefined
-            ? {
-                dutyTicks: Math.max(
-                  0,
-                  Math.min(durationTicks, Math.round(source.dutyTicks)),
-                ),
-              }
-          : {}),
         };
+        const dutyTicks = normalizeDutyTicks(source.dutyTicks, durationTicks);
+        if (dutyTicks === undefined) delete normalized.dutyTicks;
+        else normalized.dutyTicks = dutyTicks;
+        return normalized;
       });
       signal.states = signal.digitalTiming.cells.map((cell) => cell.state);
       if (signal.stepGaps) {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Signal } from '../shared/types';
 import {
   laneLogicalWidth,
+  stepLogicalX,
   stepLogicalCenter,
   stepLogicalXEnd,
   stepAtLogicalXForSignal,
@@ -86,5 +87,26 @@ describe('laneTiming', () => {
     expect(laneLogicalWidth(coarse, 4)).toBe(160);
     expect(stepAtLogicalXForSignal(120, fine, 4)).toBe(6);
     expect(stepAtLogicalXForSignal(120, coarse, 4)).toBe(3);
+  });
+
+  it('skips a collapsed first cell during geometry and hit testing', () => {
+    const sig: Signal = {
+      ...base,
+      states: ['p', 'p', 'p'],
+      digitalTiming: {
+        ticksPerStep: 1,
+        phaseTicks: 0,
+        cells: [
+          { state: 'p', durationTicks: 0 },
+          { state: 'p', durationTicks: 1 },
+          { state: 'p', durationTicks: 2 },
+        ],
+      },
+    };
+    expect(stepLogicalXEnd(sig, 0)).toBe(0);
+    expect(stepLogicalX(sig, 1)).toBe(0);
+    expect(laneLogicalWidth(sig, 3)).toBe(120);
+    expect(stepAtLogicalXForSignal(0, sig, 3)).toBe(1);
+    expect(stepAtLogicalXForSignal(40, sig, 3)).toBe(2);
   });
 });

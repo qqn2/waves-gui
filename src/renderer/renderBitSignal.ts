@@ -39,6 +39,11 @@ function isExtendedTransientState(state: BitState): boolean {
   return state === 'i' || state === 'I' || state === 'm' || state === 'M';
 }
 
+function timingDutyCycle(cell: { durationTicks: number; dutyTicks?: number } | undefined): number {
+  if (!cell || cell.durationTicks <= 0) return cell?.dutyTicks === undefined ? 0.5 : 0;
+  return cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks;
+}
+
 function drawDataCell(
   ctx: CanvasRenderingContext2D,
   state: BitState,
@@ -273,6 +278,11 @@ export function renderBitSignal(
     const x = stepLogicalX(signal, i) * scale - transform.scrollX;
     const nextX = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
 
+    if (nextX <= x) {
+      prevY = stateToY(st, yHigh, yLow, yMid);
+      continue;
+    }
+
     if (extendedDigital && isExtendedDataState(st)) {
       if (pathOpen) {
         ctx.stroke();
@@ -320,10 +330,7 @@ export function renderBitSignal(
         resumeAtCurrentState ? yMid : prevY,
         baseStroke,
         clockSlewLogical * scale,
-        signal.digitalTiming?.cells[i]?.dutyTicks === undefined
-          ? 0.5
-          : signal.digitalTiming.cells[i]!.dutyTicks!
-            / signal.digitalTiming.cells[i]!.durationTicks,
+        timingDutyCycle(signal.digitalTiming?.cells[i]),
         baseDash,
         signalStrokeWidth(signal),
       );
@@ -372,9 +379,7 @@ export function renderBitSignal(
         yHigh,
         yLow,
         ctx.lineWidth,
-        timingCell?.dutyTicks === undefined
-          ? 0.5
-          : timingCell.dutyTicks / timingCell.durationTicks,
+        timingDutyCycle(timingCell),
         clockSlewLogical * scale,
       );
       prevY = clockCycleEndY(st, yHigh, yLow);
@@ -459,6 +464,7 @@ export function renderBitSignal(
     if ((states[i] ?? '0') !== 'x') continue;
     const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
     const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    if (x2 <= x1) continue;
     ctx.fillStyle = hatch ?? X_FILL;
     ctx.fillRect(x1, yHigh, x2 - x1, yLow - yHigh);
     ctx.strokeStyle = X_STROKE;
@@ -477,6 +483,7 @@ export function renderBitSignal(
     if (!signal.stepGaps?.[i]) continue;
     const x1 = stepLogicalX(signal, i) * scale - transform.scrollX;
     const x2 = stepLogicalXEnd(signal, i) * scale - transform.scrollX;
+    if (x2 <= x1) continue;
     drawStepGap(ctx, x1, x2, yHigh, yLow, gapStroke, gapFill);
   }
   ctx.restore();

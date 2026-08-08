@@ -37,6 +37,12 @@ licensed; these compact cases are synthetic adaptations rather than copied
 output artifacts. The shared sub-cycle case points to the separately vendored
 WaveDrom reference used by that compatibility subset.
 
+`complex-waveform.json` is the exact upstream-style mixed waveform regression
+fixture. It covers nested groups, digital state families, analogue curves,
+generated analogue values, generated PWM duty cycles, and generated periods
+with a leading zero. Its generated expressions use the bounded subset
+documented in the product compatibility contract.
+
 `visual/reference` contains SVG output produced by the same pinned Undulate
 revision for the first digital and analogue tutorials. These MIT-licensed
 reference artifacts are kept offline so CI never depends on the documentation

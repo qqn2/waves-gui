@@ -56,6 +56,9 @@ Undulate extensions include:
 - expanded node identifiers and endpoint markers;
 - integer sub-step timing, repeat, per-cell periods, duty-cycle arrays, phase,
   and digital slew;
+- bounded generated numeric sequences for analogue values, period arrays, and
+  duty-cycle arrays using `[expression for i in range(N)]` (up to 10,000
+  values), including zero-period collapsed source cells;
 - analogue hold, step, capacitive, sampled-curve, metastability, and impulse
   cells;
 - voltage rails, safe documented expressions, deterministic random seeds,
@@ -67,7 +70,8 @@ Undulate extensions include:
 
 Safe analogue expressions use a bounded parser for documented constants,
 arithmetic, and math functions. Imported JavaScript or Python is never
-executed.
+executed. Generated expressions are retained on save while their modeled
+values remain unchanged; edits export concrete arrays.
 
 ## Rendering and export
 

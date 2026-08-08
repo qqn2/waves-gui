@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { paintDigitalTimingTicks } from './fineTiming';
+import {
+  paintDigitalTimingTicks,
+  timingForCellCount,
+  timingDurationTicks,
+} from './fineTiming';
 
 describe('fine timing paint', () => {
+  it('preserves an explicit zero period while keeping duration sums non-negative', () => {
+    const timing = timingForCellCount(3, 1, { periods: [0, 1, 2] });
+    expect(timing.cells.map((cell) => cell.durationTicks)).toEqual([0, 1, 2]);
+    expect(timingDurationTicks(timing)).toBe(3);
+  });
+
   it('splits a timing cell at painted document ticks without changing duration', () => {
     const cells = paintDigitalTimingTicks(
       {

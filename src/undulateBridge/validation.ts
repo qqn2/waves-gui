@@ -2,7 +2,11 @@ import {
   MAX_ANALOGUE_ABS_VALUE,
   MAX_ANALOGUE_SAMPLES_PER_CELL,
 } from '../shared/analogue';
-import { validateAnalogueExpression } from '../shared/analogueExpressions';
+import {
+  evaluateUndulateSequence,
+  validateAnalogueExpression,
+  validateUndulateSequence,
+} from '../shared/analogueExpressions';
 import {
   isSafeUndulateColorInput,
   isSafeAnnotationDasharray,
@@ -327,8 +331,20 @@ function scanAnalogueValues(
   path: string,
   findings: UndulateFinding[],
 ): void {
+  if (typeof signal.analogue === 'string') {
+    const error = validateUndulateSequence(signal.analogue);
+    if (error) {
+      findings.push(invalid(
+        `${path}.analogue`,
+        'generated analogue sequence',
+        error,
+      ));
+    }
+    return;
+  }
   if (!Array.isArray(signal.analogue) || typeof signal.wave !== 'string') return;
-  const consumingKinds = [...signal.wave].filter((char) => /[sca]/.test(char));
+  const repeat = typeof signal.repeat === 'number' ? signal.repeat : 1;
+  const consumingKinds = [...signal.wave.repeat(repeat)].filter((char) => /[sca]/.test(char));
   signal.analogue.forEach((value, index) => {
     const valuePath = `${path}.analogue[${index}]`;
     if (typeof value === 'string') {
@@ -375,6 +391,17 @@ function scanSignal(
       }
     } else if (field === 'analogue') {
       scanAnalogueValues(signal, path, findings);
+    } else if (field === 'periods' || field === 'duty_cycles') {
+      if (typeof signal[field] === 'string') {
+        const error = validateUndulateSequence(signal[field] as string);
+        if (error) {
+          findings.push(invalid(
+            fieldPath,
+            `generated ${field} sequence`,
+            error,
+          ));
+        }
+      }
     }
   }
 }
@@ -485,7 +512,18 @@ function isFinitePointList(value: unknown): value is Array<[number, number]> {
 
 function validateAnalogueSignal(signal: Record<string, unknown>): string | null {
   if (signal.analogue === undefined) return null;
-  if (!Array.isArray(signal.analogue)) return 'analogue must be an array';
+  let values: unknown[];
+  if (typeof signal.analogue === 'string') {
+    try {
+      values = evaluateUndulateSequence(signal.analogue as string);
+    } catch (error) {
+      return `analogue generated sequence is invalid: ${error instanceof Error ? error.message : 'invalid sequence'}`;
+    }
+  } else if (Array.isArray(signal.analogue)) {
+    values = signal.analogue;
+  } else {
+    return 'analogue must be an array or a generated sequence string';
+  }
   if (typeof signal.wave !== 'string') return 'analogue signal requires a wave string';
   if (
     signal.repeat !== undefined
@@ -498,13 +536,14 @@ function validateAnalogueSignal(signal: Record<string, unknown>): string | null 
   ) {
     return 'analogue repeat must be an integer from 1 to 10000';
   }
-  const consumingKinds = [...signal.wave].filter((char) => /[sca]/.test(char));
-  if (consumingKinds.length !== signal.analogue.length) {
+  const repeat = typeof signal.repeat === 'number' ? signal.repeat : 1;
+  const consumingKinds = [...signal.wave.repeat(repeat)].filter((char) => /[sca]/.test(char));
+  if (consumingKinds.length !== values.length) {
     return 'analogue value count must match s/c/a wave cells';
   }
   for (let index = 0; index < consumingKinds.length; index++) {
     const kind = consumingKinds[index]!;
-    const value = signal.analogue[index];
+    const value = values[index];
     if (kind === 'a') {
       if (typeof value === 'string') {
         const error = validateAnalogueExpression(value, 'curve');
@@ -635,25 +674,52 @@ function validateDigitalTiming(signal: Record<string, unknown>): string | null {
   const expandedLength = typeof signal.wave === 'string'
     ? signal.wave.length * repeat
     : 0;
-  for (const field of ['periods', 'duty_cycles']) {
-    const array = signal[field];
+  const generatedValues = (field: 'periods' | 'duty_cycles'): number[] | null => {
+    if (typeof signal[field] !== 'string') return null;
+    try {
+      return evaluateUndulateSequence(signal[field] as string);
+    } catch (error) {
+      throw new Error(
+        `${field} generated sequence is invalid: ${error instanceof Error ? error.message : 'invalid sequence'}`,
+      );
+    }
+  };
+  let resolvedPeriods: number[] | undefined;
+  let resolvedDuties: number[] | undefined;
+  try {
+    resolvedPeriods = Array.isArray(signal.periods)
+      ? signal.periods as number[]
+      : generatedValues('periods') ?? undefined;
+    resolvedDuties = Array.isArray(signal.duty_cycles)
+      ? signal.duty_cycles as number[]
+      : generatedValues('duty_cycles') ?? undefined;
+  } catch (error) {
+    return error instanceof Error ? error.message : 'invalid generated timing sequence';
+  }
+  for (const [field, array] of [
+    ['periods', resolvedPeriods],
+    ['duty_cycles', resolvedDuties],
+  ] as const) {
     if (array === undefined) continue;
-    if (!Array.isArray(array) || array.length !== expandedLength) {
+    if (array.length !== expandedLength) {
       return `${field} must contain exactly one value per expanded wave cell`;
     }
   }
   const periods = [
     ...(signal.period !== undefined ? [signal.period] : []),
-    ...(Array.isArray(signal.periods) ? signal.periods : []),
+    ...(resolvedPeriods ?? []),
   ];
   if (periods.some((value) =>
-    typeof value !== 'number' || !Number.isFinite(value) || value <= 0
+    typeof value !== 'number' || !Number.isFinite(value) || value < 0
   )) {
-    return 'period and periods must contain finite positive numbers';
+    return 'period and periods must contain finite non-negative numbers';
+  }
+  if (expandedLength > 0 && periods.length > 0 && periods.every((value) => value === 0)) {
+    return 'period and periods must contain at least one positive value';
   }
   const duties = [
     ...(signal.duty_cycle !== undefined ? [signal.duty_cycle] : []),
-    ...(Array.isArray(signal.duty_cycles) ? signal.duty_cycles : []),
+    ...(resolvedDuties ?? []),
   ];
   if (duties.some((value) =>
     typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1
@@ -673,13 +739,13 @@ function validateDigitalTiming(signal: Record<string, unknown>): string | null {
   const timingValues: number[] = [];
   if (typeof signal.phase === 'number') timingValues.push(signal.phase);
   if (typeof signal.period === 'number') timingValues.push(signal.period);
-  if (Array.isArray(signal.periods)) timingValues.push(...signal.periods as number[]);
+  if (resolvedPeriods) timingValues.push(...resolvedPeriods);
   for (let index = 0; index < expandedLength; index++) {
-    const period = Array.isArray(signal.periods)
-      ? signal.periods[index]
+    const period = resolvedPeriods
+      ? resolvedPeriods[index]
       : signal.period ?? 1;
-    const duty = Array.isArray(signal.duty_cycles)
-      ? signal.duty_cycles[index]
+    const duty = resolvedDuties
+      ? resolvedDuties[index]
       : signal.duty_cycle;
     if (typeof period === 'number' && typeof duty === 'number') {
       timingValues.push(period * duty);
@@ -739,6 +805,9 @@ function waveDromValidationView(root: Record<string, unknown>): UndulateRoot {
       if (typeof signal.wave === 'string') {
         signal.wave = signal.wave.replace(/[sca mMlLhHiI]/g, '.');
       }
+      if (typeof signal.periods === 'string') delete signal.periods;
+      if (typeof signal.duty_cycles === 'string') delete signal.duty_cycles;
+      if (typeof signal.analogue === 'string') delete signal.analogue;
       return null;
     });
   }

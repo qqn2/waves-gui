@@ -70,10 +70,14 @@ export function timingForCellCount(
   const cells = Array.from({ length: Math.max(0, cellCount) }, (_, index) => {
     const duration = options.periods?.[index] ?? options.period ?? 1;
     const duty = options.dutyCycles?.[index] ?? options.dutyCycle;
-    const durationTicks = Math.max(1, ticksFor(duration, ticksPerStep));
+    const validDuration = Number.isFinite(duration) && duration >= 0;
+    const durationTicks = duration === 0
+      ? 0
+      : validDuration ? Math.max(1, ticksFor(duration, ticksPerStep)) : 1;
+    const validDuty = typeof duty === 'number' && Number.isFinite(duty);
     return {
       durationTicks,
-      ...(duty !== undefined
+      ...(validDuty
         ? {
             dutyTicks: Math.max(
               0,
@@ -112,7 +116,7 @@ export function timingDurationTicks(
   timing: Pick<SignalTiming, 'cells'>,
 ): number {
   return timing.cells.reduce(
-    (total, cell) => total + Math.max(1, Math.round(cell.durationTicks)),
+    (total, cell) => total + Math.max(0, Math.round(cell.durationTicks)),
     0,
   );
 }
@@ -132,9 +136,7 @@ export function signalDurationTicks(
   const timing = signalTiming(signal);
   if (timing) {
     const timingTicks = Math.max(1, timing.ticksPerStep);
-    return Math.ceil(
-      timingDurationTicks(timing) * ticksPerStep / timingTicks,
-    );
+    return Math.ceil(timingDurationTicks(timing) * ticksPerStep / timingTicks);
   }
   if (signal.type === 'bit') {
     return Math.max(0, signal.states.length) * ticksPerStep;
@@ -305,7 +307,7 @@ export function eraseDigitalTimingTicksWithMapping(
   for (const cell of timing.cells) {
     const outputStart = output.length;
     const cellStart = cursor;
-    const cellEnd = cursor + Math.max(1, Math.round(cell.durationTicks));
+    const cellEnd = cursor + Math.max(0, Math.round(cell.durationTicks));
     cursor = cellEnd;
     const overlapStart = Math.max(cellStart, lo);
     const overlapEnd = Math.min(cellEnd, hiExclusive);

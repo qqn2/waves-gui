@@ -7,6 +7,7 @@ import {
   validateWavedromJSON,
   type WdRoot,
 } from '../wavedromBridge';
+import type { Signal } from '../shared/types';
 import type { UndulateRoot } from './types';
 import {
   fromUndulateJSON,
@@ -17,6 +18,98 @@ import {
 } from './undulateJSON';
 
 describe('Undulate JSON bridge', () => {
+  it('loads the complex upstream waveform fixture without editing its source', () => {
+    const root = JSON.parse(readFileSync(
+      join(process.cwd(), 'tests/fixtures/undulate/complex-waveform.json'),
+      'utf8',
+    )) as UndulateRoot;
+    expect(root.signal[0]).toMatchObject({
+      name: 'Alfa',
+      wave: '01.zx=ud.24.53',
+    });
+    expect(root.signal[root.signal.length - 1]).toEqual(expect.arrayContaining([
+      'test 7',
+      expect.objectContaining({ name: 'CK', repeat: 2 }),
+      expect.objectContaining({ name: 'GBF', repeat: 4 }),
+    ]));
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const signals: Array<{ name: string; signal: typeof diagram.signals[number] }> = [];
+    const walk = (entries: typeof diagram.signals) => {
+      for (const signal of entries) {
+        if (signal.type === 'group') walk(signal.children);
+        else if (signal.type !== 'spacer') signals.push({ name: signal.name, signal });
+      }
+    };
+    walk(diagram.signals);
+    const find = (name: string): Signal | undefined => {
+      const signal = signals.find((item) => item.name === name)?.signal;
+      return signal?.type === 'group' ? undefined : signal;
+    };
+    const gbf = find('GBF');
+    const intS = find('INT_S');
+    const intC = find('INT_C');
+    const pwm = find('pwm');
+    const adaptiveClock = find('adaptive_clock');
+    expect(gbf?.type === 'analogue' ? gbf.analogueCells : undefined).toHaveLength(16);
+    expect(gbf?.type === 'analogue'
+      ? gbf.analogueCells?.filter((cell) => cell.kind === 'samples')
+      : undefined).toHaveLength(4);
+    expect(intS?.undulateGeneratedSequences?.analogue?.values)
+      .toEqual(expect.arrayContaining([0.1, 0.5, 0.9]));
+    expect(intC?.undulateGeneratedSequences?.analogue?.values?.[0]).toBeCloseTo(1.3);
+    expect(pwm?.undulateGeneratedSequences?.duty_cycles?.values).toHaveLength(16);
+    expect(adaptiveClock?.undulateGeneratedSequences?.periods?.values?.[0]).toBe(0);
+
+    const exported = toUndulateJSON(diagram);
+    const findRaw = (entries: unknown[], name: string): Record<string, unknown> | undefined => {
+      for (const entry of entries) {
+        if (Array.isArray(entry)) {
+          const nested = findRaw(entry.slice(1), name);
+          if (nested) return nested;
+        } else if (
+          entry
+          && typeof entry === 'object'
+          && (entry as Record<string, unknown>).name === name
+        ) {
+          return entry as Record<string, unknown>;
+        }
+      }
+      return undefined;
+    };
+    expect(findRaw(exported.signal, 'INT_S')?.analogue)
+      .toBe('[0.4*(i%4)+0.1 for i in range(16)]');
+    expect(findRaw(exported.signal, 'INT_C')?.analogue)
+      .toBe('[0.4*(3-i%4)+0.1 for i in range(16)]');
+    expect(findRaw(exported.signal, 'pwm')?.duty_cycles)
+      .toBe('[i/16 for i in range(16)]');
+    expect(findRaw(exported.signal, 'adaptive_clock')?.periods)
+      .toBe('[i/8 for i in range(16)]');
+
+    const edited = fromUndulateJSON(root);
+    const editedSignals: Signal[] = [];
+    const collectEdited = (entries: typeof edited.signals) => {
+      for (const signal of entries) {
+        if (signal.type === 'group') collectEdited(signal.children);
+        else if (signal.type !== 'spacer') editedSignals.push(signal);
+      }
+    };
+    collectEdited(edited.signals);
+    const editedByName = (name: string) => editedSignals.find((signal) => signal.name === name);
+    const editedIntS = editedByName('INT_S');
+    const editedPwm = editedByName('pwm');
+    const editedAdaptive = editedByName('adaptive_clock');
+    if (editedIntS?.type === 'analogue') editedIntS.analogueCells![0]!.value += 0.1;
+    if (editedPwm?.digitalTiming) editedPwm.digitalTiming.cells[1]!.dutyTicks = 0;
+    if (editedAdaptive?.digitalTiming) editedAdaptive.digitalTiming.cells[1]!.durationTicks = 4;
+    const editedExport = toUndulateJSON(edited);
+    expect(Array.isArray(findRaw(editedExport.signal, 'INT_S')?.analogue)).toBe(true);
+    expect(findRaw(editedExport.signal, 'INT_C')?.analogue)
+      .toBe('[0.4*(3-i%4)+0.1 for i in range(16)]');
+    expect(Array.isArray(findRaw(editedExport.signal, 'pwm')?.duty_cycles)).toBe(true);
+    expect(Array.isArray(findRaw(editedExport.signal, 'adaptive_clock')?.periods)).toBe(true);
+  });
+
   it('detects timing-only Undulate documents', () => {
     expect(isUndulateJSON({
       signal: [{
@@ -26,6 +119,24 @@ describe('Undulate JSON bridge', () => {
         periods: [1, 0.5],
       }],
     })).toBe(true);
+  });
+
+  it('reports generated-field syntax and cardinality at the source path', () => {
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'bad periods',
+        wave: 'pp',
+        periods: '[i for x in range(2)]',
+      }],
+    })).toContain('signal[0].periods');
+    expect(validateUndulateJSON({
+      signal: [{
+        name: 'bad analogue count',
+        wave: 'ss',
+        repeat: 2,
+        analogue: '[i for i in range(2)]',
+      }],
+    })).toContain('analogue value count');
   });
 
   it('rejects timing values that exceed the lossless tick ceiling', () => {
@@ -471,7 +582,7 @@ describe('Undulate JSON bridge', () => {
       signal: [{
         name: 'repeating analogue',
         wave: 'sc.',
-        analogue: [0.5, 1.25],
+        analogue: [0.5, 1.25, 0.5, 1.25],
         repeat: 2,
       }],
     } satisfies UndulateRoot;
@@ -489,7 +600,7 @@ describe('Undulate JSON bridge', () => {
     ]);
     expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
       wave: 'sc.',
-      analogue: [0.5, 1.25],
+      analogue: [0.5, 1.25, 0.5, 1.25],
       repeat: 2,
     });
     if (!signal || signal.type !== 'analogue' || !signal.analogueCells) {

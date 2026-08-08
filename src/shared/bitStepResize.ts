@@ -78,7 +78,7 @@ export function deleteTimingFlags(
   let outputIndex = 0;
   let cursor = 0;
   sourceCells.forEach((cell, index) => {
-    const duration = Math.max(1, Math.round(cell.durationTicks));
+    const duration = Math.max(0, Math.round(cell.durationTicks));
     const cellEnd = cursor + duration;
     const before = Math.max(0, Math.min(cellEnd, start) - cursor);
     const after = Math.max(0, cellEnd - Math.max(cursor, end));

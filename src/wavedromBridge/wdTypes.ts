@@ -6,9 +6,10 @@ export interface WdSignal {
   period?: number;
   phase?: number;
   repeat?: number;
-  periods?: number[];
+  periods?: number[] | string;
   duty_cycle?: number;
-  duty_cycles?: number[];
+  duty_cycles?: number[] | string;
+  analogue?: unknown[] | string;
   slewing?: number;
   skin?: string;
   [key: string]: unknown;

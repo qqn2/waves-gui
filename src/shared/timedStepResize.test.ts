@@ -5,6 +5,7 @@ import {
   canResizeTimingToDuration,
   deleteMajorStepInTiming,
   insertMajorStepInTiming,
+  resizeTimingToDuration,
   timingBoundaryAtMajorStep,
 } from './timedStepResize';
 import type { DigitalTiming } from './types';
@@ -93,5 +94,12 @@ describe('native timing boundaries', () => {
     expect(canInsertMajorStepInTiming(value, 3)).toBe(true);
     expect(insertMajorStepInTiming(value, 3)).toBe(false);
     expect(value.cells.map((cell) => cell.durationTicks)).toEqual([2, 2]);
+  });
+
+  it('advances past collapsed source cells without consuming resize duration', () => {
+    const value = timing([0, 2]);
+    expect(canResizeTimingToDuration(value, 2)).toBe(true);
+    expect(resizeTimingToDuration(value, 2)).toBe(true);
+    expect(value.cells.map((cell) => cell.durationTicks)).toEqual([0, 2]);
   });
 });

@@ -14,7 +14,7 @@ function cloneCell(cell: TimedCell, durationTicks: number, offsetTicks = 0): Tim
 
 export function timingCellDuration(timing: SignalTiming): number {
   return timing.cells.reduce(
-    (sum, cell) => sum + Math.max(1, Math.round(cell.durationTicks)),
+    (sum, cell) => sum + Math.max(0, Math.round(cell.durationTicks)),
     0,
   );
 }
@@ -33,7 +33,7 @@ export function resizeTimingToDuration(
 
   while (remaining > 0 && index < source.length) {
     const cell = source[index]!;
-    const duration = Math.min(Math.max(1, Math.round(cell.durationTicks)), remaining);
+    const duration = Math.min(Math.max(0, Math.round(cell.durationTicks)), remaining);
     cells.push(cloneCell(cell, duration));
     remaining -= duration;
     index += 1;
@@ -82,7 +82,7 @@ export function timingBoundaryAtMajorStep(
   if (target > total) return { kind: 'after', index: timing.cells.length, tick: target };
   let cursor = 0;
   for (let index = 0; index < timing.cells.length; index++) {
-    const duration = Math.max(1, Math.round(timing.cells[index]!.durationTicks));
+    const duration = Math.max(0, Math.round(timing.cells[index]!.durationTicks));
     if (target === cursor) return { kind: 'exact', index, tick: target };
     if (target < cursor + duration) {
       return { kind: 'inside', index, offsetTicks: target - cursor, tick: target };
@@ -103,7 +103,7 @@ function isClockCell(cell: TimedCell | undefined): boolean {
 function rangeSplitsClockCell(timing: SignalTiming, start: number, end: number): boolean {
   let cursor = 0;
   for (const cell of timing.cells) {
-    const cellEnd = cursor + Math.max(1, Math.round(cell.durationTicks));
+    const cellEnd = cursor + Math.max(0, Math.round(cell.durationTicks));
     if (
       isClockCell(cell)
       && ((start > cursor && start < cellEnd) || (end > cursor && end < cellEnd))

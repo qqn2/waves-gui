@@ -100,7 +100,7 @@ export interface AnalogueCell {
 }
 
 export interface TimedCell {
-  /** Positive duration in document ticks. */
+  /** Non-negative duration in document ticks; imported collapsed cells may be zero. */
   durationTicks: number;
   /** Optional high/low boundary preserved for native timing round-trips. */
   dutyTicks?: number;
@@ -179,6 +179,15 @@ export interface Signal {
     analogue: unknown[];
     fingerprint: string;
   };
+  /** Original bounded generated Undulate arrays, retained until their modeled values change. */
+  undulateGeneratedSequences?: Partial<Record<
+    'analogue' | 'periods' | 'duty_cycles',
+    {
+      source: string;
+      values: number[];
+      fingerprint: string;
+    }
+  >>;
   /** Display range. Defaults to Undulate's VSSA/VDDA context (0..1.8). */
   analogueMin?: number;
   analogueMax?: number;

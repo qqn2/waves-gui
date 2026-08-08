@@ -111,6 +111,11 @@ function isExtendedTransientState(state: BitState): boolean {
   return state === 'i' || state === 'I' || state === 'm' || state === 'M';
 }
 
+function timingDutyCycle(cell: { durationTicks: number; dutyTicks?: number } | undefined): number {
+  if (!cell || cell.durationTicks <= 0) return cell?.dutyTicks === undefined ? 0.5 : 0;
+  return cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks;
+}
+
 function svgExtendedDataCell(
   state: BitState,
   x: number,
@@ -259,6 +264,11 @@ function svgBitSignal(
     const x = stepLogicalX(signal, i) * hscale;
     const nextX = stepLogicalXEnd(signal, i) * hscale;
 
+    if (nextX <= x) {
+      prevY = bitY(st, yHigh, yLow, yMid);
+      continue;
+    }
+
     if (extendedDigital && isExtendedDataState(st)) {
       flushPath();
       let runEnd = i + 1;
@@ -296,10 +306,7 @@ function svgBitSignal(
         resumeAtCurrentState ? yMid : prevY,
         color,
         clockSlewLogical * hscale,
-        signal.digitalTiming?.cells[i]?.dutyTicks === undefined
-          ? 0.5
-          : signal.digitalTiming.cells[i]!.dutyTicks!
-            / signal.digitalTiming.cells[i]!.durationTicks,
+        timingDutyCycle(signal.digitalTiming?.cells[i]),
       );
       parts.push(transient.svg);
       prevY = transient.endY;
@@ -336,9 +343,7 @@ function svgBitSignal(
         yHigh,
         yLow,
         color,
-        timingCell?.dutyTicks === undefined
-          ? 0.5
-          : timingCell.dutyTicks / timingCell.durationTicks,
+        timingDutyCycle(timingCell),
         clockSlewLogical * hscale,
       ));
       prevY = clockCycleEndY(st, yHigh, yLow);
@@ -407,6 +412,7 @@ function svgBitSignal(
     if (!signal.stepGaps?.[i]) continue;
     const x1 = stepLogicalX(signal, i) * hscale;
     const x2 = stepLogicalXEnd(signal, i) * hscale;
+    if (x2 <= x1) continue;
     parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
   }
 
@@ -442,6 +448,7 @@ function svgVectorSignal(
     const x1 = stepLogicalX(signal, seg.startStep) * hscale;
     const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * hscale;
     const span = x2 - x1;
+    if (span <= 0) continue;
     const stroke = esc(segmentBusStroke(seg, signal));
     const fill = esc(segmentBusFill(seg, signal));
 
@@ -474,6 +481,7 @@ function svgVectorSignal(
     if (!gaps[i]) continue;
     const x1 = stepLogicalX(signal, i) * hscale;
     const x2 = stepLogicalXEnd(signal, i) * hscale;
+    if (x2 <= x1) continue;
     parts.push(svgStepGap(x1, x2, yHigh, yLow, gapStroke, gapFill));
   }
 

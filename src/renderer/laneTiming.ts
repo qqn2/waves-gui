@@ -14,7 +14,10 @@ import { signalTiming } from '../shared/fineTiming';
 export function lanePeriod(signal: Signal): number {
   const timing = signalTiming(signal);
   if (timing?.cells.length) {
-    return timing.cells[0]!.durationTicks / timing.ticksPerStep;
+    const positive = timing.cells.find((cell) => cell.durationTicks > 0);
+    return positive
+      ? positive.durationTicks / timing.ticksPerStep
+      : 1;
   }
   const p = signal.period;
   if (p === undefined || p < 1) return 1;

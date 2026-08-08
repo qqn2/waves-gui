@@ -85,6 +85,11 @@ import {
   parseUndulateNodes,
   wavedromNodePattern,
 } from './nodes';
+import {
+  generatedSequenceFingerprint,
+  resolveUndulateGeneratedSequences,
+  type GeneratedSequenceSources,
+} from './generatedSequences';
 
 const ROOT_FIELDS = new Set([
   ...UNDULATE_PROPERTY_MANIFEST.root.supported,
@@ -265,6 +270,23 @@ function analogueCellsFingerprint(cells: AnalogueCell[]): string {
   })));
 }
 
+function analogueGeneratedValues(cells: AnalogueCell[]): number[] | null {
+  const values: number[] = [];
+  for (const cell of cells) {
+    if (cell.kind !== 'step' && cell.kind !== 'capacitive') continue;
+    if (!Number.isFinite(cell.value)) return null;
+    values.push(cell.value);
+  }
+  return values;
+}
+
+function sameGeneratedValues(
+  values: readonly number[],
+  source: { values: number[]; fingerprint: string },
+): boolean {
+  return generatedSequenceFingerprint(values) === source.fingerprint;
+}
+
 function analogueToUndulateEntry(
   signal: Signal,
   preserveExpressions: boolean,
@@ -328,7 +350,7 @@ function analogueToUndulateEntry(
     ...signalStyleToUndulate(signal.style),
   };
   const source = signal.undulateAnalogueRepeat;
-  return source && source.fingerprint === analogueCellsFingerprint(cells)
+  const compact = source && source.fingerprint === analogueCellsFingerprint(cells)
     ? {
         ...expanded,
         wave: source.wave,
@@ -336,6 +358,47 @@ function analogueToUndulateEntry(
         repeat: source.repeat,
       }
     : expanded;
+  const generated = signal.undulateGeneratedSequences?.analogue;
+  const generatedValues = analogueGeneratedValues(cells);
+  return preserveExpressions
+    && generated
+    && generatedValues
+    && sameGeneratedValues(generatedValues, generated)
+    ? { ...compact, analogue: generated.source }
+    : compact;
+}
+
+function timingDutyCycle(cell: { durationTicks: number; dutyTicks?: number }): number {
+  if (cell.durationTicks <= 0) return cell.dutyTicks === undefined ? 0.5 : 0;
+  return cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks;
+}
+
+function applyGeneratedTimingExpressions(
+  entry: WdSignal,
+  signal: Signal,
+  timing: SignalTiming,
+  preserveExpressions: boolean,
+): WdSignal {
+  if (!preserveExpressions) return entry;
+  const generated = signal.undulateGeneratedSequences;
+  if (!generated) return entry;
+  const periods = generated.periods;
+  if (periods) {
+    const values = timing.cells.map((cell) => cell.durationTicks / timing.ticksPerStep);
+    if (sameGeneratedValues(values, periods)) {
+      delete entry.period;
+      entry.periods = periods.source;
+    }
+  }
+  const duties = generated.duty_cycles;
+  if (duties) {
+    const values = timing.cells.map(timingDutyCycle);
+    if (sameGeneratedValues(values, duties)) {
+      delete entry.duty_cycle;
+      entry.duty_cycles = duties.source;
+    }
+  }
+  return entry;
 }
 
 function applyTimingFields(entry: WdSignal, timing: SignalTiming): WdSignal {
@@ -355,9 +418,7 @@ function applyTimingFields(entry: WdSignal, timing: SignalTiming): WdSignal {
     entry.periods = periods;
   }
 
-  const dutyCycles = timing.cells.map((cell) =>
-    cell.dutyTicks === undefined ? 0.5 : cell.dutyTicks / cell.durationTicks,
-  );
+  const dutyCycles = timing.cells.map(timingDutyCycle);
   const hasExplicitDuty = timing.sourceFields?.dutyCycle === true;
   delete entry.duty_cycle;
   delete entry.duty_cycles;
@@ -441,8 +502,17 @@ function mergeUndulateSignalEntries(
       );
     }
     if (signal.type === 'vector') {
+      const entry = vectorToUndulateEntry(signal);
+      if (signal.vectorTiming) {
+        applyGeneratedTimingExpressions(
+          entry,
+          signal,
+          signal.vectorTiming,
+          preserveExpressions,
+        );
+      }
       return withOpaqueFields(
-        vectorToUndulateEntry(signal),
+        entry,
         signal,
         opaqueSignals,
       );
@@ -458,6 +528,7 @@ function mergeUndulateSignalEntries(
         signal.stepGlitches,
       );
       applyTimingFields(entry, timing);
+      applyGeneratedTimingExpressions(entry, signal, timing, preserveExpressions);
       delete entry.repeat;
       return withOpaqueFields(
         retainCompactDigitalRepeat(
@@ -471,12 +542,16 @@ function mergeUndulateSignalEntries(
         opaqueSignals,
       );
     }
+    const entry = withUndulateNode(
+      {
+        ...(shared as WdSignal),
+        ...signalStyleToUndulate(signal.style),
+      },
+      signal,
+    );
     return withOpaqueFields(
       retainCompactDigitalRepeat(
-        {
-          ...withUndulateNode({ ...(shared as WdSignal) }, signal),
-          ...signalStyleToUndulate(signal.style),
-        },
+        entry,
         signal,
       ),
       signal,
@@ -837,14 +912,16 @@ function timingValues(rawSignals: WdSignal[]): number[] {
   const values: number[] = [];
   for (const raw of rawSignals) {
     if (Array.isArray(raw.analogue)) continue;
+    const periods = Array.isArray(raw.periods) ? raw.periods : undefined;
+    const duties = Array.isArray(raw.duty_cycles) ? raw.duty_cycles : undefined;
     if (typeof raw.phase === 'number') values.push(raw.phase);
     if (typeof raw.period === 'number') values.push(raw.period);
-    if (Array.isArray(raw.periods)) values.push(...raw.periods);
+    if (periods) values.push(...periods);
     const count = (raw.wave?.length ?? 0)
       * (typeof raw.repeat === 'number' ? raw.repeat : 1);
     for (let index = 0; index < count; index++) {
-      const period = raw.periods?.[index] ?? raw.period ?? 1;
-      const duty = raw.duty_cycles?.[index] ?? raw.duty_cycle;
+      const period = periods?.[index] ?? raw.period ?? 1;
+      const duty = duties?.[index] ?? raw.duty_cycle;
       if (duty !== undefined) values.push(period * duty);
     }
   }
@@ -887,9 +964,9 @@ function importDigitalTiming(
   const timingOptions = {
     phase: raw.phase,
     period: raw.period,
-    periods: raw.periods,
+    periods: Array.isArray(raw.periods) ? raw.periods : undefined,
     dutyCycle: raw.duty_cycle,
-    dutyCycles: raw.duty_cycles,
+    dutyCycles: Array.isArray(raw.duty_cycles) ? raw.duty_cycles : undefined,
     slewing: raw.slewing,
     sourceFields: {
       ...(raw.period !== undefined || raw.periods !== undefined
@@ -924,7 +1001,10 @@ function importDigitalTiming(
   delete parsed.phase;
 }
 
-export function fromUndulateJSON(root: UndulateRoot): DiagramState {
+export function fromUndulateJSON(inputRoot: UndulateRoot): DiagramState {
+  const resolved = resolveUndulateGeneratedSequences(inputRoot);
+  const root = resolved.root;
+  const generatedSources = resolved.sources;
   const rawSignals = flattenRawSignals(root.signal);
   const preserveNativeCellCounts = rawSignals.some(hasNativeTimingFields);
   const diagram = fromWavedromJSON(wavedromCompatibleRoot(root), {
@@ -991,6 +1071,10 @@ export function fromUndulateJSON(root: UndulateRoot): DiagramState {
           analogue: JSON.parse(JSON.stringify(raw.analogue)) as unknown[],
           fingerprint: analogueCellsFingerprint(parsed.analogueCells ?? []),
         };
+      }
+      const generated = generatedSources[index];
+      if (generated) {
+        parsed.undulateGeneratedSequences = JSON.parse(JSON.stringify(generated)) as GeneratedSequenceSources;
       }
       const opaque = opaqueFields(
         raw as unknown as Record<string, unknown>,
