@@ -7,7 +7,7 @@ import {
 } from '../shell/samples';
 
 export type SampleCategoryId = 'general' | 'amba' | 'undulate';
-export type SampleDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+export type SampleSource = 'Undulate' | 'WaveDrom JSON';
 
 export interface SampleLibraryEntry extends SampleLeaf {
   assetUrl: string;
@@ -16,9 +16,9 @@ export interface SampleLibraryEntry extends SampleLeaf {
   previewVersion: 'v1';
   category: SampleCategoryId;
   categoryLabel: string;
+  source: SampleSource;
   path: string[];
   tags: string[];
-  difficulty: SampleDifficulty;
   featured: boolean;
 }
 
@@ -75,12 +75,6 @@ function categoryForSample(sample: SampleLeaf): SampleCategoryId {
   return 'general';
 }
 
-function difficultyForCategory(category: SampleCategoryId): SampleDifficulty {
-  if (category === 'general') return 'Beginner';
-  if (category === 'amba') return 'Intermediate';
-  return 'Advanced';
-}
-
 function makeEntry(sample: SampleLeaf, path: string[]): SampleLibraryEntry {
   const category = categoryForSample(sample);
   const tags = [CATEGORY_LABELS[category], ...path, sample.title]
@@ -93,9 +87,9 @@ function makeEntry(sample: SampleLeaf, path: string[]): SampleLibraryEntry {
     previewVersion: 'v1',
     category,
     categoryLabel: CATEGORY_LABELS[category],
+    source: category === 'undulate' ? 'Undulate' : 'WaveDrom JSON',
     path,
     tags,
-    difficulty: difficultyForCategory(category),
     featured: FEATURED_IDS.has(sample.id),
   };
 }
@@ -133,7 +127,7 @@ export function filterSampleLibrary(
       entry.title,
       entry.description,
       entry.categoryLabel,
-      entry.difficulty,
+      entry.source,
       ...entry.path,
       ...entry.tags,
     ].join(' ').toLocaleLowerCase();
