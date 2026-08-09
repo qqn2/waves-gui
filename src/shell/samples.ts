@@ -1,6 +1,10 @@
 import { useStore } from '../shared/store';
 import { parseCodeToDiagram } from '../codePanel/codeSync';
 import { forgetCurrentFileHandle } from './FileOperations';
+import {
+  sampleParseOptions,
+  type SampleFormat,
+} from '../sampleLibrary/sampleSource';
 
 export interface SampleLeaf {
   kind: 'sample';
@@ -10,6 +14,12 @@ export interface SampleLeaf {
   description: string;
   /** File name under /samples/ (public/) */
   file: string;
+  /** Source syntax used when parsing the bundled asset. */
+  format?: SampleFormat;
+  /** Whether the current editor can parse and render this fixture. */
+  support?: 'supported' | 'future';
+  /** Why a future-support fixture is retained in the catalog. */
+  supportNote?: string;
 }
 
 export interface SampleFolder {
@@ -81,14 +91,14 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
             kind: 'sample',
             id: 'amba/apb/write',
             title: 'Write',
-            description: 'SETUP + ACCESS, no wait (IHI0024E Fig 3-1)',
+            description: 'PSEL/PENABLE/PREADY setup and access with PADDR/PWDATA (IHI0024E Fig 3-1)',
             file: 'amba-apb-write.json',
           },
           {
             kind: 'sample',
             id: 'amba/apb/read',
             title: 'Read',
-            description: 'SETUP + ACCESS, PRDATA (IHI0024E Fig 3-4)',
+            description: 'PSEL/PENABLE/PREADY setup and access with PADDR/PRDATA (IHI0024E Fig 3-4)',
             file: 'amba-apb-read.json',
           },
         ],
@@ -101,14 +111,14 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
             kind: 'sample',
             id: 'amba/ahb/write',
             title: 'Single write',
-            description: 'NONSEQ address phase + data phase (IHI0033C)',
+            description: 'HTRANS/HADDR/HWRITE/HBURST followed by HWDATA/HREADY/HRESP (IHI0033C)',
             file: 'amba-ahb-write.json',
           },
           {
             kind: 'sample',
             id: 'amba/ahb/transfer-types',
             title: 'Transfer types',
-            description: 'Fig 3-6 style: NONSEQ, BUSY, SEQ, INCR, wait states',
+            description: 'HTRANS/HADDR/HREADY with NONSEQ, BUSY, SEQ, INCR, and a wait state',
             file: 'amba-ahb-transfer-types.json',
           },
         ],
@@ -121,14 +131,14 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
             kind: 'sample',
             id: 'amba/axi/write',
             title: 'Write',
-            description: 'AW + W + B channels, AWLEN=0, WLAST=1',
+            description: 'AWADDR/AWVALID/AWREADY; WDATA/WSTRB/WLAST; BVALID/BREADY/BRESP',
             file: 'amba-axi-write.json',
           },
           {
             kind: 'sample',
             id: 'amba/axi/read',
             title: 'Read',
-            description: 'AR + R channels, RLAST=1',
+            description: 'ARADDR/ARLEN/ARVALID/ARREADY; RDATA/RRESP/RLAST/RVALID/RREADY',
             file: 'amba-axi-read.json',
           },
         ],
@@ -137,7 +147,7 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
   },
   {
     kind: 'folder',
-    label: 'Undulate tasks',
+    label: 'Undulate workflows',
     children: [
       {
         kind: 'sample',
@@ -166,6 +176,148 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
         title: 'Extended states and style',
         description: 'Impulse, metastability, expanded nodes, marked edges, and safe styles',
         file: 'undulate-states-style.json',
+      },
+      {
+        kind: 'folder',
+        label: 'Upstream compatibility',
+        children: [
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/wavetest',
+            title: 'WaveDrom compatibility suite',
+            description: 'Upstream wavetest.json: states, groups, buses, timing, and edges',
+            file: 'undulate-ludwig-wavetest.json',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/wavetest-alt',
+            title: 'WaveDrom compatibility suite (alt)',
+            description: 'Upstream wavetest_alt.json with extended timing and generated fields',
+            file: 'undulate-ludwig-wavetest-alt.json',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/wavetest-yaml',
+            title: 'WaveDrom compatibility suite (YAML)',
+            description: 'Upstream wavetest.yaml mapping syntax and nested groups',
+            file: 'undulate-ludwig-wavetest-yaml.yaml',
+            format: 'undulate-yaml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/jsonml-syntax',
+            title: 'JSONML syntax',
+            description: 'Upstream JSONML parser syntax and grouped signal forms',
+            file: 'undulate-ludwig-jsonml-syntax.json',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/legacy-1',
+            title: 'Legacy syntax 1',
+            description: 'Upstream legacy JSONML compatibility case',
+            file: 'undulate-ludwig-legacy-1.jsonml',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/legacy-2',
+            title: 'Legacy syntax 2',
+            description: 'Upstream legacy JSONML compatibility case',
+            file: 'undulate-ludwig-legacy-2.jsonml',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/legacy-3',
+            title: 'Legacy syntax 3',
+            description: 'Upstream legacy JSONML compatibility case',
+            file: 'undulate-ludwig-legacy-3.jsonml',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/missing-group',
+            title: 'Missing group recovery',
+            description: 'Upstream JSONML case with incomplete group structure',
+            file: 'undulate-ludwig-missing-group.jsonml',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/overlay',
+            title: 'Overlay tables',
+            description: 'Upstream TOML tables with overlays and grouped signals',
+            file: 'undulate-ludwig-overlay.toml',
+            format: 'undulate-toml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/clip-phase',
+            title: 'Phase clipping',
+            description: 'Upstream YAML cases for phase clipping and clock edges',
+            file: 'undulate-ludwig-clip-phase.yaml',
+            format: 'undulate-yaml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/fix-36',
+            title: 'Fix 36 regression',
+            description: 'Upstream YAML regression for signal and timing parsing',
+            file: 'undulate-ludwig-fix-36.yaml',
+            format: 'undulate-yaml',
+          },
+          ...(['0', '1', '2', '3', '4', '5'] as const).map((suffix) => ({
+            kind: 'sample' as const,
+            id: `undulate/ludwig/title-width-${suffix}`,
+            title: `Title width ${suffix}`,
+            description: 'Upstream YAML title-width renderer case',
+            file: `undulate-ludwig-title-width-${suffix}.yaml`,
+            format: 'undulate-yaml' as const,
+          })),
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/adcec',
+            title: 'ADCEC period vectors',
+            description: 'Upstream case with compact, partial period vectors',
+            file: 'undulate-ludwig-adcec.jsonml',
+            format: 'undulate-json',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/annotation',
+            title: 'Generated annotations',
+            description: 'Upstream case combining generated periods and legacy edges',
+            file: 'undulate-ludwig-annotation.yaml',
+            format: 'undulate-yaml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/edge-markers',
+            title: 'Edge markers',
+            description: 'Upstream case using extended edge markers and HSL styles',
+            file: 'undulate-ludwig-edge-markers.yaml',
+            format: 'undulate-yaml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/local-config-nodes',
+            title: 'Local config nodes',
+            description: 'Upstream case with nested layout configuration metadata',
+            file: 'undulate-ludwig-local-config-nodes.yaml',
+            format: 'undulate-yaml',
+          },
+          {
+            kind: 'sample',
+            id: 'undulate/ludwig/term-size',
+            title: 'Term size metadata',
+            description: 'Upstream case using numeric bus data metadata',
+            file: 'undulate-ludwig-term-size.yaml',
+            format: 'undulate-yaml',
+          },
+        ],
       },
     ],
   },
@@ -198,7 +350,7 @@ export function sampleAssetUrl(file: string): string {
 }
 
 export function sampleThumbnailUrl(file: string, theme: 'light' | 'dark'): string {
-  return `${baseUrl}samples/previews/${file.replace(/\.json$/i, `.${theme}.svg`)}`;
+  return `${baseUrl}samples/previews/${file.replace(/\.[^.]+$/i, `.${theme}.svg`)}`;
 }
 
 function confirmDiscardIfDirty(): boolean {
@@ -222,7 +374,7 @@ export async function loadSampleDiagram(sampleId: string): Promise<boolean> {
       return false;
     }
     const source = await res.text();
-    const parsed = parseCodeToDiagram(source);
+    const parsed = parseCodeToDiagram(source, sampleParseOptions(sample.format));
     if (parsed.ok === false) {
       window.alert(parsed.error);
       return false;

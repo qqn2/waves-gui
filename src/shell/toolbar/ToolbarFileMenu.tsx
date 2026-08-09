@@ -60,7 +60,7 @@ export function ToolbarFileMenu({
                 onBrowseSamples();
               }}
             >
-              Browse samples
+              Browse templates
             </button>
             {recentFiles.length > 0 ? (
               <>

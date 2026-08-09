@@ -43,6 +43,13 @@ generated analogue values, generated PWM duty cycles, and generated periods
 with a leading zero. Its generated expressions use the bounded subset
 documented in the product compatibility contract.
 
+`ludwig-tests.json` records the upstream `tests/` extraction used by the
+sample browser. The 22 currently loadable JSON/JSONML/YAML/TOML waveform
+documents are copied verbatim into `public/samples/` with `undulate-ludwig-`
+names. Negative parser cases, renderer scripts, CSS resources, and intentionally
+invalid waveform fixtures remain listed with explicit exclusion reasons because
+they are not sample documents users can inspect.
+
 `visual/reference` contains SVG output produced by the same pinned Undulate
 revision for the first digital and analogue tutorials. These MIT-licensed
 reference artifacts are kept offline so CI never depends on the documentation

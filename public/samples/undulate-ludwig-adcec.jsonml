@@ -1,0 +1,34 @@
+{ signal: [
+  {name: "mcu_clk",                    wave: "p.........................."},
+  {name: "ce",                         wave: "hlhlhlhlhlhlhlhlhlhlhlhlhlh"},
+  {name: "fsm_ce (FR=1)",              wave: "hl..hl..hl..hl..hl..hl..hl."},
+  {name: "clk_ce (CLK_TO_INT=0)",      wave: "hl..hl..hl..hl..hl..hl..hl."},
+  {},
+  {name: "phi_int",                    wave: "lh...l...h...l...h...l...h."},
+  {name: "phi_clk",                    wave: "l...nh..pl..nh..pl..nh..pl."},
+  {},
+  {},
+
+  {name: "mcu_clk",                    wave: "p.........................."},
+  {name: "ce",                         wave: "hlhlhlhlhlhlhlhlhlhlhlhlhlh"},
+  {name: "fsm_ce (FR=1)",              wave: "hl..hl..hl..hl..hl..hl..hl."},
+  {name: "clk_ce (CLK_TO_INT=1)",      wave: "hlh..lh..lh..lh..lh..lh..l."},
+  {},
+  {name: "phi_int",                    wave: "lh...l...h...l...h...l...h."},
+  {name: "phi_clk",                    wave: "l.nh..pl..nh..pl..nh..pl..."},
+  {},
+  {},
+
+  {name: "mcu_clk",                    wave: "p.........................."},
+  {name: "ce",                         wave: "hlhlhlhlhlhlhlhlhlhlhlhlhlh"},
+  {name: "fsm_ce (FR=1)",              wave: "hl..hl..hl..hl..hl..hl..hl."},
+  {name: "clk_ce (CLK_TO_INT=2)",      wave: "hl.h.l.h.l.h.l.h.l.h.l.h.l."},
+  {},
+  {name: "phi_int",                    wave: "lh...l...h...l...h...l...h."},
+  {name: "phi_clk",                    wave: "l..nh..pl..nh..pl..nh..pl.."},
+  {},
+  {},
+
+  // experiment with data and x
+  {name: "arbitrary", wave: "hxlx=xzX=lX=XlzX=Xz", periods: [1.6, 0.1, 0.9, 0.1, 2, 0.1, 2, 0.1, 1, 2, 0.1, 2, 0.1, 1.1, 2, 0.1]},
+]}

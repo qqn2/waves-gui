@@ -1,6 +1,7 @@
 import { parseCodeToDiagram } from '../codePanel/codeSync';
 import type { DiagramState } from '../shared/types';
 import type { SampleLibraryEntry } from './catalog';
+import { sampleParseOptions } from './sampleSource';
 
 export const SAMPLE_PREVIEW_CACHE_LIMIT = 6;
 
@@ -53,7 +54,7 @@ export async function loadSamplePreview(
   const source = await response.text();
   if (signal?.aborted) throw cancellationError();
 
-  const parsed = parseCodeToDiagram(source);
+  const parsed = parseCodeToDiagram(source, sampleParseOptions(entry.format));
   if (parsed.ok === false) throw new Error(parsed.error);
   cachePreview(key, parsed.diagram);
   return parsed.diagram;

@@ -1,0 +1,85 @@
+clk:
+  wave: "p.........."
+
+signal[0]:
+  wave: "0..1...0..."
+  node: "...a...c..."
+
+signal[1]:
+  wave: "0....1....."
+  node: ".....b....."
+  periods: "[0.8,7/6]"
+
+signal[2]:
+  wave: "0..h.l....."
+  node: "...#.#..... edge_detection low_mode"
+
+spacer_0:
+  wave: ""
+
+# should have the 3 values
+experimental_0:
+  wave: "x5...|05|4="
+  data:
+    - "0x70"
+    - "0x71"
+    - "0x72"
+
+# should only be 0x70
+experimental_0b:
+  wave: "x5.|.|..|.."
+  data:
+    - "0x70"
+    - "0x71"
+    - "0x72"
+
+experimental_1:
+  wave: "x1...|..|.."
+
+experimental_2:
+  wave: "xh...|..|.."
+
+experimental_3:
+  wave: "x0...|..|.."
+
+experimental_4:
+  wave: "x1...|..|.."
+
+edges:
+  - "a -> c"
+  - "low_mode ~-> a revert"
+  - "a RX_DATA"
+
+annotations:
+  # global compression
+  - shape: "||"
+    x: 9
+  # hline: -
+  - shape: "-"
+    y: 2.5
+  # vline: |
+  - shape: "|"
+    x: 3.025
+    stroke: rgba(0, 0, 255, 127)
+  - shape: "|"
+    x: 5.025
+    stroke: rgba(255, 0, 0, 127)
+  # arrows as in wavedrom
+  - shape: "~>"
+    from: "a"
+    to: "b"
+  - shape: "-|>"
+    from: (5.05, 4.5)
+    to: (7.05, 2)
+    text: "djs"
+    dx: 0.25
+  - shape: "<->"
+    from: (3, 4.5)
+    to: (5, 4.5)
+    text: "delay"
+    fill: "#6CB1AA"
+    stroke: "#6CB1AA"
+  - text: There is no transition between these data
+    fill: rgba(255, 255, 0, 255)
+    x: 8
+    y: 4.15

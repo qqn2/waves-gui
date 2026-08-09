@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="744" height="214" viewBox="0 0 744 214">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="214" fill="#242424"/>
+<text x="8" y="44" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >cmd</text>
+<text x="8" y="84" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >bus[15:0]</text>
+<text x="8" y="118" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >tada</text>
+<text x="20" y="157" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >tada[2]</text>
+<text x="20" y="198" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >tada[3]</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="640" height="24" fill="#242424"/>
+<text x="20" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="180" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="220" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="260" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="300" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="340" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="380" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="420" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="460" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="500" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<text x="540" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">13</text>
+<text x="580" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">14</text>
+<text x="620" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">15</text>
+<line x1="0" y1="24" x2="0" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="40" y1="24" x2="40" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="24" x2="80" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="120" y1="24" x2="120" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="24" x2="160" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="200" y1="24" x2="200" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="24" x2="240" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="280" y1="24" x2="280" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="24" x2="320" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="360" y1="24" x2="360" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="24" x2="400" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="440" y1="24" x2="440" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="24" x2="480" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="520" y1="24" x2="520" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="24" x2="560" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="600" y1="24" x2="600" y2="214" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="24" x2="640" y2="214" stroke="#333333" stroke-width="1"/>
+<path d="M0,56 L1,32 L19.5,32 L20.5,56 L40,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,40 -3,46 3,46" fill="#4A9EFF"/>
+<path d="M40,56 L41,32 L59.5,32 L60.5,56 L80,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="40,40 37,46 43,46" fill="#4A9EFF"/>
+<path d="M80,56 L81,32 L99.5,32 L100.5,56 L120,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,40 77,46 83,46" fill="#4A9EFF"/>
+<path d="M120,56 L121,32 L139.5,32 L140.5,56 L160,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="120,40 117,46 123,46" fill="#4A9EFF"/>
+<path d="M160,56 L161,32 L179.5,32 L180.5,56 L200,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,40 157,46 163,46" fill="#4A9EFF"/>
+<path d="M200,56 L201,32 L219.5,32 L220.5,56 L240,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="200,40 197,46 203,46" fill="#4A9EFF"/>
+<path d="M240,56 L241,32 L259.5,32 L260.5,56 L280,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,40 237,46 243,46" fill="#4A9EFF"/>
+<path d="M280,56 L281,32 L299.5,32 L300.5,56 L320,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="280,40 277,46 283,46" fill="#4A9EFF"/>
+<path d="M320,56 L321,32 L339.5,32 L340.5,56 L360,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,40 317,46 323,46" fill="#4A9EFF"/>
+<path d="M360,56 L361,32 L379.5,32 L380.5,56 L400,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="360,40 357,46 363,46" fill="#4A9EFF"/>
+<path d="M400,56 L401,32 L419.5,32 L420.5,56 L440,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,40 397,46 403,46" fill="#4A9EFF"/>
+<path d="M440,56 L441,32 L459.5,32 L460.5,56 L480,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="440,40 437,46 443,46" fill="#4A9EFF"/>
+<path d="M480,56 L481,32 L499.5,32 L500.5,56 L520,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,40 477,46 483,46" fill="#4A9EFF"/>
+<path d="M520,56 L521,32 L539.5,32 L540.5,56 L560,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="520,40 517,46 523,46" fill="#4A9EFF"/>
+<path d="M560,56 L561,32 L579.5,32 L580.5,56 L600,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,40 557,46 563,46" fill="#4A9EFF"/>
+<path d="M600,56 L601,32 L619.5,32 L620.5,56 L640,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="600,40 597,46 603,46" fill="#4A9EFF"/>
+<path d="M0,84 L8,72 L32,72 L40,84 L32,96 L8,96 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="20" y="84" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M40,84 L48,72 L192,72 L200,84 L192,96 L48,96 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="120" y="84" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x300</text>
+<path d="M200,84 L208,72 L312,72 L320,84 L312,96 L208,96 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="260" y="84" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x341</text>
+<path d="M320,84 L328,72 L352,72 L360,84 L352,96 L328,96 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="340" y="84" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M360,84 L368,72 L512,72 L520,84 L512,96 L368,96 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="84" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle"></text>
+<path d="M520,84 L528,72 L632,72 L640,84 L632,96 L528,96 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="580" y="84" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle"></text>
+<path d="M0,174 L40,174 L40,174 L40,140 L80,140" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,140 L80,174 L120,174" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,174 L120,140 L160,140" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M160,140 L160,174 L200,174" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,174 L240,174" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,174 L240,140 L280,140" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M280,140 L320,140" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,206 L40,206 L43,206 L46,190 L80,190 L120,190 L160,190" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="160" y="190" width="40" height="16" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="1"/>
+<path d="M160,190 L200,190 M160,206 L200,206" fill="none" stroke="#ff6b6b" stroke-width="1"/>
+<path d="M200,190 L240,190 L280,190 L320,190" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<line x1="86" y1="24" x2="86" y2="214" stroke="#db4141" stroke-width="1.5" stroke-dasharray="1 3"/>
+<line x1="120" y1="24" x2="120" y2="214" stroke="#db4141" stroke-width="1.5" stroke-dasharray="1 3"/>
+<defs><marker id="undulate-arrow-0" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#db4141"/></marker></defs><path d="M 86 144 L 120 144" fill="none" stroke="#db4141" stroke-width="1.5" marker-start="url(#undulate-arrow-0)" marker-end="url(#undulate-arrow-0)"/><text x="102.8" y="143.8" fill="#db4141" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="400" font-size="6.4">T   </text>
+<defs><marker id="wd-export-arrow" viewBox="0 0 10 10" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#d4a84b"/></marker></defs>
+<path d="M 60 84 L 140 157" fill="none" stroke="#d4a84b" stroke-width="2" marker-end="url(#wd-export-arrow)"/>
+<path d="M 220 84 l 0 73 40 0" fill="none" stroke="#d4a84b" stroke-width="2" marker-end="url(#wd-export-arrow)"/>
+<path d="M 140 157 C 140 157 164 198 220 198" fill="none" stroke="#d4a84b" stroke-width="2" marker-end="url(#wd-export-arrow)"/>
+  </g>
+</svg>

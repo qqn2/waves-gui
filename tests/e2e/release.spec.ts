@@ -28,6 +28,30 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.appRoot')).toBeVisible();
 });
 
+test('browses and loads upstream-compatible Undulate YAML samples', async ({ page }) => {
+  await page.getByRole('button', { name: /File/ }).click();
+  await page.getByRole('button', { name: 'Browse templates', exact: true }).click();
+
+  const dialog = page.getByRole('dialog', { name: /Template Library/ });
+  await expect(dialog).toBeVisible();
+  const search = dialog.getByRole('searchbox', { name: 'Search templates' });
+  await search.fill('YAML');
+
+  const row = dialog.getByRole('button', {
+    name: /WaveDrom compatibility suite \(YAML\)/,
+  });
+  await expect(row).toBeVisible();
+  await expect(dialog.getByText('Undulate', { exact: true }).first()).toBeVisible();
+  await row.click();
+  await expect(dialog.getByLabel(/WaveDrom compatibility suite \(YAML\) waveform preview/))
+    .toBeVisible();
+  await dialog.getByRole('button', { name: /Edit copy/ }).click();
+
+  await expect(page.getByText('Undulate YAML', { exact: true })).toBeVisible();
+  await expect(page.locator('.cm-content')).toContainText('compatibility:');
+  await expect(page.locator('.cm-content')).toContainText('p||||......');
+});
+
 test('starts cleanly and never offers diagram transmission', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', (message) => {

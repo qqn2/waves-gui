@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="624" height="348" viewBox="0 0 624 348">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="348" fill="#242424"/>
+<text x="8" y="44" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >spacer</text>
+<text x="8" y="78" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Analog</text>
+<text x="20" y="103.2" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >VDD50OTP</text>
+<text x="20" y="144.8" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >VPP</text>
+<text x="8" y="186" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Ports</text>
+<text x="20" y="220" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >POWER_UP</text>
+<text x="8" y="254" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >OTP Shell</text>
+<text x="20" y="288" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ms_otp_shell_vpp_mode[1:0]</text>
+<text x="20" y="328" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >CEB</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="520" height="24" fill="#242424"/>
+<text x="20" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="180" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="220" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="260" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="300" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="340" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="380" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="420" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="460" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="500" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<line x1="0" y1="24" x2="0" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="40" y1="24" x2="40" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="24" x2="80" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="120" y1="24" x2="120" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="24" x2="160" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="200" y1="24" x2="200" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="24" x2="240" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="280" y1="24" x2="280" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="24" x2="320" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="360" y1="24" x2="360" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="24" x2="400" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="440" y1="24" x2="440" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="24" x2="480" y2="348" stroke="#333333" stroke-width="1"/>
+<line x1="520" y1="24" x2="520" y2="348" stroke="#333333" stroke-width="1"/>
+
+<path d="M 0 164 L 36 100 L 40 100 L 80 100 L 120 100 L 160 100 L 200 100 L 240 100 L 280 100 L 320 100 L 360 100 L 400 100 L 440 100 L 480 100 L 520 100" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 0 164 L 40 164 L 80 164 L 120 164 L 160 164 L 200 164 L 240 164 L 280 164 L 320 164 L 345 100 L 360 100 L 400 100 L 440 100 L 480 100 L 520 100" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path data-wave-state="l" d="M0,232 L40,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,232 L80,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,232 L120,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,232 L120,232 L120,208 L160,208 L160,208 L160,232 L200,232 L240,232 L280,232 L320,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,288 L8,276 L312,276 L320,288 L312,300 L8,300 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="160" y="288" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M320,288 L328,276 L472,276 L480,288 L472,300 L328,300 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="288" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M0,316 L40,316 L80,316 L120,316 L160,316 L200,316 L240,316 L243,316 L246,340 L280,340 L320,340 L360,340 L400,340 L440,340 L480,340 L520,340" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="174" y="64" width="12" height="284" fill="#111111"/>
+<line x1="177" y1="64" x2="177" y2="348" stroke="#e8e8e8" stroke-width="1.5"/>
+<line x1="183" y1="64" x2="183" y2="348" stroke="#e8e8e8" stroke-width="1.5"/>
+<rect x="254" y="64" width="12" height="284" fill="#111111"/>
+<line x1="257" y1="64" x2="257" y2="348" stroke="#e8e8e8" stroke-width="1.5"/>
+<line x1="263" y1="64" x2="263" y2="348" stroke="#e8e8e8" stroke-width="1.5"/>
+<line x1="128" y1="24" x2="128" y2="348" stroke="#DB4140" stroke-width="1.5" stroke-dasharray="1 3"/>
+<line x1="242" y1="24" x2="242" y2="348" stroke="#DB4140" stroke-width="1.5" stroke-dasharray="1 3"/>
+<line x1="330" y1="24" x2="330" y2="348" stroke="#DB4140" stroke-width="1.5" stroke-dasharray="1 3"/>
+<defs><marker id="undulate-arrow-0" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#e8e8e8"/></marker></defs><path d="M 140 220 C 240 220, 240 288, 340 288" fill="none" stroke="#e8e8e8" stroke-width="1.5" marker-end="url(#undulate-arrow-0)"/>
+<defs><marker id="undulate-arrow-1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#e8e8e8"/></marker></defs><path d="M 340 288 C 340 288, 340 132, 340 132" fill="none" stroke="#e8e8e8" stroke-width="1.5" marker-end="url(#undulate-arrow-1)"/>
+<defs><marker id="undulate-arrow-2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#e8e8e8"/></marker></defs><path d="M 140 220 C 200 220, 200 328, 260 328" fill="none" stroke="#e8e8e8" stroke-width="1.5" marker-end="url(#undulate-arrow-2)"/>
+<defs><marker id="undulate-arrow-3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#e8e8e8"/></marker></defs><path d="M 128 34 L 242 34" fill="none" stroke="#e8e8e8" stroke-width="1.5" marker-start="url(#undulate-arrow-3)" marker-end="url(#undulate-arrow-3)"/><rect x="152.2" y="25.9" width="65.6" height="16.200000000000003" fill="#111111"/><text x="185" y="34" fill="#e8e8e8" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="400" font-size="12">&gt; 100 ns</text>
+<defs><marker id="undulate-arrow-4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#e8e8e8"/></marker></defs><path d="M 128 62 L 330 62" fill="none" stroke="#e8e8e8" stroke-width="1.5" marker-start="url(#undulate-arrow-4)" marker-end="url(#undulate-arrow-4)"/><rect x="204.65" y="53.9" width="51.199999999999996" height="16.200000000000003" fill="#111111"/><text x="230.25" y="62" fill="#e8e8e8" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="400" font-size="12">&gt; 1 us</text>
+  </g>
+</svg>

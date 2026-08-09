@@ -473,7 +473,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                 </p>
                 {analogueCell?.expression ? (
                   <p className={styles.inspectorFieldHint}>
-                    Resolved from Ludwig expression: <code>{analogueCell.expression}</code>.
+                    Resolved from upstream compatibility expression: <code>{analogueCell.expression}</code>.
                     Editing this cell detaches it from the expression.
                   </p>
                 ) : null}
@@ -586,7 +586,7 @@ export function SignalInspector({ onClose }: { onClose: () => void }) {
                   />
                 </label>
                 <p className={styles.inspectorFieldHint}>
-                  Document-wide rails for Ludwig expressions. Changing either
+                  Document-wide rails for upstream compatibility expressions. Changing either
                   value reevaluates every expression-backed analog cell.
                 </p>
                 <div className={styles.inspectorField}>

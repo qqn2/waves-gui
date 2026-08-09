@@ -9,7 +9,6 @@ import {
   PanelBottom,
   PanelRight,
   Search,
-  Star,
   X,
 } from 'lucide-react';
 import { renderDiagramImage } from '../exportEngine/exportImage';
@@ -21,8 +20,10 @@ import {
   filterSampleLibrary,
   SAMPLE_LIBRARY_CATALOG,
   SAMPLE_LIBRARY_CATEGORIES,
+  SAMPLE_LIBRARY_SUBCATEGORIES,
   type SampleLibraryCategory,
   type SampleLibraryEntry,
+  type SampleLibrarySubcategory,
 } from './catalog';
 import { loadSamplePreview } from './previewLoader';
 import styles from './SampleBrowser.module.css';
@@ -34,6 +35,7 @@ export interface SampleBrowserProps {
 }
 
 type PreviewDock = 'bottom' | 'right';
+type TemplateLibrarySelection = SampleLibraryCategory['id'] | SampleLibrarySubcategory['id'];
 
 const PREVIEW_DOCK_STORAGE_KEY = 'waves-gui-sample-library-preview-dock';
 
@@ -86,7 +88,9 @@ function SampleThumbnail({
 
   useEffect(() => setFailed(false), [thumbnailUrl]);
 
-  if (failed) return <FallbackWaveformThumbnail entry={entry} large={large} />;
+  if (failed || entry.support === 'future') {
+    return <FallbackWaveformThumbnail entry={entry} large={large} />;
+  }
 
   return (
     <div className={`${styles.thumbnail} ${large ? styles.thumbnailLarge : ''}`}>
@@ -137,6 +141,15 @@ function TemplateWaveform({
   useEffect(() => {
     const controller = new AbortController();
     setLoaded({ sampleId: entry.id, status: 'loading', diagram: null, error: null });
+    if (entry.support === 'future') {
+      setLoaded({
+        sampleId: entry.id,
+        status: 'error',
+        diagram: null,
+        error: entry.supportNote ?? 'This fixture is retained for future parser support.',
+      });
+      return () => controller.abort();
+    }
     void loadSamplePreview(entry, controller.signal)
       .then((diagram) => {
         if (controller.signal.aborted) return;
@@ -215,9 +228,16 @@ function TemplateWaveform({
       ) : (
         <div className={styles.waveformLoading}>
           <SampleThumbnail entry={entry} theme={theme} large />
-          <span role={error ? 'alert' : 'status'}>
-            {error ? 'Preview unavailable' : 'Rendering preview…'}
+          <span role={entry.support === 'future' || error ? 'alert' : 'status'}>
+            {entry.support === 'future'
+              ? 'Preview pending support'
+              : error
+                ? 'Preview unavailable'
+                : 'Rendering preview…'}
           </span>
+          {entry.support === 'future' && entry.supportNote ? (
+            <span className={styles.previewSupportNote}>{entry.supportNote}</span>
+          ) : null}
         </div>
       )}
     </div>
@@ -225,7 +245,6 @@ function TemplateWaveform({
 }
 
 function CategoryIcon({ category }: { category: SampleLibraryCategory['id'] }) {
-  if (category === 'featured') return <Star size={16} aria-hidden />;
   if (category === 'all') return <LayoutList size={16} aria-hidden />;
   if (category === 'general') return <FileText size={16} aria-hidden />;
   if (category === 'amba') return <Cpu size={16} aria-hidden />;
@@ -258,8 +277,12 @@ function TemplatePreview({
               type="button"
               className={styles.primaryButton}
               onClick={() => onPick(entry.id)}
+              disabled={entry.support === 'future'}
+              title={entry.support === 'future'
+                ? 'This fixture is retained for future parser support'
+                : undefined}
             >
-              Edit copy… <ChevronRight size={15} aria-hidden />
+              {entry.support === 'future' ? 'Future support' : <>Edit copy… <ChevronRight size={15} aria-hidden /></>}
             </button>
           </header>
           <TemplateWaveform entry={entry} theme={theme} />
@@ -273,7 +296,13 @@ function TemplatePreview({
 
 export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
   const theme = useStore((state) => state.view.theme);
-  const [category, setCategory] = useState<SampleLibraryCategory['id']>('undulate');
+  const [category, setCategory] = useState<TemplateLibrarySelection>('undulate');
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    general: true,
+    amba: true,
+    undulate: true,
+    compatibility: true,
+  });
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(
     SAMPLE_LIBRARY_CATALOG.find((entry) => entry.id === 'undulate/fine-timing')?.id
@@ -391,7 +420,13 @@ export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
   if (!open) return null;
 
   const selectEntry = (entry: SampleLibraryEntry) => setSelectedId(entry.id);
-  const categoryLabel = SAMPLE_LIBRARY_CATEGORIES.find((item) => item.id === category)?.label;
+  const categoryLabel = SAMPLE_LIBRARY_CATEGORIES.find((item) => item.id === category)?.label
+    ?? SAMPLE_LIBRARY_SUBCATEGORIES.find((item) => item.id === category)?.label;
+
+  const selectCategory = (nextCategory: TemplateLibrarySelection) => {
+    setCategory(nextCategory);
+    setQuery('');
+  };
 
   return (
     <div
@@ -413,7 +448,7 @@ export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
         <header className={styles.header}>
           <div className={styles.appTitle}>
             <span className={styles.appMark} aria-hidden><Activity size={19} /></span>
-            <h2 id="sample-browser-title">WAVES GUI <span>—</span> Sample Library</h2>
+            <h2 id="sample-browser-title">Waves GUI <span>—</span> Template Library</h2>
           </div>
           <div className={styles.headerActions}>
             <label className={styles.searchBox}>
@@ -451,7 +486,7 @@ export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
                 <PanelRight size={17} aria-hidden />
               </button>
             </div>
-            <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close sample library" title="Close">
+            <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close template library" title="Close">
               <X size={18} aria-hidden />
             </button>
           </div>
@@ -460,27 +495,67 @@ export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
         <div className={`${styles.body} ${dock === 'right' ? styles.bodyRight : styles.bodyBottom}`}>
           <aside className={styles.sidebar} aria-label="Library navigation">
             <div className={styles.sidebarLabel}>Library</div>
-            <nav aria-label="Sample categories">
+            <nav aria-label="Template categories">
               {SAMPLE_LIBRARY_CATEGORIES.map((item) => {
                 const count = filterSampleLibrary(SAMPLE_LIBRARY_CATALOG, item.id, '').length;
-                const active = category === item.id;
+                const subcategories = SAMPLE_LIBRARY_SUBCATEGORIES.filter(
+                  (subcategory) => subcategory.parentId === item.id,
+                );
+                const hasSubcategories = subcategories.length > 0;
+                const expanded = expandedCategories[item.id] ?? true;
+                const active = category === item.id
+                  || (hasSubcategories && category.startsWith(`${item.id}/`));
                 return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`${styles.categoryButton} ${active ? styles.categoryButtonActive : ''}`}
-                    aria-pressed={active}
-                    title={item.description}
-                    onClick={() => {
-                      setCategory(item.id);
-                      setQuery('');
-                    }}
-                  >
-                    <CategoryIcon category={item.id} />
-                    <span>{item.label}</span>
-                    <span className={styles.categoryCount}>{count}</span>
-                    {item.id === 'amba' ? <ChevronRight className={styles.categoryChevron} size={14} aria-hidden /> : null}
-                  </button>
+                  <div key={item.id}>
+                    <button
+                      type="button"
+                      className={`${styles.categoryButton} ${active ? styles.categoryButtonActive : ''}`}
+                      aria-pressed={active}
+                      aria-expanded={hasSubcategories ? expanded : undefined}
+                      title={item.description}
+                      onClick={() => {
+                        selectCategory(item.id);
+                        if (hasSubcategories) {
+                          setExpandedCategories((current) => ({
+                            ...current,
+                            [item.id]: !expanded,
+                          }));
+                        }
+                      }}
+                    >
+                      <CategoryIcon category={item.id} />
+                      <span>{item.label}</span>
+                      <span className={styles.categoryCount}>{count}</span>
+                      {hasSubcategories ? (
+                        <ChevronRight
+                          className={`${styles.categoryChevron} ${expanded ? styles.categoryChevronExpanded : ''}`}
+                          size={14}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </button>
+                    {hasSubcategories && expanded ? (
+                      <div className={styles.subcategoryList} role="group" aria-label={`${item.label} subcategories`}>
+                        {subcategories.map((subcategory) => {
+                          const subcategoryCount = filterSampleLibrary(SAMPLE_LIBRARY_CATALOG, subcategory.id, '').length;
+                          const subcategoryActive = category === subcategory.id;
+                          return (
+                            <button
+                              key={subcategory.id}
+                              type="button"
+                              className={`${styles.subcategoryButton} ${subcategoryActive ? styles.subcategoryButtonActive : ''}`}
+                              aria-pressed={subcategoryActive}
+                              title={subcategory.description}
+                              onClick={() => selectCategory(subcategory.id)}
+                            >
+                              <span>{subcategory.label}</span>
+                              <span className={styles.categoryCount}>{subcategoryCount}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
                 );
               })}
             </nav>
@@ -517,7 +592,14 @@ export function SampleBrowser({ open, onClose, onPick }: SampleBrowserProps) {
                         title={`${entry.title} — ${entry.description}`}
                       >
                         <span className={styles.previewCell}><SampleThumbnail entry={entry} theme={theme} /></span>
-                        <span className={styles.nameCell}>{entry.title}</span>
+                        <span className={styles.nameCell}>
+                          <span className={styles.nameText}>{entry.title}</span>
+                          {entry.support === 'future' ? (
+                            <span className={styles.futureBadge} title={entry.supportNote}>
+                              Future support
+                            </span>
+                          ) : null}
+                        </span>
                         <span className={styles.sourceCell}>{entry.source}</span>
                         <span className={styles.descriptionCell}>{entry.description}</span>
                       </button>

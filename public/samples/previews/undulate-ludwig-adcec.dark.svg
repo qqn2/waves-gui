@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1184" height="1144" viewBox="0 0 1184 1144">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="1144" fill="#242424"/>
+<text x="8" y="44" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >mcu_clk</text>
+<text x="8" y="84" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ce</text>
+<text x="8" y="124" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >fsm_ce (FR=1)</text>
+<text x="8" y="164" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_ce (CLK_TO_INT=0)</text>
+<text x="8" y="204" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_int</text>
+<text x="8" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_clk</text>
+<text x="8" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="364" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >mcu_clk</text>
+<text x="8" y="444" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ce</text>
+<text x="8" y="484" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >fsm_ce (FR=1)</text>
+<text x="8" y="524" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_ce (CLK_TO_INT=1)</text>
+<text x="8" y="564" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="604" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_int</text>
+<text x="8" y="644" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_clk</text>
+<text x="8" y="684" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="724" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="764" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >mcu_clk</text>
+<text x="8" y="804" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ce</text>
+<text x="8" y="844" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >fsm_ce (FR=1)</text>
+<text x="8" y="884" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_ce (CLK_TO_INT=2)</text>
+<text x="8" y="924" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="964" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_int</text>
+<text x="8" y="1004" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >phi_clk</text>
+<text x="8" y="1044" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="1084" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="1124" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >arbitrary</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1080" height="24" fill="#242424"/>
+<text x="20" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="60" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="100" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="140" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="180" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="220" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="260" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="300" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="340" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="380" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="420" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="460" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="500" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<text x="540" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">13</text>
+<text x="580" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">14</text>
+<text x="620" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">15</text>
+<text x="660" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">16</text>
+<text x="700" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">17</text>
+<text x="740" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">18</text>
+<text x="780" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">19</text>
+<text x="820" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">20</text>
+<text x="860" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">21</text>
+<text x="900" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">22</text>
+<text x="940" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">23</text>
+<text x="980" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">24</text>
+<text x="1020" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">25</text>
+<text x="1060" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">26</text>
+<line x1="0" y1="24" x2="0" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="40" y1="24" x2="40" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="24" x2="80" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="120" y1="24" x2="120" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="24" x2="160" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="200" y1="24" x2="200" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="24" x2="240" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="280" y1="24" x2="280" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="24" x2="320" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="360" y1="24" x2="360" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="24" x2="400" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="440" y1="24" x2="440" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="24" x2="480" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="520" y1="24" x2="520" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="24" x2="560" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="600" y1="24" x2="600" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="24" x2="640" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="680" y1="24" x2="680" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="24" x2="720" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="760" y1="24" x2="760" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="24" x2="800" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="840" y1="24" x2="840" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="24" x2="880" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="920" y1="24" x2="920" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="960" y1="24" x2="960" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="1000" y1="24" x2="1000" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="1040" y1="24" x2="1040" y2="1144" stroke="#333333" stroke-width="1"/>
+<line x1="1080" y1="24" x2="1080" y2="1144" stroke="#333333" stroke-width="1"/>
+<path d="M0,56 L0,32 L20,32 L20,56 L40,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M40,56 L40,32 L60,32 L60,56 L80,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,56 L80,32 L100,32 L100,56 L120,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,56 L120,32 L140,32 L140,56 L160,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,56 L160,32 L180,32 L180,56 L200,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M200,56 L200,32 L220,32 L220,56 L240,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,56 L240,32 L260,32 L260,56 L280,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,56 L280,32 L300,32 L300,56 L320,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,56 L320,32 L340,32 L340,56 L360,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M360,56 L360,32 L380,32 L380,56 L400,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,56 L400,32 L420,32 L420,56 L440,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M440,56 L440,32 L460,32 L460,56 L480,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,56 L480,32 L500,32 L500,56 L520,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M520,56 L520,32 L540,32 L540,56 L560,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,56 L560,32 L580,32 L580,56 L600,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M600,56 L600,32 L620,32 L620,56 L640,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,56 L640,32 L660,32 L660,56 L680,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M680,56 L680,32 L700,32 L700,56 L720,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,56 L720,32 L740,32 L740,56 L760,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M760,56 L760,32 L780,32 L780,56 L800,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,56 L800,32 L820,32 L820,56 L840,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M840,56 L840,32 L860,32 L860,56 L880,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,56 L880,32 L900,32 L900,56 L920,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M920,56 L920,32 L940,32 L940,56 L960,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,56 L960,32 L980,32 L980,56 L1000,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1000,56 L1000,32 L1020,32 L1020,56 L1040,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1040,56 L1040,32 L1060,32 L1060,56 L1080,56" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,72 L40,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,72 L40,96 L80,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,96 L80,72 L120,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,72 L120,96 L160,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,96 L160,72 L200,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,72 L200,96 L240,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,96 L240,72 L280,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,72 L280,96 L320,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,96 L320,72 L360,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,72 L360,96 L400,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,96 L400,72 L440,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,72 L440,96 L480,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,96 L480,72 L520,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,72 L520,96 L560,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,96 L560,72 L600,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,72 L600,96 L640,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,96 L640,72 L680,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,72 L680,96 L720,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,96 L720,72 L760,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,72 L760,96 L800,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,96 L800,72 L840,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,72 L840,96 L880,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,96 L880,72 L920,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,72 L920,96 L960,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,96 L960,72 L1000,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,72 L1000,96 L1040,96" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,96 L1040,72 L1080,72" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,112 L40,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,112 L40,136 L80,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,136 L120,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,136 L160,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,136 L160,112 L200,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,112 L200,136 L240,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,136 L280,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,136 L320,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,136 L320,112 L360,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,112 L360,136 L400,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,136 L440,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,136 L480,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,136 L480,112 L520,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,112 L520,136 L560,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,136 L600,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,136 L640,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,136 L640,112 L680,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,112 L680,136 L720,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,136 L760,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,136 L800,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,136 L800,112 L840,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,112 L840,136 L880,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,136 L920,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,136 L960,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,136 L960,112 L1000,112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,112 L1000,136 L1040,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,136 L1080,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,152 L40,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,152 L40,176 L80,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,176 L120,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,176 L160,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,176 L160,152 L200,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,152 L200,176 L240,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,176 L280,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,176 L320,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,176 L320,152 L360,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,152 L360,176 L400,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,176 L440,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,176 L480,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,176 L480,152 L520,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,152 L520,176 L560,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,176 L600,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,176 L640,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,176 L640,152 L680,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,152 L680,176 L720,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,176 L760,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,176 L800,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,176 L800,152 L840,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,152 L840,176 L880,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,176 L920,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,176 L960,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,176 L960,152 L1000,152" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,152 L1000,176 L1040,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,176 L1080,176" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,256 L40,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M40,256 L40,232 L80,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,232 L120,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,232 L160,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,232 L200,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,232 L200,256 L240,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,256 L280,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,256 L320,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M320,256 L360,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M360,256 L360,232 L400,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,232 L440,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,232 L480,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,232 L520,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,232 L520,256 L560,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,256 L600,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,256 L640,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M640,256 L680,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M680,256 L680,232 L720,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,232 L760,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,232 L800,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,232 L840,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,232 L840,256 L880,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,256 L920,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,256 L960,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M960,256 L1000,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1000,256 L1000,232 L1040,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,232 L1080,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,296 L40,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,296 L80,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,296 L120,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,296 L160,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,272 L160,296 L180,296 L180,272 L200,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M200,272 L240,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,272 L280,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M280,272 L320,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,296 L320,272 L340,272 L340,296 L360,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,296 L400,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,296 L440,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,296 L480,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,272 L480,296 L500,296 L500,272 L520,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M520,272 L560,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,272 L600,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M600,272 L640,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,296 L640,272 L660,272 L660,296 L680,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,296 L720,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,296 L760,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,296 L800,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,272 L800,296 L820,296 L820,272 L840,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M840,272 L880,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,272 L920,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M920,272 L960,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,296 L960,272 L980,272 L980,296 L1000,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,296 L1040,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,296 L1080,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,416 L0,392 L20,392 L20,416 L40,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M40,416 L40,392 L60,392 L60,416 L80,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,416 L80,392 L100,392 L100,416 L120,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,416 L120,392 L140,392 L140,416 L160,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,416 L160,392 L180,392 L180,416 L200,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M200,416 L200,392 L220,392 L220,416 L240,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,416 L240,392 L260,392 L260,416 L280,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,416 L280,392 L300,392 L300,416 L320,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,416 L320,392 L340,392 L340,416 L360,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M360,416 L360,392 L380,392 L380,416 L400,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,416 L400,392 L420,392 L420,416 L440,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M440,416 L440,392 L460,392 L460,416 L480,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,416 L480,392 L500,392 L500,416 L520,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M520,416 L520,392 L540,392 L540,416 L560,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,416 L560,392 L580,392 L580,416 L600,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M600,416 L600,392 L620,392 L620,416 L640,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,416 L640,392 L660,392 L660,416 L680,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M680,416 L680,392 L700,392 L700,416 L720,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,416 L720,392 L740,392 L740,416 L760,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M760,416 L760,392 L780,392 L780,416 L800,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,416 L800,392 L820,392 L820,416 L840,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M840,416 L840,392 L860,392 L860,416 L880,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,416 L880,392 L900,392 L900,416 L920,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M920,416 L920,392 L940,392 L940,416 L960,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,416 L960,392 L980,392 L980,416 L1000,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1000,416 L1000,392 L1020,392 L1020,416 L1040,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1040,416 L1040,392 L1060,392 L1060,416 L1080,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,432 L40,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,432 L40,456 L80,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,456 L80,432 L120,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,432 L120,456 L160,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,456 L160,432 L200,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,432 L200,456 L240,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,456 L240,432 L280,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,432 L280,456 L320,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,456 L320,432 L360,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,432 L360,456 L400,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,456 L400,432 L440,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,432 L440,456 L480,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,456 L480,432 L520,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,432 L520,456 L560,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,456 L560,432 L600,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,432 L600,456 L640,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,456 L640,432 L680,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,432 L680,456 L720,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,456 L720,432 L760,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,432 L760,456 L800,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,456 L800,432 L840,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,432 L840,456 L880,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,456 L880,432 L920,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,432 L920,456 L960,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,456 L960,432 L1000,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,432 L1000,456 L1040,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,456 L1040,432 L1080,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,472 L40,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,472 L40,496 L80,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,496 L120,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,496 L160,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,496 L160,472 L200,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,472 L200,496 L240,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,496 L280,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,496 L320,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,496 L320,472 L360,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,472 L360,496 L400,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,496 L440,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,496 L480,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,496 L480,472 L520,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,472 L520,496 L560,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,496 L600,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,496 L640,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,496 L640,472 L680,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,472 L680,496 L720,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,496 L760,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,496 L800,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,496 L800,472 L840,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,472 L840,496 L880,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,496 L920,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,496 L960,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,496 L960,472 L1000,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,472 L1000,496 L1040,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,496 L1080,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,512 L40,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,512 L40,536 L80,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,536 L80,512 L120,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,512 L160,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,512 L200,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,512 L200,536 L240,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,536 L240,512 L280,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M280,512 L320,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,512 L360,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,512 L360,536 L400,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,536 L400,512 L440,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,512 L480,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,512 L520,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,512 L520,536 L560,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,536 L560,512 L600,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M600,512 L640,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,512 L680,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,512 L680,536 L720,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,536 L720,512 L760,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,512 L800,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,512 L840,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,512 L840,536 L880,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,536 L880,512 L920,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M920,512 L960,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,512 L1000,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,512 L1000,536 L1040,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,536 L1080,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,616 L40,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M40,616 L40,592 L80,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,592 L120,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,592 L160,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,592 L200,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,592 L200,616 L240,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,616 L280,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,616 L320,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M320,616 L360,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M360,616 L360,592 L400,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,592 L440,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,592 L480,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,592 L520,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,592 L520,616 L560,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,616 L600,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,616 L640,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M640,616 L680,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M680,616 L680,592 L720,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,592 L760,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,592 L800,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,592 L840,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,592 L840,616 L880,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,616 L920,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,616 L960,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M960,616 L1000,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1000,616 L1000,592 L1040,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,592 L1080,592" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,656 L40,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,656 L80,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,632 L80,656 L100,656 L100,632 L120,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,632 L160,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,632 L200,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M200,632 L240,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,656 L240,632 L260,632 L260,656 L280,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,656 L320,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M320,656 L360,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,656 L400,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,632 L400,656 L420,656 L420,632 L440,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,632 L480,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,632 L520,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M520,632 L560,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,656 L560,632 L580,632 L580,656 L600,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,656 L640,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M640,656 L680,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,656 L720,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,632 L720,656 L740,656 L740,632 L760,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,632 L800,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,632 L840,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M840,632 L880,632" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,656 L880,632 L900,632 L900,656 L920,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,656 L960,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M960,656 L1000,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,656 L1040,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,656 L1080,656" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,776 L0,752 L20,752 L20,776 L40,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M40,776 L40,752 L60,752 L60,776 L80,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,776 L80,752 L100,752 L100,776 L120,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,776 L120,752 L140,752 L140,776 L160,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,776 L160,752 L180,752 L180,776 L200,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M200,776 L200,752 L220,752 L220,776 L240,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,776 L240,752 L260,752 L260,776 L280,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,776 L280,752 L300,752 L300,776 L320,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,776 L320,752 L340,752 L340,776 L360,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M360,776 L360,752 L380,752 L380,776 L400,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,776 L400,752 L420,752 L420,776 L440,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M440,776 L440,752 L460,752 L460,776 L480,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,776 L480,752 L500,752 L500,776 L520,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M520,776 L520,752 L540,752 L540,776 L560,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,776 L560,752 L580,752 L580,776 L600,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M600,776 L600,752 L620,752 L620,776 L640,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,776 L640,752 L660,752 L660,776 L680,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M680,776 L680,752 L700,752 L700,776 L720,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,776 L720,752 L740,752 L740,776 L760,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M760,776 L760,752 L780,752 L780,776 L800,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,776 L800,752 L820,752 L820,776 L840,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M840,776 L840,752 L860,752 L860,776 L880,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,776 L880,752 L900,752 L900,776 L920,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M920,776 L920,752 L940,752 L940,776 L960,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,776 L960,752 L980,752 L980,776 L1000,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1000,776 L1000,752 L1020,752 L1020,776 L1040,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1040,776 L1040,752 L1060,752 L1060,776 L1080,776" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,792 L40,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,792 L40,816 L80,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,816 L80,792 L120,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,792 L120,816 L160,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,816 L160,792 L200,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,792 L200,816 L240,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,816 L240,792 L280,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,792 L280,816 L320,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,816 L320,792 L360,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,792 L360,816 L400,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,816 L400,792 L440,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,792 L440,816 L480,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,816 L480,792 L520,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,792 L520,816 L560,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,816 L560,792 L600,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,792 L600,816 L640,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,816 L640,792 L680,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,792 L680,816 L720,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,816 L720,792 L760,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,792 L760,816 L800,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,816 L800,792 L840,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,792 L840,816 L880,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,816 L880,792 L920,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,792 L920,816 L960,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,816 L960,792 L1000,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,792 L1000,816 L1040,816" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,816 L1040,792 L1080,792" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,832 L40,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,832 L40,856 L80,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,856 L120,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M120,856 L160,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,856 L160,832 L200,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,832 L200,856 L240,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,856 L280,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,856 L320,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,856 L320,832 L360,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,832 L360,856 L400,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,856 L440,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M440,856 L480,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,856 L480,832 L520,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,832 L520,856 L560,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,856 L600,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,856 L640,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,856 L640,832 L680,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,832 L680,856 L720,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,856 L760,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M760,856 L800,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,856 L800,832 L840,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,832 L840,856 L880,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,856 L920,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,856 L960,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,856 L960,832 L1000,832" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,832 L1000,856 L1040,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,856 L1080,856" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,872 L40,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,872 L40,896 L80,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,896 L120,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,896 L120,872 L160,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,872 L200,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,872 L200,896 L240,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,896 L280,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M280,896 L280,872 L320,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M320,872 L360,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,872 L360,896 L400,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,896 L440,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,896 L440,872 L480,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,872 L520,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,872 L520,896 L560,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,896 L600,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M600,896 L600,872 L640,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M640,872 L680,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,872 L680,896 L720,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,896 L760,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,896 L760,872 L800,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,872 L840,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,872 L840,896 L880,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,896 L920,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M920,896 L920,872 L960,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M960,872 L1000,872" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,872 L1000,896 L1040,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,896 L1080,896" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,976 L40,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M40,976 L40,952 L80,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M80,952 L120,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M120,952 L160,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,952 L200,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M200,952 L200,976 L240,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M240,976 L280,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M280,976 L320,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M320,976 L360,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M360,976 L360,952 L400,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M400,952 L440,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M440,952 L480,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,952 L520,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M520,952 L520,976 L560,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M560,976 L600,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M600,976 L640,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M640,976 L680,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M680,976 L680,952 L720,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M720,952 L760,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M760,952 L800,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,952 L840,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M840,952 L840,976 L880,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M880,976 L920,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M920,976 L960,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M960,976 L1000,976" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1000,976 L1000,952 L1040,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M1040,952 L1080,952" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M0,1016 L40,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M40,1016 L80,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M80,1016 L120,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,992 L120,1016 L140,1016 L140,992 L160,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M160,992 L200,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M200,992 L240,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M240,992 L280,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,1016 L280,992 L300,992 L300,1016 L320,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M320,1016 L360,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M360,1016 L400,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M400,1016 L440,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M440,992 L440,1016 L460,1016 L460,992 L480,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M480,992 L520,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M520,992 L560,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M560,992 L600,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M600,1016 L600,992 L620,992 L620,1016 L640,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M640,1016 L680,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M680,1016 L720,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M720,1016 L760,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M760,992 L760,1016 L780,1016 L780,992 L800,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M800,992 L840,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M840,992 L880,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M880,992 L920,992" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M920,1016 L920,992 L940,992 L940,1016 L960,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M960,1016 L1000,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1000,1016 L1040,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="l" d="M1040,1016 L1080,1016" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="h" d="M0,1112 L64,1112" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="x" d="M64,1124 L65,1112 L67,1112 L68,1124 L67,1136 L65,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="l" d="M68,1136 L104,1136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="x" d="M104,1124 L105,1112 L107,1112 L108,1124 L107,1136 L105,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="=" d="M108,1124 L111,1112 L185,1112 L188,1124 L185,1136 L111,1136 Z" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+<path data-wave-state="x" d="M188,1124 L189,1112 L191,1112 L192,1124 L191,1136 L189,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="z" d="M192,1124 C192,1124 192,1124 212,1124 L272,1124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="X" d="M272,1124 L273,1112 L275,1112 L276,1124 L275,1136 L273,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="=" d="M276,1124 L279,1112 L313,1112 L316,1124 L313,1136 L279,1136 Z" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+<path data-wave-state="l" d="M316,1136 L396,1136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="X" d="M396,1124 L397,1112 L399,1112 L400,1124 L399,1136 L397,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="=" d="M400,1124 L403,1112 L477,1112 L480,1124 L477,1136 L403,1136 Z" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+<path data-wave-state="X" d="M480,1124 L481,1112 L483,1112 L484,1124 L483,1136 L481,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="l" d="M484,1136 L528,1136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="z" d="M528,1136 C528,1124 528,1124 548,1124 L608,1124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path data-wave-state="X" d="M608,1124 L609,1112 L611,1112 L612,1124 L611,1136 L609,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="=" d="M612,1124 L615,1112 L649,1112 L652,1124 L649,1136 L615,1136 Z" fill="#ffffff" stroke="#6b7280" stroke-width="2"/>
+<path data-wave-state="X" d="M652,1124 L655,1112 L689,1112 L692,1124 L689,1136 L655,1136 Z" fill="url(#hatch-x)" stroke="#ff6b6b" stroke-width="2"/>
+<path data-wave-state="z" d="M692,1124 C692,1124 692,1124 712,1124 L732,1124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

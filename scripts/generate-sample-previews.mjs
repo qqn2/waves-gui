@@ -8,11 +8,11 @@ const samplesDir = join(root, 'public', 'samples');
 const previewsDir = join(samplesDir, 'previews');
 
 function previewFileName(sampleFile, theme) {
-  return sampleFile.replace(/\.json$/i, `.${theme}.svg`);
+  return sampleFile.replace(/\.[^.]+$/i, `.${theme}.svg`);
 }
 
 function legacyPreviewFileName(sampleFile) {
-  return sampleFile.replace(/\.json$/i, '.svg');
+  return sampleFile.replace(/\.[^.]+$/i, '.svg');
 }
 
 function lightPreviewSvg(svg) {
@@ -40,6 +40,8 @@ const server = await createServer({
 
 try {
   const { parseCodeToDiagram } = await server.ssrLoadModule('/src/codePanel/codeSync.ts');
+  const { collectSampleLeaves } = await server.ssrLoadModule('/src/shell/samples.ts');
+  const { sampleParseOptions } = await server.ssrLoadModule('/src/sampleLibrary/sampleSource.ts');
   const { buildSVGString } = await server.ssrLoadModule('/src/exportEngine/exportSVG.ts');
   const { defaultView } = await server.ssrLoadModule('/src/shared/store/helpers.ts');
   const previewView = {
@@ -47,14 +49,19 @@ try {
     labelWidth: 104,
     showAnchorLetters: false,
   };
+  const entriesByFile = new Map(collectSampleLeaves().map((sample) => [sample.file, sample]));
   const sampleFiles = (await readdir(samplesDir))
-    .filter((file) => file.endsWith('.json'))
+    .filter((file) => /\.(json|jsonml|yaml|toml)$/i.test(file))
+    .filter((file) => entriesByFile.get(file)?.support !== 'future')
     .sort();
 
   await mkdir(previewsDir, { recursive: true });
   for (const sampleFile of sampleFiles) {
     const source = await readFile(join(samplesDir, sampleFile), 'utf8');
-    const parsed = parseCodeToDiagram(source);
+    const parsed = parseCodeToDiagram(
+      source,
+      sampleParseOptions(entriesByFile.get(sampleFile)?.format),
+    );
     if (parsed.ok === false) {
       throw new Error(`Could not generate ${sampleFile}: ${parsed.error}`);
     }

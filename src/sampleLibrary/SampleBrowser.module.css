@@ -270,6 +270,42 @@
 
 .categoryChevron {
   margin-left: -5px;
+  transition: transform 120ms ease;
+}
+
+.categoryChevronExpanded {
+  transform: rotate(90deg);
+}
+
+.subcategoryList {
+  margin: 0 0 5px 26px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.subcategoryButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.subcategoryButton:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.subcategoryButtonActive {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-panel));
+  color: var(--accent-ink);
 }
 
 .results {
@@ -372,6 +408,7 @@
 
 .templateRow:focus-visible,
 .categoryButton:focus-visible,
+.subcategoryButton:focus-visible,
 .dockButton:focus-visible,
 .dockButtonActive:focus-visible,
 .closeButton:focus-visible,
@@ -432,8 +469,32 @@
 }
 
 .nameCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.84rem;
   font-weight: 700;
+}
+
+.nameText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.futureBadge {
+  flex-shrink: 0;
+  padding: 2px 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 52%, var(--border));
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  color: var(--accent-ink);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .sourceCell,
@@ -540,6 +601,14 @@
   filter: brightness(1.08);
 }
 
+.primaryButton:disabled {
+  border-color: var(--border);
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  filter: none;
+}
+
 .secondaryButton {
   min-height: 32px;
   padding: 0 11px;
@@ -586,6 +655,13 @@
 .waveformLoading .thumbnail {
   width: min(310px, 60%);
   height: 68px;
+}
+
+.previewSupportNote {
+  max-width: min(420px, 34%);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.35;
 }
 
 .emptyState,
