@@ -7,12 +7,12 @@
   "config": { "hscale": 2 },
   "signal": [
     { "name": "HCLK", "wave": "P........" },
-    { "name": "HTRANS[1:0]", "wave": "x.=2.3..", "data": ["NONSEQ", "BUSY", "SEQ", "SEQ"] },
-    { "name": "HADDR[31:0]", "wave": "x.=x.=3.", "data": ["0x20", "0x24", "0x28", "0x2C"] },
-    { "name": "HWRITE", "wave": "1.0..1.." },
-    { "name": "HBURST[2:0]", "wave": "x.6..", "data": ["INCR"] },
-    { "name": "HREADY", "wave": "1..0.1.." },
-    { "name": "HRDATA[31:0]", "wave": "x...=x..", "data": ["Data (0x20)", "Data (0x24)", "Data (0x28)", "Data (0x2C)"] }
+    { "name": "HTRANS[1:0]", "wave": "x.=..234.", "data": ["NONSEQ", "BUSY", "SEQ", "SEQ"] },
+    { "name": "HADDR[31:0]", "wave": "x.=..234.", "data": ["0x20", "0x24", "0x28", "0x2C"] },
+    { "name": "HWRITE", "wave": "1.0..1..." },
+    { "name": "HBURST[2:0]", "wave": "x.6......", "data": ["INCR"] },
+    { "name": "HREADY", "wave": "1..0.1..." },
+    { "name": "HRDATA[31:0]", "wave": "x....=234", "data": ["Data (0x20)", "Data (0x24)", "Data (0x28)", "Data (0x2C)"] }
   ],
   "foot": {
     "text": "Use Preview in JSON panel for WaveDrom rendering; edit bus labels in panel or paint with Bus field"

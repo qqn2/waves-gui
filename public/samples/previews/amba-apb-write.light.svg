@@ -7,13 +7,13 @@
   </defs>
   <rect width="100%" height="100%" fill="#ffffff"/>
   <rect x="0" y="0" width="104" height="352" fill="#f8fafc"/>
-<text x="8" y="68" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PCLK</text>
-<text x="8" y="108" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PSEL</text>
-<text x="8" y="148" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PENABLE</text>
-<text x="8" y="188" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PWRITE</text>
-<text x="8" y="228" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PADDR</text>
-<text x="8" y="268" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PWDATA</text>
-<text x="8" y="308" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">PREADY</text>
+<text x="8" y="68" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PCLK</text>
+<text x="8" y="108" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PSEL</text>
+<text x="8" y="148" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PENABLE</text>
+<text x="8" y="188" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PWRITE</text>
+<text x="8" y="228" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PADDR</text>
+<text x="8" y="268" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PWDATA</text>
+<text x="8" y="308" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >PREADY</text>
   <g transform="translate(104, 0)">
     <rect x="0" y="0" width="640" height="24" fill="#f8fafc"/>
 <text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
@@ -51,21 +51,17 @@
 <polygon points="480,64 477,70 483,70" fill="#4A9EFF"/>
 <path d="M560,80 L560,56 L600,56 L600,80 L640,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <polygon points="560,64 557,70 563,70" fill="#4A9EFF"/>
-<path d="M0,120 L80,120 L160,120 L166,120 L172,96 L240,96 L320,96 L400,96 L406,96 L412,120 L480,120 L560,120 L640,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
-<path d="M0,160 L80,160 L160,160 L240,160 L246,160 L252,136 L320,136 L400,136 L406,136 L412,160 L480,160 L560,160 L640,160" fill="none" stroke="#4A9EFF" stroke-width="2"/>
-<path d="M0,200 L80,200 L160,200 L166,200 L172,176 L240,176 L320,176 L400,176 L406,176 L412,200 L480,200 L560,200 L640,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,120 L80,120 L160,120 L166,120 L172,96 L240,96 L320,96 L326,96 L332,120 L400,120 L480,120 L560,120 L640,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,160 L80,160 L160,160 L240,160 L246,160 L252,136 L320,136 L326,136 L332,160 L400,160 L480,160 L560,160 L640,160" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,200 L80,200 L160,200 L166,200 L172,176 L240,176 L320,176 L326,176 L332,200 L400,200 L480,200 L560,200 L640,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <path d="M0,228 L16,216 L144,216 L160,228 L144,240 L16,240 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="80" y="228" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
-<path d="M160,228 L176,216 L224,216 L240,228 L224,240 L176,240 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-<text x="200" y="228" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x1000</text>
-<path d="M240,228 L256,216 L624,216 L640,228 L624,240 L256,240 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
-<text x="440" y="228" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,228 L176,216 L624,216 L640,228 L624,240 L176,240 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="228" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x1000</text>
 <path d="M0,268 L16,256 L144,256 L160,268 L144,280 L16,280 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="80" y="268" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
-<path d="M160,268 L176,256 L224,256 L240,268 L224,280 L176,280 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-<text x="200" y="268" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xDEADBEEF</text>
-<path d="M240,268 L256,256 L624,256 L640,268 L624,280 L256,280 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
-<text x="440" y="268" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,268 L176,256 L624,256 L640,268 L624,280 L176,280 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="268" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xDEADBEEF</text>
 <path d="M0,296 L80,296 L160,296 L240,296 L320,296 L400,296 L480,296 L560,296 L640,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
   </g>
 </svg>

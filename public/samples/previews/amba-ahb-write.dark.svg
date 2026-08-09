@@ -7,18 +7,18 @@
   </defs>
   <rect width="100%" height="100%" fill="#111111"/>
   <rect x="0" y="0" width="104" height="528" fill="#242424"/>
-<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">Address phase</text>
-<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HCLK</text>
-<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HSEL</text>
-<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HTRANS</text>
-<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HADDR</text>
-<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HWRITE</text>
-<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HBURST</text>
-<text x="8" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle"></text>
-<text x="8" y="370" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle">Data phase</text>
-<text x="20" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HWDATA</text>
-<text x="20" y="444" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HREADY</text>
-<text x="20" y="484" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle">HRESP</text>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Address phase</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HCLK</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HSEL</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HTRANS</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HADDR</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HWRITE</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBURST</text>
+<text x="8" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="370" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Data phase</text>
+<text x="20" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HWDATA</text>
+<text x="20" y="444" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HREADY</text>
+<text x="20" y="484" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HRESP</text>
   <g transform="translate(104, 0)">
     <rect x="0" y="0" width="640" height="24" fill="#242424"/>
 <text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
@@ -56,7 +56,7 @@
 <polygon points="480,92 477,98 483,98" fill="#4A9EFF"/>
 <path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <polygon points="560,92 557,98 563,98" fill="#4A9EFF"/>
-<path d="M0,148 L80,148 L160,148 L166,148 L172,124 L240,124 L320,124 L400,124 L406,124 L412,148 L480,148 L560,148 L640,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L160,148 L166,148 L172,124 L240,124 L320,124 L326,124 L332,148 L400,148 L480,148 L560,148 L640,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <path d="M0,176 L16,164 L144,164 L160,176 L144,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="80" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
 <path d="M160,176 L176,164 L224,164 L240,176 L224,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
@@ -69,19 +69,19 @@
 <text x="200" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA0000000</text>
 <path d="M240,216 L256,204 L624,204 L640,216 L624,228 L256,228 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="440" y="216" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
-<path d="M0,268 L80,268 L160,268 L166,268 L172,244 L240,244 L320,244 L400,244 L406,244 L412,268 L480,268 L560,268 L640,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,268 L80,268 L160,268 L166,268 L172,244 L240,244 L320,244 L326,244 L332,268 L400,268 L480,268 L560,268 L640,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <path d="M0,296 L16,284 L144,284 L160,296 L144,308 L16,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="80" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
 <path d="M160,296 L176,284 L224,284 L240,296 L224,308 L176,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
 <text x="200" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">SINGLE</text>
 <path d="M240,296 L256,284 L624,284 L640,296 L624,308 L256,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
 <text x="440" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
-<path d="M0,404 L16,392 L304,392 L320,404 L304,416 L16,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
-<text x="160" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
-<path d="M320,404 L336,392 L384,392 L400,404 L384,416 L336,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-<text x="360" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xDEADBEEF</text>
-<path d="M400,404 L416,392 L624,392 L640,404 L624,416 L416,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
-<text x="520" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,404 L16,392 L224,392 L240,404 L224,416 L16,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="120" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M240,404 L256,392 L304,392 L320,404 L304,416 L256,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xDEADBEEF</text>
+<path d="M320,404 L336,392 L624,392 L640,404 L624,416 L336,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="480" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
 <path d="M0,432 L80,432 L160,432 L240,432 L320,432 L400,432 L480,432 L560,432 L640,432" fill="none" stroke="#4A9EFF" stroke-width="2"/>
 <path d="M0,496 L80,496 L160,496 L240,496 L320,496 L400,496 L480,496 L560,496 L640,496" fill="none" stroke="#4A9EFF" stroke-width="2"/>
   </g>

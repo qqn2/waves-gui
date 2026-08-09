@@ -71,7 +71,7 @@ describe('AHB transfer types sample (WaveDrom-faithful)', () => {
     const outHtrans = (exported.signal as object[]).find(
       (e) => !Array.isArray(e) && (e as { name?: string }).name === 'HTRANS[1:0]',
     ) as { wave?: string; data?: string[] };
-    expect(outHtrans?.data).toEqual(['NONSEQ', 'BUSY', 'SEQ']);
+    expect(outHtrans?.data).toEqual(['NONSEQ', 'BUSY', 'SEQ', 'SEQ']);
     expect(outHtrans?.wave).toMatch(/^x\./);
     expect(outHtrans?.wave).toContain('3');
   });

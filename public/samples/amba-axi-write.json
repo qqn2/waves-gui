@@ -5,25 +5,26 @@
     [
       "AW channel",
       { "name": "ACLK", "wave": "P..........." },
-      { "name": "AWADDR", "wave": "x..=x..", "data": ["0x40001000"] },
-      { "name": "AWLEN", "wave": "x..2x..", "data": ["0"] },
-      { "name": "AWVALID", "wave": "0..1..0..." },
-      { "name": "AWREADY", "wave": "0...1..0.." }
+      { "name": "AWADDR", "wave": "x..=........", "data": ["0x40001000"] },
+      { "name": "AWLEN", "wave": "x..2........", "data": ["0"] },
+      { "name": "AWVALID", "wave": "0..1..0....." },
+      { "name": "AWREADY", "wave": "0...1..0...." }
     ],
     {},
     [
       "W channel",
-      { "name": "WDATA", "wave": "x....=x..", "data": ["0xCAFEBABE"] },
-      { "name": "WLAST", "wave": "0....1.0.." },
-      { "name": "WVALID", "wave": "0....1.0.." },
-      { "name": "WREADY", "wave": "0....0.1.." }
+      { "name": "WDATA", "wave": "x....=......", "data": ["0xCAFEBABE"] },
+      { "name": "WSTRB", "wave": "x....=......", "data": ["0xF"] },
+      { "name": "WLAST", "wave": "0.....1..0.." },
+      { "name": "WVALID", "wave": "0.....1..0.." },
+      { "name": "WREADY", "wave": "0......1.0.." }
     ],
     {},
     [
       "B channel",
-      { "name": "BRESP", "wave": "x......=x.", "data": ["OKAY"] },
-      { "name": "BVALID", "wave": "0......1.0" },
-      { "name": "BREADY", "wave": "0......0.1" }
+      { "name": "BRESP", "wave": "x........=..", "data": ["OKAY"] },
+      { "name": "BVALID", "wave": "0........1.0" },
+      { "name": "BREADY", "wave": "0.........1." }
     ]
   ],
   "foot": { "text": "AWLEN=0, WLAST=1; channels may overlap; AXI4 write" }
