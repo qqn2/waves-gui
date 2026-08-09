@@ -143,6 +143,61 @@ function parseColorNumber(value: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function parseHslComponent(value: string, asHue = false): number | undefined {
+  const match = value.trim().match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))(%|deg)?$/i);
+  if (!match) return undefined;
+  const amount = Number(match[1]);
+  if (!Number.isFinite(amount)) return undefined;
+  if (match[2] === '%') {
+    if (asHue) return amount / 100;
+    return amount / 100;
+  }
+  return amount;
+}
+
+function hslToRgb(hue: number, saturation: number, lightness: number): [number, number, number] {
+  const h = ((hue % 360) + 360) % 360;
+  const c = (1 - Math.abs(2 * lightness - 1)) * saturation;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = lightness - c / 2;
+  const [r, g, b] = h < 60
+    ? [c, x, 0]
+    : h < 120
+      ? [x, c, 0]
+      : h < 180
+        ? [0, c, x]
+        : h < 240
+          ? [0, x, c]
+          : h < 300
+            ? [x, 0, c]
+            : [c, 0, x];
+  return [r, g, b].map((channel) => Math.floor((channel + m) * 255)) as [number, number, number];
+}
+
+function parseHslColor(value: string): string | undefined {
+  const match = value.match(/^(hsla?)\(([^)]+)\)$/i);
+  if (!match) return undefined;
+  const parts = match[2]!.split(',').map((part) => part.trim());
+  const alphaPresent = match[1]!.toLowerCase() === 'hsla';
+  if (parts.length !== (alphaPresent ? 4 : 3)) return undefined;
+  const hue = parseHslComponent(parts[0]!, true);
+  const saturation = parseHslComponent(parts[1]!);
+  const lightness = parseHslComponent(parts[2]!);
+  if (
+    hue === undefined
+    || saturation === undefined
+    || lightness === undefined
+    || saturation < 0
+    || saturation > 1
+    || lightness < 0
+    || lightness > 1
+  ) return undefined;
+  const [r, g, b] = hslToRgb(hue, saturation, lightness);
+  if (!alphaPresent) return `rgb(${r}, ${g}, ${b})`;
+  const alpha = normalizeAlphaComponent(parseColorNumber(parts[3]!));
+  return alpha === undefined ? undefined : `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 /**
  * Normalize Undulate/WaveDrom-safe color values to a canonical CSS string.
  * Accepts hex, named colors, rgb()/rgba(), and Undulate's documented
@@ -168,6 +223,8 @@ export function normalizeUndulateColor(value: unknown): string | undefined {
   if (/^#[0-9a-f]{3,4}$/i.test(color) || /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(color)) {
     return color;
   }
+  const hsl = parseHslColor(color);
+  if (hsl) return hsl;
   const match = color.match(/^rgba?\(([^)]+)\)$/i);
   if (!match) return undefined;
   const parts = match[1]!.split(',').map((part) => part.trim());

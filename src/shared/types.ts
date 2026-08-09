@@ -225,7 +225,7 @@ export interface Signal {
   /** Original WaveDrom wave/data retained for unsupported mixed bus/scalar lanes. */
   sourceWaveData?: {
     wave: string;
-    data?: string | Array<string | string[]>;
+    data?: string | Array<string | number | boolean | Array<string | number | boolean>>;
   };
   /** @deprecated Use laneMode `'wave'` and `wave`. Kept for loaded diagrams. */
   waveOverride?: string;

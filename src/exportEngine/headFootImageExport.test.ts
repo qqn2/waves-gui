@@ -37,4 +37,14 @@ describe('head/foot image export', () => {
     expect(svg).toMatch(/>2<\/text>/);
     expect(svg).toMatch(/>3<\/text>/);
   });
+
+  it('widens the waveform viewport for long captions', () => {
+    const diagram = createDefaultDiagram();
+    diagram.config.totalSteps = 4;
+    diagram.config.head = { text: 'Edit Sub-Steps, periods, duty, and phase' };
+
+    const dimensions = computeExportDimensions(diagram, defaultView());
+
+    expect(dimensions.waveformWidth).toBeGreaterThan(4 * 40);
+  });
 });

@@ -95,8 +95,15 @@ function validateSignalEntry(
     const valid = typeof data === 'string'
       || (Array.isArray(data)
         && data.length <= MAX_DATA_ENTRIES
-        && data.every((entry) => typeof entry === 'string' || (Array.isArray(entry) && entry.every((part) => typeof part === 'string'))));
-    if (!valid) return 'data must be a string or an array of strings';
+        && data.every((entry) =>
+          typeof entry === 'string'
+          || typeof entry === 'boolean'
+          || (typeof entry === 'number' && Number.isFinite(entry))
+          || (Array.isArray(entry) && entry.every((part) =>
+            typeof part === 'string'
+            || typeof part === 'boolean'
+            || (typeof part === 'number' && Number.isFinite(part))))));
+    if (!valid) return 'data must be a string or an array of scalar labels';
   }
   return null;
 }

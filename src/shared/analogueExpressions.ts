@@ -344,6 +344,48 @@ export function evaluateUndulateSequence(
   return values;
 }
 
+function splitTopLevelList(source: string): string[] {
+  const trimmed = source.trim();
+  if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+    throw new AnalogueExpressionError('numeric lists must use [value, ...] syntax');
+  }
+  const body = trimmed.slice(1, -1).trim();
+  if (!body) return [];
+  const parts: string[] = [];
+  let start = 0;
+  let depth = 0;
+  for (let index = 0; index < body.length; index++) {
+    const char = body[index]!;
+    if (char === '(') depth++;
+    else if (char === ')') depth--;
+    else if (char === ',' && depth === 0) {
+      const part = body.slice(start, index).trim();
+      if (!part) throw new AnalogueExpressionError('numeric lists cannot contain empty values');
+      parts.push(part);
+      start = index + 1;
+    }
+    if (depth < 0) throw new AnalogueExpressionError('numeric list has an unmatched parenthesis');
+  }
+  if (depth !== 0) throw new AnalogueExpressionError('numeric list has an unmatched parenthesis');
+  const final = body.slice(start).trim();
+  if (!final) throw new AnalogueExpressionError('numeric lists cannot contain empty values');
+  parts.push(final);
+  if (parts.length > UNDULATE_SEQUENCE_MAX_VALUES) {
+    throw new AnalogueExpressionError(
+      `numeric list length must be from 0 to ${UNDULATE_SEQUENCE_MAX_VALUES}`,
+    );
+  }
+  return parts;
+}
+
+/** Evaluate Undulate's bounded literal timing-vector spelling, e.g. [0.8, 7/6]. */
+export function evaluateUndulateNumericList(
+  source: string,
+  context: AnalogueContext = DEFAULT_ANALOGUE_CONTEXT,
+): number[] {
+  return splitTopLevelList(source).map((part) => evaluateAnalogueScalar(part, context));
+}
+
 export function validateUndulateSequence(
   source: string,
   context: AnalogueContext = DEFAULT_ANALOGUE_CONTEXT,

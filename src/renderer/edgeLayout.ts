@@ -99,6 +99,16 @@ export function parseEdge(edge: string): ParsedEdge | null {
     };
   }
   const { path, label } = parseEdgeString(edge);
+  if (/^[\p{L}\p{N}_.#]+$/u.test(path)) {
+    return {
+      fromNode: path,
+      toNode: path,
+      hasStartArrow: false,
+      hasArrow: false,
+      shape: '-',
+      label,
+    };
+  }
   if (path.length < 2) return null;
   return { ...parseEdgePath(path), label };
 }

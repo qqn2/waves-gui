@@ -43,6 +43,41 @@ function normalizeAnnotationAnchors(value: unknown): void {
   }
 }
 
+function applyLocalGroupConfig(
+  entry: WdSignalEntry,
+  config: Record<string, unknown> | undefined,
+): WdSignalEntry {
+  if (!config) return entry;
+  const vscale = typeof config.vscale === 'number' ? config.vscale : undefined;
+  if (vscale === undefined) return entry;
+  if (Array.isArray(entry)) {
+    return [
+      entry[0]!,
+      ...(entry.slice(1) as WdSignalEntry[]).map((child) =>
+        applyLocalGroupConfig(child, config),
+      ),
+    ] as WdGroup;
+  }
+  if (Object.keys(entry).length === 0) return entry;
+  const signal = entry as WdSignal;
+  return signal.vscale === undefined ? { ...signal, vscale } : signal;
+}
+
+function mappingChildren(
+  value: Record<string, unknown>,
+  invalid: (message: string) => Error,
+): WdSignalEntry[] {
+  const localConfig = isMappingRecord(value.config) ? value.config : undefined;
+  return Object.entries(value)
+    .filter(([childName]) => childName !== 'config')
+    .map(([childName, child]) =>
+      applyLocalGroupConfig(
+        mappingSignalEntry(childName, child, invalid),
+        localConfig,
+      )
+    );
+}
+
 function mappingSignalEntry(
   name: string,
   value: unknown,
@@ -57,9 +92,7 @@ function mappingSignalEntry(
   ) {
     return [
       value.name,
-      ...Object.entries(value.signal).map(([childName, child]) =>
-        mappingSignalEntry(childName, child, invalid)
-      ),
+      ...mappingChildren(value.signal, invalid),
     ] as WdGroup;
   }
   if (Object.keys(value).length === 0) return {};
@@ -70,9 +103,7 @@ function mappingSignalEntry(
   }
   return [
     name,
-    ...Object.entries(value).map(([childName, child]) =>
-      mappingSignalEntry(childName, child, invalid)
-    ),
+    ...mappingChildren(value, invalid),
   ] as WdGroup;
 }
 

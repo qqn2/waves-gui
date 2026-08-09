@@ -287,6 +287,15 @@ function sameGeneratedValues(
   return generatedSequenceFingerprint(values) === source.fingerprint;
 }
 
+function samePartialPeriodValues(
+  values: readonly number[],
+  source: { values: number[]; fingerprint: string },
+): boolean {
+  return values.length >= source.values.length
+    && source.values.every((value, index) => values[index] === value)
+    && values.slice(source.values.length).every((value) => value === 1);
+}
+
 function analogueToUndulateEntry(
   signal: Signal,
   preserveExpressions: boolean,
@@ -385,7 +394,7 @@ function applyGeneratedTimingExpressions(
   const periods = generated.periods;
   if (periods) {
     const values = timing.cells.map((cell) => cell.durationTicks / timing.ticksPerStep);
-    if (sameGeneratedValues(values, periods)) {
+    if (sameGeneratedValues(values, periods) || samePartialPeriodValues(values, periods)) {
       delete entry.period;
       entry.periods = periods.source;
     }

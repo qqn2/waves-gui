@@ -139,6 +139,35 @@ describe('Undulate JSON bridge', () => {
     })).toContain('analogue value count');
   });
 
+  it('supports partial literal period vectors and numeric bus labels', () => {
+    const root = {
+      signal: [
+        { name: 'timed', wave: '0....1.....', periods: '[0.8, 7/6]' },
+        { name: 'bus', wave: '=.=.=.=.', data: [1, 2, 3, 4] },
+      ],
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    const diagram = fromUndulateJSON(root);
+    const timed = diagram.signals[0];
+    expect(timed.type === 'bit' ? timed.digitalTiming?.cells[0]?.durationTicks : undefined)
+      .toBeGreaterThan(0);
+    const bus = diagram.signals[1];
+    expect(bus.type === 'vector' ? bus.segments.map((segment) => segment.value) : [])
+      .toEqual(['1', '2', '3', '4']);
+    expect(toUndulateJSON(diagram).signal[0]).toMatchObject({
+      periods: '[0.8, 7/6]',
+    });
+  });
+
+  it('accepts Ludwig text-only edge annotations at a node', () => {
+    const root = {
+      signal: [{ name: 'source', wave: '0', node: 'a' }],
+      edges: ['a RX_DATA'],
+    } satisfies UndulateRoot;
+    expect(validateUndulateJSON(root)).toBeNull();
+    expect(fromUndulateJSON(root).edges).toEqual(['a RX_DATA']);
+  });
+
   it('rejects timing values that exceed the lossless tick ceiling', () => {
     expect(validateUndulateJSON({
       signal: [{

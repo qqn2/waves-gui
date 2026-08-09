@@ -1,6 +1,7 @@
 import {
   DEFAULT_ANALOGUE_CONTEXT,
   evaluateUndulateSequence,
+  evaluateUndulateNumericList,
   type AnalogueContext,
 } from '../shared/analogueExpressions';
 import type { WdSignal, WdSignalEntry } from '../wavedromBridge';
@@ -49,7 +50,20 @@ function resolveField(
 ): void {
   const value = signal[field];
   if (typeof value !== 'string') return;
-  const values = evaluateUndulateSequence(value, context);
+  let values: number[];
+  try {
+    values = evaluateUndulateSequence(value, context);
+  } catch (sequenceError) {
+    if (field === 'periods' || field === 'duty_cycles') {
+      try {
+        values = evaluateUndulateNumericList(value, context);
+      } catch {
+        throw sequenceError;
+      }
+    } else {
+      throw sequenceError;
+    }
+  }
   signal[field] = values;
   sources[field] = {
     source: value,

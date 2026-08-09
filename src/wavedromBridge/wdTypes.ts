@@ -1,7 +1,7 @@
 export interface WdSignal {
   name?: string;
   wave?: string;
-  data?: string | Array<string | string[]>;
+  data?: string | Array<string | number | boolean | Array<string | number | boolean>>;
   node?: string;
   period?: number;
   phase?: number;
@@ -11,6 +11,7 @@ export interface WdSignal {
   duty_cycles?: number[] | string;
   analogue?: unknown[] | string;
   slewing?: number;
+  vscale?: number;
   skin?: string;
   [key: string]: unknown;
 }

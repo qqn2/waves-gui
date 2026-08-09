@@ -13,6 +13,10 @@ export interface ExportDimensions {
   axisOffset: number;
 }
 
+function captionWidth(text: string | undefined): number {
+  return text ? text.length * 12 * 0.6 + 16 : 0;
+}
+
 /** Full diagram size at zoom 1, including label column and time axis. */
 export function computeExportDimensions(
   diagram: DiagramState,
@@ -22,7 +26,11 @@ export function computeExportDimensions(
   const contentH = totalContentHeight(rows);
   const { headHeight, footHeight } = measureHeadFoot(diagram.config);
   const axisOffset = TIME_AXIS_HEIGHT + headHeight;
-  const waveformWidth = diagramLogicalWidth(diagram) * diagram.config.hscale;
+  const waveformWidth = Math.max(
+    diagramLogicalWidth(diagram) * diagram.config.hscale,
+    captionWidth(diagram.config.head?.text),
+    captionWidth(diagram.config.foot?.text),
+  );
   const waveformHeight = contentH + axisOffset + footHeight;
   return {
     labelWidth: view.labelWidth,

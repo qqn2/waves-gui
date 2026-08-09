@@ -113,6 +113,13 @@ describe('annotations', () => {
     expect(isSafeUndulateColorInput('rgba(0, 0, 255, )')).toBe(false);
   });
 
+  it('normalizes Ludwig HSL and HSLA colors into safe RGB values', () => {
+    expect(normalizeUndulateColor('hsl(0%, 100%, 50%)')).toBe('rgb(255, 0, 0)');
+    expect(normalizeUndulateColor('hsla(127, 100%, 50%, 0.5)'))
+      .toBe('rgba(0, 255, 29, 0.5)');
+    expect(isSafeUndulateColorInput('hsl(0%, 100%, 101%)')).toBe(false);
+  });
+
   it('normalizes and formats numeric and percentage line ranges', () => {
     const annotations = normalizeAnnotations([
       {

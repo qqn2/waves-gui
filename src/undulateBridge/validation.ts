@@ -4,6 +4,7 @@ import {
 } from '../shared/analogue';
 import {
   evaluateUndulateSequence,
+  evaluateUndulateNumericList,
   validateAnalogueExpression,
   validateUndulateSequence,
 } from '../shared/analogueExpressions';
@@ -326,6 +327,22 @@ function scanConfig(value: unknown, findings: UndulateFinding[]): void {
   scanNamedObject(value.foot, 'config.foot', FOOT_FIELDS, findings);
 }
 
+function validateTimingExpression(value: string): string | null {
+  try {
+    evaluateUndulateSequence(value);
+    return null;
+  } catch (sequenceError) {
+    try {
+      evaluateUndulateNumericList(value);
+      return null;
+    } catch {
+      return sequenceError instanceof Error
+        ? sequenceError.message
+        : 'invalid timing expression';
+    }
+  }
+}
+
 function scanAnalogueValues(
   signal: Record<string, unknown>,
   path: string,
@@ -393,7 +410,7 @@ function scanSignal(
       scanAnalogueValues(signal, path, findings);
     } else if (field === 'periods' || field === 'duty_cycles') {
       if (typeof signal[field] === 'string') {
-        const error = validateUndulateSequence(signal[field] as string);
+        const error = validateTimingExpression(signal[field] as string);
         if (error) {
           findings.push(invalid(
             fieldPath,
@@ -677,7 +694,12 @@ function validateDigitalTiming(signal: Record<string, unknown>): string | null {
   const generatedValues = (field: 'periods' | 'duty_cycles'): number[] | null => {
     if (typeof signal[field] !== 'string') return null;
     try {
-      return evaluateUndulateSequence(signal[field] as string);
+      const source = signal[field] as string;
+      try {
+        return evaluateUndulateSequence(source);
+      } catch {
+        return evaluateUndulateNumericList(source);
+      }
     } catch (error) {
       throw new Error(
         `${field} generated sequence is invalid: ${error instanceof Error ? error.message : 'invalid sequence'}`,
@@ -701,8 +723,11 @@ function validateDigitalTiming(signal: Record<string, unknown>): string | null {
     ['duty_cycles', resolvedDuties],
   ] as const) {
     if (array === undefined) continue;
+    if (field === 'periods' && array.length <= expandedLength) continue;
     if (array.length !== expandedLength) {
-      return `${field} must contain exactly one value per expanded wave cell`;
+      return field === 'periods'
+        ? `${field} must contain no more than one value per expanded wave cell`
+        : `${field} must contain exactly one value per expanded wave cell`;
     }
   }
   const periods = [
@@ -800,6 +825,17 @@ function validateAnalogueOverlayLimits(entries: unknown[]): string | null {
 
 function waveDromValidationView(root: Record<string, unknown>): UndulateRoot {
   const clone = JSON.parse(JSON.stringify(root)) as UndulateRoot;
+  if (
+    clone.config
+    && typeof clone.config.hscale === 'number'
+    && clone.config.hscale > 0
+    && clone.config.hscale < 1
+  ) {
+    // Undulate permits compact fractional hscale values. The editor's
+    // WaveDrom-compatible layout floor is one; retain the original source in
+    // the input while validating the clamped render view.
+    clone.config.hscale = 1;
+  }
   if (Array.isArray(clone.signal)) {
     visitSignals(clone.signal, (signal) => {
       if (typeof signal.wave === 'string') {

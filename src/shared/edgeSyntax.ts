@@ -85,7 +85,14 @@ export function parseUndulateEdge(value: string): ParsedUndulateEdge | null {
 /** Convert an Undulate edge to the compact spelling used by the app renderer. */
 export function normalizeUndulateEdge(value: string): string | null {
   const parsed = parseUndulateEdge(value);
-  if (!parsed) return null;
+  if (!parsed) {
+    // Ludwig's renderer accepts `NODE TEXT` as a text-only annotation at a
+    // node. Keep the spelling intact; the renderer handles it as a zero-length
+    // labeled edge so the source remains exportable.
+    return /^\s*[\p{L}\p{N}]\s+[\w .]+\s*$/u.test(value)
+      ? value.trim()
+      : null;
+  }
   const path = parsed.connector.includes('#') || parsed.connector.includes('*')
     ? `${parsed.from} ${parsed.connector} ${parsed.to}`
     : `${parsed.from}${parsed.connector}${parsed.to}`;

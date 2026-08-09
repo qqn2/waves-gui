@@ -46,11 +46,21 @@ function timingCellWidth(signal: Signal, step: number): number | null {
     : null;
 }
 
+/**
+ * Undulate applies a native lane's phase in units of its first timed cell.
+ * This differs from legacy WaveDrom `signal.phase`, which uses the base cell.
+ */
+function timingPhaseTicks(timing: NonNullable<ReturnType<typeof signalTiming>>): number {
+  const ticksPerStep = Math.max(1, timing.ticksPerStep);
+  const firstDuration = timing.cells[0]?.durationTicks ?? ticksPerStep;
+  return timing.phaseTicks * firstDuration / ticksPerStep;
+}
+
 /** Logical X at the left edge of `step` for this lane (before hscale/zoom). */
 export function stepLogicalX(signal: Signal, step: number): number {
   const timing = signalTiming(signal);
   if (timing) {
-    let ticks = -timing.phaseTicks;
+    let ticks = -timingPhaseTicks(timing);
     const fallback = timing.ticksPerStep;
     for (let index = 0; index < step; index++) {
       ticks += timing.cells[index]?.durationTicks ?? fallback;
@@ -87,7 +97,7 @@ export function stepFromLogicalX(
   }
   const timing = signalTiming(signal);
   if (timing) {
-    let cursor = -timing.phaseTicks;
+    let cursor = -timingPhaseTicks(timing);
     const target = logicalX * timing.ticksPerStep / CELL_WIDTH;
     for (let index = 0; index < timing.cells.length; index++) {
       cursor += timing.cells[index]!.durationTicks;

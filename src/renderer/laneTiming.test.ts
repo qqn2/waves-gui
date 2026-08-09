@@ -48,11 +48,28 @@ describe('laneTiming', () => {
         ],
       },
     };
-    expect(stepLogicalXEnd(sig, 0)).toBe(10);
-    expect(stepLogicalXEnd(sig, 1)).toBe(50);
-    expect(stepLogicalXEnd(sig, 2)).toBe(110);
+    expect(stepLogicalXEnd(sig, 0)).toBe(15);
+    expect(stepLogicalXEnd(sig, 1)).toBe(55);
+    expect(stepLogicalXEnd(sig, 2)).toBe(115);
     expect(stepAtLogicalXForSignal(30, sig, 3)).toBe(1);
     expect(stepAtLogicalXForSignal(80, sig, 3)).toBe(2);
+  });
+
+  it('scales native phase by the first timed cell period', () => {
+    const sig: Signal = {
+      ...base,
+      states: ['p', 'n'],
+      digitalTiming: {
+        ticksPerStep: 4,
+        phaseTicks: -1,
+        cells: [
+          { state: 'p', durationTicks: 2 },
+          { state: 'n', durationTicks: 4 },
+        ],
+      },
+    };
+    expect(stepLogicalX(sig, 0)).toBe(5);
+    expect(stepLogicalXEnd(sig, 0)).toBe(25);
   });
 
   it('aligns fine and coarse native siblings by duration rather than symbol count', () => {
