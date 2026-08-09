@@ -3,13 +3,164 @@ import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { describe, expect, it } from 'vitest';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
+import { timingForStates } from '../shared/fineTiming';
 import { defaultView } from '../shared/store/helpers';
+import type { AnalogueCell } from '../shared/types';
+import type { HitTestResult } from './hitTest';
 import { PointerMarker } from './PointerMarker';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean })
   .IS_REACT_ACT_ENVIRONMENT = true;
 
 describe('PointerMarker', () => {
+  async function renderMarker(
+    diagram: ReturnType<typeof createDefaultDiagram>,
+    view: ReturnType<typeof defaultView>,
+    tool: Parameters<typeof PointerMarker>[0]['tool'],
+    signalId: string,
+    step: number,
+    canvasX: number,
+    signalType: HitTestResult['signalType'] = 'bit',
+  ): Promise<{ host: HTMLDivElement; root: ReturnType<typeof createRoot> }> {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    await act(async () => root.render(
+      <PointerMarker
+        diagram={diagram}
+        view={view}
+        tool={tool}
+        hit={{
+          signalId,
+          signalType,
+          step,
+          half: 'top',
+          isLabelArea: false,
+          isTimeAxis: false,
+          edgeIndex: null,
+          annotationId: null,
+          canvasX,
+        }}
+      />,
+    ));
+    return { host, root };
+  }
+
+  it('highlights the whole major step for paint, even near its right edge', async () => {
+    const diagram = createDefaultDiagram();
+    const bit = diagram.signals.find((signal) => signal.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+
+    const { host, root } = await renderMarker(
+      diagram,
+      defaultView(),
+      'paint',
+      bit.id,
+      1,
+      79,
+    );
+    const target = host.querySelector<HTMLElement>('.pointerIntervalTarget');
+    expect(target).not.toBeNull();
+    expect(target?.style.left).toBe('40px');
+    expect(target?.style.width).toBe('40px');
+    expect(host.querySelector('.pointerPrecisionLine')).toBeNull();
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain('step 1');
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
+  it('highlights the floor-selected fine-timing substep', async () => {
+    const diagram = createDefaultDiagram();
+    diagram.compatibility = { extensionsEnabled: true };
+    diagram.config.ticksPerStep = 4;
+    const bit = diagram.signals.find((signal) => signal.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+    bit.digitalTiming = timingForStates(bit.states, 4, {});
+
+    const { host, root } = await renderMarker(
+      diagram,
+      defaultView(),
+      'paint',
+      bit.id,
+      1,
+      59,
+    );
+    const target = host.querySelector<HTMLElement>('.pointerIntervalTarget');
+    expect(target).not.toBeNull();
+    expect(target?.style.left).toBe('50px');
+    expect(target?.style.width).toBe('10px');
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain(
+      'step 1',
+    );
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain(
+      'substep 2/4',
+    );
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
+  it('keeps analogue previews inside the highlighted interval', async () => {
+    const diagram = createDefaultDiagram();
+    const analogue = diagram.signals[0];
+    analogue.type = 'analogue';
+    analogue.analogueCells = analogue.states.map<AnalogueCell>((_, index) => ({
+      kind: 'step',
+      value: index % 2,
+    }));
+
+    const { host, root } = await renderMarker(
+      diagram,
+      defaultView(),
+      'analogue-paint',
+      analogue.id,
+      1,
+      79,
+      'analogue',
+    );
+    const target = host.querySelector<HTMLElement>('.pointerIntervalTarget');
+    const preview = host.querySelector<HTMLElement>('.analogueBrushGhost');
+    expect(target?.style.left).toBe('40px');
+    expect(target?.style.width).toBe('40px');
+    expect(preview?.style.left).toBe('43px');
+    expect(preview?.style.width).toBe('34px');
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain(
+      'step 1',
+    );
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
+  it('labels erase as an interval operation', async () => {
+    const diagram = createDefaultDiagram();
+    const bit = diagram.signals.find((signal) => signal.type === 'bit');
+    expect(bit?.type).toBe('bit');
+    if (!bit || bit.type !== 'bit') return;
+
+    const { host, root } = await renderMarker(
+      diagram,
+      defaultView(),
+      'erase',
+      bit.id,
+      2,
+      119,
+    );
+    expect(host.querySelector('.pointerIntervalTarget')).not.toBeNull();
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain(
+      'step 2',
+    );
+    expect(host.querySelector('.pointerMarkerLabel')?.textContent).toContain(
+      'erase',
+    );
+
+    await act(async () => root.unmount());
+    host.remove();
+  });
+
   it('uses a snapped precision cursor without covering a row or cell', async () => {
     const diagram = createDefaultDiagram();
     diagram.compatibility = { extensionsEnabled: true };
