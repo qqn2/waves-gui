@@ -8,24 +8,36 @@ export interface RowLayoutEntry {
   type: 'bit' | 'vector' | 'analogue' | 'spacer' | 'group';
 }
 
+export interface RowLayoutOptions {
+  /** Keep a dedicated group header row for the interactive editor by default. */
+  includeGroupRows?: boolean;
+  /** Override the default signal row height for a renderer-specific layout. */
+  rowHeight?: number;
+}
+
 /** Flat visible rows in logical pixels (zoom = 1). */
 export function buildRowLayout(
   signals: SignalOrGroup[],
   collapsedGroupIds: readonly string[] = [],
+  options: RowLayoutOptions = {},
 ): RowLayoutEntry[] {
   const rows: RowLayoutEntry[] = [];
   let y = 0;
+  const includeGroupRows = options.includeGroupRows !== false;
+  const rowHeightOverride = options.rowHeight;
 
   const walk = (list: SignalOrGroup[]) => {
     for (let index = 0; index < list.length; index++) {
       const item = list[index]!;
       if (item.type === 'group') {
-        rows.push({ id: item.id, y, height: GROUP_HEADER_HEIGHT, type: 'group' });
-        y += GROUP_HEADER_HEIGHT;
+        if (includeGroupRows) {
+          rows.push({ id: item.id, y, height: GROUP_HEADER_HEIGHT, type: 'group' });
+          y += GROUP_HEADER_HEIGHT;
+        }
         if (!collapsedGroupIds.includes(item.id)) walk(item.children);
       } else {
         let chainEnd = index;
-        let rowHeight = item.rowHeight ?? ROW_HEIGHT;
+        let rowHeight = rowHeightOverride ?? item.rowHeight ?? ROW_HEIGHT;
         while (chainEnd < list.length - 1) {
           const current = list[chainEnd]!;
           const next = list[chainEnd + 1]!;
@@ -35,7 +47,7 @@ export function buildRowLayout(
             || next.type !== 'analogue'
           ) break;
           chainEnd++;
-          rowHeight = Math.max(rowHeight, next.rowHeight ?? ROW_HEIGHT);
+          rowHeight = Math.max(rowHeight, rowHeightOverride ?? next.rowHeight ?? ROW_HEIGHT);
         }
         for (let member = index; member <= chainEnd; member++) {
           const signal = list[member]!;

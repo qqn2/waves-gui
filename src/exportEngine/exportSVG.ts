@@ -23,7 +23,7 @@ import {
 import { segmentBusFill, segmentBusStroke, segmentBusTextColor } from '../renderer/vectorBusStyle';
 import { svgEdges } from './exportEdges';
 import { computeExportDimensions } from './exportDimensions';
-import { buildLabelEntries } from './labelEntries';
+import { buildLabelEntries, buildWaveDromLabelEntries } from './labelEntries';
 import { exportBaseName } from './fileName';
 import {
   clockCycleEndY,
@@ -76,6 +76,11 @@ function themeColor(varName: string, fallback: string): string {
   return v || fallback;
 }
 
+export interface SVGRenderOptions {
+  /** Use WaveDrom's vertical group labels and group-spanning layout. */
+  mode?: 'editor' | 'wavedrom';
+}
+
 function bitY(
   st: BitState,
   yHigh: number,
@@ -125,6 +130,7 @@ function svgExtendedDataCell(
   bevel: number,
   fillOverride?: string,
   strokeOverride?: string,
+  defaultStroke?: string,
 ): string {
   const d = Math.min(bevel, Math.max(1, (nextX - x) * 0.2));
   const yMid = (yHigh + yLow) / 2;
@@ -137,7 +143,7 @@ function svgExtendedDataCell(
     : esc(fillHexForWaveChar(state) ?? '#ffffff');
   const stroke = strokeOverride
     ? esc(strokeOverride)
-    : unknown ? esc(X_STROKE) : '#6b7280';
+    : unknown ? esc(defaultStroke ?? X_STROKE) : esc(defaultStroke ?? '#6b7280');
   return `<path data-wave-state="${esc(state)}" d="${path}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
 }
 
@@ -223,6 +229,7 @@ function svgBitSignal(
   totalSteps: number,
   hscale: number,
   axisOffset: number,
+  defaultStroke?: string,
 ): string {
   const yHigh = axisOffset + rowY + TRACE_PADDING;
   const yLow = axisOffset + rowY + rowH - TRACE_PADDING;
@@ -234,7 +241,7 @@ function svgBitSignal(
   let prevY = bitY(states[0] ?? '0', yHigh, yLow, yMid);
   let pathOpen = false;
   let resumeAtCurrentState = false;
-  const color = esc(signalStroke(signal));
+  const color = esc(signal.style?.stroke ?? defaultStroke ?? signalStroke(signal));
   const strokeWidth = signalStrokeWidth(signal);
   const extendedDigital = states.some(
     (state) => state === 'X' || state === '='
@@ -289,6 +296,7 @@ function svgBitSignal(
         3 * hscale,
         signal.style?.fill,
         signal.style?.stroke,
+        defaultStroke,
       ));
       i = runEnd - 1;
       resumeAtCurrentState = true;
@@ -353,10 +361,10 @@ function svgBitSignal(
     if (st === 'x') {
       flushPath();
       parts.push(
-        `<rect x="${x}" y="${yHigh}" width="${nextX - x}" height="${yLow - yHigh}" fill="url(#hatch-x)" stroke="${esc(X_STROKE)}" stroke-width="1"/>`,
+        `<rect x="${x}" y="${yHigh}" width="${nextX - x}" height="${yLow - yHigh}" fill="url(#hatch-x)" stroke="${esc(defaultStroke ?? X_STROKE)}" stroke-width="1"/>`,
       );
       parts.push(
-        `<path d="M${x},${yHigh} L${nextX},${yHigh} M${x},${yLow} L${nextX},${yLow}" fill="none" stroke="${esc(X_STROKE)}" stroke-width="1"/>`,
+        `<path d="M${x},${yHigh} L${nextX},${yHigh} M${x},${yLow} L${nextX},${yLow}" fill="none" stroke="${esc(defaultStroke ?? X_STROKE)}" stroke-width="1"/>`,
       );
       continue;
     }
@@ -406,7 +414,7 @@ function svgBitSignal(
   }
   flushPath();
 
-  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapStroke = esc(defaultStroke ?? themeColor('--text-primary', '#e8e8e8'));
   const gapFill = esc(themeColor('--bg-canvas', '#121212'));
   for (let i = 0; i < totalSteps; i++) {
     if (!signal.stepGaps?.[i]) continue;
@@ -432,6 +440,7 @@ function svgVectorSignal(
   rowH: number,
   hscale: number,
   axisOffset: number,
+  defaultStroke?: string,
 ): string {
   const d = BUS_DIAGONAL * hscale;
   const yMid = axisOffset + rowY + rowH / 2;
@@ -449,7 +458,7 @@ function svgVectorSignal(
     const x2 = stepLogicalXEnd(signal, seg.endStep - 1) * hscale;
     const span = x2 - x1;
     if (span <= 0) continue;
-    const stroke = esc(segmentBusStroke(seg, signal));
+    const stroke = esc(signal.style?.stroke ?? defaultStroke ?? segmentBusStroke(seg, signal));
     const fill = esc(segmentBusFill(seg, signal));
 
     if (span < d * 3) {
@@ -474,7 +483,7 @@ function svgVectorSignal(
     }
   }
 
-  const gapStroke = esc(themeColor('--text-primary', '#e8e8e8'));
+  const gapStroke = esc(defaultStroke ?? themeColor('--text-primary', '#e8e8e8'));
   const gapFill = esc(themeColor('--bg-canvas', '#121212'));
   const gaps = signal.stepGaps ?? [];
   for (let i = 0; i < gaps.length; i++) {
@@ -494,13 +503,14 @@ function svgGrid(
   hscale: number,
   axisOffset: number,
   gridColor: string,
+  dashed = false,
 ): string {
   const cellW = CELL_WIDTH * hscale;
   const lines: string[] = [];
   for (let i = 0; i <= totalSteps; i++) {
     const x = i * cellW;
     lines.push(
-      `<line x1="${x}" y1="${axisOffset}" x2="${x}" y2="${axisOffset + contentH}" stroke="${esc(gridColor)}" stroke-width="1"/>`,
+      `<line x1="${x}" y1="${axisOffset}" x2="${x}" y2="${axisOffset + contentH}" stroke="${esc(gridColor)}" stroke-width="1"${dashed ? ' stroke-dasharray="1,3"' : ''}/>`,
     );
   }
   return lines.join('\n');
@@ -605,8 +615,12 @@ function svgLabels(
   labelBg: string,
   textColor: string,
   totalHeight: number,
+  mode: SVGRenderOptions['mode'] = 'editor',
 ): string {
-  const entries = buildLabelEntries(diagram.signals);
+  const wavedromLabels = mode === 'wavedrom';
+  const entries = wavedromLabels
+    ? buildWaveDromLabelEntries(diagram.signals)
+    : buildLabelEntries(diagram.signals);
   const parts = [
     `<rect x="0" y="0" width="${labelWidth}" height="${totalHeight}" fill="${esc(labelBg)}"/>`,
   ];
@@ -618,10 +632,15 @@ function svgLabels(
       : entry.style?.fontFamily ?? 'sans-serif';
     const fontWeight = entry.isGroup ? 600 : entry.style?.fontWeight ?? 400;
     const fontSize = entry.isGroup ? 11 : entry.style?.fontSize ?? 12;
+    const fill = wavedromLabels ? '#0041c4' : textColor;
+    const transform = wavedromLabels && entry.isGroup
+      ? ` transform="rotate(270 ${x} ${y})"`
+      : '';
     parts.push(
-      `<text x="${x}" y="${y}" fill="${esc(textColor)}" `
+      `<text x="${x}" y="${y}" fill="${esc(fill)}"${transform} `
       + `font-family="${esc(fontFamily)}" font-weight="${fontWeight}" `
-      + `font-size="${fontSize}" dominant-baseline="middle">`
+      + `font-size="${fontSize}" dominant-baseline="middle" `
+      + `${wavedromLabels && entry.isGroup ? 'text-anchor="middle"' : ''}>`
       + `${esc(entry.name)}</text>`,
     );
   }
@@ -741,6 +760,7 @@ function svgAnalogueSignal(
   rowHeight: number,
   hscale: number,
   axisOffset: number,
+  defaultStroke?: string,
 ): string {
   const points = analoguePathPoints(signal);
   if (points.length === 0) return '';
@@ -758,7 +778,7 @@ function svgAnalogueSignal(
   const dashAttribute = dash.length > 0
     ? ` stroke-dasharray="${dash.join(' ')}"`
     : '';
-  return `<path d="${path}" fill="none" stroke="${esc(signalStroke(signal))}" `
+  return `<path d="${path}" fill="none" stroke="${esc(signal.style?.stroke ?? defaultStroke ?? signalStroke(signal))}" `
     + `stroke-width="${signalStrokeWidth(signal)}"${dashAttribute} `
     + 'stroke-linejoin="round" stroke-linecap="round"/>';
 }
@@ -769,17 +789,21 @@ function walkSignalSvg(
   diagram: DiagramState,
   axisOffset: number,
   rowIndex: { i: number },
+  includeGroupRows = true,
+  defaultStroke?: string,
 ): string {
   const parts: string[] = [];
   const hscale = diagram.config.hscale;
 
   for (const item of list) {
     const row = rows[rowIndex.i];
-    if (!row) break;
     if (item.type === 'group') {
-      rowIndex.i++;
-      parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex));
-    } else if (item.type === 'bit') {
+      if (includeGroupRows) rowIndex.i++;
+      parts.push(walkSignalSvg(item.children, rows, diagram, axisOffset, rowIndex, includeGroupRows, defaultStroke));
+      continue;
+    }
+    if (!row) break;
+    if (item.type === 'bit') {
       const renderSteps =
         item.digitalTiming?.cells.length ?? diagram.config.totalSteps;
       parts.push(
@@ -790,12 +814,13 @@ function walkSignalSvg(
           renderSteps,
           hscale,
           axisOffset,
+          defaultStroke,
         ),
       );
       rowIndex.i++;
     } else if (item.type === 'vector') {
       parts.push(
-        svgVectorSignal(item, row.y, row.height, hscale, axisOffset),
+        svgVectorSignal(item, row.y, row.height, hscale, axisOffset, defaultStroke),
       );
       rowIndex.i++;
     } else if (item.type === 'analogue') {
@@ -807,6 +832,7 @@ function walkSignalSvg(
             row.height,
             hscale,
             axisOffset,
+            defaultStroke,
           ),
         );
       }
@@ -818,16 +844,34 @@ function walkSignalSvg(
   return parts.join('\n');
 }
 
-export function buildSVGString(diagram: DiagramState, view: ViewState): string {
-  const dims = computeExportDimensions(diagram, view);
-  const rows = buildRowLayout(diagram.signals);
+export function buildSVGString(
+  diagram: DiagramState,
+  view: ViewState,
+  options: SVGRenderOptions = {},
+): string {
+  const includeGroupRows = options.mode !== 'wavedrom';
+  const layoutOptions = {
+    includeGroupRows,
+    ...(options.mode === 'wavedrom' ? { rowHeight: 30 } : {}),
+  };
+  const editorDims = computeExportDimensions(diagram, view);
+  const rows = buildRowLayout(diagram.signals, [], layoutOptions);
   const contentH = totalContentHeight(rows);
+  const { footHeight } = measureHeadFoot(diagram.config);
+  const dims = options.mode === 'wavedrom'
+    ? {
+      ...editorDims,
+      waveformHeight: contentH + editorDims.axisOffset + footHeight,
+      totalHeight: contentH + editorDims.axisOffset + footHeight,
+    }
+    : editorDims;
   const bg = themeColor('--bg-canvas', '#111111');
   const labelBg = themeColor('--bg-panel', '#242424');
   const textColor = themeColor('--text-primary', '#e8e8e8');
   const gridColor = themeColor('--grid-line', '#333333');
   const panelBg = themeColor('--bg-panel', '#242424');
   const secondaryTextColor = themeColor('--text-secondary', '#999999');
+  const defaultStroke = options.mode === 'wavedrom' ? '#000000' : undefined;
 
   const waveformParts: string[] = [];
   waveformParts.push(
@@ -854,10 +898,19 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
       diagram.config.hscale,
       dims.axisOffset,
       gridColor,
+      options.mode === 'wavedrom',
     ),
   );
   waveformParts.push(
-    walkSignalSvg(diagram.signals, rows, diagram, dims.axisOffset, { i: 0 }),
+    walkSignalSvg(
+      diagram.signals,
+      rows,
+      diagram,
+      dims.axisOffset,
+      { i: 0 },
+      includeGroupRows,
+      defaultStroke,
+    ),
   );
   const annotationSvg = svgAnnotations(
     diagram,
@@ -878,7 +931,15 @@ export function buildSVGString(diagram: DiagramState, view: ViewState): string {
     </pattern>
   </defs>
   <rect width="100%" height="100%" fill="${esc(bg)}"/>
-  ${svgLabels(diagram, dims.labelWidth, dims.axisOffset, labelBg, textColor, dims.totalHeight)}
+  ${svgLabels(
+    diagram,
+    dims.labelWidth,
+    dims.axisOffset,
+    labelBg,
+    textColor,
+    dims.totalHeight,
+    options.mode,
+  )}
   <g transform="translate(${dims.labelWidth}, 0)">
     ${waveformParts.join('\n')}
   </g>

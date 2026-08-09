@@ -57,6 +57,58 @@ export function buildLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
   return entries;
 }
 
+/** WaveDrom's group labels span child rows instead of occupying a row. */
+export function buildWaveDromLabelEntries(signals: SignalOrGroup[]): LabelEntry[] {
+  const rows = buildRowLayout(signals, [], { includeGroupRows: false, rowHeight: 30 });
+  const entries: LabelEntry[] = [];
+  let rowIdx = 0;
+
+  const walk = (list: SignalOrGroup[], depth: number) => {
+    for (const item of list) {
+      if (item.type === 'group') {
+        const groupIndex = entries.length;
+        entries.push({
+          name: item.name,
+          y: 0,
+          height: 0,
+          depth,
+          isGroup: true,
+          centerRatio: 0.5,
+        });
+        const firstRowIdx = rowIdx;
+        walk(item.children, depth + 1);
+        const first = rows[firstRowIdx];
+        const last = rows[rowIdx - 1];
+        if (!first || !last) {
+          entries.splice(groupIndex, 1);
+          continue;
+        }
+        entries[groupIndex] = {
+          ...entries[groupIndex]!,
+          y: first.y,
+          height: last.y + last.height - first.y,
+        };
+        continue;
+      }
+
+      const row = rows[rowIdx++];
+      if (!row) return;
+      entries.push({
+        name: item.name,
+        y: row.y,
+        height: row.height,
+        depth,
+        isGroup: false,
+        centerRatio: overlayLabelRatio(item.order),
+        ...(item.style ? { style: item.style } : {}),
+      });
+    }
+  };
+
+  walk(signals, 0);
+  return entries;
+}
+
 export function drawSignalLabels(
   ctx: CanvasRenderingContext2D,
   diagram: DiagramState,

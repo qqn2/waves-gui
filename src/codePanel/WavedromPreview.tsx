@@ -70,7 +70,7 @@ export function WavedromPreview({
               edgeToolHover: null,
               activeAnnotationId: null,
             };
-            const svgText = buildSVGString(result.diagram, previewView);
+            const svgText = buildSVGString(result.diagram, previewView, { mode: 'wavedrom' });
             const svgDocument = new DOMParser().parseFromString(
               svgText,
               'image/svg+xml',
