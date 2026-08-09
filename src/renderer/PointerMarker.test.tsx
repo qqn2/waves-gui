@@ -105,9 +105,12 @@ describe('PointerMarker', () => {
 
   it('keeps analogue previews inside the highlighted interval', async () => {
     const diagram = createDefaultDiagram();
-    const analogue = diagram.signals[0];
+    const analogue = diagram.signals.find((signal) => signal.type !== 'group');
+    expect(analogue).toBeDefined();
+    if (!analogue) return;
     analogue.type = 'analogue';
     analogue.analogueCells = analogue.states.map<AnalogueCell>((_, index) => ({
+      id: `analogue-${index}`,
       kind: 'step',
       value: index % 2,
     }));
