@@ -14,6 +14,7 @@ import type { HitTestResult } from './hitTest';
 import { findSignal } from '../shared/store';
 import { toggleBinaryBitState } from '../shared/bitToggle';
 import { stepLogicalX, stepLogicalXEnd } from './laneTiming';
+import { timingTickAtCanvasX } from '../tools/pointerUtils';
 
 function analogueHoverShape(
   signal: Signal,
@@ -135,6 +136,38 @@ export function PointerMarker({
       ? `${majorTick}+${minorTick}/${timingDivisions}`
       : `${majorTick}`;
 
+  // Draw and erase operate on an interval. Their preview must follow the
+  // floor-based paint hit test instead of the nearest-boundary cursor used by
+  // annotation and edge tools.
+  const intervalTool =
+    tool === 'paint' || tool === 'analogue-paint' || tool === 'erase';
+  const fineTimingPaint =
+    tool === 'paint'
+    && targetSignal.type === 'bit'
+    && Boolean(targetSignal.digitalTiming)
+    && timingDivisions > 1
+    && (view.paintMode === 'set' || view.paintMode === 'toggle');
+  const intervalTick = fineTimingPaint
+    ? timingTickAtCanvasX(rawPointerX, diagram, view, hit.signalId)
+    : null;
+  const intervalStartLogical = intervalTick !== null
+    ? intervalTick / timingDivisions * CELL_WIDTH
+    : stepLogicalX(targetSignal, hit.step);
+  const intervalEndLogical = intervalTick !== null
+    ? (intervalTick + 1) / timingDivisions * CELL_WIDTH
+    : stepLogicalXEnd(targetSignal, hit.step);
+  const intervalLeft = intervalStartLogical * scale - view.scrollX;
+  const intervalWidth = Math.max(
+    1,
+    (intervalEndLogical - intervalStartLogical) * scale,
+  );
+  const intervalMajorTick = intervalTick === null
+    ? hit.step
+    : Math.floor(intervalTick / timingDivisions);
+  const intervalMinorTick = intervalTick === null
+    ? null
+    : intervalTick % timingDivisions;
+
   if (tool === 'structured-arrow') {
     const currentX =
       timingDivisions > 1 ? precisionX : left + cellW / 2;
@@ -253,25 +286,45 @@ export function PointerMarker({
     }
   }
 
+  const intervalTargetLabel = intervalTool
+    ? `${signalName} \u00b7 step ${intervalMajorTick}`
+      + (intervalMinorTick !== null
+        ? ` \u00b7 substep ${intervalMinorTick + 1}/${timingDivisions}`
+        : '')
+      + (tool === 'erase'
+        ? ' \u00b7 erase'
+        : paintHint || analoguePaintHint)
+    : '';
+
   return (
     <>
-      <div
-        className="pointerPrecisionLine"
-        style={{ left: precisionX, top: waveformTop }}
-        aria-hidden
-      />
-      <div
-        className="pointerPrecisionTarget"
-        style={{ left: precisionX, top: top + height / 2 }}
-        aria-hidden
-      />
-      <div
-        className="pointerTickBadge"
-        style={{ left: precisionX, top: waveformTop }}
-        aria-hidden
-      >
-        {tickLabel}
-      </div>
+      {intervalTool ? (
+        <div
+          className="pointerIntervalTarget"
+          style={{ left: intervalLeft, top, width: intervalWidth, height }}
+          aria-hidden
+        />
+      ) : (
+        <>
+          <div
+            className="pointerPrecisionLine"
+            style={{ left: precisionX, top: waveformTop }}
+            aria-hidden
+          />
+          <div
+            className="pointerPrecisionTarget"
+            style={{ left: precisionX, top: top + height / 2 }}
+            aria-hidden
+          />
+          <div
+            className="pointerTickBadge"
+            style={{ left: precisionX, top: waveformTop }}
+            aria-hidden
+          >
+            {tickLabel}
+          </div>
+        </>
+      )}
       {analoguePreview ? (
         <svg
           className="analogueBrushGhost"
@@ -294,12 +347,15 @@ export function PointerMarker({
       {tool !== 'cursor' && tool !== 'select' ? (
         <div
           className="pointerMarkerLabel pointerMarkerLabelCompact"
-          style={{ left: precisionX + 7, top: top + 3 }}
+          style={{
+            left: (intervalTool ? intervalLeft : precisionX) + 7,
+            top: top + 3,
+          }}
         >
-          {signalName}
-          {paintHint}
-          {analoguePaintHint}
-          {edgeHint}
+          {intervalTool ? intervalTargetLabel : signalName}
+          {!intervalTool && paintHint}
+          {!intervalTool && analoguePaintHint}
+          {!intervalTool && edgeHint}
         </div>
       ) : null}
     </>

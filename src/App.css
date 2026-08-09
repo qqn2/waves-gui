@@ -124,6 +124,15 @@
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--bg-canvas) 72%, transparent);
 }
 
+.pointerIntervalTarget {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+  box-sizing: border-box;
+  border: 1px solid var(--selection-stroke);
+  background: var(--selection-fill);
+}
+
 .pointerTickBadge {
   position: absolute;
   z-index: 4;
