@@ -2,7 +2,7 @@
 
 ## Relationship to the Phase 1 plan
 
-[`SAMPLE_BROWSER_IMPLEMENTATION_PLAN.md`](./SAMPLE_BROWSER_IMPLEMENTATION_PLAN.md) defines the browser shell, metadata contract, lazy preview behavior, and the first 40 lessons. This document is the Phase 2 content and scale plan that follows it.
+[`SAMPLE_BROWSER_IMPLEMENTATION_PLAN.md`](./SAMPLE_BROWSER_IMPLEMENTATION_PLAN.md) records the shipped browser shell, current catalog architecture, and content-authoring handoff. This document is the Phase 2 content and scale plan that follows it.
 
 Phase 2 is intentionally much larger than the first vertical slice. The attached curriculum contains **832 candidate samples**. The target is to make all 832 discoverable through the manifest, while authoring and reviewing waveform assets in controlled batches. The UI must never render all 832 at once.
 
