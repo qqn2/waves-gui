@@ -123,13 +123,15 @@ function promoteValidatedEntry(entry, validation) {
     lastReviewed: validation.reviewedOn,
     reviewNotes: [...reviewNotes, validationReviewNote(validation)],
     references: [validationReference(validation)],
-    asset: {
-      path: validation.asset.path,
-      format: validation.asset.format,
-      previewVersion: 'v1',
-      support: 'supported',
-      supportNote: null,
-    },
+    asset: validation.asset === undefined
+      ? entry.asset
+      : {
+        path: validation.asset.path,
+        format: validation.asset.format,
+        previewVersion: 'v1',
+        support: 'supported',
+        supportNote: null,
+      },
   };
 }
 
@@ -204,7 +206,7 @@ function parseCurriculum(markdown, validatedSamples) {
   });
 }
 
-function publishedEntries() {
+function publishedEntries(validatedSamples) {
   const slugCounts = new Map();
   for (const sample of PUBLISHED_SAMPLES) {
     const baseSlug = sample.id.split('/').at(-1);
@@ -219,7 +221,7 @@ function publishedEntries() {
       ? sample.id.split('/').slice(1).join('-')
       : baseSlug;
     const tags = tagsFor(shard, `${sample.id} ${sample.title}`, sample.description);
-    return {
+    const entry = {
       id: sample.id,
       slug,
       sourceNumber: null,
@@ -244,6 +246,8 @@ function publishedEntries() {
         supportNote: sample.supportNote,
       },
     };
+    const validation = validatedSamples.get(sample.id);
+    return validation === undefined ? entry : promoteValidatedEntry(entry, validation);
   });
 }
 
@@ -263,16 +267,20 @@ function validateEntries(curriculum, published, validatedSamples) {
       throw new Error(`Mojibake remains in UI fields for ${entry.id}`);
     }
     if (entry.contentStatus === 'reviewed' || entry.contentStatus === 'featured') {
-      const validation = entry.sourceNumber === null ? undefined : validatedSamples.get(entry.sourceNumber);
+      const validation = validatedSamples.get(entry.sourceNumber === null ? entry.id : entry.sourceNumber);
       if (validation === undefined) {
         throw new Error(`Only validated registry entries may emit ${entry.contentStatus}: ${entry.id}`);
       }
       if (entry.contentStatus !== validation.status
-        || entry.asset?.path !== validation.asset.path
-        || entry.asset?.format !== validation.asset.format
         || entry.owner !== validation.reviewedBy
         || entry.lastReviewed !== validation.reviewedOn) {
         throw new Error(`Validation registry metadata was not applied consistently: ${entry.id}`);
+      }
+      if (validation.asset !== undefined && (
+        entry.asset?.path !== validation.asset.path
+        || entry.asset?.format !== validation.asset.format
+      )) {
+        throw new Error(`Validation registry asset metadata was not applied consistently: ${entry.id}`);
       }
     }
   }
@@ -280,9 +288,13 @@ function validateEntries(curriculum, published, validatedSamples) {
     if (!ids.has(sample.id)) throw new Error(`Published ID was not migrated: ${sample.id}`);
   }
   const curriculumNumbers = new Set(curriculum.map((entry) => entry.sourceNumber));
-  for (const sourceNumber of validatedSamples.keys()) {
-    if (!curriculumNumbers.has(sourceNumber)) {
-      throw new Error(`Validated registry refers to missing sourceNumber ${sourceNumber}`);
+  const publishedIds = new Set(published.map((entry) => entry.id));
+  for (const target of validatedSamples.keys()) {
+    if (typeof target === 'number' && !curriculumNumbers.has(target)) {
+      throw new Error(`Validated registry refers to missing sourceNumber ${target}`);
+    }
+    if (typeof target === 'string' && !publishedIds.has(target)) {
+      throw new Error(`Validated registry refers to missing legacyId ${target}`);
     }
   }
 }
@@ -293,7 +305,7 @@ async function main() {
   const markdown = await readFile(sourcePath, 'utf8');
   const validatedSamples = await loadValidatedSamples({ rootDir: root, allowMissing: false });
   const curriculum = parseCurriculum(markdown, validatedSamples);
-  const published = publishedEntries();
+  const published = publishedEntries(validatedSamples);
   validateEntries(curriculum, published, validatedSamples);
   const entries = [...curriculum, ...published];
   await mkdir(shardRoot, { recursive: true });

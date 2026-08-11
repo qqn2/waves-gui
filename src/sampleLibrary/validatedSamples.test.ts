@@ -7,6 +7,7 @@ import {
   validationReference,
   validationReviewNote,
 } from '../../scripts/validated-samples.mjs';
+import { PUBLISHED_SAMPLES } from '../../scripts/sample-catalog-source.mjs';
 
 const temporaryRoots: string[] = [];
 
@@ -37,6 +38,13 @@ const reviewedSample = {
   validationEvidence: 'Compared timing semantics and generated light/dark previews.',
 };
 
+const reviewedLegacySample = {
+  legacyId: 'undulate/ludwig/wavetest',
+  reviewedBy: 'Waves GUI automated compatibility validation',
+  reviewedOn: '2026-08-10',
+  validationEvidence: 'Bundled parser, renderer, and Ludwig compatibility fixture coverage pass.',
+};
+
 describe('validated sample registry', () => {
   it('turns one human-editable record into review metadata', async () => {
     const registryFile = await writeRegistry(registry([reviewedSample]));
@@ -53,11 +61,38 @@ describe('validated sample registry', () => {
     expect(validationReviewNote(sample!)).toContain('Validated by Reviewer on 2026-08-10');
   });
 
+  it('promotes a frozen legacy bundle by ID without allowing a duplicate asset mapping', async () => {
+    const registryFile = await writeRegistry(registry([reviewedLegacySample]));
+
+    const samples = await loadValidatedSamples({ registryFile, allowMissing: false });
+    expect(samples.get(reviewedLegacySample.legacyId)).toEqual({
+      ...reviewedLegacySample,
+      status: 'reviewed',
+    });
+
+    const invalidRegistry = await writeRegistry(registry([{
+      ...reviewedLegacySample,
+      asset: reviewedSample.asset,
+    }]));
+    await expect(loadValidatedSamples({ registryFile: invalidRegistry, allowMissing: false }))
+      .rejects.toThrow(/frozen bundled asset mapping/i);
+  });
+
+  it('contains reviewed records for every frozen published legacy sample', async () => {
+    const samples = await loadValidatedSamples({ allowMissing: false });
+    const legacyIds = [...samples.keys()].filter((target): target is string => typeof target === 'string');
+
+    expect(new Set(legacyIds)).toEqual(new Set(PUBLISHED_SAMPLES.map(({ id }) => id)));
+    expect(legacyIds).toHaveLength(PUBLISHED_SAMPLES.length);
+  });
+
   it.each([
     [{ ...reviewedSample, validationEvidence: '' }, 'validationEvidence'],
     [{ ...reviewedSample, reviewedOn: '2026-15-40' }, 'reviewedOn'],
     [{ ...reviewedSample, asset: { ...reviewedSample.asset, path: '../outside.json' } }, 'asset.path'],
     [{ ...reviewedSample, status: 'draft' }, 'status'],
+    [{ ...reviewedLegacySample, legacyId: 'general//clock-reset' }, 'legacyId'],
+    [{ ...reviewedLegacySample, sourceNumber: 55 }, 'exactly one'],
   ])('rejects an invalid promotion record', async (entry, expectedField) => {
     const registryFile = await writeRegistry(registry([entry]));
 

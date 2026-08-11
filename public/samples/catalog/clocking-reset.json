@@ -879,18 +879,25 @@
       "description": "Clock (P, arrow), active-low reset, enable",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "clocking-reset",

@@ -51,3 +51,24 @@ command.
 For an unreviewed source file, keep it out of this registry. It remains an
 unpublished local file and its curriculum item stays index-only in the
 committed catalog.
+
+## Promoting a bundled legacy sample
+
+The small published templates and Ludwig compatibility fixtures are already
+reviewed through their parser, renderer, and compatibility coverage. Their
+assets stay in the frozen `PUBLISHED_SAMPLES` migration map, so a legacy record
+names only its stable ID—never a source number or duplicate asset path:
+
+```json
+{
+  "legacyId": "undulate/ludwig/wavetest",
+  "reviewedBy": "Waves GUI automated validation",
+  "reviewedOn": "2026-08-10",
+  "validationEvidence": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+}
+```
+
+`legacyId` must exactly match a frozen published ID. The validator rejects
+unknown IDs, duplicate records, source numbers on legacy records, or a copied
+asset mapping. This keeps the built-in templates reviewed without making their
+asset location a second piece of mutable metadata.

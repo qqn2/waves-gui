@@ -5129,18 +5129,25 @@
       "description": "Sub-steps, per-cell periods, duty cycles, phase, and slew",
       "shardId": "firmware-verification-stress",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5164,18 +5171,25 @@
       "description": "Step, capacitive, sampled curves, expressions, and overlay groups",
       "shardId": "firmware-verification-stress",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5199,18 +5213,25 @@
       "description": "Text, bounded lines, compression, and structured arrows",
       "shardId": "firmware-verification-stress",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5234,18 +5255,25 @@
       "description": "Impulse, metastability, expanded nodes, marked edges, and safe styles",
       "shardId": "firmware-verification-stress",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5269,18 +5297,25 @@
       "description": "Upstream wavetest.json: states, groups, buses, timing, and edges",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5304,18 +5339,25 @@
       "description": "Upstream wavetest_alt.json with extended timing and generated fields",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5339,18 +5381,25 @@
       "description": "Upstream wavetest.yaml mapping syntax and nested groups",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5374,18 +5423,25 @@
       "description": "Upstream JSONML parser syntax and grouped signal forms",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5409,18 +5465,25 @@
       "description": "Upstream legacy JSONML compatibility case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5444,18 +5507,25 @@
       "description": "Upstream legacy JSONML compatibility case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5479,18 +5549,25 @@
       "description": "Upstream legacy JSONML compatibility case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5514,18 +5591,25 @@
       "description": "Upstream JSONML case with incomplete group structure",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5549,18 +5633,25 @@
       "description": "Upstream TOML tables with overlays and grouped signals",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5584,18 +5675,25 @@
       "description": "Upstream YAML cases for phase clipping and clock edges",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress",
@@ -5622,18 +5720,25 @@
       "description": "Upstream YAML regression for signal and timing parsing",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5657,18 +5762,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5692,18 +5804,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5727,18 +5846,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5762,18 +5888,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5797,18 +5930,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5832,18 +5972,25 @@
       "description": "Upstream YAML title-width renderer case",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5867,18 +6014,25 @@
       "description": "Upstream case with compact, partial period vectors",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5902,18 +6056,25 @@
       "description": "Upstream case combining generated periods and legacy edges",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5937,18 +6098,25 @@
       "description": "Upstream case using extended edge markers and HSL styles",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -5972,18 +6140,25 @@
       "description": "Upstream case with nested layout configuration metadata",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"
@@ -6007,18 +6182,25 @@
       "description": "Upstream case using numeric bus data metadata",
       "shardId": "firmware-verification-stress",
       "tier": "stress",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "fixture",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson."
+        "Bundled upstream compatibility fixture; not a reviewed curriculum lesson.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled Undulate parser, renderer, and Ludwig compatibility-fixture checks pass for the frozen upstream case."
       ],
       "tags": [
         "firmware-verification-stress"

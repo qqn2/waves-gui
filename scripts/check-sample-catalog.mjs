@@ -579,20 +579,24 @@ export async function validateSampleCatalog(options = {}) {
   const aliases = collectAliases(index, shardDocuments, errors);
   validateRelationships(entriesById, aliases, errors);
 
-  for (const [sourceNumber, validation] of validatedSamples) {
-    const entryId = sourceNumbers.get(sourceNumber);
+  for (const [target, validation] of validatedSamples) {
+    const isCurriculum = typeof target === 'number';
+    const entryId = isCurriculum ? sourceNumbers.get(target) : target;
     const entry = entryId === undefined ? undefined : entriesById.get(entryId);
-    const location = `validated samples sourceNumber ${sourceNumber}`;
+    const location = `validated samples ${isCurriculum ? `sourceNumber ${target}` : `legacyId ${target}`}`;
     if (entry === undefined) {
-      addError(errors, location, 'does not resolve to a generated curriculum entry');
+      addError(errors, location, `does not resolve to a generated ${isCurriculum ? 'curriculum' : 'legacy'} entry`);
       continue;
+    }
+    if (!isCurriculum && entry.sourceNumber !== null) {
+      addError(errors, location, 'must resolve to a non-curriculum legacy entry');
     }
     if (entry.contentStatus !== validation.status) {
       addError(errors, location, `generated status must be ${validation.status}`);
     }
-    if (!isObject(entry.asset)
+    if (validation.asset !== undefined && (!isObject(entry.asset)
       || entry.asset.path !== validation.asset.path
-      || entry.asset.format !== validation.asset.format) {
+      || entry.asset.format !== validation.asset.format)) {
       addError(errors, location, 'generated asset path and format must match the validation registry');
     }
     if (entry.owner !== validation.reviewedBy || entry.lastReviewed !== validation.reviewedOn) {

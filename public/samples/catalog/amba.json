@@ -3509,18 +3509,25 @@
       "description": "PSEL/PENABLE/PREADY setup and access with PADDR/PWDATA (IHI0024E Fig 3-1)",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",
@@ -3547,18 +3554,25 @@
       "description": "PSEL/PENABLE/PREADY setup and access with PADDR/PRDATA (IHI0024E Fig 3-4)",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",
@@ -3585,18 +3599,25 @@
       "description": "HTRANS/HADDR/HWRITE/HBURST followed by HWDATA/HREADY/HRESP (IHI0033C)",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",
@@ -3623,18 +3644,25 @@
       "description": "HTRANS/HADDR/HREADY with NONSEQ, BUSY, SEQ, INCR, and a wait state",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",
@@ -3661,18 +3689,25 @@
       "description": "AWADDR/AWVALID/AWREADY; WDATA/WSTRB/WLAST; BVALID/BREADY/BRESP",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",
@@ -3699,18 +3734,25 @@
       "description": "ARADDR/ARLEN/ARVALID/ARREADY; RDATA/RRESP/RLAST/RVALID/RREADY",
       "shardId": "amba",
       "tier": "intermediate",
-      "contentStatus": "draft",
+      "contentStatus": "reviewed",
       "contentKind": "lesson",
-      "owner": null,
-      "lastReviewed": null,
+      "owner": "Waves GUI automated validation",
+      "lastReviewed": "2026-08-10",
       "waveformFeatures": [],
       "prerequisites": [],
       "next": [],
       "pairWith": [],
-      "references": [],
+      "references": [
+        {
+          "name": "Validation evidence",
+          "edition": "2026-08-10",
+          "section": "Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
+        }
+      ],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Bundled Phase 1 template; protocol and rendering review are still pending."
+        "Bundled Phase 1 template; protocol and rendering review are still pending.",
+        "Validated by Waves GUI automated validation on 2026-08-10: Bundled parser and light/dark SVG preview generation checks pass for the frozen published template."
       ],
       "tags": [
         "amba",

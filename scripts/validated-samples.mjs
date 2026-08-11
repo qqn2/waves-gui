@@ -48,29 +48,53 @@ function reviewDate(value, path) {
   return parsed;
 }
 
+function legacyId(value, path) {
+  const parsed = nonEmptyString(value, path);
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)+$/.test(parsed)) {
+    fail(path, 'must be a stable slash-separated legacy sample ID');
+  }
+  return parsed;
+}
+
 function parseEntry(value, index) {
   const path = `entries[${index}]`;
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     fail(path, 'must be an object');
   }
-  if (!Number.isInteger(value.sourceNumber) || value.sourceNumber < 1 || value.sourceNumber > 832) {
-    fail(`${path}.sourceNumber`, 'must be an integer in 1..832');
+  const hasSourceNumber = Object.hasOwn(value, 'sourceNumber');
+  const hasLegacyId = Object.hasOwn(value, 'legacyId');
+  if (hasSourceNumber === hasLegacyId) {
+    fail(path, 'must target exactly one of sourceNumber or legacyId');
   }
-  if (value.asset === null || typeof value.asset !== 'object' || Array.isArray(value.asset)) {
-    fail(`${path}.asset`, 'must be an object');
-  }
-  const assetPath = safeRelativePath(value.asset.path, `${path}.asset.path`);
-  const format = nonEmptyString(value.asset.format, `${path}.asset.format`);
-  if (!ASSET_FORMATS.has(format)) {
-    fail(`${path}.asset.format`, `unsupported format ${JSON.stringify(format)}`);
+
+  let target;
+  let asset;
+  if (hasSourceNumber) {
+    if (!Number.isInteger(value.sourceNumber) || value.sourceNumber < 1 || value.sourceNumber > 832) {
+      fail(`${path}.sourceNumber`, 'must be an integer in 1..832');
+    }
+    if (value.asset === null || typeof value.asset !== 'object' || Array.isArray(value.asset)) {
+      fail(`${path}.asset`, 'must be an object');
+    }
+    const assetPath = safeRelativePath(value.asset.path, `${path}.asset.path`);
+    const format = nonEmptyString(value.asset.format, `${path}.asset.format`);
+    if (!ASSET_FORMATS.has(format)) {
+      fail(`${path}.asset.format`, `unsupported format ${JSON.stringify(format)}`);
+    }
+    target = value.sourceNumber;
+    asset = { path: assetPath, format };
+  } else {
+    if (Object.hasOwn(value, 'asset')) {
+      fail(`${path}.asset`, 'must be omitted for a legacyId; the frozen bundled asset mapping is authoritative');
+    }
+    target = legacyId(value.legacyId, `${path}.legacyId`);
   }
   const status = value.status === undefined ? 'reviewed' : nonEmptyString(value.status, `${path}.status`);
   if (!REVIEW_STATUSES.has(status)) {
     fail(`${path}.status`, 'must be "reviewed" or "featured"');
   }
   return {
-    sourceNumber: value.sourceNumber,
-    asset: { path: assetPath, format },
+    ...(hasSourceNumber ? { sourceNumber: target, asset } : { legacyId: target }),
     status,
     reviewedBy: nonEmptyString(value.reviewedBy, `${path}.reviewedBy`),
     reviewedOn: reviewDate(value.reviewedOn, `${path}.reviewedOn`),
@@ -80,8 +104,11 @@ function parseEntry(value, index) {
 
 /**
  * Read the human-maintained validation registry.  The returned map is keyed by
- * Phase 2 source number, so catalog generation can promote the matching entry
- * without hand-editing generated manifest shards.
+ * source number or frozen legacy ID, so catalog generation can promote the
+ * matching entry without hand-editing generated manifest shards. Curriculum
+ * records carry their asset because they introduce a new file. Legacy records
+ * deliberately do not: their frozen PUBLISHED_SAMPLES mapping remains the
+ * single source of truth for the already-published asset path and format.
  */
 export async function loadValidatedSamples(options = {}) {
   const rootDir = resolve(options.rootDir ?? ROOT);
@@ -114,10 +141,12 @@ export async function loadValidatedSamples(options = {}) {
   const records = new Map();
   for (const [index, value] of document.entries.entries()) {
     const record = parseEntry(value, index);
-    if (records.has(record.sourceNumber)) {
-      fail(`entries[${index}].sourceNumber`, `duplicates sourceNumber ${record.sourceNumber}`);
+    const target = record.sourceNumber ?? record.legacyId;
+    const targetField = record.sourceNumber === undefined ? 'legacyId' : 'sourceNumber';
+    if (records.has(target)) {
+      fail(`entries[${index}].${targetField}`, `duplicates ${targetField} ${JSON.stringify(target)}`);
     }
-    records.set(record.sourceNumber, record);
+    records.set(target, record);
   }
   return records;
 }
