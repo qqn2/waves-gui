@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "APB read held in access",
+      { "name": "PCLK", "wave": "P........." },
+      { "name": "PSEL", "wave": "0.1...0..." },
+      { "name": "PENABLE", "wave": "0..1..0..." },
+      { "name": "PWRITE", "wave": "0........." },
+      { "name": "PADDR[15:0]", "wave": "x.=.......", "data": ["0x2004"] },
+      { "name": "PRDATA[31:0]", "wave": "x....=....", "data": ["0x12345678"] },
+      { "name": "PREADY", "wave": "1..0.1...." }
+    ]
+  ],
+  "head": { "text": "APB read with wait states" },
+  "foot": {
+    "text": "The peripheral may extend access by holding PREADY low. PRDATA is shown valid for the final access cycle, when PREADY rises and the read completes."
+  },
+  "config": { "hscale": 2 }
+}

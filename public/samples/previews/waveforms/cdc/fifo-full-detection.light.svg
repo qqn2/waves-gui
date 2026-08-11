@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1084.8" height="340" viewBox="0 0 1084.8 340">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="340" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Write clock domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wr_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wr_en</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wgray_next[3:0]</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rgray_sync[3:0]</text>
+<text x="20" y="256" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >invert rgray_sync[3:2]</text>
+<text x="20" y="296" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >full</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="980.8" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="490.4" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">FIFO full detection compares the next Gray write pointer</text>
+<text x="490.4" y="330" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">For this 4-bit example, full asserts when wgray_next equals rgray_sync with its two most-significant Gray bits inverted (0 becomes C).</text>
+<line x1="0" y1="48" x2="0" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,124 L80,124 L160,124 L240,124 L320,124 L400,124 L480,124 L560,124 L640,124 L720,124 L800,124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L16,164 L64,164 L80,176 L64,188 L16,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="40" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M80,176 L96,164 L144,164 L160,176 L144,188 L96,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="120" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M160,176 L176,164 L224,164 L240,176 L224,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3</text>
+<path d="M240,176 L256,164 L304,164 L320,176 L304,188 L256,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M320,176 L336,164 L384,164 L400,176 L384,188 L336,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">6</text>
+<path d="M400,176 L416,164 L464,164 L480,176 L464,188 L416,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">7</text>
+<path d="M480,176 L496,164 L544,164 L560,176 L544,188 L496,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">5</text>
+<path d="M560,176 L576,164 L624,164 L640,176 L624,188 L576,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">4</text>
+<path d="M640,176 L656,164 L784,164 L800,176 L784,188 L656,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="720" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">C</text>
+<path d="M0,216 L16,204 L784,204 L800,216 L784,228 L16,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M0,256 L16,244 L784,244 L800,256 L784,268 L16,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">C</text>
+<path d="M0,308 L80,308 L160,308 L240,308 L320,308 L400,308 L480,308 L560,308 L640,308 L646,308 L652,284 L720,284 L800,284" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="557.2" y="251.9" width="245.6" height="16.200000000000003" fill="#ffffff"/><text x="680" y="260" fill="#111827" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">next write Gray pointer matches C</text>
+  </g>
+</svg>

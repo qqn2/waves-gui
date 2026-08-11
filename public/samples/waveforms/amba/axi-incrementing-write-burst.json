@@ -1,0 +1,37 @@
+{
+  "head": { "text": "AXI4 incrementing write burst (four beats)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P............." },
+    {},
+    [
+      "Write address channel",
+      { "name": "AWVALID", "wave": "0.10.........." },
+      { "name": "AWREADY", "wave": "0.10.........." },
+      { "name": "AWID[3:0]", "wave": "x.=x..........", "data": ["0x5"] },
+      { "name": "AWADDR[31:0]", "wave": "x.=x..........", "data": ["0x0000_2000"] },
+      { "name": "AWLEN[7:0]", "wave": "x.=x..........", "data": ["3 (four beats)"] },
+      { "name": "AWSIZE[2:0]", "wave": "x.=x..........", "data": ["2 (4 bytes)"] },
+      { "name": "AWBURST[1:0]", "wave": "x.=x..........", "data": ["INCR"] }
+    ],
+    {},
+    [
+      "Write data channel",
+      { "name": "derived write address", "wave": "x...=234x.....", "data": ["0x0000_2000", "0x0000_2004", "0x0000_2008", "0x0000_200C"] },
+      { "name": "WVALID", "wave": "0...11110....." },
+      { "name": "WREADY", "wave": "0...11110....." },
+      { "name": "WDATA[31:0]", "wave": "x...=234x.....", "data": ["word 0", "word 1", "word 2", "word 3"] },
+      { "name": "WSTRB[3:0]", "wave": "x...=234x.....", "data": ["0xF", "0xF", "0xF", "0xF"] },
+      { "name": "WLAST", "wave": "0......10....." }
+    ],
+    {},
+    [
+      "One response for the complete burst",
+      { "name": "BVALID", "wave": "0.........10.." },
+      { "name": "BREADY", "wave": "0.........10.." },
+      { "name": "BID[3:0]", "wave": "x.........=x..", "data": ["0x5"] },
+      { "name": "BRESP[1:0]", "wave": "x.........=x..", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "AWLEN=3 creates four W transfers. W has no address channel of its own: its effective addresses follow AWADDR, AWSIZE, and AWBURST=INCR. WLAST marks only the fourth beat, then one B response completes the burst." }
+}

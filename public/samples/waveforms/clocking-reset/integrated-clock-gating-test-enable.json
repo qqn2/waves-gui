@@ -1,0 +1,19 @@
+{
+  "signal": [
+    { "name": "source_clk", "wave": "p........" },
+    [
+      "ICG controls",
+      { "name": "functional_enable", "wave": "0.1..0..." },
+      { "name": "scan_enable", "wave": "0...1..0." },
+      { "name": "gate_request = functional_enable | scan_enable", "wave": "0.1....0." },
+      { "name": "latched_gate_enable", "wave": "0..1....0" }
+    ],
+    { "name": "gated_clk", "wave": "0..p....0" }
+  ],
+  "head": {
+    "text": "Integrated clock gate: functional enable OR scan enable"
+  },
+  "foot": {
+    "text": "The ICG captures gate_request while source_clk is low, so functional and test clocking do not create runt pulses."
+  }
+}

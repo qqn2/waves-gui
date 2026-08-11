@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="847.1999999999999" height="288" viewBox="0 0 847.1999999999999 288">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="288" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Fast source domain</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_pulse</text>
+<text x="8" y="170" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Slow destination domain</text>
+<text x="20" y="204" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >captured_pulse</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="743.1999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="371.59999999999997" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">FAILURE — a narrow pulse is lost by a slow destination</text>
+<text x="371.59999999999997" y="278" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The source pulse rises and falls between destination sampling edges, so captured_pulse never asserts.</text>
+<line x1="0" y1="48" x2="0" y2="264" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="264" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="264" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="264" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="264" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L20,84 L20,108 L40,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M40,108 L40,84 L60,84 L60,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L100,84 L100,108 L120,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,108 L120,84 L140,84 L140,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L180,84 L180,108 L200,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M200,108 L200,84 L220,84 L220,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L260,84 L260,108 L280,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,108 L280,84 L300,84 L300,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L40,148 L46,148 L52,124 L80,124 L86,124 L92,148 L120,148 L160,148 L200,148 L240,148 L280,148 L320,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,216 L0,192 L80,192 L80,216 L160,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,216 L160,192 L240,192 L240,216 L320,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L160,256 L320,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="54.400000000000006" y="151.9" width="51.199999999999996" height="16.200000000000003" fill="#111111"/><text x="80" y="160" fill="#b42318" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">missed</text>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "signal": [
+    [
+      "Read clock domain",
+      { "name": "rd_clk", "wave": "p...........", "phase": 0.25 },
+      { "name": "empty", "wave": "1..0....1...", "phase": 0.25 },
+      { "name": "rd_en", "wave": "0...10..10..", "phase": 0.25 },
+      { "name": "rd_data[7:0]", "wave": "x...=...=...", "data": ["0x3A", "0x7C"], "phase": 0.25 },
+      { "name": "rbin", "wave": "=...=...=...", "data": ["0", "1", "2"], "phase": 0.25 },
+      { "name": "rgray", "wave": "=...=...=...", "data": ["000", "001", "011"], "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Asynchronous FIFO read advances only when data is available" },
+  "foot": {
+    "text": "empty first deasserts after a synchronized write pointer arrives. Accepted rd_en pulses return successive words and advance the read-side binary and Gray pointers."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,9 +1,43 @@
 # Validating and promoting a sample
 
 Generated catalog files under `public/samples/catalog/` are not hand-edited.
-They are rebuilt from the Phase 2 curriculum, the frozen legacy templates, and the small
-validation registry at
-[`public/samples/validated-samples.v1.json`](../public/samples/validated-samples.v1.json).
+They are rebuilt from the Phase 2 curriculum, the frozen legacy templates, and two
+small registries:
+
+- [`public/samples/draft-samples.v1.json`](../public/samples/draft-samples.v1.json)
+  makes a local waveform visible as an explicitly unvalidated draft.
+- [`public/samples/validated-samples.v1.json`](../public/samples/validated-samples.v1.json)
+  promotes a checked waveform to `reviewed` or `featured`.
+
+The validated registry takes precedence for a shared source number.
+
+## Show an unvalidated waveform locally
+
+1. Put the waveform below `public/samples/waveforms/<domain>/`.
+2. Add exactly one minimal record to `entries` in
+   `public/samples/draft-samples.v1.json`:
+
+   ```json
+   {
+     "sourceNumber": 55,
+     "asset": {
+       "path": "waveforms/cdc/single-bit-two-flop-synchronizer.json",
+       "format": "wavedrom-json"
+     }
+   }
+   ```
+
+   The source number is authoritative: it selects the title, category, and
+   canonical catalog ID from the curriculum even when the filename intentionally
+   differs from the title slug. Draft records cannot contain reviewer, date,
+   evidence, status, or other lifecycle fields.
+3. Run `npm run samples:validate`. This rebuilds the catalog and generated SVG
+   previews so the browser's **Include unvalidated drafts** switch can show the
+   waveform. It checks parsing/rendering consistency; it does not mark the
+   sample reviewed.
+
+Do not hand-author a `cdc.svg`: the command writes light and dark previews at
+`public/samples/previews/<asset path with .light.svg/.dark.svg>`.
 
 ## Promote a reviewed waveform
 
@@ -48,9 +82,10 @@ record. A duplicate source number, unsafe path, unsupported format, invalid
 date, missing evidence, stale generated catalog, or missing preview fails the
 command.
 
-For an unreviewed source file, keep it out of this registry. It remains an
-unpublished local file and its curriculum item stays index-only in the
-committed catalog.
+For an unreviewed source file, keep it out of the validated registry and place
+it in the draft registry instead. It remains a `draft` in the catalog and is
+hidden by default; the browser shows it only after enabling **Include
+unvalidated drafts**.
 
 ## Promoting a bundled legacy sample
 

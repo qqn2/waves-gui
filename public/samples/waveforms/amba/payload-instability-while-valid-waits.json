@@ -1,0 +1,16 @@
+{
+  "head": { "text": "Invalid AXI4-Lite master: address changes while AWVALID waits" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AW channel (deliberately invalid)",
+      { "name": "ACLK", "wave": "P.........." },
+      { "name": "AWADDR[31:0] (INVALID)", "wave": "x.=2..x....", "data": ["0x4000_0020", "0x4000_0024 (changed while waiting)"] },
+      { "name": "AWVALID", "wave": "0.1...0...." },
+      { "name": "AWREADY", "wave": "0....1....." }
+    ]
+  ],
+  "foot": {
+    "text": "Deliberately invalid: AWADDR is payload and must remain stable for every cycle AWVALID=1 before the handshake. This master changes AWADDR while AWREADY is low, so the eventual handshake has no well-defined requested address."
+  }
+}

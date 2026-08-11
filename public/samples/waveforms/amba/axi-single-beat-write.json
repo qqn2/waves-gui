@@ -1,0 +1,36 @@
+{
+  "head": { "text": "AXI4 single-beat write" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P.........." },
+    {},
+    [
+      "Write address channel",
+      { "name": "AWVALID", "wave": "0.10......." },
+      { "name": "AWREADY", "wave": "0.10......." },
+      { "name": "AWID[3:0]", "wave": "x.=x.......", "data": ["0x3"] },
+      { "name": "AWADDR[31:0]", "wave": "x.=x.......", "data": ["0x4000_0010"] },
+      { "name": "AWLEN[7:0]", "wave": "x.=x.......", "data": ["0 (one beat)"] },
+      { "name": "AWSIZE[2:0]", "wave": "x.=x.......", "data": ["2 (4 bytes)"] },
+      { "name": "AWBURST[1:0]", "wave": "x.=x.......", "data": ["INCR"] }
+    ],
+    {},
+    [
+      "Write data channel",
+      { "name": "WVALID", "wave": "0...10....." },
+      { "name": "WREADY", "wave": "0...10....." },
+      { "name": "WDATA[31:0]", "wave": "x...=x.....", "data": ["0xCAFE_0001"] },
+      { "name": "WSTRB[3:0]", "wave": "x...=x.....", "data": ["0xF"] },
+      { "name": "WLAST", "wave": "0...10....." }
+    ],
+    {},
+    [
+      "Write response channel",
+      { "name": "BVALID", "wave": "0......10.." },
+      { "name": "BREADY", "wave": "0......10.." },
+      { "name": "BID[3:0]", "wave": "x......=x..", "data": ["0x3"] },
+      { "name": "BRESP[1:0]", "wave": "x......=x..", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "AW and W are independent channels. AWLEN=0 describes one W transfer, so WLAST is high on it; one matching BID/BRESP response follows the completed write." }
+}

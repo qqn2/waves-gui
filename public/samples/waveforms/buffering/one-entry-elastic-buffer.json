@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "One-entry elastic buffer",
+      { "name": "clk", "wave": "p........." },
+      { "name": "in_valid", "wave": "0.10......" },
+      { "name": "in_data[7:0]", "wave": "x.=.......", "data": ["0xA1"] },
+      { "name": "out_ready", "wave": "11000.11.." },
+      { "name": "out_valid", "wave": "0.111110.." },
+      { "name": "out_data[7:0]", "wave": "x.=.......", "data": ["0xA1"] },
+      { "name": "occupancy", "wave": "=..=...=..", "data": ["0", "1", "0"] },
+      { "name": "in_ready", "wave": "1..000.11." }
+    ]
+  ],
+  "head": { "text": "One-entry elastic buffer absorbs one stalled transfer" },
+  "foot": {
+    "text": "The buffer accepts A1 while downstream ready is low, then deasserts in_ready because its only storage entry is occupied. It releases the word when out_ready returns."
+  },
+  "config": { "hscale": 2 }
+}

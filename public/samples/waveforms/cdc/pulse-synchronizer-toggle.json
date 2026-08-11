@@ -1,0 +1,22 @@
+{
+  "signal": [
+    [
+      "Fast source domain",
+      { "name": "src_clk", "wave": "p.........", "period": 0.5 },
+      { "name": "src_event", "wave": "010..10...", "period": 0.5 },
+      { "name": "src_toggle", "wave": "01...0....", "period": 0.5 }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p...." },
+      { "name": "toggle_sync1", "wave": "01.0." },
+      { "name": "toggle_sync2", "wave": "0.1.0" },
+      { "name": "dst_event", "wave": "0.101" }
+    ]
+  ],
+  "head": { "text": "Pulse synchronizer using a toggle" },
+  "foot": {
+    "text": "Each spaced source event flips a persistent state; the destination synchronizes that state and detects each change."
+  },
+  "config": { "hscale": 2 }
+}

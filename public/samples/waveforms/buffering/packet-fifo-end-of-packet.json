@@ -1,0 +1,26 @@
+{
+  "signal": [
+    [
+      "Ingress packet P0",
+      { "name": "clk", "wave": "p.............." },
+      { "name": "in_valid", "wave": "010101000000000" },
+      { "name": "in_data[7:0]", "wave": "x.=.=.=........", "data": ["P0[0]", "P0[1]", "P0[2]"] },
+      { "name": "in_eop", "wave": "000001000000000" }
+    ],
+    [
+      "Packet FIFO and egress",
+      { "name": "occupancy", "wave": "=.=.=...=.=.=..", "data": ["0", "1", "2", "3", "2", "1", "0"] },
+      { "name": "out_valid", "wave": "000000001010100" },
+      { "name": "out_data[7:0]", "wave": "x........=.=.=.", "data": ["P0[0]", "P0[1]", "P0[2]"] },
+      { "name": "out_eop", "wave": "000000000000010" }
+    ]
+  ],
+  "annotations": [
+    { "text": "EOP is stored and emitted with P0[2]", "x": 12.7, "y": 7.05, "font-size": "12px", "font-weight": 700, "fill": "#1d4ed8" }
+  ],
+  "head": { "text": "Packet FIFO preserves the end-of-packet marker" },
+  "foot": {
+    "text": "The marker accompanies the final stored beat, so egress observes the same packet boundary as ingress even though the beats leave later."
+  },
+  "config": { "hscale": 2 }
+}

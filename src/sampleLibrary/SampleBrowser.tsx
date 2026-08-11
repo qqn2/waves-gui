@@ -41,6 +41,8 @@ type LoadState<T> =
   | { status: 'error'; value: null; error: string };
 
 const DEFAULT_SHARD: CatalogShardId = 'fundamentals';
+const ALL_CATEGORIES = 'all';
+type CategorySelection = CatalogShardId | typeof ALL_CATEGORIES;
 const PREVIEW_DOCK_STORAGE_KEY = 'waves-gui-sample-library-preview-dock';
 const DEFAULT_REPOSITORY = new CatalogRepository();
 const IDLE = { status: 'idle', value: null, error: null } as const;
@@ -202,7 +204,8 @@ function TemplateWaveform({ entry, theme }: { entry: SampleLibraryEntry; theme: 
   );
 }
 
-function CategoryIcon({ category }: { category: CatalogShardId }) {
+function CategoryIcon({ category }: { category: CategorySelection }) {
+  if (category === ALL_CATEGORIES) return <Activity size={16} aria-hidden />;
   if (category === 'fundamentals' || category === 'clocking-reset') return <FileText size={16} aria-hidden />;
   if (category === 'amba' || category === 'axi-stream-other-buses') return <Cpu size={16} aria-hidden />;
   return <Diamond size={16} aria-hidden />;
@@ -284,7 +287,7 @@ export function SampleBrowser({
   repository = DEFAULT_REPOSITORY,
 }: SampleBrowserProps) {
   const theme = useStore((state) => state.view.theme);
-  const [category, setCategory] = useState<CatalogShardId>(DEFAULT_SHARD);
+  const [category, setCategory] = useState<CategorySelection>(DEFAULT_SHARD);
   const [query, setQuery] = useState('');
   const [includeDrafts, setIncludeDrafts] = useState(false);
   const [includePlanned, setIncludePlanned] = useState(false);
@@ -292,8 +295,10 @@ export function SampleBrowser({
   const [dock, setDock] = useState<PreviewDock>(loadPreviewDock);
   const [indexState, setIndexState] = useState<LoadState<CatalogIndexV1>>(IDLE);
   const [shardStates, setShardStates] = useState<Partial<Record<CatalogShardId, LoadState<CatalogShardV1>>>>({});
+  const [allShardsState, setAllShardsState] = useState<LoadState<readonly CatalogShardV1[]>>(IDLE);
   const [indexAttempt, setIndexAttempt] = useState(0);
   const [shardAttempts, setShardAttempts] = useState<Partial<Record<CatalogShardId, number>>>({});
+  const [allShardsAttempt, setAllShardsAttempt] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -306,6 +311,7 @@ export function SampleBrowser({
     if (!open) return;
     let active = true;
     setShardStates({});
+    setAllShardsState(IDLE);
     setSelectedId(null);
     setIndexState({ status: 'loading', value: null, error: null });
     void repository.getIndex().then((index) => {
@@ -316,9 +322,9 @@ export function SampleBrowser({
     return () => { active = false; };
   }, [indexAttempt, open, repository]);
 
-  const shardState = shardStates[category] ?? IDLE;
+  const shardState = category === ALL_CATEGORIES ? IDLE : shardStates[category] ?? IDLE;
   useEffect(() => {
-    if (!open || indexState.status !== 'ready') return;
+    if (!open || indexState.status !== 'ready' || category === ALL_CATEGORIES) return;
     let active = true;
     setShardStates((current) => ({
       ...current,
@@ -338,10 +344,31 @@ export function SampleBrowser({
     return () => { active = false; };
   }, [category, indexState.status, open, repository, shardAttempts]);
 
+  useEffect(() => {
+    if (!open || indexState.status !== 'ready' || category !== ALL_CATEGORIES) return;
+    let active = true;
+    setAllShardsState({ status: 'loading', value: null, error: null });
+    void Promise.all(indexState.value.shards.map((descriptor) => repository.getShard(descriptor.id)))
+      .then((shards) => {
+        if (active) setAllShardsState({ status: 'ready', value: shards, error: null });
+      })
+      .catch((error: unknown) => {
+        if (active) setAllShardsState({ status: 'error', value: null, error: errorMessage(error) });
+      });
+    return () => { active = false; };
+  }, [allShardsAttempt, category, indexState, open, repository]);
+
   const categories = indexState.status === 'ready' ? categoriesFromIndex(indexState.value.shards) : [];
-  const entries = useMemo(() => shardState.status === 'ready'
-    ? shardState.value.entries.map((entry) => projectManifestEntry(entry, repository))
-    : [], [repository, shardState]);
+  const entries = useMemo(() => {
+    if (category === ALL_CATEGORIES) {
+      return allShardsState.status === 'ready'
+        ? allShardsState.value.flatMap((shard) => shard.entries.map((entry) => projectManifestEntry(entry, repository)))
+        : [];
+    }
+    return shardState.status === 'ready'
+      ? shardState.value.entries.map((entry) => projectManifestEntry(entry, repository))
+      : [];
+  }, [allShardsState, category, repository, shardState]);
   const visibleEntries = useMemo(
     () => filterSampleLibrary(entries, query, includeDrafts, includePlanned),
     [entries, includeDrafts, includePlanned, query],
@@ -421,12 +448,23 @@ export function SampleBrowser({
   useEffect(() => getSafeStorage().setItem(PREVIEW_DOCK_STORAGE_KEY, dock), [dock]);
   if (!open) return null;
 
-  const categoryLabel = categories.find((item) => item.id === category)?.label ?? 'Templates';
+  const categoryLabel = category === ALL_CATEGORIES
+    ? 'All templates'
+    : categories.find((item) => item.id === category)?.label ?? 'Templates';
+  const scopeLabel = category === ALL_CATEGORIES ? 'all categories' : 'this category';
+  const contentState = category === ALL_CATEGORIES ? allShardsState : shardState;
   const retryIndex = () => setIndexAttempt((attempt) => attempt + 1);
-  const retryShard = () => setShardAttempts((current) => ({
-    ...current,
-    [category]: (current[category] ?? 0) + 1,
-  }));
+  const retryShard = () => {
+    if (category === ALL_CATEGORIES) return;
+    setShardAttempts((current) => ({
+      ...current,
+      [category]: (current[category] ?? 0) + 1,
+    }));
+  };
+  const retryContent = () => {
+    if (category === ALL_CATEGORIES) setAllShardsAttempt((attempt) => attempt + 1);
+    else retryShard();
+  };
 
   return (
     <div className={styles.backdrop} role="presentation" onClick={(event) => {
@@ -449,9 +487,9 @@ export function SampleBrowser({
           <div className={styles.headerActions}>
             <label className={styles.searchBox}>
               <Search size={16} aria-hidden />
-              <span className={styles.visuallyHidden}>Search templates in selected category</span>
+              <span className={styles.visuallyHidden}>{`Search templates in ${scopeLabel}`}</span>
               <input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search this category…" type="search" aria-label="Search templates in selected category" />
+                placeholder={`Search ${scopeLabel}...`} type="search" aria-label={`Search templates in ${scopeLabel}`} />
               <kbd>Ctrl+F</kbd>
             </label>
             <div className={styles.dockToggle} aria-label="Preview docking">
@@ -474,6 +512,14 @@ export function SampleBrowser({
           <aside className={styles.sidebar} aria-label="Library navigation">
             <div className={styles.sidebarLabel}>Library</div>
             <nav aria-label="Template categories">
+              <button type="button"
+                className={`${styles.categoryButton} ${category === ALL_CATEGORIES ? styles.categoryButtonActive : ''}`}
+                aria-pressed={category === ALL_CATEGORIES} title="Load and search every template category"
+                onClick={() => { setCategory(ALL_CATEGORIES); setQuery(''); setSelectedId(null); }}>
+                <CategoryIcon category={ALL_CATEGORIES} />
+                <span>All templates</span>
+                <span className={styles.categoryCount}>{indexState.status === 'ready' ? indexState.value.entryCount : 0}</span>
+              </button>
               {categories.map((item: SampleLibraryCategory) => (
                 <button key={item.id} type="button"
                   className={`${styles.categoryButton} ${category === item.id ? styles.categoryButtonActive : ''}`}
@@ -497,7 +543,7 @@ export function SampleBrowser({
                 <label className={styles.draftToggle}>
                   <input type="checkbox" checked={includeDrafts}
                     onChange={(event) => setIncludeDrafts(event.target.checked)} />
-                  Include unvalidated drafts
+                  {`Include unvalidated drafts in ${scopeLabel}`}
                 </label>
                 <label className={styles.plannedToggle}>
                   <input type="checkbox" checked={includePlanned}
@@ -505,23 +551,27 @@ export function SampleBrowser({
                   Include planned samples
                 </label>
                 <span className={styles.resultsHint}>
-                  {includeDrafts ? 'Unvalidated drafts included' : 'Showing reviewed and featured samples'}
+                  {includeDrafts
+                    ? `Unvalidated drafts included in ${scopeLabel}`
+                    : `Showing reviewed and featured samples in ${scopeLabel}`}
                 </span>
-                <span className={styles.resultsHint}>Search is within this category</span>
+                <span className={styles.resultsHint}>
+                  {category === ALL_CATEGORIES ? 'Search spans every loaded category' : 'Search is within this category'}
+                </span>
               </div>
             </div>
 
-            {indexState.status === 'loading' || (indexState.status === 'ready' && shardState.status === 'loading') ? (
+            {indexState.status === 'loading' || (indexState.status === 'ready' && contentState.status === 'loading') ? (
               <div className={styles.emptyState} role="status">Loading catalog…</div>
             ) : indexState.status === 'error' ? (
               <div className={styles.emptyState} role="alert">
                 <strong>Could not load the template catalog.</strong><span>{indexState.error}</span>
                 <button type="button" className={styles.secondaryButton} onClick={retryIndex}>Retry</button>
               </div>
-            ) : shardState.status === 'error' ? (
+            ) : contentState.status === 'error' ? (
               <div className={styles.emptyState} role="alert">
-                <strong>Could not load this category.</strong><span>{shardState.error}</span>
-                <button type="button" className={styles.secondaryButton} onClick={retryShard}>Retry</button>
+                <strong>{category === ALL_CATEGORIES ? 'Could not load all categories.' : 'Could not load this category.'}</strong><span>{contentState.error}</span>
+                <button type="button" className={styles.secondaryButton} onClick={retryContent}>Retry</button>
               </div>
             ) : visibleEntries.length ? (
               <div className={styles.templateTable}>
@@ -551,12 +601,12 @@ export function SampleBrowser({
               </div>
             ) : (
               <div className={styles.emptyState}>
-                <strong>{query ? `No templates match “${query}”.` : 'No validated templates in this category.'}</strong>
+                <strong>{query ? `No templates match “${query}”.` : `No validated templates in ${scopeLabel}.`}</strong>
                 {query ? (
                   <button type="button" className={styles.secondaryButton} onClick={() => setQuery('')}>Clear search</button>
                 ) : !includeDrafts && entries.some((entry) => entry.contentStatus === 'draft') ? (
                   <button type="button" className={styles.secondaryButton} onClick={() => setIncludeDrafts(true)}>
-                    Show unvalidated drafts
+                    {`Show unvalidated drafts in ${scopeLabel}`}
                   </button>
                 ) : null}
               </div>

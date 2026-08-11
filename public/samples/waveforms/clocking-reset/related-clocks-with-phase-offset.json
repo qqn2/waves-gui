@@ -1,0 +1,30 @@
+{
+  "signal": [
+    {
+      "name": "clk_reference",
+      "wave": "p.....",
+      "periods": [1, 1, 1, 1, 1, 1],
+      "phase": 0
+    },
+    {
+      "name": "clk_shifted",
+      "wave": "p.....",
+      "periods": [1, 1, 1, 1, 1, 1],
+      "phase": -0.25
+    }
+  ],
+  "annotations": [
+    { "shape": "|", "x": 2, "from": "8%", "to": "92%" },
+    {
+      "text": "quarter-cycle offset",
+      "x": 2.25,
+      "y": 0.9,
+      "font-size": "12px"
+    }
+  ],
+  "head": { "text": "Related clocks with phase offset" },
+  "foot": {
+    "text": "Both clocks have the same period; clk_shifted is modeled one quarter-cycle later."
+  },
+  "config": { "hscale": 2 }
+}

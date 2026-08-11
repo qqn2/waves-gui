@@ -1,0 +1,24 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p..........." },
+      { "name": "request_attempt", "wave": "001010000010" },
+      { "name": "source_ready", "wave": "110000000011" },
+      { "name": "src_request", "wave": "001111100011" },
+      { "name": "ack_sync", "wave": "000000111000" },
+      { "name": "blocked_attempt", "wave": "000010000000" }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p...........", "phase": 0.25 },
+      { "name": "request_sync", "wave": "000011110001", "phase": 0.25 },
+      { "name": "dst_ack", "wave": "000001110000", "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Handshake backpressures the source" },
+  "foot": {
+    "text": "The attempt while source_ready is low is blocked; a later attempt is accepted only after acknowledgement releases the source."
+  },
+  "config": { "hscale": 2 }
+}

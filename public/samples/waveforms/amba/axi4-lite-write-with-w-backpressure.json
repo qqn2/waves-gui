@@ -1,0 +1,29 @@
+{
+  "head": { "text": "AXI4-Lite write with W-channel backpressure" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P..........." },
+    {},
+    [
+      "Address already accepted",
+      { "name": "AWVALID", "wave": "0.1.0......." },
+      { "name": "AWREADY", "wave": "0.1.0......." }
+    ],
+    {},
+    [
+      "W channel",
+      { "name": "WVALID", "wave": "0..1...0...." },
+      { "name": "WREADY", "wave": "0.....1.0..." },
+      { "name": "WDATA[31:0]", "wave": "x..=...x....", "data": ["0xCAFE_BABE (held)"] },
+      { "name": "WSTRB[3:0]", "wave": "x..=...x....", "data": ["0xF (held)"] }
+    ],
+    {},
+    [
+      "Response after W handshake",
+      { "name": "BVALID", "wave": "0.......1.0." },
+      { "name": "BREADY", "wave": "0........1.." },
+      { "name": "BRESP", "wave": "x.......=.x.", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "AW and W are independent. After WVALID rises, WDATA and WSTRB must remain stable until the WVALID/WREADY handshake; the write response follows that completed data acceptance." }
+}

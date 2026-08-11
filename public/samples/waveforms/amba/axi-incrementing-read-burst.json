@@ -1,0 +1,30 @@
+{
+  "head": { "text": "AXI4 incrementing read burst (four beats)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P............." },
+    {},
+    [
+      "Read address channel",
+      { "name": "ARVALID", "wave": "0.10.........." },
+      { "name": "ARREADY", "wave": "0.10.........." },
+      { "name": "ARID[3:0]", "wave": "x.=x..........", "data": ["0x3"] },
+      { "name": "ARADDR[31:0]", "wave": "x.=x..........", "data": ["0x0000_1000"] },
+      { "name": "ARLEN[7:0]", "wave": "x.=x..........", "data": ["3 (four beats)"] },
+      { "name": "ARSIZE[2:0]", "wave": "x.=x..........", "data": ["2 (4 bytes)"] },
+      { "name": "ARBURST[1:0]", "wave": "x.=x..........", "data": ["INCR"] }
+    ],
+    {},
+    [
+      "Derived address and read responses",
+      { "name": "effective read address", "wave": "x....=234x....", "data": ["0x0000_1000", "0x0000_1004", "0x0000_1008", "0x0000_100C"] },
+      { "name": "RVALID", "wave": "0....11110...." },
+      { "name": "RREADY", "wave": "0....11110...." },
+      { "name": "RID[3:0]", "wave": "x....=234x....", "data": ["0x3", "0x3", "0x3", "0x3"] },
+      { "name": "RDATA[31:0]", "wave": "x....=234x....", "data": ["word 0", "word 1", "word 2", "word 3"] },
+      { "name": "RRESP[1:0]", "wave": "x....=234x....", "data": ["OKAY", "OKAY", "OKAY", "OKAY"] },
+      { "name": "RLAST", "wave": "0.......10...." }
+    ]
+  ],
+  "foot": { "text": "ARLEN=3 creates four beats. With ARSIZE=2 and ARBURST=INCR, each derived address advances by four bytes; RLAST is high only with the fourth R transfer." }
+}

@@ -1,0 +1,26 @@
+{
+  "signal": [
+    [
+      "Ingress packet P1",
+      { "name": "clk", "wave": "p.............." },
+      { "name": "in_valid", "wave": "010101000000000" },
+      { "name": "in_data[7:0]", "wave": "x.=.=.=........", "data": ["P1[0]", "P1[1]", "P1[2]"] },
+      { "name": "in_eop", "wave": "000001000000000" }
+    ],
+    [
+      "Forward after header decode",
+      { "name": "header_decoded", "wave": "0001..........." },
+      { "name": "out_valid", "wave": "000010101000000" },
+      { "name": "out_data[7:0]", "wave": "x....=.=.......", "data": ["P1[0]", "P1[1]", "P1[2]"] },
+      { "name": "out_eop", "wave": "0000000001....." }
+    ]
+  ],
+  "annotations": [
+    { "text": "egress starts before ingress EOP", "x": 7.8, "y": 7.05, "font-size": "12px", "font-weight": 700, "fill": "#b54708" }
+  ],
+  "head": { "text": "Cut-through forwarding starts before packet completion" },
+  "foot": {
+    "text": "After decoding the first beat, egress begins while later beats are still arriving. This lowers latency, but the design needs enough buffering and a policy for an incomplete or errored packet."
+  },
+  "config": { "hscale": 2 }
+}

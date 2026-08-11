@@ -1,0 +1,30 @@
+{
+  "signal": [
+    [
+      "Fast source domain",
+      { "name": "src_clk", "wave": "p...............", "period": 0.25 },
+      { "name": "src_event", "wave": "0.1010..........", "period": 0.25 },
+      { "name": "src_toggle", "wave": "0.1.0...........", "period": 0.25 }
+    ],
+    [
+      "Slow destination domain",
+      { "name": "dst_clk", "wave": "p.", "period": 2 },
+      { "name": "toggle_sync2", "wave": "0.", "period": 2 },
+      { "name": "dst_event", "wave": "0.", "period": 2 }
+    ]
+  ],
+  "annotations": [
+    {
+      "text": "two toggles cancel",
+      "x": 1.5,
+      "y": 2.6,
+      "font-weight": 700,
+      "fill": "#b42318"
+    }
+  ],
+  "head": { "text": "FAILURE — toggle events arrive too close together" },
+  "foot": {
+    "text": "Two source events return src_toggle to its original value before the next destination edge, so neither event is observed."
+  },
+  "config": { "hscale": 2 }
+}

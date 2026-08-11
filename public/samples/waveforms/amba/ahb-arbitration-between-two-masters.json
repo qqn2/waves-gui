@@ -1,0 +1,25 @@
+{
+  "head": { "text": "Full AHB arbitration chooses one of two requesting masters" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Arbiter interface",
+      { "name": "HBUSREQ0", "wave": "0.1....." },
+      { "name": "HBUSREQ1", "wave": "0.1....." },
+      { "name": "HGRANT0", "wave": "0.10...." },
+      { "name": "HGRANT1", "wave": "0..10..." }
+    ],
+    {},
+    [
+      "Selected address phases",
+      { "name": "HCLK", "wave": "P......." },
+      { "name": "address master", "wave": "x.=2x...", "data": ["M0", "M1"] },
+      { "name": "HTRANS", "wave": "x.=2x...", "data": ["NONSEQ", "NONSEQ"] },
+      { "name": "HADDR[31:0]", "wave": "x.=2x...", "data": ["M0: 0x1000", "M1: 0x2000"] },
+      { "name": "HREADY", "wave": "1......." }
+    ]
+  ],
+  "foot": {
+    "text": "Both masters request the bus. The arbiter grants M0 first and M1 next; only one master drives a valid address phase at a time."
+  }
+}

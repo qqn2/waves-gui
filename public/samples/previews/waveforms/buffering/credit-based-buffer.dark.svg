@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1322.3999999999999" height="340" viewBox="0 0 1322.3999999999999 340">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="340" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Credit-based sender (three remote slots)</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >send</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >tx_data[7:0]</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >credits_available</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >can_send</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >remote_occupancy</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1218.3999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="609.1999999999999" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Credit-based buffer spends one credit per accepted send</text>
+<text x="609.1999999999999" y="330" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Credits represent advertised free remote storage. Each accepted transfer consumes exactly one credit, reducing available credits from 3 to 1 as remote occupancy rises.</text>
+<line x1="0" y1="48" x2="0" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="316" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="316" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L86,148 L92,124 L160,124 L166,124 L172,148 L240,148 L246,148 L252,124 L320,124 L326,124 L332,148 L400,148 L480,148 L560,148 L640,148 L720,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L16,164 L144,164 L160,176 L144,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,176 L176,164 L304,164 L320,176 L304,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA0</text>
+<path d="M320,176 L336,164 L704,164 L720,176 L704,188 L336,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA1</text>
+<path d="M0,216 L16,204 L144,204 L160,216 L144,228 L16,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3</text>
+<path d="M160,216 L176,204 L304,204 L320,216 L304,228 L176,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M320,216 L336,204 L704,204 L720,216 L704,228 L336,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M0,244 L80,244 L160,244 L240,244 L320,244 L400,244 L480,244 L560,244 L640,244 L720,244" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,296 L16,284 L144,284 L160,296 L144,308 L16,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M160,296 L176,284 L304,284 L320,296 L304,308 L176,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M320,296 L336,284 L704,284 L720,296 L704,308 L336,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+  </g>
+</svg>

@@ -4,7 +4,7 @@
   "generatedFrom": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
   "curriculumCount": 832,
   "entryCount": 869,
-  "assetEntryCount": 37,
+  "assetEntryCount": 157,
   "shardCount": 13,
   "aliases": {},
   "shards": [
@@ -30,7 +30,7 @@
       },
       "curriculumCount": 22,
       "entryCount": 23,
-      "assetEntryCount": 1
+      "assetEntryCount": 15
     },
     {
       "id": "cdc",
@@ -42,7 +42,7 @@
       },
       "curriculumCount": 26,
       "entryCount": 26,
-      "assetEntryCount": 0
+      "assetEntryCount": 26
     },
     {
       "id": "buffering",
@@ -54,7 +54,7 @@
       },
       "curriculumCount": 20,
       "entryCount": 20,
-      "assetEntryCount": 0
+      "assetEntryCount": 20
     },
     {
       "id": "amba",
@@ -66,7 +66,7 @@
       },
       "curriculumCount": 92,
       "entryCount": 98,
-      "assetEntryCount": 6
+      "assetEntryCount": 66
     },
     {
       "id": "axi-stream-other-buses",

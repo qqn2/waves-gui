@@ -1,0 +1,35 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p......." },
+      {
+        "name": "binary_count[2:0]",
+        "wave": "========",
+        "data": ["000", "001", "010", "011", "100", "101", "110", "111"]
+      },
+      {
+        "name": "gray_count[2:0]",
+        "wave": "========",
+        "data": ["000", "001", "011", "010", "110", "111", "101", "100"]
+      }
+    ],
+    [
+      "Slower destination domain",
+      { "name": "dst_clk", "wave": "p...", "period": 2 },
+      {
+        "name": "gray_sync[2:0]",
+        "wave": "=.=.=.=.",
+        "data": ["000", "011", "110", "101"]
+      }
+    ]
+  ],
+  "annotations": [
+    { "text": "one source bit per increment", "x": 4, "y": 2.45, "font-size": "12px" }
+  ],
+  "head": { "text": "Gray counter crossing" },
+  "foot": {
+    "text": "Adjacent source Gray values change one bit; a slower destination may skip counts and still requires normal CDC synchronization."
+  },
+  "config": { "hscale": 2 }
+}

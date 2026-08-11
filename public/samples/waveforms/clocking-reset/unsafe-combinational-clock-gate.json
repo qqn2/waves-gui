@@ -1,0 +1,35 @@
+{
+  "signal": [
+    {
+      "name": "source_clk",
+      "wave": "01.01010",
+      "periods": [1, 0.5, 0.5, 1, 1, 1, 1, 1]
+    },
+    {
+      "name": "gate_enable (unsafe)",
+      "wave": "0.1...0.",
+      "periods": [1, 0.5, 0.5, 1, 1, 1, 1, 1]
+    },
+    {
+      "name": "gated_clk = source_clk & gate_enable",
+      "wave": "0.1010..",
+      "periods": [1, 0.5, 0.5, 1, 1, 1, 1, 1]
+    }
+  ],
+  "annotations": [
+    {
+      "text": "runt pulse: 0.5 T",
+      "x": 3.1,
+      "y": 2.35,
+      "font-weight": 700,
+      "fill": "#b42318"
+    },
+    { "shape": "|", "x": 1.5, "from": "0%", "to": "100%" }
+  ],
+  "head": {
+    "text": "FAILURE — combinational clock gating creates a runt pulse"
+  },
+  "foot": {
+    "text": "The unsafe enable rises halfway through an existing high phase, exposing only the remaining 0.5 T at gated_clk."
+  }
+}

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="984" height="768" viewBox="0 0 984 768">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="768" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ACLK</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="142" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Read address channel</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARVALID</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARREADY</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARID[3:0]</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARADDR[31:0]</text>
+<text x="20" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARLEN[7:0]</text>
+<text x="20" y="376" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARSIZE[2:0]</text>
+<text x="20" y="416" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ARBURST[1:0]</text>
+<text x="8" y="456" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="490" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Read data channel</text>
+<text x="20" y="524" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RVALID</text>
+<text x="20" y="564" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RREADY</text>
+<text x="20" y="604" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RID[3:0]</text>
+<text x="20" y="644" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RDATA[31:0]</text>
+<text x="20" y="684" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RRESP[1:0]</text>
+<text x="20" y="724" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >RLAST</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="880" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="440" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">AXI4 single-beat read</text>
+<text x="440" y="758" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">ARLEN=0 requests exactly one read beat. The matching RID returns once, and RLAST is asserted on that only R transfer.</text>
+<line x1="0" y1="48" x2="0" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="744" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="744" stroke="#333333" stroke-width="1"/>
+<path d="M0,80 L0,56 L40,56 L40,80 L80,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,64 -3,70 3,70" fill="#4A9EFF"/>
+<path d="M80,80 L80,56 L120,56 L120,80 L160,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,64 77,70 83,70" fill="#4A9EFF"/>
+<path d="M160,80 L160,56 L200,56 L200,80 L240,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,64 157,70 163,70" fill="#4A9EFF"/>
+<path d="M240,80 L240,56 L280,56 L280,80 L320,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,64 237,70 243,70" fill="#4A9EFF"/>
+<path d="M320,80 L320,56 L360,56 L360,80 L400,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,64 317,70 323,70" fill="#4A9EFF"/>
+<path d="M400,80 L400,56 L440,56 L440,80 L480,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,64 397,70 403,70" fill="#4A9EFF"/>
+<path d="M480,80 L480,56 L520,56 L520,80 L560,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,64 477,70 483,70" fill="#4A9EFF"/>
+<path d="M560,80 L560,56 L600,56 L600,80 L640,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,64 557,70 563,70" fill="#4A9EFF"/>
+<path d="M640,80 L640,56 L680,56 L680,80 L720,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,64 637,70 643,70" fill="#4A9EFF"/>
+<path d="M720,80 L720,56 L760,56 L760,80 L800,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="720,64 717,70 723,70" fill="#4A9EFF"/>
+<path d="M800,80 L800,56 L840,56 L840,80 L880,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="800,64 797,70 803,70" fill="#4A9EFF"/>
+<path d="M0,188 L80,188 L160,188 L166,188 L172,164 L240,164 L246,164 L252,188 L320,188 L400,188 L480,188 L560,188 L640,188 L720,188 L800,188 L880,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L166,228 L172,204 L240,204 L246,204 L252,228 L320,228 L400,228 L480,228 L560,228 L640,228 L720,228 L800,228 L880,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L16,244 L144,244 L160,256 L144,268 L16,268 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="256" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,256 L176,244 L224,244 L240,256 L224,268 L176,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3</text>
+<path d="M240,256 L256,244 L864,244 L880,256 L864,268 L256,268 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="256" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,296 L16,284 L144,284 L160,296 L144,308 L16,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,296 L176,284 L224,284 L240,296 L224,308 L176,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x4000_0010</text>
+<path d="M240,296 L256,284 L864,284 L880,296 L864,308 L256,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,336 L16,324 L144,324 L160,336 L144,348 L16,348 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="336" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,336 L176,324 L224,324 L240,336 L224,348 L176,348 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="336" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0 (one beat)</text>
+<path d="M240,336 L256,324 L864,324 L880,336 L864,348 L256,348 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="336" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,376 L16,364 L144,364 L160,376 L144,388 L16,388 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="376" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,376 L176,364 L224,364 L240,376 L224,388 L176,388 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="376" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2 (4 bytes)</text>
+<path d="M240,376 L256,364 L864,364 L880,376 L864,388 L256,388 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="376" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,416 L16,404 L144,404 L160,416 L144,428 L16,428 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="416" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,416 L176,404 L224,404 L240,416 L224,428 L176,428 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="416" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">INCR</text>
+<path d="M240,416 L256,404 L864,404 L880,416 L864,428 L256,428 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="560" y="416" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,536 L80,536 L160,536 L240,536 L320,536 L400,536 L480,536 L486,536 L492,512 L560,512 L566,512 L572,536 L640,536 L720,536 L800,536 L880,536" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,576 L80,576 L160,576 L240,576 L320,576 L400,576 L480,576 L486,576 L492,552 L560,552 L566,552 L572,576 L640,576 L720,576 L800,576 L880,576" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,604 L16,592 L464,592 L480,604 L464,616 L16,616 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="240" y="604" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M480,604 L496,592 L544,592 L560,604 L544,616 L496,616 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="604" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3</text>
+<path d="M560,604 L576,592 L864,592 L880,604 L864,616 L576,616 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="720" y="604" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,644 L16,632 L464,632 L480,644 L464,656 L16,656 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="240" y="644" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M480,644 L496,632 L544,632 L560,644 L544,656 L496,656 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="644" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x1234_5678</text>
+<path d="M560,644 L576,632 L864,632 L880,644 L864,656 L576,656 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="720" y="644" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,684 L16,672 L464,672 L480,684 L464,696 L16,696 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="240" y="684" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M480,684 L496,672 L544,672 L560,684 L544,696 L496,696 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="684" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OKAY</text>
+<path d="M560,684 L576,672 L864,672 L880,684 L864,696 L576,696 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="720" y="684" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,736 L80,736 L160,736 L240,736 L320,736 L400,736 L480,736 L486,736 L492,712 L560,712 L566,712 L572,736 L640,736 L720,736 L800,736 L880,736" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

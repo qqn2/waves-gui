@@ -1,0 +1,35 @@
+{
+  "head": { "text": "AXI4-Lite slave: one accepted write is held in a skid buffer" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AXI4-Lite write channels",
+      { "name": "ACLK", "wave": "P..........." },
+      { "name": "AWADDR[31:0]", "wave": "x.=x........", "data": ["0x4000_0030"] },
+      { "name": "AWVALID", "wave": "0.10........" },
+      { "name": "AWREADY", "wave": "1..0..1....." },
+      { "name": "WDATA[31:0]", "wave": "x.=x........", "data": ["0x0000_0001"] },
+      { "name": "WVALID", "wave": "0.10........" },
+      { "name": "WREADY", "wave": "1..0..1....." }
+    ],
+    {},
+    [
+      "Slave-side one-entry write buffer",
+      { "name": "skid_full", "wave": "0..1..0....." },
+      { "name": "skid_awaddr[31:0]", "wave": "x..=..x.....", "data": ["0x4000_0030"] },
+      { "name": "skid_wdata[31:0]", "wave": "x..=..x.....", "data": ["0x0000_0001"] },
+      { "name": "regfile_ready", "wave": "0....1......" },
+      { "name": "write_commit", "wave": "0....10....." }
+    ],
+    {},
+    [
+      "B response channel",
+      { "name": "BRESP[1:0]", "wave": "x.....=.x...", "data": ["OKAY"] },
+      { "name": "BVALID", "wave": "0.....1.0..." },
+      { "name": "BREADY", "wave": "0......1...." }
+    ]
+  ],
+  "foot": {
+    "text": "This trace accepts simultaneous AW and W into one paired skid entry, then deasserts both READY signals while that entry is full. When the register file is ready, the buffered write commits and one B response is returned. A production AXI-Lite slave must preserve the same VALID/payload stability rules for either channel whenever it is stalled."
+  }
+}

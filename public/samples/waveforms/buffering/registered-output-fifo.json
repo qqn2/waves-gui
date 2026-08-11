@@ -1,0 +1,18 @@
+{
+  "signal": [
+    [
+      "Registered-output FIFO (depth 4, starts with A5)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "pop", "wave": "010....." },
+      { "name": "occupancy", "wave": "=.=.....", "data": ["1", "0"] },
+      { "name": "empty", "wave": "0.1....." },
+      { "name": "dout[7:0]", "wave": "x..=....", "data": ["0xA5"] },
+      { "name": "dout_valid", "wave": "0..1...." }
+    ]
+  ],
+  "head": { "text": "Registered-output FIFO returns data after pop" },
+  "foot": {
+    "text": "Unlike a show-ahead FIFO, the stored head A5 is loaded into an output register after the accepted pop. dout_valid asserts one registered-output cycle later."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "Synchronous FIFO (depth 4, already full)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "push_request", "wave": "010....." },
+      { "name": "push_accepted", "wave": "0......." },
+      { "name": "din[7:0]", "wave": "x.=.....", "data": ["0xEE (ignored)"] },
+      { "name": "write_ptr", "wave": "=.......", "data": ["2"] },
+      { "name": "occupancy", "wave": "=.......", "data": ["4"] },
+      { "name": "full", "wave": "1......." },
+      { "name": "empty", "wave": "0......." }
+    ]
+  ],
+  "head": { "text": "FAILURE: FIFO rejects a push while full" },
+  "foot": {
+    "text": "The requested write must not overwrite stored data. Because full is high, push_accepted stays low and both write pointer and occupancy hold their values."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="811.1999999999999" height="232" viewBox="0 0 811.1999999999999 232">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="232" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >enable_request</text>
+<text x="8" y="148" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >enable_latched_low</text>
+<text x="8" y="188" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >gated_clk</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="707.1999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="353.59999999999997" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Clock gating with a low-phase latch</text>
+<text x="353.59999999999997" y="222" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The enable is captured while clk is low, so gated_clk starts and stops on complete clock pulses.</text>
+<line x1="0" y1="48" x2="0" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="208" stroke="#333333" stroke-width="1"/>
+<path d="M0,80 L0,56 L40,56 L40,80 L80,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,80 L80,56 L120,56 L120,80 L160,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,80 L160,56 L200,56 L200,80 L240,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,80 L240,56 L280,56 L280,80 L320,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,80 L320,56 L360,56 L360,80 L400,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,80 L400,56 L440,56 L440,80 L480,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,80 L480,56 L520,56 L520,80 L560,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,80 L560,56 L600,56 L600,80 L640,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,120 L80,120 L160,120 L166,120 L172,96 L240,96 L320,96 L400,96 L406,96 L412,120 L480,120 L560,120 L640,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,160 L80,160 L160,160 L240,160 L246,160 L252,136 L320,136 L400,136 L480,136 L486,136 L492,160 L560,160 L640,160" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,200 L80,200 L160,200 L240,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,200 L240,176 L280,176 L280,200 L320,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,200 L320,176 L360,176 L360,200 L400,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,200 L400,176 L440,176 L440,200 L480,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,200 L560,200 L640,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

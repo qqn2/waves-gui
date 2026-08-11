@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "Credit-based sender",
+      { "name": "clk", "wave": "p........" },
+      { "name": "credit_return", "wave": "001000..." },
+      { "name": "credits_available", "wave": "=..=.=...", "data": ["0", "1", "0"] },
+      { "name": "can_send", "wave": "0..1.0..." },
+      { "name": "send_request", "wave": "000010..." },
+      { "name": "send_accepted", "wave": "000010..." },
+      { "name": "tx_data[7:0]", "wave": "x....=...", "data": ["0xA5"] }
+    ]
+  ],
+  "head": { "text": "A returned credit re-enables sending" },
+  "foot": {
+    "text": "The sender begins with no remote capacity. A credit return raises credits_available to 1, permits one accepted A5 transfer, and that transfer consumes the returned credit."
+  },
+  "config": { "hscale": 2 }
+}

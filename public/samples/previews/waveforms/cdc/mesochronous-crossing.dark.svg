@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1704" height="368" viewBox="0 0 1704 368">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="368" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Same nominal frequency</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_word</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >write_to_elastic_buffer</text>
+<text x="8" y="210" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Unknown phase at destination</text>
+<text x="20" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >read_from_elastic_buffer</text>
+<text x="20" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_word</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1600" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="800" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Mesochronous crossing — same frequency, unknown phase</text>
+<text x="800" y="358" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The clocks have the same nominal rate but no guaranteed edge alignment. An elastic buffer or suitable synchronizer absorbs the unknown sampling phase; the fixed offset drawn here is illustrative, not a phase-noise model.</text>
+<line x1="0" y1="48" x2="0" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="344" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,136 L16,124 L224,124 L240,136 L224,148 L16,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="120" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M240,136 L256,124 L864,124 L880,136 L864,148 L256,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="560" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3C</text>
+<path d="M0,188 L80,188 L160,188 L240,188 L246,188 L252,164 L320,164 L326,164 L332,188 L400,188 L480,188 L560,188 L640,188 L720,188 L800,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-36,256 L-36,232 L4,232 L4,256 L44,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M44,256 L44,232 L84,232 L84,256 L124,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M124,256 L124,232 L164,232 L164,256 L204,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M204,256 L204,232 L244,232 L244,256 L284,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M284,256 L284,232 L324,232 L324,256 L364,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M364,256 L364,232 L404,232 L404,256 L444,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M444,256 L444,232 L484,232 L484,256 L524,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M524,256 L524,232 L564,232 L564,256 L604,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M604,256 L604,232 L644,232 L644,256 L684,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M684,256 L684,232 L724,232 L724,256 L764,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M764,256 L764,232 L804,232 L804,256 L844,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-36,296 L44,296 L124,296 L204,296 L284,296 L364,296 L370,296 L376,272 L444,272 L450,272 L456,296 L524,296 L604,296 L684,296 L764,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-36,324 L-20,312 L348,312 L364,324 L348,336 L-20,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="164" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M364,324 L380,312 L748,312 L764,324 L748,336 L380,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="564" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3C</text>
+<rect x="272" y="215.9" width="224" height="16.200000000000003" fill="#111111"/><text x="384" y="224" fill="#b54708" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">phase is arbitrary after reset</text>
+  </g>
+</svg>

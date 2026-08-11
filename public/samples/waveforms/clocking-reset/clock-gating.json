@@ -1,0 +1,13 @@
+{
+  "signal": [
+    { "name": "clk", "wave": "p......." },
+    { "name": "enable_request", "wave": "0.1..0.." },
+    { "name": "enable_latched_low", "wave": "0..1..0." },
+    { "name": "gated_clk", "wave": "0..p..0." }
+  ],
+  "head": { "text": "Clock gating with a low-phase latch" },
+  "foot": {
+    "text": "The enable is captured while clk is low, so gated_clk starts and stops on complete clock pulses."
+  },
+  "config": { "hscale": 2 }
+}

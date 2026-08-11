@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1646.3999999999999" height="488" viewBox="0 0 1646.3999999999999 488">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="488" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Source domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_data</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >req</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ack_sync2</text>
+<text x="8" y="250" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Destination domain</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >req_sync2</text>
+<text x="20" y="364" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_capture</text>
+<text x="20" y="404" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ack</text>
+<text x="20" y="444" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_data</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1542.3999999999999" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="1000" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<text x="771.1999999999999" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Related clocks — conservative request/acknowledge transfer</text>
+<text x="771.1999999999999" y="478" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The source holds 0xA5 while req traverses to the destination and until ack returns. This costs round-trip latency and control logic, but remains robust when the assumed related-clock timing margin is unavailable.</text>
+<line x1="0" y1="48" x2="0" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1040" y1="48" x2="1040" y2="464" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,108 L880,84 L920,84 L920,108 L960,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,108 L960,84 L1000,84 L1000,108 L1040,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,136 L16,124 L1024,124 L1040,136 L1024,148 L16,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5 held until acknowledge</text>
+<path d="M0,188 L80,188 L160,188 L166,188 L172,164 L240,164 L320,164 L400,164 L480,164 L560,164 L640,164 L720,164 L800,164 L806,164 L812,188 L880,188 L960,188 L1040,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L240,228 L320,228 L400,228 L480,228 L560,228 L640,228 L646,228 L652,204 L720,204 L800,204 L806,204 L812,228 L880,228 L960,228 L1040,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,296 L-20,272 L20,272 L20,296 L60,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,296 L60,272 L100,272 L100,296 L140,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,296 L140,272 L180,272 L180,296 L220,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,296 L220,272 L260,272 L260,296 L300,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,296 L300,272 L340,272 L340,296 L380,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,296 L380,272 L420,272 L420,296 L460,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,296 L460,272 L500,272 L500,296 L540,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,296 L540,272 L580,272 L580,296 L620,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,296 L620,272 L660,272 L660,296 L700,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M700,296 L700,272 L740,272 L740,296 L780,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M780,296 L780,272 L820,272 L820,296 L860,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M860,296 L860,272 L900,272 L900,296 L940,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M940,296 L940,272 L980,272 L980,296 L1020,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,336 L60,336 L140,336 L220,336 L300,336 L306,336 L312,312 L380,312 L460,312 L540,312 L620,312 L700,312 L780,312 L786,312 L792,336 L860,336 L940,336 L1020,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,376 L60,376 L140,376 L220,376 L300,376 L306,376 L312,352 L380,352 L386,352 L392,376 L460,376 L540,376 L614,376 L617,352 L620,376 L700,376 L780,376 L860,376 L940,376 L1020,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,416 L60,416 L140,416 L220,416 L300,416 L380,416 L386,416 L392,392 L460,392 L540,392 L620,392 L700,392 L780,392 L786,392 L792,416 L860,416 L940,416 L1020,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,444 L-4,432 L284,432 L300,444 L284,456 L-4,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M300,444 L316,432 L1004,432 L1020,444 L1004,456 L316,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="660" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+  </g>
+</svg>

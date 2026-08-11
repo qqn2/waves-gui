@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AXI4-Lite R-channel backpressure" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P..........." },
+    {},
+    [
+      "Read address accepted",
+      { "name": "ARVALID", "wave": "0.1.0......." },
+      { "name": "ARREADY", "wave": "0.1.0......." }
+    ],
+    {},
+    [
+      "R channel held by the master",
+      { "name": "RVALID", "wave": "0....1...0.." },
+      { "name": "RREADY", "wave": "0.......1..." },
+      { "name": "RDATA[31:0]", "wave": "x....=...x..", "data": ["0x89AB_CDEF (held)"] },
+      { "name": "RRESP[1:0]", "wave": "x....=...x..", "data": ["OKAY (held)"] }
+    ]
+  ],
+  "foot": { "text": "After a read response becomes valid, the slave must hold RVALID, RDATA, and RRESP stable until the master supplies RREADY. The response is transferred only at that handshake." }
+}

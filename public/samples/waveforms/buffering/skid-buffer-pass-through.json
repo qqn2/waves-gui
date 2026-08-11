@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "One-entry skid buffer",
+      { "name": "clk", "wave": "p........" },
+      { "name": "in_valid", "wave": "0.10....." },
+      { "name": "in_data[7:0]", "wave": "x.=......", "data": ["0xA5"] },
+      { "name": "out_ready", "wave": "1........" },
+      { "name": "out_valid", "wave": "0.10....." },
+      { "name": "out_data[7:0]", "wave": "x.=......", "data": ["0xA5"] },
+      { "name": "buffer_occupied", "wave": "0........" },
+      { "name": "in_ready", "wave": "1........" }
+    ]
+  ],
+  "head": { "text": "Skid buffer pass-through has no storage latency" },
+  "foot": {
+    "text": "With out_ready continuously high, A5 transfers directly from input to output. The skid register stays empty and in_ready remains asserted."
+  },
+  "config": { "hscale": 2 }
+}

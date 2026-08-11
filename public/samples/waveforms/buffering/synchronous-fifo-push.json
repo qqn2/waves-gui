@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "Synchronous FIFO (depth 4)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "push", "wave": "010....." },
+      { "name": "din[7:0]", "wave": "x.=.....", "data": ["0xA5"] },
+      { "name": "write_ptr", "wave": "=.=.....", "data": ["0", "1"] },
+      { "name": "occupancy", "wave": "=.=.....", "data": ["0", "1"] },
+      { "name": "empty", "wave": "1.0....." },
+      { "name": "full", "wave": "0......." }
+    ]
+  ],
+  "head": { "text": "Synchronous FIFO push accepts one word" },
+  "foot": {
+    "text": "With full low, push is accepted on the clock edge: 0xA5 is stored, the write pointer advances, occupancy changes from 0 to 1, and empty deasserts."
+  },
+  "config": { "hscale": 2 }
+}

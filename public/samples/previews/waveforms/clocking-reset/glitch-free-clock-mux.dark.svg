@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="940.8" height="312" viewBox="0 0 940.8 312">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="312" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_a</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_b (0.25 T later)</text>
+<text x="8" y="148" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >select_b</text>
+<text x="8" y="188" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >enable_a</text>
+<text x="8" y="228" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >enable_b</text>
+<text x="8" y="268" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >mux_clk</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="836.8" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="418.4" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Glitch-free clock mux handover</text>
+<text x="418.4" y="302" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">enable_a drops at 1.5 T; enable_b rises during clk_b low at 2.0 T; mux_clk waits for clk_b's full pulse at 2.25 T.</text>
+<line x1="0" y1="48" x2="0" y2="288" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="288" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="288" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="288" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="288" stroke="#333333" stroke-width="1"/>
+<path d="M0,56 L20,56 L40,56 L46,56 L52,80 L60,80 L80,80 L86,80 L92,56 L100,56 L120,56 L126,56 L132,80 L140,80 L160,80 L166,80 L172,56 L180,56 L200,56 L206,56 L212,80 L220,80 L240,80 L246,80 L252,56 L260,56 L280,56 L286,56 L292,80 L300,80 L320,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,120 L20,120 L26,120 L32,96 L40,96 L60,96 L66,96 L72,120 L80,120 L100,120 L106,120 L112,96 L120,96 L140,96 L146,96 L152,120 L160,120 L180,120 L186,120 L192,96 L200,96 L220,96 L226,96 L232,120 L240,120 L260,120 L266,120 L272,96 L280,96 L300,96 L306,96 L312,120 L320,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,160 L20,160 L40,160 L60,160 L80,160 L100,160 L106,160 L112,136 L120,136 L140,136 L160,136 L180,136 L200,136 L220,136 L240,136 L260,136 L280,136 L300,136 L320,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L20,176 L40,176 L60,176 L80,176 L100,176 L120,176 L126,176 L132,200 L140,200 L160,200 L180,200 L200,200 L220,200 L240,200 L260,200 L280,200 L300,200 L320,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,240 L20,240 L40,240 L60,240 L80,240 L100,240 L120,240 L140,240 L160,240 L166,240 L172,216 L180,216 L200,216 L220,216 L240,216 L260,216 L280,216 L300,216 L320,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L20,256 L40,256 L46,256 L52,280 L60,280 L80,280 L86,280 L92,256 L100,256 L120,256 L126,256 L132,280 L140,280 L160,280 L180,280 L186,280 L192,256 L200,256 L220,256 L226,256 L232,280 L240,280 L260,280 L266,280 L272,256 L280,256 L300,256 L306,256 L312,280 L320,280" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="5.599999999999994" y="217.9" width="288.8" height="16.200000000000003" fill="#111111"/><text x="150" y="226" fill="#e8e8e8" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="400" font-size="12">both sources disabled; output stays low</text>
+  </g>
+</svg>

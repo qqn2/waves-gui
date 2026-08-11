@@ -1,0 +1,23 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p..........." },
+      { "name": "src_data", "wave": "=.=.......=.", "data": ["OLD", "0xA5", "NEXT"] },
+      { "name": "src_hold", "wave": "0..1....0..." },
+      { "name": "ack_sync", "wave": "0......1..0." }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p...........", "phase": 0.25 },
+      { "name": "mux_select_sync", "wave": "0....1....0.", "phase": 0.25 },
+      { "name": "dst_data", "wave": "=....=......", "data": ["OLD", "0xA5"] },
+      { "name": "dst_ack", "wave": "0.....1..0..", "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Mux-based data synchronizer with acknowledgement" },
+  "foot": {
+    "text": "The synchronized select captures the held 0xA5 bus; the source does not change that bus until acknowledgement returns."
+  },
+  "config": { "hscale": 2 }
+}

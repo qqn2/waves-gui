@@ -1,0 +1,21 @@
+{
+  "signal": [
+    [
+      "One-entry skid buffer",
+      { "name": "clk", "wave": "p........" },
+      { "name": "in_valid", "wave": "0.10....." },
+      { "name": "in_data[7:0]", "wave": "x.=......", "data": ["0xA5"] },
+      { "name": "out_ready", "wave": "110......" },
+      { "name": "out_valid", "wave": "0.111...." },
+      { "name": "out_data[7:0]", "wave": "x.=......", "data": ["0xA5"] },
+      { "name": "capture", "wave": "0.10....." },
+      { "name": "buffer_occupied", "wave": "0..1....." },
+      { "name": "in_ready", "wave": "1..0....." }
+    ]
+  ],
+  "head": { "text": "Skid buffer captures a word when ready drops" },
+  "foot": {
+    "text": "A5 initially passes toward the downstream interface. When out_ready drops while A5 is valid, the skid register captures it and then backpressures the source."
+  },
+  "config": { "hscale": 2 }
+}

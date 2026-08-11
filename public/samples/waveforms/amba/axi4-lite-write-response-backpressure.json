@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AXI4-Lite write-response backpressure" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P..........." },
+    {},
+    [
+      "Write request completes",
+      { "name": "AWVALID", "wave": "0.1.0......." },
+      { "name": "AWREADY", "wave": "0.1.0......." },
+      { "name": "WVALID", "wave": "0.1.0......." },
+      { "name": "WREADY", "wave": "0.1.0......." }
+    ],
+    {},
+    [
+      "B channel held by the master",
+      { "name": "BVALID", "wave": "0....1...0.." },
+      { "name": "BREADY", "wave": "0.......1..." },
+      { "name": "BRESP", "wave": "x....=...x..", "data": ["OKAY (held)"] }
+    ]
+  ],
+  "foot": { "text": "Once the slave asserts BVALID, both BVALID and BRESP remain stable until the master finally asserts BREADY. A delayed response handshake does not discard the response." }
+}

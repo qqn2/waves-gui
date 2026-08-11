@@ -1,0 +1,39 @@
+{
+  "signal": [
+    {
+      "name": "clk_a",
+      "wave": "1.0.1.0..1.0.",
+      "periods": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.125, 0.125, 0.25, 0.25, 0.25, 0.25, 0.25]
+    },
+    {
+      "name": "clk_b (0.25 T later)",
+      "wave": "01.0.1..0.1.0",
+      "periods": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.125, 0.125, 0.25, 0.25, 0.25, 0.25, 0.25]
+    },
+    {
+      "name": "select_b",
+      "wave": "0......1.....",
+      "periods": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.125, 0.125, 0.25, 0.25, 0.25, 0.25, 0.25]
+    },
+    {
+      "name": "mux_clk (unsafe)",
+      "wave": "1.0.1.010.1.0",
+      "periods": [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.125, 0.125, 0.25, 0.25, 0.25, 0.25, 0.25]
+    }
+  ],
+  "annotations": [
+    { "shape": "|", "x": 1.625, "from": "55%", "to": "96%" },
+    {
+      "text": "0.125 T runt high pulse",
+      "x": 1.68,
+      "y": 3.1,
+      "font-weight": 700,
+      "fill": "#b42318"
+    }
+  ],
+  "head": { "text": "Failure: switching a clock mux directly" },
+  "foot": {
+    "text": "At 1.625 T, select changes while clk_a is low and clk_b is high; the direct mux produces a 0.125 T runt high pulse."
+  },
+  "config": { "hscale": 2 }
+}

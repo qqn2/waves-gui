@@ -1,0 +1,16 @@
+{
+  "signal": [
+    { "name": "clk_in", "wave": "p......." },
+    {
+      "name": "divide_count",
+      "wave": "22222222",
+      "data": ["0", "1", "2", "3", "0", "1", "2", "3"]
+    },
+    { "name": "clk_div4", "wave": "0.1.0.1." }
+  ],
+  "head": { "text": "Clock divider by four" },
+  "foot": {
+    "text": "clk_div4 is the counter MSB: low for counts 0–1 and high for counts 2–3, repeating every four input-clock cycles."
+  },
+  "config": { "hscale": 2 }
+}

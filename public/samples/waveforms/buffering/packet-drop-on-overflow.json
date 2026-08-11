@@ -1,0 +1,26 @@
+{
+  "signal": [
+    [
+      "Ingress packet P7 (three beats)",
+      { "name": "clk", "wave": "p.........." },
+      { "name": "in_valid", "wave": "01010100000" },
+      { "name": "in_data[7:0]", "wave": "x.=.=.=....", "data": ["P7[0]", "P7[1]", "P7[2]"] },
+      { "name": "in_eop", "wave": "00000100000" }
+    ],
+    [
+      "Depth-4 FIFO has only two free slots",
+      { "name": "free_slots", "wave": "=..........", "data": ["2"] },
+      { "name": "packet_admit", "wave": "0.........." },
+      { "name": "drop_packet", "wave": "0.1........" },
+      { "name": "occupancy", "wave": "=..........", "data": ["2"] }
+    ]
+  ],
+  "annotations": [
+    { "text": "P7 is rejected as a whole", "x": 3.7, "y": 7.0, "font-size": "12px", "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "FAILURE / POLICY — packet drop on insufficient FIFO space" },
+  "foot": {
+    "text": "With packet-length-aware admission, a three-beat packet cannot enter when only two slots remain. The policy rejects all P7 beats, preserving existing packets instead of storing a partial packet."
+  },
+  "config": { "hscale": 2 }
+}

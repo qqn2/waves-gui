@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1516.8" height="448" viewBox="0 0 1516.8 448">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="448" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Ingress packet P7 (three beats)</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >in_valid</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >in_data[7:0]</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >in_eop</text>
+<text x="8" y="250" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Depth-4 FIFO has only two free slots</text>
+<text x="20" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >free_slots</text>
+<text x="20" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >packet_admit</text>
+<text x="20" y="364" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >drop_packet</text>
+<text x="20" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >occupancy</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1412.8" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="706.4" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">FAILURE / POLICY — packet drop on insufficient FIFO space</text>
+<text x="706.4" y="438" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">With packet-length-aware admission, a three-beat packet cannot enter when only two slots remain. The policy rejects all P7 beats, preserving existing packets instead of storing a partial packet.</text>
+<line x1="0" y1="48" x2="0" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="424" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="424" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L86,148 L92,124 L160,124 L166,124 L172,148 L240,148 L246,148 L252,124 L320,124 L326,124 L332,148 L400,148 L406,148 L412,124 L480,124 L486,124 L492,148 L554,148 L557,124 L560,148 L634,148 L637,124 L640,148 L714,148 L717,124 L720,148 L794,148 L797,124 L800,148 L880,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L16,164 L144,164 L160,176 L144,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,176 L176,164 L304,164 L320,176 L304,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">P7[0]</text>
+<path d="M320,176 L336,164 L464,164 L480,176 L464,188 L336,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">P7[1]</text>
+<path d="M480,176 L496,164 L864,164 L880,176 L864,188 L496,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="680" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">P7[2]</text>
+<path d="M0,228 L74,228 L77,204 L80,228 L154,228 L157,204 L160,228 L234,228 L237,204 L240,228 L314,228 L317,204 L320,228 L400,228 L406,228 L412,204 L480,204 L486,204 L492,228 L554,228 L557,204 L560,228 L634,228 L637,204 L640,228 L714,228 L717,204 L720,228 L794,228 L797,204 L800,228 L880,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,284 L16,272 L864,272 L880,284 L864,296 L16,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M0,336 L80,336 L160,336 L240,336 L320,336 L400,336 L480,336 L560,336 L640,336 L720,336 L800,336 L880,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,376 L80,376 L160,376 L166,376 L172,352 L240,352 L320,352 L400,352 L480,352 L560,352 L640,352 L720,352 L800,352 L880,352" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,404 L16,392 L864,392 L880,404 L864,416 L16,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<rect x="202" y="319.9" width="188" height="16.200000000000003" fill="#111111"/><text x="296" y="328" fill="#b42318" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">P7 is rejected as a whole</text>
+  </g>
+</svg>

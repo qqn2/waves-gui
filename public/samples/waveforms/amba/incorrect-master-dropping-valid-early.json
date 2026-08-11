@@ -1,0 +1,16 @@
+{
+  "head": { "text": "Invalid AXI4-Lite master: AWVALID drops before an address handshake" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AW channel (deliberately invalid)",
+      { "name": "ACLK", "wave": "P........" },
+      { "name": "AWADDR[31:0]", "wave": "x.=..x...", "data": ["0x4000_0020 (abandoned)"] },
+      { "name": "AWVALID (INVALID)", "wave": "0.10....." },
+      { "name": "AWREADY", "wave": "0...1...." }
+    ]
+  ],
+  "foot": {
+    "text": "Deliberately invalid: once the master raises AWVALID, it must keep AWVALID and AWADDR asserted and stable until an AWVALID/AWREADY handshake occurs. Here AWVALID falls before AWREADY ever rises, so no address is transferred."
+  }
+}

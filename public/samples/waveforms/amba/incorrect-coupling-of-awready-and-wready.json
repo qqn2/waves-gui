@@ -1,0 +1,29 @@
+{
+  "head": { "text": "AXI4-Lite caution: coupled AWREADY and WREADY serialize channels" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P............." },
+    {},
+    [
+      "Master offers address before data",
+      { "name": "AWVALID", "wave": "0.1...0......." },
+      { "name": "AWADDR[31:0]", "wave": "x.=...x.......", "data": ["0x4000_0008"] },
+      { "name": "WVALID", "wave": "0....10....." },
+      { "name": "WDATA[31:0]", "wave": "x....=x.......", "data": ["0xCAFE_0001"] }
+    ],
+    {},
+    [
+      "Coupled but protocol-permitted slave",
+      { "name": "AWREADY (bad)", "wave": "0....10....." },
+      { "name": "WREADY (bad)", "wave": "0....10....." }
+    ],
+    {},
+    [
+      "One delayed response",
+      { "name": "BVALID", "wave": "0......10....." },
+      { "name": "BREADY", "wave": "0......10....." },
+      { "name": "BRESP", "wave": "x......=x.....", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "This coupling is AXI4-Lite legal: a slave may wait for AWVALID, WVALID, or both before asserting either READY. It serializes otherwise independent channel progress, but is not itself a protocol failure. Deadlock occurs only if an invalid master waits for AWREADY before asserting WVALID." }
+}

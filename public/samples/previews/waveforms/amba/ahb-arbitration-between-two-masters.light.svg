@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1027.1999999999998" height="528" viewBox="0 0 1027.1999999999998 528">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="528" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Arbiter interface</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ0</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ1</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT0</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT1</text>
+<text x="8" y="256" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="290" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Selected address phases</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HCLK</text>
+<text x="20" y="364" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >address master</text>
+<text x="20" y="404" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HTRANS</text>
+<text x="20" y="444" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HADDR[31:0]</text>
+<text x="20" y="484" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HREADY</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="923.1999999999999" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="461.59999999999997" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Full AHB arbitration chooses one of two requesting masters</text>
+<text x="461.59999999999997" y="518" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Both masters request the bus. The arbiter grants M0 first and M1 next; only one master drives a valid address phase at a time.</text>
+<line x1="0" y1="48" x2="0" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L80,108 L160,108 L166,108 L172,84 L240,84 L320,84 L400,84 L480,84 L560,84 L640,84" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L160,148 L166,148 L172,124 L240,124 L320,124 L400,124 L480,124 L560,124 L640,124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,188 L80,188 L160,188 L166,188 L172,164 L240,164 L246,164 L252,188 L320,188 L400,188 L480,188 L560,188 L640,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L240,228 L246,228 L252,204 L320,204 L326,204 L332,228 L400,228 L480,228 L560,228 L640,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,336 L0,312 L40,312 L40,336 L80,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,320 -3,326 3,326" fill="#4A9EFF"/>
+<path d="M80,336 L80,312 L120,312 L120,336 L160,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,320 77,326 83,326" fill="#4A9EFF"/>
+<path d="M160,336 L160,312 L200,312 L200,336 L240,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,320 157,326 163,326" fill="#4A9EFF"/>
+<path d="M240,336 L240,312 L280,312 L280,336 L320,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,320 237,326 243,326" fill="#4A9EFF"/>
+<path d="M320,336 L320,312 L360,312 L360,336 L400,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,320 317,326 323,326" fill="#4A9EFF"/>
+<path d="M400,336 L400,312 L440,312 L440,336 L480,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,320 397,326 403,326" fill="#4A9EFF"/>
+<path d="M480,336 L480,312 L520,312 L520,336 L560,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,320 477,326 483,326" fill="#4A9EFF"/>
+<path d="M560,336 L560,312 L600,312 L600,336 L640,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,320 557,326 563,326" fill="#4A9EFF"/>
+<path d="M0,364 L16,352 L144,352 L160,364 L144,376 L16,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,364 L176,352 L224,352 L240,364 L224,376 L176,376 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="364" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0</text>
+<path d="M240,364 L256,352 L304,352 L320,364 L304,376 L256,376 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="364" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M1</text>
+<path d="M320,364 L336,352 L624,352 L640,364 L624,376 L336,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="480" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,404 L16,392 L144,392 L160,404 L144,416 L16,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,404 L176,392 L224,392 L240,404 L224,416 L176,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ</text>
+<path d="M240,404 L256,392 L304,392 L320,404 L304,416 L256,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ</text>
+<path d="M320,404 L336,392 L624,392 L640,404 L624,416 L336,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="480" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,444 L16,432 L144,432 L160,444 L144,456 L16,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,444 L176,432 L224,432 L240,444 L224,456 L176,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0: 0x1000</text>
+<path d="M240,444 L256,432 L304,432 L320,444 L304,456 L256,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M1: 0x2000</text>
+<path d="M320,444 L336,432 L624,432 L640,444 L624,456 L336,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="480" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,472 L80,472 L160,472 L240,472 L320,472 L400,472 L480,472 L560,472 L640,472" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

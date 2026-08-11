@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "Read clock domain",
+      { "name": "rd_clk", "wave": "p........", "phase": 0.25 },
+      { "name": "rd_en", "wave": "0.10.10..", "phase": 0.25 },
+      { "name": "rgray_next[3:0]", "wave": "=..=..=..", "data": ["6", "7", "5"], "phase": 0.25 },
+      { "name": "wgray_sync[3:0]", "wave": "=........", "data": ["5"], "phase": 0.25 },
+      { "name": "empty", "wave": "0.....1..", "phase": 0.25 }
+    ]
+  ],
+  "annotations": [
+    { "text": "rgray_next = synchronized write Gray pointer", "x": 6.2, "y": 4.3, "font-size": "12px", "font-weight": 700 }
+  ],
+  "head": { "text": "FIFO empty detection compares Gray pointers directly" },
+  "foot": {
+    "text": "After the second accepted read, rgray_next reaches 5, equal to wgray_sync. The read-side empty flag then asserts and blocks further reads."
+  },
+  "config": { "hscale": 2 }
+}

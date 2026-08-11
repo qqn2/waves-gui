@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite default slave response for an unmapped address" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Unmapped transfer",
+      { "name": "HCLK", "wave": "P........" },
+      { "name": "HTRANS", "wave": "x.=x.....", "data": ["NONSEQ"] },
+      { "name": "HADDR", "wave": "x.=x.....", "data": ["0xF000_0000"] },
+      { "name": "HSEL_RAM", "wave": "0........" },
+      { "name": "HSEL_UART", "wave": "0........" },
+      { "name": "HSEL_DEFAULT", "wave": "0.1....0." }
+    ],
+    {},
+    [
+      "Defined default response",
+      { "name": "HREADY", "wave": "1..01...." },
+      { "name": "HRESP", "wave": "0..1.0..." }
+    ]
+  ],
+  "foot": { "text": "A decode miss selects the default slave. Its two-cycle ERROR response is defined protocol behavior, not a malformed bus trace." }
+}

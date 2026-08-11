@@ -1,0 +1,23 @@
+{
+  "signal": [
+    [
+      "Asynchronous arrivals",
+      { "name": "arrives_before_edge", "wave": "0.1.......", "phase": 0.1 },
+      { "name": "arrives_after_edge", "wave": "0.1.......", "phase": -0.1 }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p........." },
+      { "name": "sync2_before_case", "wave": "0...1....." },
+      { "name": "sync2_after_case", "wave": "0....1...." }
+    ]
+  ],
+  "annotations": [
+    { "text": "one-cycle variation", "x": 4.5, "y": 3.7, "font-size": "12px" }
+  ],
+  "head": { "text": "Two-flop synchronizer latency depends on arrival phase" },
+  "foot": {
+    "text": "Missing the destination sampling edge adds one cycle; this illustration shows about two versus three destination cycles of latency."
+  },
+  "config": { "hscale": 2 }
+}

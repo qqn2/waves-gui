@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="703.1999999999999" height="152" viewBox="0 0 703.1999999999999 152">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="152" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_reference</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_shifted</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="599.1999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="299.59999999999997" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Related clocks with phase offset</text>
+<text x="299.59999999999997" y="142" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Both clocks have the same period; clk_shifted is modeled one quarter-cycle later.</text>
+<line x1="0" y1="48" x2="0" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="128" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="128" stroke="#333333" stroke-width="1"/>
+<path d="M0,80 L0,56 L40,56 L40,80 L80,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,80 L80,56 L120,56 L120,80 L160,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,80 L160,56 L200,56 L200,80 L240,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,80 L240,56 L280,56 L280,80 L320,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,80 L320,56 L360,56 L360,80 L400,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,80 L400,56 L440,56 L440,80 L480,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M20,120 L20,96 L60,96 L60,120 L100,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M100,120 L100,96 L140,96 L140,120 L180,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M180,120 L180,96 L220,96 L220,120 L260,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M260,120 L260,96 L300,96 L300,120 L340,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M340,120 L340,96 L380,96 L380,120 L420,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M420,120 L420,96 L460,96 L460,120 L500,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<line x1="160" y1="54.4" x2="160" y2="121.6" stroke="#e8e8e8" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="104" y="75.9" width="152" height="16.200000000000003" fill="#111111"/><text x="180" y="84" fill="#e8e8e8" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="400" font-size="12">quarter-cycle offset</text>
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+{
+  "head": { "text": "AXI4-Lite misaligned address handling (peripheral policy)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P........" },
+    {},
+    [
+      "Write address",
+      { "name": "AWVALID", "wave": "0.10....." },
+      { "name": "AWREADY", "wave": "0.10....." },
+      { "name": "AWADDR[31:0]", "wave": "x.=.x....", "data": ["0x4000_0002 (not word aligned)"] },
+      { "name": "WVALID", "wave": "0.10....." },
+      { "name": "WREADY", "wave": "0.10....." }
+    ],
+    {},
+    [
+      "Alignment-checking peripheral response",
+      { "name": "BVALID", "wave": "0....10.." },
+      { "name": "BREADY", "wave": "0....10.." },
+      { "name": "BRESP", "wave": "x....=x..", "data": ["SLVERR"] }
+    ]
+  ],
+  "foot": { "text": "This sample shows one integration policy: an alignment-checking peripheral accepts the handshake then returns SLVERR for an unaligned word access. The address-alignment and error policy must be documented by the interconnect/peripheral; do not infer it from this waveform alone." }
+}

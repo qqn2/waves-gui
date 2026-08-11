@@ -1,0 +1,25 @@
+{
+  "head": { "text": "AHB-Lite single write: write data belongs to the following data phase" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phase",
+      { "name": "HCLK", "wave": "P......." },
+      { "name": "HSEL", "wave": "0.1.0..." },
+      { "name": "HTRANS[1:0]", "wave": "x.=x....", "data": ["NONSEQ"] },
+      { "name": "HADDR[31:0]", "wave": "x.=x....", "data": ["0x40000024"] },
+      { "name": "HWRITE", "wave": "0.1.0..." },
+      { "name": "HSIZE[2:0]", "wave": "x.=x....", "data": ["WORD"] }
+    ],
+    {},
+    [
+      "Write-data phase",
+      { "name": "HWDATA[31:0]", "wave": "x..=....", "data": ["0x13579BDF"] },
+      { "name": "HREADY", "wave": "1......." },
+      { "name": "HRESP", "wave": "0......." }
+    ]
+  ],
+  "foot": {
+    "text": "A NONSEQ write address/control phase precedes its HWDATA data phase by one cycle; HREADY high completes the transfer without a wait state."
+  }
+}

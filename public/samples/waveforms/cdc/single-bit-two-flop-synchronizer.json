@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p......." },
+      { "name": "async_level", "wave": "0.1....." }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p.......", "phase": 0.25 },
+      { "name": "sync_ff1", "wave": "0..1....", "phase": 0.25 },
+      { "name": "sync_ff2", "wave": "0...1...", "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Single-bit two-flop synchronizer" },
+  "foot": {
+    "text": "The source level remains stable while two destination registers transfer it; analog metastability behavior is not modeled."
+  },
+  "config": { "hscale": 2 }
+}

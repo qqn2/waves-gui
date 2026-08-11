@@ -1,0 +1,24 @@
+{
+  "signal": [
+    [
+      "Known generated-clock relationship",
+      { "name": "src_clk", "wave": "p........" },
+      { "name": "src_data", "wave": "=..=.....", "data": ["OLD", "0xA5"] },
+      { "name": "src_valid", "wave": "0..10...." }
+    ],
+    [
+      "Receiving related clock",
+      { "name": "dst_clk", "wave": "p........", "phase": 0.25 },
+      { "name": "dst_capture", "wave": "0...10...", "phase": 0.25 },
+      { "name": "dst_data", "wave": "=...=....", "data": ["OLD", "0xA5"], "phase": 0.25 }
+    ]
+  ],
+  "annotations": [
+    { "text": "only safe with proved aperture margin", "x": 4.1, "y": 4.25, "font-size": "12px", "font-weight": 700, "fill": "#b54708" }
+  ],
+  "head": { "text": "CORNER — related-clock transfer without a handshake" },
+  "foot": {
+    "text": "This short path is valid only when generated-clock timing constraints prove data is stable across the receiving aperture for every permitted phase relationship. It is not a replacement for an asynchronous CDC handshake; compare the conservative handshake example."
+  },
+  "config": { "hscale": 2 }
+}

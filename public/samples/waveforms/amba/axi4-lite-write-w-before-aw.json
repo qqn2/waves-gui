@@ -1,0 +1,31 @@
+{
+  "head": { "text": "AXI4-Lite write: write data handshake can precede address" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Write data channel",
+      { "name": "ACLK", "wave": "P........." },
+      { "name": "WDATA[31:0]", "wave": "x.=.......", "data": ["0x00000009"] },
+      { "name": "WSTRB[3:0]", "wave": "x.=.......", "data": ["0xF"] },
+      { "name": "WVALID", "wave": "0.1.0....." },
+      { "name": "WREADY", "wave": "0..1......" }
+    ],
+    {},
+    [
+      "Address write channel",
+      { "name": "AWADDR[31:0]", "wave": "x....=....", "data": ["0x40000018"] },
+      { "name": "AWVALID", "wave": "0....1.0.." },
+      { "name": "AWREADY", "wave": "0.....1..." }
+    ],
+    {},
+    [
+      "Write response channel",
+      { "name": "BRESP[1:0]", "wave": "x......=..", "data": ["OKAY"] },
+      { "name": "BVALID", "wave": "0......1.0" },
+      { "name": "BREADY", "wave": "0.......1." }
+    ]
+  ],
+  "foot": {
+    "text": "W can handshake before AW. The slave retains the accepted data until the matching address handshake arrives, then produces one B response."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "head": { "text": "Historical full-AHB SPLIT / RETRY mechanics (not part of AHB-Lite)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Full-AHB arbiter signals",
+      { "name": "HBUSREQ0", "wave": "0.1.........." },
+      { "name": "HBUSREQ1", "wave": "0....1......." },
+      { "name": "HGRANT0", "wave": "0.10....10..." },
+      { "name": "HGRANT1", "wave": "0....10......" },
+      { "name": "HSPLIT0", "wave": "0......10...." }
+    ],
+    {},
+    [
+      "Deferred and retried transfer",
+      { "name": "HCLK", "wave": "P............" },
+      { "name": "address master", "wave": "x.=xx=xx2x...", "data": ["M0", "M1", "M0 retry"] },
+      { "name": "HTRANS", "wave": "x.=xx=xx2x...", "data": ["NONSEQ M0", "NONSEQ M1", "NONSEQ M0"] },
+      { "name": "HADDR[31:0]", "wave": "x.=xx=xx2x...", "data": ["0x7000", "0x7100", "0x7000"] },
+      { "name": "HRESP[1:0]", "wave": "x..=.x.......", "data": ["SPLIT"] },
+      { "name": "HREADY", "wave": "1..01........" }
+    ]
+  ],
+  "foot": {
+    "text": "Historical full AHB only: SPLIT is a two-cycle response (HREADY low then high) that parks M0 until HSPLIT0 re-enables it. RETRY used the same response timing but did not use HSPLIT. Neither SPLIT nor RETRY exists in AHB-Lite."
+  }
+}

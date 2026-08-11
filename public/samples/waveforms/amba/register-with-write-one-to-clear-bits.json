@@ -1,0 +1,26 @@
+{
+  "head": { "text": "AXI4-Lite register with write-one-to-clear status bits" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P..........." },
+    {},
+    [
+      "Status event and software write",
+      { "name": "irq_event[3:0]", "wave": "0.10........" },
+      { "name": "STATUS[3:0]", "wave": "0.=...2.....", "data": ["0b1111 set", "0b1010 after W1C"] },
+      { "name": "AWVALID", "wave": "0....10....." },
+      { "name": "AWREADY", "wave": "0....10....." },
+      { "name": "WVALID", "wave": "0....10....." },
+      { "name": "WREADY", "wave": "0....10....." },
+      { "name": "WDATA[3:0]", "wave": "x....=x....", "data": ["0b0101"] }
+    ],
+    {},
+    [
+      "Response",
+      { "name": "BVALID", "wave": "0.......10.." },
+      { "name": "BREADY", "wave": "0.......10.." },
+      { "name": "BRESP", "wave": "x.......=x..", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "A W1C register clears only status bits written as one. Writing 0b0101 clears bits 2 and 0, so a prior 0b1111 status becomes 0b1010; zero write bits leave status unchanged." }
+}

@@ -1,0 +1,24 @@
+{
+  "signal": [
+    [
+      "Same nominal frequency",
+      { "name": "src_clk", "wave": "p.........." },
+      { "name": "src_word", "wave": "=..=.......", "data": ["OLD", "0x3C"] },
+      { "name": "write_to_elastic_buffer", "wave": "0..10....." }
+    ],
+    [
+      "Unknown phase at destination",
+      { "name": "dst_clk", "wave": "p..........", "phase": 0.45 },
+      { "name": "read_from_elastic_buffer", "wave": "0....10...", "phase": 0.45 },
+      { "name": "dst_word", "wave": "=....=....", "data": ["OLD", "0x3C"], "phase": 0.45 }
+    ]
+  ],
+  "annotations": [
+    { "text": "phase is arbitrary after reset", "x": 4.8, "y": 4.4, "font-size": "12px", "font-weight": 700, "fill": "#b54708" }
+  ],
+  "head": { "text": "Mesochronous crossing — same frequency, unknown phase" },
+  "foot": {
+    "text": "The clocks have the same nominal rate but no guaranteed edge alignment. An elastic buffer or suitable synchronizer absorbs the unknown sampling phase; the fixed offset drawn here is illustrative, not a phase-noise model."
+  },
+  "config": { "hscale": 2 }
+}

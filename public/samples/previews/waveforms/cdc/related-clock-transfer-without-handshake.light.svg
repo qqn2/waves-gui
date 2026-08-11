@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2013.6" height="368" viewBox="0 0 2013.6 368">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="368" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Known generated-clock relationship</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_data</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_valid</text>
+<text x="8" y="210" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Receiving related clock</text>
+<text x="20" y="244" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_capture</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_data</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1909.6" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="954.8" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">CORNER — related-clock transfer without a handshake</text>
+<text x="954.8" y="358" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">This short path is valid only when generated-clock timing constraints prove data is stable across the receiving aperture for every permitted phase relationship. It is not a replacement for an asynchronous CDC handshake; compare the conservative handshake example.</text>
+<line x1="0" y1="48" x2="0" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,136 L16,124 L224,124 L240,136 L224,148 L16,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="120" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M240,136 L256,124 L704,124 L720,136 L704,148 L256,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="480" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+<path d="M0,188 L80,188 L160,188 L240,188 L246,188 L252,164 L320,164 L326,164 L332,188 L400,188 L480,188 L560,188 L640,188 L720,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,256 L-20,232 L20,232 L20,256 L60,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,256 L60,232 L100,232 L100,256 L140,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,256 L140,232 L180,232 L180,256 L220,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,256 L220,232 L260,232 L260,256 L300,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,256 L300,232 L340,232 L340,256 L380,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,256 L380,232 L420,232 L420,256 L460,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,256 L460,232 L500,232 L500,256 L540,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,256 L540,232 L580,232 L580,256 L620,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,256 L620,232 L660,232 L660,256 L700,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,296 L60,296 L140,296 L220,296 L300,296 L306,296 L312,272 L380,272 L386,272 L392,296 L460,296 L540,296 L620,296 L700,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,324 L-4,312 L284,312 L300,324 L284,336 L-4,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M300,324 L316,312 L684,312 L700,324 L684,336 L316,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="500" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+<rect x="190.8" y="209.9" width="274.4" height="16.200000000000003" fill="#ffffff"/><text x="328" y="218" fill="#b54708" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">only safe with proved aperture margin</text>
+  </g>
+</svg>

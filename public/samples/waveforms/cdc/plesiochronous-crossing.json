@@ -1,0 +1,24 @@
+{
+  "signal": [
+    [
+      "Source is slightly faster",
+      { "name": "src_clk", "wave": "p..........", "periods": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+      { "name": "src_frame", "wave": "=.=.=.=.=..", "data": ["F0", "F1", "F2", "F3", "F4"] },
+      { "name": "elastic_write", "wave": "010101010.." }
+    ],
+    [
+      "Destination is nominally slower",
+      { "name": "dst_clk", "wave": "p..........", "periods": [1.08, 1.08, 1.08, 1.08, 1.08, 1.08, 1.08, 1.08, 1.08, 1.08], "phase": 0.25 },
+      { "name": "elastic_read", "wave": "0.10.10.10.", "phase": 0.25 },
+      { "name": "elastic_fill", "wave": "=.=.=.=....", "data": ["1", "2", "3", "4"], "phase": 0.25 }
+    ]
+  ],
+  "annotations": [
+    { "text": "small rate offset accumulates", "x": 6.0, "y": 5.15, "font-size": "12px", "font-weight": 700, "fill": "#b54708" }
+  ],
+  "head": { "text": "Plesiochronous crossing — elastic-buffer drift" },
+  "foot": {
+    "text": "A small frequency offset makes writes gradually outrun reads, so elastic-buffer occupancy rises. Real designs need depth plus an underflow/overflow or rate-matching policy; the periods and fill labels are conceptual, not a cycle-accurate oscillator model."
+  },
+  "config": { "hscale": 2 }
+}

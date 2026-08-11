@@ -1,0 +1,32 @@
+{
+  "head": { "text": "AXI4-Lite independent simultaneous read and write" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P..........." },
+    {},
+    [
+      "Write request channels",
+      { "name": "AWVALID", "wave": "0.10........" },
+      { "name": "AWREADY", "wave": "0.10........" },
+      { "name": "WVALID", "wave": "0.10........" },
+      { "name": "WREADY", "wave": "0.10........" }
+    ],
+    {},
+    [
+      "Read request channel",
+      { "name": "ARVALID", "wave": "0.10........" },
+      { "name": "ARREADY", "wave": "0.10........" },
+      { "name": "ARADDR", "wave": "x.=x........", "data": ["0x4000_0020"] }
+    ],
+    {},
+    [
+      "Independent responses",
+      { "name": "BVALID", "wave": "0.....10...." },
+      { "name": "BREADY", "wave": "0.....10...." },
+      { "name": "RVALID", "wave": "0......10..." },
+      { "name": "RREADY", "wave": "0......10..." },
+      { "name": "RDATA", "wave": "x......=x...", "data": ["0x1234_5678"] }
+    ]
+  ],
+  "foot": { "text": "Read and write channels are independent: an AR handshake can occur while AW/W complete, and B and R responses may return independently. No cross-channel READY coupling is required." }
+}

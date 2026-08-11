@@ -11,7 +11,7 @@
     },
     "curriculumCount": 22,
     "entryCount": 23,
-    "assetEntryCount": 1
+    "assetEntryCount": 15
   },
   "entries": [
     {
@@ -337,7 +337,7 @@
       "description": "Show deterministic phase relation.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -348,7 +348,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -366,6 +366,13 @@
           "- **Initial status:** `index-only`",
           "- Show deterministic phase relation."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-divider-by-four.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -376,7 +383,7 @@
       "description": "Same frequency but shifted clock edges.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -387,7 +394,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -405,6 +412,13 @@
           "- **Initial status:** `index-only`",
           "- Same frequency but shifted clock edges."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/related-clocks-with-phase-offset.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -415,7 +429,7 @@
       "description": "Parent clock to divided child clock.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -426,7 +440,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -444,6 +458,13 @@
           "- **Initial status:** `index-only`",
           "- Parent clock to divided child clock."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/generated-clock-crossing.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -454,7 +475,7 @@
       "description": "Show a runt pulse or double edge.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -465,7 +486,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -483,6 +504,13 @@
           "- **Initial status:** `index-only`",
           "- Show a runt pulse or double edge."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-mux-switching-incorrectly.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -493,7 +521,7 @@
       "description": "Disable old clock before enabling new clock.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -504,7 +532,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -522,6 +550,13 @@
           "- **Initial status:** `index-only`",
           "- Disable old clock before enabling new clock."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/glitch-free-clock-mux.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -532,7 +567,7 @@
       "description": "Enable latched while clock is low.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -543,7 +578,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -561,6 +596,13 @@
           "- **Initial status:** `index-only`",
           "- Enable latched while clock is low."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-gating.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -571,7 +613,7 @@
       "description": "Deliberately show a glitch.",
       "shardId": "clocking-reset",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -582,7 +624,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -600,6 +642,13 @@
           "- **Initial status:** `index-only`",
           "- Deliberately show a glitch."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/unsafe-combinational-clock-gate.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -610,7 +659,7 @@
       "description": "Functional enable OR scan enable.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -621,7 +670,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -639,6 +688,13 @@
           "- **Initial status:** `index-only`",
           "- Functional enable OR scan enable."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/integrated-clock-gating-test-enable.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -649,7 +705,7 @@
       "description": "Quiesce transaction flow before stopping clock.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -660,7 +716,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -678,6 +734,13 @@
           "- **Initial status:** `index-only`",
           "- Quiesce transaction flow before stopping clock."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-startup-shutdown.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -688,7 +751,7 @@
       "description": "Pause, reprogram divider/PLL, lock, resume.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -699,7 +762,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset"
@@ -714,6 +777,13 @@
           "- **Initial status:** `index-only`",
           "- Pause, reprogram divider/PLL, lock, resume."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/dynamic-frequency-change.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -724,7 +794,7 @@
       "description": "Two nominally similar but asynchronous clocks.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -735,7 +805,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -753,6 +823,13 @@
           "- **Initial status:** `index-only`",
           "- Two nominally similar but asynchronous clocks."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-domain-phase-drift.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -763,7 +840,7 @@
       "description": "Useful for fine-timing and Undulate rendering.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -774,7 +851,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset"
@@ -789,6 +866,13 @@
           "- **Initial status:** `index-only`",
           "- Useful for fine-timing and Undulate rendering."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/duty-cycle-distortion.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -799,7 +883,7 @@
       "description": "Fine-timed edge placement.",
       "shardId": "clocking-reset",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -810,7 +894,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -828,6 +912,13 @@
           "- **Initial status:** `index-only`",
           "- Fine-timed edge placement."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/clock-jitter-illustration.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -838,7 +929,7 @@
       "description": "Very narrow high or low phase. This section should demonstrate core CDC concepts with clear, focused examples.",
       "shardId": "clocking-reset",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -849,7 +940,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "clocking-reset",
@@ -869,6 +960,13 @@
           "- # 3. CDC examples",
           "- This section should demonstrate core CDC concepts with clear, focused examples."
         ]
+      },
+      "asset": {
+        "path": "waveforms/clocking-reset/minimum-pulse-width-violation.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {

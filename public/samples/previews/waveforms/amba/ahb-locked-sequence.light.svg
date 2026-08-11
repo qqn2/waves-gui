@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1250.3999999999999" height="608" viewBox="0 0 1250.3999999999999 608">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="608" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Master and arbiter lock signals</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ0</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HLOCK0</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ1</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT0</text>
+<text x="20" y="256" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT1</text>
+<text x="8" y="296" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="330" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Locked address phases</text>
+<text x="20" y="364" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HCLK</text>
+<text x="20" y="404" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HMASTLOCK</text>
+<text x="20" y="444" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >address master</text>
+<text x="20" y="484" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HTRANS</text>
+<text x="20" y="524" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HADDR[31:0]</text>
+<text x="20" y="564" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HREADY</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1146.3999999999999" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="573.1999999999999" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Full AHB locked sequence defers a competing bus request</text>
+<text x="573.1999999999999" y="598" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">While M0 asserts HLOCK0 for its NONSEQ/SEQ pair, the arbiter keeps M0 granted even though M1 requests. The grant changes only after the locked sequence ends.</text>
+<line x1="0" y1="48" x2="0" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="584" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L80,108 L160,108 L166,108 L172,84 L240,84 L320,84 L400,84 L480,84 L560,84 L640,84 L720,84 L800,84" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L160,148 L166,148 L172,124 L234,124 L237,148 L240,124 L320,124 L400,124 L406,124 L412,148 L480,148 L560,148 L640,148 L720,148 L800,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,188 L80,188 L160,188 L240,188 L246,188 L252,164 L320,164 L400,164 L480,164 L560,164 L640,164 L720,164 L800,164" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L166,228 L172,204 L234,204 L237,228 L240,204 L314,204 L317,228 L320,204 L400,204 L406,204 L412,228 L480,228 L560,228 L640,228 L720,228 L800,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,268 L80,268 L160,268 L240,268 L320,268 L400,268 L406,268 L412,244 L480,244 L486,244 L492,268 L560,268 L640,268 L720,268 L800,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,376 L0,352 L40,352 L40,376 L80,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,360 -3,366 3,366" fill="#4A9EFF"/>
+<path d="M80,376 L80,352 L120,352 L120,376 L160,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,360 77,366 83,366" fill="#4A9EFF"/>
+<path d="M160,376 L160,352 L200,352 L200,376 L240,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,360 157,366 163,366" fill="#4A9EFF"/>
+<path d="M240,376 L240,352 L280,352 L280,376 L320,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,360 237,366 243,366" fill="#4A9EFF"/>
+<path d="M320,376 L320,352 L360,352 L360,376 L400,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,360 317,366 323,366" fill="#4A9EFF"/>
+<path d="M400,376 L400,352 L440,352 L440,376 L480,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,360 397,366 403,366" fill="#4A9EFF"/>
+<path d="M480,376 L480,352 L520,352 L520,376 L560,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,360 477,366 483,366" fill="#4A9EFF"/>
+<path d="M560,376 L560,352 L600,352 L600,376 L640,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,360 557,366 563,366" fill="#4A9EFF"/>
+<path d="M640,376 L640,352 L680,352 L680,376 L720,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,360 637,366 643,366" fill="#4A9EFF"/>
+<path d="M720,376 L720,352 L760,352 L760,376 L800,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="720,360 717,366 723,366" fill="#4A9EFF"/>
+<path d="M0,416 L80,416 L160,416 L166,416 L172,392 L234,392 L237,416 L240,392 L320,392 L400,392 L406,392 L412,416 L480,416 L560,416 L640,416 L720,416 L800,416" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,444 L16,432 L144,432 L160,444 L144,456 L16,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,444 L176,432 L224,432 L240,444 L224,456 L176,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0</text>
+<path d="M240,444 L256,432 L304,432 L320,444 L304,456 L256,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0</text>
+<path d="M320,444 L336,432 L384,432 L400,444 L384,456 L336,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="360" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M400,444 L416,432 L784,432 L800,444 L784,456 L416,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M1</text>
+<path d="M0,484 L16,472 L144,472 L160,484 L144,496 L16,496 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="484" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,484 L176,472 L224,472 L240,484 L224,496 L176,496 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="484" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ</text>
+<path d="M240,484 L256,472 L304,472 L320,484 L304,496 L256,496 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="484" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">SEQ</text>
+<path d="M320,484 L336,472 L384,472 L400,484 L384,496 L336,496 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="360" y="484" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M400,484 L416,472 L784,472 L800,484 L784,496 L416,496 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="484" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ</text>
+<path d="M0,524 L16,512 L144,512 L160,524 L144,536 L16,536 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="524" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,524 L176,512 L224,512 L240,524 L224,536 L176,536 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x5000</text>
+<path d="M240,524 L256,512 L304,512 L320,524 L304,536 L256,536 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="280" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x5004</text>
+<path d="M320,524 L336,512 L384,512 L400,524 L384,536 L336,536 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="360" y="524" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M400,524 L416,512 L784,512 L800,524 L784,536 L416,536 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x6000</text>
+<path d="M0,552 L80,552 L160,552 L240,552 L320,552 L400,552 L480,552 L560,552 L640,552 L720,552 L800,552" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

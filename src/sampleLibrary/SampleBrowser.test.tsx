@@ -10,31 +10,37 @@ import { CatalogRepository } from './catalogRepository';
 import { CATALOG_SHARD_IDS, type CatalogIndexV1, type CatalogShardDescriptor, type SampleManifestEntry } from './catalogTypes';
 
 function descriptor(id: (typeof CATALOG_SHARD_IDS)[number]): CatalogShardDescriptor {
-  const populated = id === 'fundamentals';
+  const fundamentals = id === 'fundamentals';
+  const cdc = id === 'cdc';
+  const populated = fundamentals || cdc;
   return {
     id,
-    label: id === 'fundamentals' ? 'Fundamentals' : id === 'cdc' ? 'CDC' : id,
+    label: fundamentals ? 'Fundamentals' : cdc ? 'CDC' : id,
     path: `catalog/${id}.json`,
     sourceNumberRange: { start: 1, end: 832 },
     curriculumCount: populated ? 1 : 0,
-    entryCount: populated ? 3 : 0,
-    assetEntryCount: populated ? 2 : 0,
+    entryCount: fundamentals ? 3 : cdc ? 1 : 0,
+    assetEntryCount: fundamentals ? 2 : cdc ? 1 : 0,
   };
 }
 
 type FixtureStatus = 'index-only' | 'draft' | 'reviewed';
 
-function manifestEntry(contentStatus: FixtureStatus): SampleManifestEntry {
+function manifestEntry(
+  contentStatus: FixtureStatus,
+  shardId: (typeof CATALOG_SHARD_IDS)[number] = 'fundamentals',
+): SampleManifestEntry {
   const planned = contentStatus === 'index-only';
   const reviewed = contentStatus === 'reviewed';
-  const slug = planned ? 'planned-lesson' : reviewed ? 'reviewed-handshake' : 'unvalidated-handshake';
+  const cdc = shardId === 'cdc';
+  const slug = planned ? 'planned-lesson' : reviewed ? (cdc ? 'event-synchronizer' : 'reviewed-handshake') : 'unvalidated-handshake';
   return {
-    id: `fundamentals/${slug}`,
-    sourceNumber: planned ? 1 : null,
+    id: `${shardId}/${slug}`,
+    sourceNumber: planned ? 1 : cdc ? 33 : null,
     slug,
-    shardId: 'fundamentals',
-    title: planned ? 'Planned lesson' : reviewed ? 'Reviewed handshake' : 'Unvalidated handshake',
-    description: planned ? 'Awaiting a waveform' : reviewed ? 'Ready to edit' : 'Awaiting validation',
+    shardId,
+    title: planned ? 'Planned lesson' : reviewed ? (cdc ? 'CDC event synchronizer' : 'Reviewed handshake') : 'Unvalidated handshake',
+    description: planned ? 'Awaiting a waveform' : reviewed ? (cdc ? 'Cross-category search fixture' : 'Ready to edit') : 'Awaiting validation',
     tier: 'essential',
     contentStatus,
     owner: reviewed ? 'Template maintainers' : null,
@@ -42,8 +48,10 @@ function manifestEntry(contentStatus: FixtureStatus): SampleManifestEntry {
     protocols: [], concepts: [], waveformFeatures: [], prerequisites: [], next: [], pairWith: [],
     reviewNotes: [reviewed ? 'Validated in fixture' : 'Not reviewed'],
     references: reviewed ? [{ name: 'Fixture guide', edition: null, section: null }] : [], artifactPrompt: null,
-    contentKind: 'lesson', tags: ['fundamentals'],
-    sourceRecord: planned ? { document: 'docs/catalog.md', title: 'Planned lesson', body: ['Source 1'] } : null,
+    contentKind: 'lesson', tags: [shardId],
+    sourceRecord: planned || cdc
+      ? { document: 'docs/catalog.md', title: planned ? 'Planned lesson' : 'CDC event synchronizer', body: [planned ? 'Source 1' : 'Source 33'] }
+      : null,
     ...(planned ? {} : {
       asset: { path: `${slug}.json`, format: 'wavedrom-json' as const, previewVersion: 'v1' },
     }),
@@ -56,9 +64,9 @@ function fixtures() {
     schemaVersion: 1,
     catalogVersion: 'v1',
     generatedFrom: 'docs/catalog.md',
-    curriculumCount: 1,
-    entryCount: 3,
-    assetEntryCount: 2,
+    curriculumCount: 2,
+    entryCount: 4,
+    assetEntryCount: 3,
     shardCount: 13,
     aliases: {},
     shards,
@@ -71,7 +79,7 @@ function fixtures() {
       shard,
       entries: shard.id === 'fundamentals'
         ? [manifestEntry('index-only'), manifestEntry('draft'), manifestEntry('reviewed')]
-        : [],
+        : shard.id === 'cdc' ? [manifestEntry('reviewed', 'cdc')] : [],
     },
   ]));
   return { index, documents };
@@ -163,6 +171,49 @@ describe('SampleBrowser lazy catalog integration', () => {
     expect(host.textContent).toContain('Search is within this category');
   });
 
+  it('loads every shard only after All is selected, then searches stable cross-category results', async () => {
+    const { index, documents } = fixtures();
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith('catalog.v1.json')) return new Response(JSON.stringify(index));
+      const document = documents.get(url);
+      if (document) return new Response(JSON.stringify(document));
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    const repository = new CatalogRepository({ baseUrl: '/waves/', fetch: fetchMock as typeof fetch });
+    await act(async () => root.render(<SampleBrowser open onClose={vi.fn()} onPick={vi.fn()} repository={repository} />));
+    await settle(() => host.textContent?.includes('Reviewed handshake') === true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const all = Array.from(host.querySelectorAll('button')).find((button) => button.textContent?.includes('All templates'))!;
+    await act(async () => all.click());
+    await settle(() => host.textContent?.includes('CDC event synchronizer') === true);
+
+    expect(fetchMock).toHaveBeenCalledTimes(14);
+    expect(host.textContent).toContain('Search spans every loaded category');
+    expect(host.textContent!.indexOf('Reviewed handshake')).toBeLessThan(host.textContent!.indexOf('CDC event synchronizer'));
+
+    const search = host.querySelector<HTMLInputElement>('input[type="search"]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
+        ?.call(search, 'cdc event synchronizer');
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await settle(() => host.textContent?.includes('Templates (1)') === true);
+    expect(host.textContent).toContain('CDC event synchronizer');
+    expect(host.textContent).not.toContain('Reviewed handshake');
+
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(search, '');
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await settle(() => host.textContent?.includes('Templates (2)') === true);
+    const draftToggle = toggle(host, 'Include unvalidated drafts in all categories');
+    await act(async () => draftToggle.click());
+    await settle(() => host.textContent?.includes('Unvalidated handshake') === true);
+    expect(host.textContent).toContain('Unvalidated drafts included in all categories');
+  });
+
   it('reveals planned entries on request without loading previews or enabling edit copy', async () => {
     const { index, documents } = fixtures();
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
@@ -219,7 +270,7 @@ describe('SampleBrowser lazy catalog integration', () => {
     expect(host.textContent).toContain('Edit unvalidated copy');
   });
 
-  it('keeps unregistered local waveforms out of the live catalog under a non-root base URL', async () => {
+  it('keeps registered local drafts opt-in and uses their BASE_URL-safe asset path', async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       const relative = url.replace('/waves/samples/', '');
@@ -238,21 +289,24 @@ describe('SampleBrowser lazy catalog integration', () => {
     const clocking = Array.from(host.querySelectorAll('button'))
       .find((button) => button.textContent?.includes('Clocking and reset'))!;
     await act(async () => clocking.click());
-    const draftToggle = toggle(host, 'Include unvalidated drafts');
-    await act(async () => draftToggle.click());
     await settle(() => host.textContent?.includes('Clock and reset') === true);
     expect(host.textContent).not.toContain('Clock divider by four');
 
-    const plannedToggle = toggle(host, 'Include planned samples');
-    await act(async () => plannedToggle.click());
+    const draftToggle = toggle(host, 'Include unvalidated drafts');
+    await act(async () => draftToggle.click());
     await settle(() => host.textContent?.includes('Clock divider by four') === true);
     const divider = Array.from(host.querySelectorAll('button'))
       .find((button) => button.textContent?.includes('Clock divider by four'))!;
     await act(async () => divider.click());
-    divider.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+    await settle(() => fetchMock.mock.calls.some(([url]) =>
+      String(url) === '/waves/samples/waveforms/clocking-reset/clock-divider-by-four.json'));
+    expect(host.textContent).toContain('Unvalidated draft.');
+    expect(host.textContent).toContain('Edit unvalidated copy');
+    await act(async () => divider.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })));
 
-    expect(host.textContent).toContain('No waveform preview is available yet');
-    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/waveforms/clocking-reset/'))).toBe(false);
-    expect(onPick).not.toHaveBeenCalled();
+    expect(onPick).toHaveBeenCalledWith(expect.objectContaining({
+      id: 'clocking-reset/clock-divider-by-four',
+      assetUrl: '/waves/samples/waveforms/clocking-reset/clock-divider-by-four.json',
+    }));
   });
 });

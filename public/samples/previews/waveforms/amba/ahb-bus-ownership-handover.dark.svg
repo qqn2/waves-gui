@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1315.2" height="568" viewBox="0 0 1315.2 568">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="568" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Arbiter interface</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ0</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HBUSREQ1</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT0</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HGRANT1</text>
+<text x="8" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="290" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >M0 transfer held through wait states</text>
+<text x="20" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HCLK</text>
+<text x="20" y="364" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >address master</text>
+<text x="20" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HTRANS</text>
+<text x="20" y="444" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HADDR[31:0]</text>
+<text x="20" y="484" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HWDATA[31:0]</text>
+<text x="20" y="524" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >HREADY</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1211.2" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="605.6" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Full AHB ownership handover waits for the stalled transfer to complete</text>
+<text x="605.6" y="558" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">M1 requests during M0's extended data phase, but M0's address/control and write data stay associated until HREADY completes it. M1 begins only in the following cycle.</text>
+<line x1="0" y1="48" x2="0" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="544" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="544" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L80,108 L160,108 L166,108 L172,84 L240,84 L320,84 L400,84 L480,84 L560,84 L640,84 L720,84" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L160,148 L240,148 L246,148 L252,124 L320,124 L400,124 L480,124 L560,124 L640,124 L720,124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,188 L80,188 L160,188 L166,188 L172,164 L240,164 L320,164 L400,164 L480,164 L486,164 L492,188 L560,188 L640,188 L720,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L240,228 L320,228 L400,228 L480,228 L486,228 L492,204 L560,204 L640,204 L720,204" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,336 L0,312 L40,312 L40,336 L80,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,320 -3,326 3,326" fill="#4A9EFF"/>
+<path d="M80,336 L80,312 L120,312 L120,336 L160,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,320 77,326 83,326" fill="#4A9EFF"/>
+<path d="M160,336 L160,312 L200,312 L200,336 L240,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,320 157,326 163,326" fill="#4A9EFF"/>
+<path d="M240,336 L240,312 L280,312 L280,336 L320,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,320 237,326 243,326" fill="#4A9EFF"/>
+<path d="M320,336 L320,312 L360,312 L360,336 L400,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,320 317,326 323,326" fill="#4A9EFF"/>
+<path d="M400,336 L400,312 L440,312 L440,336 L480,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,320 397,326 403,326" fill="#4A9EFF"/>
+<path d="M480,336 L480,312 L520,312 L520,336 L560,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,320 477,326 483,326" fill="#4A9EFF"/>
+<path d="M560,336 L560,312 L600,312 L600,336 L640,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,320 557,326 563,326" fill="#4A9EFF"/>
+<path d="M640,336 L640,312 L680,312 L680,336 L720,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,320 637,326 643,326" fill="#4A9EFF"/>
+<path d="M0,364 L16,352 L144,352 L160,364 L144,376 L16,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,364 L176,352 L464,352 L480,364 L464,376 L176,376 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="320" y="364" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0</text>
+<path d="M480,364 L496,352 L544,352 L560,364 L544,376 L496,376 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="364" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M1</text>
+<path d="M560,364 L576,352 L704,352 L720,364 L704,376 L576,376 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="640" y="364" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,404 L16,392 L144,392 L160,404 L144,416 L16,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,404 L176,392 L464,392 L480,404 L464,416 L176,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="320" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ M0</text>
+<path d="M480,404 L496,392 L544,392 L560,404 L544,416 L496,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NONSEQ M1</text>
+<path d="M560,404 L576,392 L704,392 L720,404 L704,416 L576,416 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="640" y="404" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,444 L16,432 L144,432 L160,444 L144,456 L16,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,444 L176,432 L464,432 L480,444 L464,456 L176,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="320" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3000</text>
+<path d="M480,444 L496,432 L544,432 L560,444 L544,456 L496,456 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="444" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x4000</text>
+<path d="M560,444 L576,432 L704,432 L720,444 L704,456 L576,456 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="640" y="444" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,484 L16,472 L224,472 L240,484 L224,496 L16,496 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="120" y="484" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M240,484 L256,472 L464,472 L480,484 L464,496 L256,496 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="484" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M0: 0xAAAA</text>
+<path d="M480,484 L496,472 L544,472 L560,484 L544,496 L496,496 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="520" y="484" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M560,484 L576,472 L704,472 L720,484 L704,496 L576,496 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="640" y="484" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">M1: 0xBBBB</text>
+<path d="M0,512 L80,512 L160,512 L240,512 L246,512 L252,536 L320,536 L400,536 L406,536 L412,512 L480,512 L560,512 L640,512 L720,512" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

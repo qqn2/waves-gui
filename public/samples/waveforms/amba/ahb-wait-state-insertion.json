@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite wait-state insertion" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phase",
+      { "name": "HCLK", "wave": "P........" },
+      { "name": "HSEL", "wave": "0.1...0.." },
+      { "name": "HTRANS", "wave": "x.=...x..", "data": ["NONSEQ"] },
+      { "name": "HADDR", "wave": "x.=...x..", "data": ["0x2000"] },
+      { "name": "HWRITE", "wave": "0.1...0.." }
+    ],
+    {},
+    [
+      "Extended data phase",
+      { "name": "HWDATA", "wave": "x..=..x..", "data": ["0xCAFE_BABE (held)"] },
+      { "name": "HREADY", "wave": "1..0.1..." },
+      { "name": "HRESP", "wave": "0........" }
+    ]
+  ],
+  "foot": { "text": "HREADY low inserts a wait state. Address, control, and write data remain associated with the unfinished transfer until HREADY returns high." }
+}

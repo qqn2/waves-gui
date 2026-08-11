@@ -1,0 +1,25 @@
+{
+  "head": { "text": "AHB-Lite single read: address phase is followed by a read-data phase" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phase",
+      { "name": "HCLK", "wave": "P......." },
+      { "name": "HSEL", "wave": "0.1.0..." },
+      { "name": "HTRANS[1:0]", "wave": "x.=x....", "data": ["NONSEQ"] },
+      { "name": "HADDR[31:0]", "wave": "x.=x....", "data": ["0x40000020"] },
+      { "name": "HWRITE", "wave": "0......." },
+      { "name": "HSIZE[2:0]", "wave": "x.=x....", "data": ["WORD"] }
+    ],
+    {},
+    [
+      "Read-data phase",
+      { "name": "HRDATA[31:0]", "wave": "x..=....", "data": ["0x89ABCDEF"] },
+      { "name": "HREADY", "wave": "1......." },
+      { "name": "HRESP", "wave": "0......." }
+    ]
+  ],
+  "foot": {
+    "text": "A NONSEQ read address/control phase is accepted with HREADY high; the slave returns HRDATA in the following data phase."
+  }
+}

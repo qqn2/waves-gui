@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="998.4" height="328" viewBox="0 0 998.4 328">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="328" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Source domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >async_level</text>
+<text x="8" y="170" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Destination domain</text>
+<text x="20" y="204" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="244" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >sync_ff1</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >sync_ff2</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="894.4" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="447.2" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Single-bit two-flop synchronizer</text>
+<text x="447.2" y="318" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The source level remains stable while two destination registers transfer it; analog metastability behavior is not modeled.</text>
+<line x1="0" y1="48" x2="0" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="304" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L160,148 L166,148 L172,124 L240,124 L320,124 L400,124 L480,124 L560,124 L640,124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,216 L-20,192 L20,192 L20,216 L60,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,216 L60,192 L100,192 L100,216 L140,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,216 L140,192 L180,192 L180,216 L220,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,216 L220,192 L260,192 L260,216 L300,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,216 L300,192 L340,192 L340,216 L380,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,216 L380,192 L420,192 L420,216 L460,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,216 L460,192 L500,192 L500,216 L540,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,216 L540,192 L580,192 L580,216 L620,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,256 L60,256 L140,256 L220,256 L226,256 L232,232 L300,232 L380,232 L460,232 L540,232 L620,232" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,296 L60,296 L140,296 L220,296 L300,296 L306,296 L312,272 L380,272 L460,272 L540,272 L620,272" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

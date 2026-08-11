@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "Fast source domain",
+      { "name": "src_clk", "wave": "p.......", "period": 0.5 },
+      { "name": "src_pulse", "wave": "010.....", "period": 0.5 },
+      { "name": "stretched_level", "wave": "01...0..", "period": 0.5 }
+    ],
+    [
+      "Slow destination domain",
+      { "name": "dst_clk", "wave": "p.", "period": 2 },
+      { "name": "captured_level", "wave": "01", "period": 2 }
+    ]
+  ],
+  "head": { "text": "Pulse stretching for a slower destination" },
+  "foot": {
+    "text": "Extending the event into a level keeps it asserted across a destination sampling edge so the destination can capture it."
+  },
+  "config": { "hscale": 2 }
+}

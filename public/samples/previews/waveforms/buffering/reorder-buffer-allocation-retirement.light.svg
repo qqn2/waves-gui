@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1624" height="516" viewBox="0 0 1624 516">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="516" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Allocate in program order</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dispatch_valid</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dispatch_tag</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rob_tail</text>
+<text x="8" y="250" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Complete out of order</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >complete_tag</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >head_ready</text>
+<text x="8" y="358" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Retire only the ready head</text>
+<text x="20" y="392" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >retire_valid</text>
+<text x="20" y="432" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >retire_tag</text>
+<text x="20" y="472" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rob_head</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1520" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="1000" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<text x="1080" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">13</text>
+<text x="1160" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">14</text>
+<text x="1240" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">15</text>
+<text x="1320" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">16</text>
+<text x="1400" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">17</text>
+<text x="1480" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">18</text>
+<text x="760" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Reorder buffer allocates and retires in order</text>
+<text x="760" y="506" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">U1 and U2 complete before U0, but cannot retire until the oldest entry is ready. Once U0 completes, retirement releases U0, U1, then U2 in program order.</text>
+<line x1="0" y1="48" x2="0" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1040" y1="48" x2="1040" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1120" y1="48" x2="1120" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1200" y1="48" x2="1200" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1280" y1="48" x2="1280" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1360" y1="48" x2="1360" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1440" y1="48" x2="1440" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="1520" y1="48" x2="1520" y2="492" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,108 L880,84 L920,84 L920,108 L960,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M960,108 L960,84 L1000,84 L1000,108 L1040,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1040,108 L1040,84 L1080,84 L1080,108 L1120,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1120,108 L1120,84 L1160,84 L1160,108 L1200,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1200,108 L1200,84 L1240,84 L1240,108 L1280,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1280,108 L1280,84 L1320,84 L1320,108 L1360,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1360,108 L1360,84 L1400,84 L1400,108 L1440,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M1440,108 L1440,84 L1480,84 L1480,108 L1520,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L86,148 L92,124 L160,124 L166,124 L172,148 L240,148 L246,148 L252,124 L320,124 L326,124 L332,148 L400,148 L406,148 L412,124 L480,124 L486,124 L492,148 L554,148 L557,124 L560,148 L634,148 L637,124 L640,148 L714,148 L717,124 L720,148 L794,148 L797,124 L800,148 L874,148 L877,124 L880,148 L954,148 L957,124 L960,148 L1034,148 L1037,124 L1040,148 L1114,148 L1117,124 L1120,148 L1194,148 L1197,124 L1200,148 L1274,148 L1277,124 L1280,148 L1354,148 L1357,124 L1360,148 L1434,148 L1437,124 L1440,148 L1520,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L16,164 L144,164 L160,176 L144,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,176 L176,164 L304,164 L320,176 L304,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U0</text>
+<path d="M320,176 L336,164 L464,164 L480,176 L464,188 L336,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U1</text>
+<path d="M480,176 L496,164 L1504,164 L1520,176 L1504,188 L496,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1000" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U2</text>
+<path d="M0,216 L16,204 L144,204 L160,216 L144,228 L16,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M160,216 L176,204 L304,204 L320,216 L304,228 L176,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M320,216 L336,204 L464,204 L480,216 L464,228 L336,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M480,216 L496,204 L1504,204 L1520,216 L1504,228 L496,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1000" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3</text>
+<path d="M0,284 L16,272 L464,272 L480,284 L464,296 L16,296 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="240" y="284" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M480,284 L496,272 L624,272 L640,284 L624,296 L496,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="560" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U1</text>
+<path d="M640,284 L656,272 L784,272 L800,284 L784,296 L656,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="720" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U2</text>
+<path d="M800,284 L816,272 L1504,272 L1520,284 L1504,296 L816,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1160" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U0</text>
+<path d="M0,336 L74,336 L77,312 L80,336 L154,336 L157,312 L160,336 L234,336 L237,312 L240,336 L314,336 L317,312 L320,336 L394,336 L397,312 L400,336 L474,336 L477,312 L480,336 L554,336 L557,312 L560,336 L634,336 L637,312 L640,336 L714,336 L717,312 L720,336 L800,336 L806,336 L812,312 L880,312 L960,312 L1040,312 L1120,312 L1200,312 L1280,312 L1360,312 L1440,312 L1520,312" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,404 L74,404 L77,380 L80,404 L154,404 L157,380 L160,404 L234,404 L237,380 L240,404 L314,404 L317,380 L320,404 L394,404 L397,380 L400,404 L474,404 L477,380 L480,404 L554,404 L557,380 L560,404 L634,404 L637,380 L640,404 L714,404 L717,380 L720,404 L794,404 L797,380 L800,404 L880,404 L886,404 L892,380 L960,380 L966,380 L972,404 L1040,404 L1046,404 L1052,380 L1120,380 L1126,380 L1132,404 L1200,404 L1206,404 L1212,380 L1280,380 L1286,380 L1292,404 L1354,404 L1357,380 L1360,404 L1434,404 L1437,380 L1440,404 L1520,404" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,432 L16,420 L1024,420 L1040,432 L1024,444 L16,444 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="520" y="432" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M1040,432 L1056,420 L1184,420 L1200,432 L1184,444 L1056,444 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1120" y="432" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U0</text>
+<path d="M1200,432 L1216,420 L1344,420 L1360,432 L1344,444 L1216,444 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1280" y="432" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U1</text>
+<path d="M1360,432 L1376,420 L1504,420 L1520,432 L1504,444 L1376,444 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1440" y="432" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">U2</text>
+<path d="M0,472 L16,460 L1024,460 L1040,472 L1024,484 L16,484 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="520" y="472" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M1040,472 L1056,460 L1184,460 L1200,472 L1184,484 L1056,484 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1120" y="472" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M1200,472 L1216,460 L1344,460 L1360,472 L1344,484 L1216,484 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1280" y="472" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M1360,472 L1376,460 L1504,460 L1520,472 L1504,484 L1376,484 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="1440" y="472" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3</text>
+<rect x="589.6" y="379.9" width="180.79999999999998" height="16.200000000000003" fill="#ffffff"/><text x="680" y="388" fill="#b54708" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">U1 and U2 wait behind U0</text>
+  </g>
+</svg>

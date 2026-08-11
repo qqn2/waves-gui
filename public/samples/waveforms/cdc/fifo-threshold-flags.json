@@ -1,0 +1,21 @@
+{
+  "signal": [
+    [
+      "Write clock domain",
+      { "name": "wr_clk", "wave": "p........" },
+      { "name": "write-side used words", "wave": "=.=.=.=..", "data": ["3", "4", "5", "6"] },
+      { "name": "almost_full (usedw >= 6)", "wave": "0.....1.." }
+    ],
+    [
+      "Read clock domain",
+      { "name": "rd_clk", "wave": "p........", "phase": 0.25 },
+      { "name": "read-side used words", "wave": "=.=.=....", "data": ["3", "2", "1"], "phase": 0.25 },
+      { "name": "almost_empty (usedw <= 1)", "wave": "0...1....", "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "FIFO almost-full and almost-empty threshold flags" },
+  "foot": {
+    "text": "Each threshold is evaluated from a domain-local occupancy estimate. Synchronizer latency makes these status flags intentionally conservative relative to remote activity."
+  },
+  "config": { "hscale": 2 }
+}

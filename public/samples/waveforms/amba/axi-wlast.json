@@ -1,0 +1,35 @@
+{
+  "head": { "text": "AXI WLAST marks exactly the final write-data beat" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Write-address channel",
+      { "name": "ACLK", "wave": "P............." },
+      { "name": "AWADDR[31:0]", "wave": "x.=x..........", "data": ["0x0000_0300"] },
+      { "name": "AWLEN[7:0]", "wave": "x.=x..........", "data": ["3 (4 beats)"] },
+      { "name": "AWSIZE[2:0]", "wave": "x.=x..........", "data": ["2 (4 bytes/beat)"] },
+      { "name": "AWBURST[1:0]", "wave": "x.=x..........", "data": ["INCR"] },
+      { "name": "AWVALID", "wave": "0.10.........." },
+      { "name": "AWREADY", "wave": "0.10.........." }
+    ],
+    {},
+    [
+      "Write-data channel",
+      { "name": "WDATA[31:0]", "wave": "x...=234x.....", "data": ["D0", "D1", "D2", "D3"] },
+      { "name": "WSTRB[3:0]", "wave": "x...=...x.....", "data": ["0xF"] },
+      { "name": "WVALID", "wave": "0...1...0....." },
+      { "name": "WREADY", "wave": "1............." },
+      { "name": "WLAST", "wave": "0......10....." }
+    ],
+    {},
+    [
+      "Write-response channel",
+      { "name": "BVALID", "wave": "0........1.0.." },
+      { "name": "BREADY", "wave": "0.........1..." },
+      { "name": "BRESP[1:0]", "wave": "x........=.x..", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": {
+    "text": "AWLEN=3 describes four W-channel beats. WLAST is low for D0 through D2 and high only with D3, the final WVALID/WREADY transfer; the B response follows the completed burst."
+  }
+}

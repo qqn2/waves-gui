@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="948" height="232" viewBox="0 0 948 232">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="232" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_a</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk_b (0.25 T later)</text>
+<text x="8" y="148" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >select_b</text>
+<text x="8" y="188" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >mux_clk (unsafe)</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="844" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="422" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Failure: switching a clock mux directly</text>
+<text x="422" y="222" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">At 1.625 T, select changes while clk_a is low and clk_b is high; the direct mux produces a 0.125 T runt high pulse.</text>
+<line x1="0" y1="48" x2="0" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="208" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="208" stroke="#333333" stroke-width="1"/>
+<path d="M0,56 L20,56 L40,56 L46,56 L52,80 L60,80 L80,80 L86,80 L92,56 L100,56 L120,56 L126,56 L132,80 L130,80 L140,80 L160,80 L166,80 L172,56 L180,56 L200,56 L206,56 L212,80 L220,80 L240,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,120 L20,120 L26,120 L32,96 L40,96 L60,96 L66,96 L72,120 L80,120 L100,120 L106,120 L112,96 L120,96 L130,96 L140,96 L146,96 L152,120 L160,120 L180,120 L186,120 L192,96 L200,96 L220,96 L226,96 L232,120 L240,120" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,160 L20,160 L40,160 L60,160 L80,160 L100,160 L120,160 L130,160 L136,160 L142,136 L140,136 L160,136 L180,136 L200,136 L220,136 L240,136" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L20,176 L40,176 L46,176 L52,200 L60,200 L80,200 L86,200 L92,176 L100,176 L120,176 L126,176 L132,200 L130,200 L136,200 L142,176 L140,176 L146,176 L152,200 L160,200 L180,200 L186,200 L192,176 L200,176 L220,176 L226,176 L232,200 L240,200" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<line x1="130" y1="136" x2="130" y2="201.6" stroke="#e8e8e8" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="47.60000000000001" y="163.9" width="173.6" height="16.200000000000003" fill="#111111"/><text x="134.4" y="172" fill="#b42318" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">0.125 T runt high pulse</text>
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "head": { "text": "Invalid APB transfer: address changes while ACCESS is stalled" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "PCLK", "wave": "P........" },
+    { "name": "PSEL", "wave": "0.1.....0" },
+    { "name": "PENABLE", "wave": "0..1...0." },
+    { "name": "PWRITE", "wave": "0.1.....0" },
+    { "name": "PADDR[11:0] (INVALID)", "wave": "x.=.=....", "data": ["0x020", "0x024"] },
+    { "name": "PWDATA[31:0]", "wave": "x.=......", "data": ["0xCAFE0001"] },
+    { "name": "PREADY", "wave": "1..0..1.." },
+    { "name": "PSLVERR", "wave": "0........" }
+  ],
+  "foot": {
+    "text": "Deliberately invalid: PADDR must remain stable from SETUP through the final ACCESS cycle. Here it changes while PENABLE=1 and PREADY=0."
+  }
+}

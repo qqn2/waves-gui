@@ -1,0 +1,30 @@
+{
+  "signal": [
+    [
+      "Allocate in program order",
+      { "name": "clk", "wave": "p.................." },
+      { "name": "dispatch_valid", "wave": "0101010000000000000" },
+      { "name": "dispatch_tag", "wave": "x.=.=.=............", "data": ["U0", "U1", "U2"] },
+      { "name": "rob_tail", "wave": "=.=.=.=............", "data": ["0", "1", "2", "3"] }
+    ],
+    [
+      "Complete out of order",
+      { "name": "complete_tag", "wave": "x.....=.=.=........", "data": ["U1", "U2", "U0"] },
+      { "name": "head_ready", "wave": "00000000001......." }
+    ],
+    [
+      "Retire only the ready head",
+      { "name": "retire_valid", "wave": "0000000000010101000" },
+      { "name": "retire_tag", "wave": "x............=.=.=.", "data": ["U0", "U1", "U2"] },
+      { "name": "rob_head", "wave": "=............=.=.=.", "data": ["0", "1", "2", "3"] }
+    ]
+  ],
+  "annotations": [
+    { "text": "U1 and U2 wait behind U0", "x": 8.5, "y": 8.5, "font-size": "12px", "font-weight": 700, "fill": "#b54708" }
+  ],
+  "head": { "text": "Reorder buffer allocates and retires in order" },
+  "foot": {
+    "text": "U1 and U2 complete before U0, but cannot retire until the oldest entry is ready. Once U0 completes, retirement releases U0, U1, then U2 in program order."
+  },
+  "config": { "hscale": 2 }
+}

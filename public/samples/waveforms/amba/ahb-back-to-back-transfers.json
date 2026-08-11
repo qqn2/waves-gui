@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite back-to-back transfers" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phases",
+      { "name": "HCLK", "wave": "P........." },
+      { "name": "HSEL", "wave": "0.110....." },
+      { "name": "HTRANS", "wave": "x.=2x.....", "data": ["NONSEQ A", "NONSEQ B"] },
+      { "name": "HADDR", "wave": "x.=2x.....", "data": ["0x3000 (A)", "0x3004 (B)"] },
+      { "name": "HWRITE", "wave": "0.110....." }
+    ],
+    {},
+    [
+      "Write-data phases",
+      { "name": "HWDATA", "wave": "x..=2x....", "data": ["A: 0x1111", "B: 0x2222"] },
+      { "name": "HREADY", "wave": "1........." },
+      { "name": "HRESP", "wave": "0........." }
+    ]
+  ],
+  "foot": { "text": "With HREADY high, the second address phase begins immediately while the first transfer's data phase completes; there is no idle bubble." }
+}

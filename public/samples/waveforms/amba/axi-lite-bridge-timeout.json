@@ -1,0 +1,30 @@
+{
+  "head": { "text": "AXI4-Lite bridge timeout (bridge-specific policy)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P............." },
+    {},
+    [
+      "AXI4-Lite read accepted by bridge",
+      { "name": "ARVALID", "wave": "0.10.........." },
+      { "name": "ARREADY", "wave": "0.10.........." },
+      { "name": "ARADDR[31:0]", "wave": "x.=x..........", "data": ["0x4000_0040"] }
+    ],
+    {},
+    [
+      "Bounded downstream wait",
+      { "name": "downstream_req", "wave": "0..1..0......." },
+      { "name": "downstream_ready", "wave": "0............." },
+      { "name": "timeout_expired", "wave": "0.....10......" }
+    ],
+    {},
+    [
+      "Bridge completes the AXI read",
+      { "name": "RVALID", "wave": "0......10....." },
+      { "name": "RREADY", "wave": "0......10....." },
+      { "name": "RDATA[31:0]", "wave": "x......=x.....", "data": ["0x0000_0000"] },
+      { "name": "RRESP[1:0]", "wave": "x......=x.....", "data": ["SLVERR"] }
+    ]
+  ],
+  "foot": { "text": "This bridge-specific policy accepts AR, waits three downstream cycles without ready, then returns one SLVERR response with a documented default RDATA value. AXI4-Lite defines the response handshake, not a universal timeout length or error policy." }
+}

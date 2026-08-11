@@ -11,6 +11,7 @@ import {
   validationReference,
   validationReviewNote,
 } from './validated-samples.mjs';
+import { loadDraftSamples } from './draft-samples.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourcePath = path.join(root, 'docs', 'SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md');
@@ -135,6 +136,21 @@ function promoteValidatedEntry(entry, validation) {
   };
 }
 
+function promoteDraftEntry(entry, draft) {
+  return {
+    ...entry,
+    contentStatus: 'draft',
+    reviewNotes: ['Draft waveform is available for local review; it has not been content-validated.'],
+    asset: {
+      path: draft.asset.path,
+      format: draft.asset.format,
+      previewVersion: 'v1',
+      support: 'supported',
+      supportNote: null,
+    },
+  };
+}
+
 function classifications(shard, tags) {
   return {
     protocols: tags.filter((tag) => PROTOCOL_TAGS.has(tag)),
@@ -142,7 +158,7 @@ function classifications(shard, tags) {
   };
 }
 
-function parseCurriculum(markdown, validatedSamples) {
+function parseCurriculum(markdown, validatedSamples, draftSamples) {
   const inventoryMarker = '## Complete 832-entry source inventory';
   const inventoryStart = markdown.indexOf(inventoryMarker);
   if (inventoryStart < 0) throw new Error(`Missing ${inventoryMarker}`);
@@ -202,7 +218,12 @@ function parseCurriculum(markdown, validatedSamples) {
       }),
     };
     const validation = validatedSamples.get(resolved.sourceNumber);
-    return validation === undefined ? resolved : promoteValidatedEntry(resolved, validation);
+    // A reviewed/featured record is deliberately authoritative. Keeping a
+    // same-number draft record lets a contributor retain local authoring
+    // history without ever downgrading the reviewed catalog entry.
+    if (validation !== undefined) return promoteValidatedEntry(resolved, validation);
+    const draft = draftSamples.get(resolved.sourceNumber);
+    return draft === undefined ? resolved : promoteDraftEntry(resolved, draft);
   });
 }
 
@@ -251,7 +272,7 @@ function publishedEntries(validatedSamples) {
   });
 }
 
-function validateEntries(curriculum, published, validatedSamples) {
+function validateEntries(curriculum, published, validatedSamples, draftSamples) {
   if (curriculum.length !== 832) throw new Error(`Expected 832 curriculum entries, found ${curriculum.length}`);
   const numbers = curriculum.map(({ sourceNumber }) => sourceNumber).sort((a, b) => a - b);
   for (let expected = 1; expected <= 832; expected += 1) {
@@ -297,6 +318,19 @@ function validateEntries(curriculum, published, validatedSamples) {
       throw new Error(`Validated registry refers to missing legacyId ${target}`);
     }
   }
+  const entriesBySourceNumber = new Map(curriculum.map((entry) => [entry.sourceNumber, entry]));
+  for (const [sourceNumber, draft] of draftSamples) {
+    const entry = entriesBySourceNumber.get(sourceNumber);
+    if (!entry) throw new Error(`Draft registry refers to missing sourceNumber ${sourceNumber}`);
+    // Validated records win, so a retained draft mapping has no effect here.
+    if (validatedSamples.has(sourceNumber)) continue;
+    if (entry.contentStatus !== 'draft' || entry.owner !== null || entry.lastReviewed !== null) {
+      throw new Error(`Draft registry metadata was not applied consistently: ${entry.id}`);
+    }
+    if (entry.asset?.path !== draft.asset.path || entry.asset?.format !== draft.asset.format) {
+      throw new Error(`Draft registry asset metadata was not applied consistently: ${entry.id}`);
+    }
+  }
 }
 
 const toJson = (value) => `${JSON.stringify(value, null, 2)}\n`;
@@ -304,9 +338,10 @@ const toJson = (value) => `${JSON.stringify(value, null, 2)}\n`;
 async function main() {
   const markdown = await readFile(sourcePath, 'utf8');
   const validatedSamples = await loadValidatedSamples({ rootDir: root, allowMissing: false });
-  const curriculum = parseCurriculum(markdown, validatedSamples);
+  const draftSamples = await loadDraftSamples({ rootDir: root, allowMissing: false });
+  const curriculum = parseCurriculum(markdown, validatedSamples, draftSamples);
   const published = publishedEntries(validatedSamples);
-  validateEntries(curriculum, published, validatedSamples);
+  validateEntries(curriculum, published, validatedSamples, draftSamples);
   const entries = [...curriculum, ...published];
   await mkdir(shardRoot, { recursive: true });
 
@@ -345,7 +380,7 @@ async function main() {
     shards: shardDescriptors,
   };
   await writeFile(path.join(outputRoot, 'catalog.v1.json'), toJson(index));
-  console.log(`Generated ${curriculum.length} curriculum entries, ${published.length} bundled entries, and ${validatedSamples.size} validated entries across ${shardDescriptors.length} shards.`);
+  console.log(`Generated ${curriculum.length} curriculum entries, ${published.length} bundled entries, ${draftSamples.size} draft records, and ${validatedSamples.size} validated entries across ${shardDescriptors.length} shards.`);
 }
 
 await main();

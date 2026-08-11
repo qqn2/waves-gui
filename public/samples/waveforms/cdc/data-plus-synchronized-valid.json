@@ -1,0 +1,23 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p........." },
+      { "name": "src_data", "wave": "=.=....=..", "data": ["OLD", "0xA5", "NEXT"] },
+      { "name": "src_valid", "wave": "0..1..0..." }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p.........", "phase": 0.25 },
+      { "name": "valid_sync1", "wave": "0...1..0..", "phase": 0.25 },
+      { "name": "valid_sync2", "wave": "0....1..0.", "phase": 0.25 },
+      { "name": "capture", "wave": "0....10...", "phase": 0.25 },
+      { "name": "dst_data", "wave": "=....=....", "data": ["OLD", "0xA5"] }
+    ]
+  ],
+  "head": { "text": "Stable data with a synchronized valid control" },
+  "foot": {
+    "text": "src_data is held at 0xA5 before valid asserts and remains stable until after the destination capture."
+  },
+  "config": { "hscale": 2 }
+}

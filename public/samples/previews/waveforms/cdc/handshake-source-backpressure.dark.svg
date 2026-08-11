@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1064" height="488" viewBox="0 0 1064 488">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="488" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Source domain</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >request_attempt</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >source_ready</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_request</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ack_sync</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >blocked_attempt</text>
+<text x="8" y="330" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Destination domain</text>
+<text x="20" y="364" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="404" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >request_sync</text>
+<text x="20" y="444" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_ack</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="960" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="480" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Handshake backpressures the source</text>
+<text x="480" y="478" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">The attempt while source_ready is low is blocked; a later attempt is accepted only after acknowledgement releases the source.</text>
+<line x1="0" y1="48" x2="0" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="464" stroke="#333333" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="464" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,108 L880,84 L920,84 L920,108 L960,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L74,148 L77,124 L80,148 L160,148 L166,148 L172,124 L240,124 L246,124 L252,148 L320,148 L326,148 L332,124 L400,124 L406,124 L412,148 L474,148 L477,124 L480,148 L554,148 L557,124 L560,148 L634,148 L637,124 L640,148 L714,148 L717,124 L720,148 L800,148 L806,148 L812,124 L880,124 L886,124 L892,148 L960,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,164 L74,164 L77,188 L80,164 L160,164 L166,164 L172,188 L234,188 L237,164 L240,188 L314,188 L317,164 L320,188 L394,188 L397,164 L400,188 L474,188 L477,164 L480,188 L554,188 L557,164 L560,188 L634,188 L637,164 L640,188 L714,188 L717,164 L720,188 L800,188 L806,188 L812,164 L874,164 L877,188 L880,164 L960,164" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L74,228 L77,204 L80,228 L160,228 L166,228 L172,204 L234,204 L237,228 L240,204 L314,204 L317,228 L320,204 L394,204 L397,228 L400,204 L474,204 L477,228 L480,204 L560,204 L566,204 L572,228 L634,228 L637,204 L640,228 L714,228 L717,204 L720,228 L800,228 L806,228 L812,204 L874,204 L877,228 L880,204 L960,204" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,268 L74,268 L77,244 L80,268 L154,268 L157,244 L160,268 L234,268 L237,244 L240,268 L314,268 L317,244 L320,268 L394,268 L397,244 L400,268 L480,268 L486,268 L492,244 L554,244 L557,268 L560,244 L634,244 L637,268 L640,244 L720,244 L726,244 L732,268 L794,268 L797,244 L800,268 L874,268 L877,244 L880,268 L960,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,308 L74,308 L77,284 L80,308 L154,308 L157,284 L160,308 L234,308 L237,284 L240,308 L320,308 L326,308 L332,284 L400,284 L406,284 L412,308 L474,308 L477,284 L480,308 L554,308 L557,284 L560,308 L634,308 L637,284 L640,308 L714,308 L717,284 L720,308 L794,308 L797,284 L800,308 L874,308 L877,284 L880,308 L960,308" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,376 L-20,352 L20,352 L20,376 L60,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,376 L60,352 L100,352 L100,376 L140,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,376 L140,352 L180,352 L180,376 L220,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,376 L220,352 L260,352 L260,376 L300,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,376 L300,352 L340,352 L340,376 L380,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,376 L380,352 L420,352 L420,376 L460,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,376 L460,352 L500,352 L500,376 L540,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,376 L540,352 L580,352 L580,376 L620,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,376 L620,352 L660,352 L660,376 L700,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M700,376 L700,352 L740,352 L740,376 L780,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M780,376 L780,352 L820,352 L820,376 L860,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M860,376 L860,352 L900,352 L900,376 L940,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,416 L54,416 L57,392 L60,416 L134,416 L137,392 L140,416 L214,416 L217,392 L220,416 L300,416 L306,416 L312,392 L374,392 L377,416 L380,392 L454,392 L457,416 L460,392 L534,392 L537,416 L540,392 L620,392 L626,392 L632,416 L694,416 L697,392 L700,416 L774,416 L777,392 L780,416 L860,416 L866,416 L872,392 L940,392" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,456 L54,456 L57,432 L60,456 L134,456 L137,432 L140,456 L214,456 L217,432 L220,456 L294,456 L297,432 L300,456 L380,456 L386,456 L392,432 L454,432 L457,456 L460,432 L534,432 L537,456 L540,432 L620,432 L626,432 L632,456 L694,456 L697,432 L700,456 L774,456 L777,432 L780,456 L854,456 L857,432 L860,456 L940,456" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

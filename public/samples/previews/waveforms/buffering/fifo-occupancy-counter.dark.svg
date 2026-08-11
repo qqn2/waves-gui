@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1041.6" height="380" viewBox="0 0 1041.6 380">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="380" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Synchronous FIFO occupancy accounting (depth 4)</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >push</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >pop</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >occupancy</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >empty</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >full</text>
+<text x="20" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >count_update</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="937.5999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="468.79999999999995" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">FIFO occupancy counter adds pushes and subtracts pops</text>
+<text x="468.79999999999995" y="370" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Accepted pushes raise the count and accepted pops lower it. The final simultaneous push and pop cancel, so occupancy holds at 1.</text>
+<line x1="0" y1="48" x2="0" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="356" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L86,148 L92,124 L160,124 L166,124 L172,148 L240,148 L246,148 L252,124 L320,124 L326,124 L332,148 L394,148 L397,124 L400,148 L474,148 L477,124 L480,148 L560,148 L566,148 L572,124 L640,124 L646,124 L652,148 L720,148 L800,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,188 L74,188 L77,164 L80,188 L154,188 L157,164 L160,188 L234,188 L237,164 L240,188 L314,188 L317,164 L320,188 L400,188 L406,188 L412,164 L480,164 L486,164 L492,188 L560,188 L566,188 L572,164 L640,164 L646,164 L652,188 L720,188 L800,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,216 L16,204 L144,204 L160,216 L144,228 L16,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M160,216 L176,204 L304,204 L320,216 L304,228 L176,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M320,216 L336,204 L464,204 L480,216 L464,228 L336,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M480,216 L496,204 L784,204 L800,216 L784,228 L496,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="640" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M0,244 L80,244 L160,244 L166,244 L172,268 L240,268 L320,268 L400,268 L480,268 L560,268 L640,268 L720,268 L800,268" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,308 L80,308 L160,308 L240,308 L320,308 L400,308 L480,308 L560,308 L640,308 L720,308 L800,308" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,348 L80,348 L160,348 L166,348 L172,324 L240,324 L246,324 L252,348 L320,348 L326,348 L332,324 L400,324 L480,324 L486,324 L492,348 L560,348 L640,348 L720,348 L800,348" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

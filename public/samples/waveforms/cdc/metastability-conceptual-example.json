@@ -1,0 +1,29 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p......." },
+      { "name": "async_level", "wave": "0.1....." }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p.......", "phase": 0.25 },
+      { "name": "sync_ff1 (conceptual)", "wave": "0..x1...", "phase": 0.25 },
+      { "name": "sync_ff2", "wave": "0....1..", "phase": 0.25 }
+    ]
+  ],
+  "annotations": [
+    {
+      "text": "conceptual uncertainty",
+      "x": 3.5,
+      "y": 3.05,
+      "font-weight": 700,
+      "fill": "#b54708"
+    }
+  ],
+  "head": { "text": "Conceptual metastability at the first synchronizer stage" },
+  "foot": {
+    "text": "The X is a teaching marker, not a physical waveform or probability model; only the first stage is shown uncertain."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite pipeline stall holds next address/control" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Pipelined address/control",
+      { "name": "HCLK", "wave": "P.........." },
+      { "name": "HSEL", "wave": "0.1111.0.." },
+      { "name": "HTRANS", "wave": "x.=2..x...", "data": ["NONSEQ A", "NONSEQ B (held)"] },
+      { "name": "HADDR", "wave": "x.=2..x...", "data": ["0x500 (A)", "0x504 (B, held)"] },
+      { "name": "HWRITE", "wave": "0........" }
+    ],
+    {},
+    [
+      "Data/response",
+      { "name": "HREADY", "wave": "1..0.1...." },
+      { "name": "HRESP", "wave": "0.........." },
+      { "name": "HRDATA", "wave": "x....=2x..", "data": ["A data", "B data"] }
+    ]
+  ],
+  "foot": { "text": "The slave stalls A's data phase with HREADY low. Because the AHB pipeline cannot advance, B's already presented address/control remains stable until the stall releases." }
+}

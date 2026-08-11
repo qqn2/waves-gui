@@ -1,0 +1,31 @@
+{
+  "head": { "text": "AXI4-Lite AW backpressure holds address and VALID until handshake" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address write channel (backpressured)",
+      { "name": "ACLK", "wave": "P........." },
+      { "name": "AWADDR[31:0]", "wave": "x.=...x...", "data": ["0x4000001C (held)"] },
+      { "name": "AWVALID", "wave": "0.1...0..." },
+      { "name": "AWREADY", "wave": "0....1...." }
+    ],
+    {},
+    [
+      "Independent write data channel",
+      { "name": "WDATA[31:0]", "wave": "x..=x.....", "data": ["0x0000000B"] },
+      { "name": "WSTRB[3:0]", "wave": "x..=x.....", "data": ["0xF"] },
+      { "name": "WVALID", "wave": "0..10....." },
+      { "name": "WREADY", "wave": "0..1......" }
+    ],
+    {},
+    [
+      "Write response channel",
+      { "name": "BRESP[1:0]", "wave": "x.....=...", "data": ["OKAY"] },
+      { "name": "BVALID", "wave": "0.....1.0." },
+      { "name": "BREADY", "wave": "0......1.." }
+    ]
+  ],
+  "foot": {
+    "text": "AWREADY stays low for three cycles. The master holds AWVALID and AWADDR unchanged until the AW handshake; W may handshake independently before that happens."
+  }
+}

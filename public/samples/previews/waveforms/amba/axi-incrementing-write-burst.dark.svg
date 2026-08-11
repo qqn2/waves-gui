@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="996" viewBox="0 0 1632 996">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="996" fill="#242424"/>
+<text x="8" y="68" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >ACLK</text>
+<text x="8" y="108" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="142" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Write address channel</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWVALID</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWREADY</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWID[3:0]</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWADDR[31:0]</text>
+<text x="20" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWLEN[7:0]</text>
+<text x="20" y="376" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWSIZE[2:0]</text>
+<text x="20" y="416" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >AWBURST[1:0]</text>
+<text x="8" y="456" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="490" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Write data channel</text>
+<text x="20" y="524" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >derived write address</text>
+<text x="20" y="564" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >WVALID</text>
+<text x="20" y="604" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >WREADY</text>
+<text x="20" y="644" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >WDATA[31:0]</text>
+<text x="20" y="684" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >WSTRB[3:0]</text>
+<text x="20" y="724" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >WLAST</text>
+<text x="8" y="764" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" ></text>
+<text x="8" y="798" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >One response for the complete burst</text>
+<text x="20" y="832" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >BVALID</text>
+<text x="20" y="872" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >BREADY</text>
+<text x="20" y="912" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >BID[3:0]</text>
+<text x="20" y="952" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >BRESP[1:0]</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1528" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="1000" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">12</text>
+<text x="1080" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">13</text>
+<text x="764" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">AXI4 incrementing write burst (four beats)</text>
+<text x="764" y="986" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">AWLEN=3 creates four W transfers. W has no address channel of its own: its effective addresses follow AWADDR, AWSIZE, and AWBURST=INCR. WLAST marks only the fourth beat, then one B response completes the burst.</text>
+<line x1="0" y1="48" x2="0" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="1040" y1="48" x2="1040" y2="972" stroke="#333333" stroke-width="1"/>
+<line x1="1120" y1="48" x2="1120" y2="972" stroke="#333333" stroke-width="1"/>
+<path d="M0,80 L0,56 L40,56 L40,80 L80,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="0,64 -3,70 3,70" fill="#4A9EFF"/>
+<path d="M80,80 L80,56 L120,56 L120,80 L160,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="80,64 77,70 83,70" fill="#4A9EFF"/>
+<path d="M160,80 L160,56 L200,56 L200,80 L240,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="160,64 157,70 163,70" fill="#4A9EFF"/>
+<path d="M240,80 L240,56 L280,56 L280,80 L320,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="240,64 237,70 243,70" fill="#4A9EFF"/>
+<path d="M320,80 L320,56 L360,56 L360,80 L400,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="320,64 317,70 323,70" fill="#4A9EFF"/>
+<path d="M400,80 L400,56 L440,56 L440,80 L480,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="400,64 397,70 403,70" fill="#4A9EFF"/>
+<path d="M480,80 L480,56 L520,56 L520,80 L560,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="480,64 477,70 483,70" fill="#4A9EFF"/>
+<path d="M560,80 L560,56 L600,56 L600,80 L640,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="560,64 557,70 563,70" fill="#4A9EFF"/>
+<path d="M640,80 L640,56 L680,56 L680,80 L720,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="640,64 637,70 643,70" fill="#4A9EFF"/>
+<path d="M720,80 L720,56 L760,56 L760,80 L800,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="720,64 717,70 723,70" fill="#4A9EFF"/>
+<path d="M800,80 L800,56 L840,56 L840,80 L880,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="800,64 797,70 803,70" fill="#4A9EFF"/>
+<path d="M880,80 L880,56 L920,56 L920,80 L960,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="880,64 877,70 883,70" fill="#4A9EFF"/>
+<path d="M960,80 L960,56 L1000,56 L1000,80 L1040,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="960,64 957,70 963,70" fill="#4A9EFF"/>
+<path d="M1040,80 L1040,56 L1080,56 L1080,80 L1120,80" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<polygon points="1040,64 1037,70 1043,70" fill="#4A9EFF"/>
+<path d="M0,188 L80,188 L160,188 L166,188 L172,164 L240,164 L246,164 L252,188 L320,188 L400,188 L480,188 L560,188 L640,188 L720,188 L800,188 L880,188 L960,188 L1040,188 L1120,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,228 L80,228 L160,228 L166,228 L172,204 L240,204 L246,204 L252,228 L320,228 L400,228 L480,228 L560,228 L640,228 L720,228 L800,228 L880,228 L960,228 L1040,228 L1120,228" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L16,244 L144,244 L160,256 L144,268 L16,268 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="256" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,256 L176,244 L224,244 L240,256 L224,268 L176,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x5</text>
+<path d="M240,256 L256,244 L1104,244 L1120,256 L1104,268 L256,268 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="680" y="256" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,296 L16,284 L144,284 L160,296 L144,308 L16,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,296 L176,284 L224,284 L240,296 L224,308 L176,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x0000_2000</text>
+<path d="M240,296 L256,284 L1104,284 L1120,296 L1104,308 L256,308 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="680" y="296" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,336 L16,324 L144,324 L160,336 L144,348 L16,348 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="336" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,336 L176,324 L224,324 L240,336 L224,348 L176,348 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="336" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3 (four beats)</text>
+<path d="M240,336 L256,324 L1104,324 L1120,336 L1104,348 L256,348 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="680" y="336" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,376 L16,364 L144,364 L160,376 L144,388 L16,388 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="376" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,376 L176,364 L224,364 L240,376 L224,388 L176,388 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="376" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2 (4 bytes)</text>
+<path d="M240,376 L256,364 L1104,364 L1120,376 L1104,388 L256,388 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="680" y="376" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,416 L16,404 L144,404 L160,416 L144,428 L16,428 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="416" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,416 L176,404 L224,404 L240,416 L224,428 L176,428 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="416" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">INCR</text>
+<path d="M240,416 L256,404 L1104,404 L1120,416 L1104,428 L256,428 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="680" y="416" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,524 L16,512 L304,512 L320,524 L304,536 L16,536 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="160" y="524" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M320,524 L336,512 L384,512 L400,524 L384,536 L336,536 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x0000_2000</text>
+<path d="M400,524 L416,512 L464,512 L480,524 L464,536 L416,536 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x0000_2004</text>
+<path d="M480,524 L496,512 L544,512 L560,524 L544,536 L496,536 Z" fill="#ffffb4" stroke="#000000" stroke-width="2"/>
+<text x="520" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x0000_2008</text>
+<path d="M560,524 L576,512 L624,512 L640,524 L624,536 L576,536 Z" fill="#ffe0b9" stroke="#000000" stroke-width="2"/>
+<text x="600" y="524" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x0000_200C</text>
+<path d="M640,524 L656,512 L1104,512 L1120,524 L1104,536 L656,536 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="880" y="524" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,576 L80,576 L160,576 L240,576 L320,576 L326,576 L332,552 L394,552 L397,576 L400,552 L474,552 L477,576 L480,552 L554,552 L557,576 L560,552 L640,552 L646,552 L652,576 L720,576 L800,576 L880,576 L960,576 L1040,576 L1120,576" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,616 L80,616 L160,616 L240,616 L320,616 L326,616 L332,592 L394,592 L397,616 L400,592 L474,592 L477,616 L480,592 L554,592 L557,616 L560,592 L640,592 L646,592 L652,616 L720,616 L800,616 L880,616 L960,616 L1040,616 L1120,616" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,644 L16,632 L304,632 L320,644 L304,656 L16,656 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="160" y="644" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M320,644 L336,632 L384,632 L400,644 L384,656 L336,656 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="644" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">word 0</text>
+<path d="M400,644 L416,632 L464,632 L480,644 L464,656 L416,656 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="644" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">word 1</text>
+<path d="M480,644 L496,632 L544,632 L560,644 L544,656 L496,656 Z" fill="#ffffb4" stroke="#000000" stroke-width="2"/>
+<text x="520" y="644" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">word 2</text>
+<path d="M560,644 L576,632 L624,632 L640,644 L624,656 L576,656 Z" fill="#ffe0b9" stroke="#000000" stroke-width="2"/>
+<text x="600" y="644" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">word 3</text>
+<path d="M640,644 L656,632 L1104,632 L1120,644 L1104,656 L656,656 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="880" y="644" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,684 L16,672 L304,672 L320,684 L304,696 L16,696 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="160" y="684" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M320,684 L336,672 L384,672 L400,684 L384,696 L336,696 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="684" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xF</text>
+<path d="M400,684 L416,672 L464,672 L480,684 L464,696 L416,696 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="440" y="684" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xF</text>
+<path d="M480,684 L496,672 L544,672 L560,684 L544,696 L496,696 Z" fill="#ffffb4" stroke="#000000" stroke-width="2"/>
+<text x="520" y="684" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xF</text>
+<path d="M560,684 L576,672 L624,672 L640,684 L624,696 L576,696 Z" fill="#ffe0b9" stroke="#000000" stroke-width="2"/>
+<text x="600" y="684" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xF</text>
+<path d="M640,684 L656,672 L1104,672 L1120,684 L1104,696 L656,696 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="880" y="684" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,736 L80,736 L160,736 L240,736 L320,736 L400,736 L480,736 L560,736 L566,736 L572,712 L640,712 L646,712 L652,736 L720,736 L800,736 L880,736 L960,736 L1040,736 L1120,736" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,844 L80,844 L160,844 L240,844 L320,844 L400,844 L480,844 L560,844 L640,844 L720,844 L800,844 L806,844 L812,820 L880,820 L886,820 L892,844 L960,844 L1040,844 L1120,844" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,884 L80,884 L160,884 L240,884 L320,884 L400,884 L480,884 L560,884 L640,884 L720,884 L800,884 L806,884 L812,860 L880,860 L886,860 L892,884 L960,884 L1040,884 L1120,884" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,912 L16,900 L784,900 L800,912 L784,924 L16,924 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="400" y="912" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M800,912 L816,900 L864,900 L880,912 L864,924 L816,924 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="840" y="912" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x5</text>
+<path d="M880,912 L896,900 L1104,900 L1120,912 L1104,924 L896,924 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="1000" y="912" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M0,952 L16,940 L784,940 L800,952 L784,964 L16,964 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="400" y="952" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M800,952 L816,940 L864,940 L880,952 L864,964 L816,964 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="840" y="952" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OKAY</text>
+<path d="M880,952 L896,940 L1104,940 L1120,952 L1104,964 L896,964 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="1000" y="952" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+  "signal": [
+    {
+      "name": "ideal_clk",
+      "wave": "pppppp",
+      "periods": [1, 1, 1, 1, 1, 1],
+      "duty_cycles": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "jittered_clk",
+      "wave": "pppppp",
+      "periods": [1, 0.9, 1.1, 0.95, 1.05, 1],
+      "duty_cycles": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    }
+  ],
+  "head": {
+    "text": "Clock jitter: individual edge positions move while average period remains 1.00 T"
+  }
+}

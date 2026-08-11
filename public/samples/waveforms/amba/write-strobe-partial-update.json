@@ -1,0 +1,26 @@
+{
+  "head": { "text": "AXI4-Lite write strobe partial register update" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P........." },
+    {},
+    [
+      "Write request",
+      { "name": "AWVALID", "wave": "0.10......" },
+      { "name": "AWREADY", "wave": "0.10......" },
+      { "name": "AWADDR", "wave": "x.=.x.....", "data": ["REG0"] },
+      { "name": "WVALID", "wave": "0.10......" },
+      { "name": "WREADY", "wave": "0.10......" },
+      { "name": "WDATA[31:0]", "wave": "x.=.x.....", "data": ["0x11_22_33_44"] },
+      { "name": "WSTRB[3:0]", "wave": "x.=.x.....", "data": ["0b0101"] }
+    ],
+    {},
+    [
+      "Register state",
+      { "name": "REG0[31:0]", "wave": "=..2......", "data": ["before: 0xAA_BB_CC_DD", "after: 0xAA_22_CC_44"] },
+      { "name": "BVALID", "wave": "0....10..." },
+      { "name": "BREADY", "wave": "0....10..." }
+    ]
+  ],
+  "foot": { "text": "WSTRB=0101 writes byte lanes 2 and 0 only. The untouched byte lanes preserve their previous values: 0xAA_BB_CC_DD becomes 0xAA_22_CC_44." }
+}

@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AXI4-Lite read transaction" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "AR channel",
+      { "name": "ACLK", "wave": "P........" },
+      { "name": "ARVALID", "wave": "0.1.0...." },
+      { "name": "ARREADY", "wave": "0.1.0...." },
+      { "name": "ARADDR[31:0]", "wave": "x.=.x....", "data": ["0x4000_0010"] },
+      { "name": "ARPROT[2:0]", "wave": "x.=.x....", "data": ["0b000"] }
+    ],
+    {},
+    [
+      "R channel",
+      { "name": "RVALID", "wave": "0....10.." },
+      { "name": "RREADY", "wave": "0....10.." },
+      { "name": "RDATA[31:0]", "wave": "x....=x..", "data": ["0x1234_5678"] },
+      { "name": "RRESP[1:0]", "wave": "x....=x..", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "An AXI4-Lite read has one AR handshake followed by exactly one R handshake. The response channel carries both RDATA and RRESP; AXI4-Lite has no RLAST signal." }
+}

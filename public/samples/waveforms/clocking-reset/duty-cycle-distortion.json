@@ -1,0 +1,20 @@
+{
+  "signal": [
+    {
+      "name": "reference_clk (50%)",
+      "wave": "pppp",
+      "periods": [1, 1, 1, 1],
+      "duty_cycles": [0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "distorted_clk",
+      "wave": "pppp",
+      "periods": [1, 1, 1, 1],
+      "duty_cycles": [0.5, 0.35, 0.65, 0.5],
+      "slewing": 0.05
+    }
+  ],
+  "head": {
+    "text": "Duty-cycle distortion: equal periods, unequal high/low times"
+  }
+}

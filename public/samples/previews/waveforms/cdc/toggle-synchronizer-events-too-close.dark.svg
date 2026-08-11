@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="991.1999999999999" height="368" viewBox="0 0 991.1999999999999 368">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="368" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Fast source domain</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_event</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_toggle</text>
+<text x="8" y="210" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Slow destination domain</text>
+<text x="20" y="244" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="284" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >toggle_sync2</text>
+<text x="20" y="324" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_event</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="887.1999999999999" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="443.59999999999997" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">FAILURE — toggle events arrive too close together</text>
+<text x="443.59999999999997" y="358" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Two source events return src_toggle to its original value before the next destination edge, so neither event is observed.</text>
+<line x1="0" y1="48" x2="0" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="344" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="344" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L10,84 L10,108 L20,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M20,108 L20,84 L30,84 L30,108 L40,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M40,108 L40,84 L50,84 L50,108 L60,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,108 L60,84 L70,84 L70,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L90,84 L90,108 L100,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M100,108 L100,84 L110,84 L110,108 L120,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M120,108 L120,84 L130,84 L130,108 L140,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,108 L140,84 L150,84 L150,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L170,84 L170,108 L180,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M180,108 L180,84 L190,84 L190,108 L200,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M200,108 L200,84 L210,84 L210,108 L220,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,108 L220,84 L230,84 L230,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L250,84 L250,108 L260,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M260,108 L260,84 L270,84 L270,108 L280,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M280,108 L280,84 L290,84 L290,108 L300,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,108 L300,84 L310,84 L310,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L20,148 L40,148 L46,148 L52,124 L60,124 L66,124 L72,148 L80,148 L86,148 L92,124 L100,124 L106,124 L112,148 L120,148 L140,148 L160,148 L180,148 L200,148 L220,148 L240,148 L260,148 L280,148 L300,148 L320,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,188 L20,188 L40,188 L46,188 L52,164 L60,164 L80,164 L86,164 L92,188 L100,188 L120,188 L140,188 L160,188 L180,188 L200,188 L220,188 L240,188 L260,188 L280,188 L300,188 L320,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,256 L0,232 L80,232 L80,256 L160,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,256 L160,232 L240,232 L240,256 L320,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,296 L160,296 L320,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,336 L160,336 L320,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<rect x="51.2" y="143.9" width="137.6" height="16.200000000000003" fill="#111111"/><text x="120" y="152" fill="#b42318" stroke="none" stroke-width="0" paint-order="stroke" stroke-linejoin="round" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-weight="700" font-size="12">two toggles cancel</text>
+  </g>
+</svg>

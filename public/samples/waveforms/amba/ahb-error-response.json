@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite ERROR response" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Read address phase",
+      { "name": "HCLK", "wave": "P........" },
+      { "name": "HSEL", "wave": "0.1....0." },
+      { "name": "HTRANS", "wave": "x.=x.....", "data": ["NONSEQ"] },
+      { "name": "HADDR", "wave": "x.=x.....", "data": ["0xDEAD_0000"] },
+      { "name": "HWRITE", "wave": "0........" }
+    ],
+    {},
+    [
+      "Two-cycle error response",
+      { "name": "HREADY", "wave": "1..01..." },
+      { "name": "HRESP", "wave": "0..1.0..." },
+      { "name": "HRDATA", "wave": "x....x..." }
+    ]
+  ],
+  "foot": { "text": "AHB-Lite ERROR is a two-cycle response: HRESP=ERROR while HREADY is low, then HRESP remains ERROR for the completing HREADY-high cycle." }
+}

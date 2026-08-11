@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1293.6" height="340" viewBox="0 0 1293.6 340">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="340" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Read clock domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rd_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >empty</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rd_en</text>
+<text x="20" y="216" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rd_data[7:0]</text>
+<text x="20" y="256" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rbin</text>
+<text x="20" y="296" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rgray</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1189.6" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="594.8" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Asynchronous FIFO read advances only when data is available</text>
+<text x="594.8" y="330" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">empty first deasserts after a synchronized write pointer arrives. Accepted rd_en pulses return successive words and advance the read-side binary and Gray pointers.</text>
+<line x1="0" y1="48" x2="0" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="316" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M-20,108 L-20,84 L20,84 L20,108 L60,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,108 L60,84 L100,84 L100,108 L140,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,108 L140,84 L180,84 L180,108 L220,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,108 L220,84 L260,84 L260,108 L300,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,108 L300,84 L340,84 L340,108 L380,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,108 L380,84 L420,84 L420,108 L460,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,108 L460,84 L500,84 L500,108 L540,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,108 L540,84 L580,84 L580,108 L620,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,108 L620,84 L660,84 L660,108 L700,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M700,108 L700,84 L740,84 L740,108 L780,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M780,108 L780,84 L820,84 L820,108 L860,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M860,108 L860,84 L900,84 L900,108 L940,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,124 L60,124 L140,124 L220,124 L226,124 L232,148 L300,148 L380,148 L460,148 L540,148 L620,148 L626,148 L632,124 L700,124 L780,124 L860,124 L940,124" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,188 L60,188 L140,188 L220,188 L300,188 L306,188 L312,164 L380,164 L386,164 L392,188 L460,188 L540,188 L620,188 L626,188 L632,164 L700,164 L706,164 L712,188 L780,188 L860,188 L940,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,216 L-4,204 L284,204 L300,216 L284,228 L-4,228 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="140" y="216" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M300,216 L316,204 L604,204 L620,216 L604,228 L316,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="460" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x3A</text>
+<path d="M620,216 L636,204 L924,204 L940,216 L924,228 L636,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="780" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0x7C</text>
+<path d="M-20,256 L-4,244 L284,244 L300,256 L284,268 L-4,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M300,256 L316,244 L604,244 L620,256 L604,268 L316,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="460" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M620,256 L636,244 L924,244 L940,256 L924,268 L636,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="780" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M-20,296 L-4,284 L284,284 L300,296 L284,308 L-4,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">000</text>
+<path d="M300,296 L316,284 L604,284 L620,296 L604,308 L316,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="460" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">001</text>
+<path d="M620,296 L636,284 L924,284 L940,296 L924,308 L636,308 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="780" y="296" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">011</text>
+  </g>
+</svg>

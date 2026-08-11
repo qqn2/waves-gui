@@ -1,0 +1,36 @@
+{
+  "signal": [
+    {
+      "name": "clock_out",
+      "wave": "pp0000pppp",
+      "periods": [1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "run_enable",
+      "wave": "1.0...1...",
+      "periods": [1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "reconfigure",
+      "wave": "0..10.....",
+      "periods": [1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "divider",
+      "wave": "=..=......",
+      "data": ["DIV2", "DIV1"],
+      "periods": [1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "pll_lock",
+      "wave": "1.0..1....",
+      "periods": [1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
+    }
+  ],
+  "head": {
+    "text": "Dynamic frequency change: pause, program, wait for lock, resume faster"
+  },
+  "foot": {
+    "text": "Conceptual sequence: stop at the old rate, change DIV2 to DIV1, observe lock, then restart with a shorter period."
+  }
+}

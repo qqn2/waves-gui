@@ -1,0 +1,26 @@
+{
+  "head": { "text": "AXI read burst: RDATA and RLAST hold through R-channel backpressure" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Read-address channel",
+      { "name": "ACLK", "wave": "P..............." },
+      { "name": "ARADDR[31:0]", "wave": "x.=x............", "data": ["0x0000_0500"] },
+      { "name": "ARLEN[7:0]", "wave": "x.=x............", "data": ["3 (4 beats)"] },
+      { "name": "ARVALID", "wave": "0.10............" },
+      { "name": "ARREADY", "wave": "0.10............" }
+    ],
+    {},
+    [
+      "Read-data channel",
+      { "name": "RVALID", "wave": "0...1.....0....." },
+      { "name": "RREADY", "wave": "1....0.1........." },
+      { "name": "RDATA[31:0]", "wave": "x...=2..34x.....", "data": ["D0", "D1 (held)", "D2", "D3"] },
+      { "name": "RRESP[1:0]", "wave": "x...=.....x.....", "data": ["OKAY (held with D1)"] },
+      { "name": "RLAST", "wave": "0........10....." }
+    ]
+  ],
+  "foot": {
+    "text": "D0 transfers first. When RREADY drops, D1 is pending: the slave keeps RVALID, RDATA, RRESP, and RLAST unchanged until RREADY returns. D2 then D3 transfer in order, with RLAST=1 only on D3."
+  }
+}

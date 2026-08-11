@@ -1,0 +1,26 @@
+{
+  "head": { "text": "Full AHB ownership handover waits for the stalled transfer to complete" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Arbiter interface",
+      { "name": "HBUSREQ0", "wave": "0.1......" },
+      { "name": "HBUSREQ1", "wave": "0..1....." },
+      { "name": "HGRANT0", "wave": "0.1...0.." },
+      { "name": "HGRANT1", "wave": "0.....1.." }
+    ],
+    {},
+    [
+      "M0 transfer held through wait states",
+      { "name": "HCLK", "wave": "P........" },
+      { "name": "address master", "wave": "x.=...2x.", "data": ["M0", "M1"] },
+      { "name": "HTRANS", "wave": "x.=...2x.", "data": ["NONSEQ M0", "NONSEQ M1"] },
+      { "name": "HADDR[31:0]", "wave": "x.=...2x.", "data": ["0x3000", "0x4000"] },
+      { "name": "HWDATA[31:0]", "wave": "x..=..x=.", "data": ["M0: 0xAAAA", "M1: 0xBBBB"] },
+      { "name": "HREADY", "wave": "1..0.1..." }
+    ]
+  ],
+  "foot": {
+    "text": "M1 requests during M0's extended data phase, but M0's address/control and write data stay associated until HREADY completes it. M1 begins only in the following cycle."
+  }
+}

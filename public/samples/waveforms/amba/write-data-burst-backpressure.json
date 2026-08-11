@@ -1,0 +1,33 @@
+{
+  "head": { "text": "AXI write burst: WDATA and WLAST hold through W-channel backpressure" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Write-address channel",
+      { "name": "ACLK", "wave": "P..............." },
+      { "name": "AWADDR[31:0]", "wave": "x.=x............", "data": ["0x0000_0400"] },
+      { "name": "AWLEN[7:0]", "wave": "x.=x............", "data": ["3 (4 beats)"] },
+      { "name": "AWVALID", "wave": "0.10............" },
+      { "name": "AWREADY", "wave": "0.10............" }
+    ],
+    {},
+    [
+      "Write-data channel",
+      { "name": "WDATA[31:0]", "wave": "x...=23..4x.....", "data": ["D0", "D1", "D2 (held)", "D3"] },
+      { "name": "WSTRB[3:0]", "wave": "x...=.....x.....", "data": ["0xF (held with D2)"] },
+      { "name": "WVALID", "wave": "0...1.....0....." },
+      { "name": "WREADY", "wave": "0...1.0.1.0....." },
+      { "name": "WLAST", "wave": "0........10....." }
+    ],
+    {},
+    [
+      "Write-response channel",
+      { "name": "BVALID", "wave": "0.........1.0..." },
+      { "name": "BREADY", "wave": "0..........1...." },
+      { "name": "BRESP[1:0]", "wave": "x.........=.x...", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": {
+    "text": "D0 and D1 transfer first. When WREADY drops, D2 is pending: WVALID, WDATA, WSTRB, and WLAST all remain unchanged until WREADY returns. D3 with WLAST=1 transfers only after that held beat is accepted."
+  }
+}

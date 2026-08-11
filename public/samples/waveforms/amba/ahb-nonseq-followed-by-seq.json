@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AHB-Lite NONSEQ followed by SEQ" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Burst address/control phases",
+      { "name": "HCLK", "wave": "P..........." },
+      { "name": "HSEL", "wave": "0.111...0..." },
+      { "name": "HTRANS", "wave": "x.=23.x.....", "data": ["NONSEQ", "SEQ", "SEQ"] },
+      { "name": "HBURST", "wave": "x.====x.....", "data": ["INCR"] },
+      { "name": "HADDR", "wave": "x.=23.x.....", "data": ["0x800", "0x804", "0x808"] },
+      { "name": "HWRITE", "wave": "0.111...0..." }
+    ],
+    {},
+    [
+      "Write-data phases",
+      { "name": "HWDATA", "wave": "x..=23x.....", "data": ["D0", "D1", "D2"] },
+      { "name": "HREADY", "wave": "1..........." },
+      { "name": "HRESP", "wave": "0..........." }
+    ]
+  ],
+  "foot": { "text": "NONSEQ opens the burst. Every contiguous beat after it is marked SEQ; each beat's write data follows its address/control phase by one pipeline phase." }
+}

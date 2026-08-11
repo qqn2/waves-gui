@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "APB read",
+      { "name": "PCLK", "wave": "P......." },
+      { "name": "PSEL", "wave": "0.1.0..." },
+      { "name": "PENABLE", "wave": "0..10..." },
+      { "name": "PWRITE", "wave": "0......." },
+      { "name": "PADDR[15:0]", "wave": "x.=.....", "data": ["0x2000"] },
+      { "name": "PRDATA[31:0]", "wave": "x..=....", "data": ["0x5A5A5A5A"] },
+      { "name": "PREADY", "wave": "1......." }
+    ]
+  ],
+  "head": { "text": "APB read without wait states" },
+  "foot": {
+    "text": "With PWRITE=0, the selected peripheral returns PRDATA during the first access cycle; PREADY=1 completes the read without a wait state."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,0 +1,21 @@
+{
+  "signal": [
+    [
+      "Write clock domain",
+      { "name": "wr_clk", "wave": "p..........." },
+      { "name": "wgray[2:0]", "wave": "=.=.=.=.....", "data": ["000", "001", "011", "010"] }
+    ],
+    [
+      "Read clock domain",
+      { "name": "rd_clk", "wave": "p...........", "phase": 0.25 },
+      { "name": "wgray_sync1", "wave": "=..=.=.=....", "data": ["000", "001", "011", "010"], "phase": 0.25 },
+      { "name": "wgray_sync2", "wave": "=...=.=.=...", "data": ["000", "001", "011", "010"], "phase": 0.25 },
+      { "name": "write_pointer_seen", "wave": "=...=.=.=...", "data": ["0", "1", "2", "3"], "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Asynchronous FIFO pointer synchronization uses Gray code" },
+  "foot": {
+    "text": "A binary count is Gray-encoded before crossing; only one bit changes per increment. The two read-clock synchronizer stages delay the pointer before it is decoded locally."
+  },
+  "config": { "hscale": 2 }
+}

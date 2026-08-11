@@ -1,0 +1,34 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p......." },
+      {
+        "name": "src_bus[3:0]",
+        "wave": "=..=....",
+        "data": ["0x3 (0011)", "0xC (1100)"]
+      }
+    ],
+    [
+      "Independent destination bit paths",
+      { "name": "dst_clk", "wave": "p.......", "phase": 0.25 },
+      { "name": "dst_bit3", "wave": "0....1.." },
+      { "name": "dst_bit2", "wave": "0...1..." },
+      { "name": "dst_bit1", "wave": "1.....0." },
+      { "name": "dst_bit0", "wave": "1....0.." },
+      {
+        "name": "dst_bus[3:0]",
+        "wave": "=...===.",
+        "data": ["0x3", "0x7 mixed", "0xE mixed", "0xC"]
+      }
+    ]
+  ],
+  "annotations": [
+    { "text": "impossible values", "x": 5, "y": 6.45, "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "FAILURE — independently synchronized bus bits reconverge incoherently" },
+  "foot": {
+    "text": "The source changes only from 0x3 to 0xC, but bit skew creates transient 0x7 and 0xE values at the destination."
+  },
+  "config": { "hscale": 2 }
+}

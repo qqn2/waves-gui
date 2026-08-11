@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "Parent clock domain",
+      { "name": "parent_clk", "wave": "p......." },
+      { "name": "parent_data", "wave": "0.1..0.." }
+    ],
+    [
+      "Divided child domain",
+      { "name": "child_clk", "wave": "p...", "period": 2 },
+      { "name": "child_sample", "wave": "0...1.0." }
+    ]
+  ],
+  "head": { "text": "Generated-clock crossing" },
+  "foot": {
+    "text": "A divided child clock samples parent-domain data on fewer, predictably related edges."
+  },
+  "config": { "hscale": 2 }
+}

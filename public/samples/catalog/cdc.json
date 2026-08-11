@@ -11,7 +11,7 @@
     },
     "curriculumCount": 26,
     "entryCount": 26,
-    "assetEntryCount": 0
+    "assetEntryCount": 26
   },
   "entries": [
     {
@@ -22,7 +22,7 @@
       "description": "Source level remains stable long enough.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -33,7 +33,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -48,6 +48,13 @@
           "- **Initial status:** `index-only`",
           "- Source level remains stable long enough."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/single-bit-two-flop-synchronizer.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -58,7 +65,7 @@
       "description": "Destination sees the change in two or three cycles depending on phase.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -69,7 +76,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -84,6 +91,13 @@
           "- **Initial status:** `index-only`",
           "- Destination sees the change in two or three cycles depending on phase."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/two-flop-synchronizer-latency-variation.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -94,7 +108,7 @@
       "description": "Use an X or metastability annotation at the first synchronizer stage.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -105,7 +119,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -120,6 +134,13 @@
           "- **Initial status:** `index-only`",
           "- Use an `X` or metastability annotation at the first synchronizer stage."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/metastability-conceptual-example.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -130,7 +151,7 @@
       "description": "Deliberately incorrect.",
       "shardId": "cdc",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -141,7 +162,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -159,6 +180,13 @@
           "- **Initial status:** `index-only`",
           "- Deliberately incorrect."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/pulse-lost-slow-destination.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -169,7 +197,7 @@
       "description": "Extend the pulse until destination captures it.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -180,7 +208,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -195,6 +223,13 @@
           "- **Initial status:** `index-only`",
           "- Extend the pulse until destination captures it."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/pulse-stretching.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -205,7 +240,7 @@
       "description": "Source toggles state for every event.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -216,7 +251,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -231,6 +266,13 @@
           "- **Initial status:** `index-only`",
           "- Source toggles state for every event."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/pulse-synchronizer-toggle.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -241,7 +283,7 @@
       "description": "Two source events occur before destination observes the first.",
       "shardId": "cdc",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -252,7 +294,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -270,6 +312,13 @@
           "- **Initial status:** `index-only`",
           "- Two source events occur before destination observes the first."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/toggle-synchronizer-events-too-close.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -280,7 +329,7 @@
       "description": "Reliable single transaction transfer.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -291,7 +340,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -306,6 +355,13 @@
           "- **Initial status:** `index-only`",
           "- Reliable single transaction transfer."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/four-phase-request-acknowledge.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -316,7 +372,7 @@
       "description": "Source cannot issue another request until acknowledgement.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -327,7 +383,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -342,6 +398,13 @@
           "- **Initial status:** `index-only`",
           "- Source cannot issue another request until acknowledgement."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/handshake-source-backpressure.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -352,7 +415,7 @@
       "description": "Deliberately incorrect incoherent capture.",
       "shardId": "cdc",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -363,7 +426,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -378,6 +441,13 @@
           "- **Initial status:** `index-only`",
           "- Deliberately incorrect incoherent capture."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/multi-bit-bus-crossed-independently.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -388,7 +458,7 @@
       "description": "Data held stable around the valid crossing.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -399,7 +469,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -414,6 +484,13 @@
           "- **Initial status:** `index-only`",
           "- Data held stable around the valid crossing."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/data-plus-synchronized-valid.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -424,7 +501,7 @@
       "description": "Source holds data until destination acknowledges.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -435,7 +512,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -450,6 +527,13 @@
           "- **Initial status:** `index-only`",
           "- Source holds data until destination acknowledges."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/mux-based-data-synchronizer.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -460,7 +544,7 @@
       "description": "Typical asynchronous FIFO pointer technique.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -471,7 +555,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -489,6 +573,13 @@
           "- **Initial status:** `index-only`",
           "- Typical asynchronous FIFO pointer technique."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/gray-counter-crossing.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -499,7 +590,7 @@
       "description": "Multiple bits transition and destination captures an impossible value.",
       "shardId": "cdc",
       "tier": "failure",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -510,7 +601,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -528,6 +619,13 @@
           "- **Initial status:** `index-only`",
           "- Multiple bits transition and destination captures an impossible value."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/binary-counter-crossing-failure.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -538,7 +636,7 @@
       "description": "Write clock, write enable, write pointer, full.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -549,7 +647,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -569,6 +667,13 @@
           "- **Initial status:** `index-only`",
           "- Write clock, write enable, write pointer, full."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/asynchronous-fifo-write.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -579,7 +684,7 @@
       "description": "Read clock, read enable, read pointer, empty.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -590,7 +695,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -610,6 +715,13 @@
           "- **Initial status:** `index-only`",
           "- Read clock, read enable, read pointer, empty."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/asynchronous-fifo-read.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -620,7 +732,7 @@
       "description": "Binary-to-Gray, synchronizer, Gray-to-binary.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -631,7 +743,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -649,6 +761,13 @@
           "- **Initial status:** `index-only`",
           "- Binary-to-Gray, synchronizer, Gray-to-binary."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/asynchronous-fifo-pointer-synchronization.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -659,7 +778,7 @@
       "description": "Inverted high Gray-pointer bits.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -670,7 +789,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -688,6 +807,13 @@
           "- **Initial status:** `index-only`",
           "- Inverted high Gray-pointer bits."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/fifo-full-detection.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -698,7 +824,7 @@
       "description": "Synchronized write pointer equals read pointer.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -709,7 +835,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -727,6 +853,13 @@
           "- **Initial status:** `index-only`",
           "- Synchronized write pointer equals read pointer."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/fifo-empty-detection.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -737,7 +870,7 @@
       "description": "Threshold-based flow control.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -748,7 +881,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -766,6 +899,13 @@
           "- **Initial status:** `index-only`",
           "- Threshold-based flow control."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/fifo-threshold-flags.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -776,7 +916,7 @@
       "description": "One pointer resets while the other domain continues.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -787,7 +927,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -805,6 +945,13 @@
           "- **Initial status:** `index-only`",
           "- One pointer resets while the other domain continues."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/reset-mismatch.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -815,7 +962,7 @@
       "description": "Two synchronized bits reconverge into logic.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -826,7 +973,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -841,6 +988,13 @@
           "- **Initial status:** `index-only`",
           "- Two synchronized bits reconverge into logic."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/reconvergence-hazard.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -851,7 +1005,7 @@
       "description": "Show valid timing assumptions.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -862,7 +1016,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -880,6 +1034,13 @@
           "- **Initial status:** `index-only`",
           "- Show valid timing assumptions."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/related-clock-transfer-without-handshake.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -890,7 +1051,7 @@
       "description": "Compare latency and implementation cost.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -901,7 +1062,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -919,6 +1080,13 @@
           "- **Initial status:** `index-only`",
           "- Compare latency and implementation cost."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/related-clock-transfer-conservative-handshake.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -929,7 +1097,7 @@
       "description": "Same nominal frequency, unknown phase.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -940,7 +1108,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc"
@@ -955,6 +1123,13 @@
           "- **Initial status:** `index-only`",
           "- Same nominal frequency, unknown phase."
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/mesochronous-crossing.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     },
     {
@@ -965,7 +1140,7 @@
       "description": "Slightly different frequencies causing elastic-buffer drift.",
       "shardId": "cdc",
       "tier": "intermediate",
-      "contentStatus": "index-only",
+      "contentStatus": "draft",
       "contentKind": "lesson",
       "owner": null,
       "lastReviewed": null,
@@ -976,7 +1151,7 @@
       "references": [],
       "artifactPrompt": null,
       "reviewNotes": [
-        "Planned curriculum entry; waveform and technical content have not been reviewed."
+        "Draft waveform is available for local review; it has not been content-validated."
       ],
       "tags": [
         "cdc",
@@ -995,6 +1170,13 @@
           "- Slightly different frequencies causing elastic-buffer drift.",
           "- # 4. FIFOs, queues and buffering"
         ]
+      },
+      "asset": {
+        "path": "waveforms/cdc/plesiochronous-crossing.json",
+        "format": "undulate-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
       }
     }
   ]

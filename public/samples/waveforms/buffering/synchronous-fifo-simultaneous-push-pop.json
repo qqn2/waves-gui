@@ -1,0 +1,22 @@
+{
+  "signal": [
+    [
+      "Synchronous FIFO (depth 4, starts with A0 and A1)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "push", "wave": "010....." },
+      { "name": "din[7:0]", "wave": "x.=.....", "data": ["0xA2"] },
+      { "name": "pop", "wave": "010....." },
+      { "name": "dout[7:0]", "wave": "x.=.....", "data": ["0xA0"] },
+      { "name": "write_ptr", "wave": "=.=.....", "data": ["2", "3"] },
+      { "name": "read_ptr", "wave": "=.=.....", "data": ["0", "1"] },
+      { "name": "occupancy", "wave": "=.......", "data": ["2"] },
+      { "name": "empty", "wave": "0......." },
+      { "name": "full", "wave": "0......." }
+    ]
+  ],
+  "head": { "text": "Simultaneous FIFO push and pop preserve occupancy" },
+  "foot": {
+    "text": "When neither full nor empty, one edge can remove the older head A0 and store A2. Both pointers advance while occupancy remains 2."
+  },
+  "config": { "hscale": 2 }
+}

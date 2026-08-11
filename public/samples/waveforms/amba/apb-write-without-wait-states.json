@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "APB write",
+      { "name": "PCLK", "wave": "P......." },
+      { "name": "PSEL", "wave": "0.1.0..." },
+      { "name": "PENABLE", "wave": "0..10..." },
+      { "name": "PWRITE", "wave": "0.1.0..." },
+      { "name": "PADDR[15:0]", "wave": "x.=.....", "data": ["0x1000"] },
+      { "name": "PWDATA[31:0]", "wave": "x.=.....", "data": ["0xDEADBEEF"] },
+      { "name": "PREADY", "wave": "1......." }
+    ]
+  ],
+  "head": { "text": "APB write without wait states" },
+  "foot": {
+    "text": "A transfer has one setup cycle (PSEL=1, PENABLE=0), followed by an access cycle. PREADY=1 completes this write on that first access cycle."
+  },
+  "config": { "hscale": 2 }
+}

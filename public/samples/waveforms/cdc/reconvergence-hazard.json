@@ -1,0 +1,28 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p........" },
+      { "name": "src_a", "wave": "0.1......" },
+      { "name": "src_b", "wave": "0.1......" }
+    ],
+    [
+      "Destination synchronizers",
+      { "name": "dst_clk", "wave": "p........", "phase": 0.25 },
+      { "name": "a_sync2", "wave": "0...1....", "phase": 0.25 },
+      { "name": "b_sync2", "wave": "0....1...", "phase": 0.25 }
+    ],
+    [
+      "Reconvergent decode",
+      { "name": "a_and_not_b", "wave": "0...10..." }
+    ]
+  ],
+  "annotations": [
+    { "text": "false one-cycle decode", "x": 4.25, "y": 5.15, "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "FAILURE — independently synchronized bits reconverge" },
+  "foot": {
+    "text": "Both source bits changed together, but their independently synchronized copies become visible one destination cycle apart. The resulting decode is spurious; transfer an encoded word or use a handshake/FIFO instead (compare the mux-based data synchronizer)."
+  },
+  "config": { "hscale": 2 }
+}

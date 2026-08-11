@@ -1,0 +1,25 @@
+{
+  "head": { "text": "APB peripheral write updates a register; a later read returns it" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "APB bus",
+      { "name": "PCLK", "wave": "P........." },
+      { "name": "PSEL", "wave": "0.1.0.1.0." },
+      { "name": "PENABLE", "wave": "0..10..10." },
+      { "name": "PWRITE", "wave": "0.1.0....." },
+      { "name": "PADDR[11:0]", "wave": "x.=.x.=...", "data": ["0x010 CTRL", "0x010 CTRL"] },
+      { "name": "PWDATA[31:0]", "wave": "x.=.x.....", "data": ["0x00000001"] },
+      { "name": "PRDATA[31:0]", "wave": "x......=..", "data": ["0x00000001"] },
+      { "name": "PREADY", "wave": "1........." }
+    ],
+    {},
+    [
+      "Peripheral state",
+      { "name": "CTRL.enable", "wave": "0...1....." }
+    ]
+  ],
+  "foot": {
+    "text": "The write completes in ACCESS and updates CTRL.enable. A later read of the same register returns the stored value."
+  }
+}

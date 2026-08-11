@@ -1,0 +1,24 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p............" },
+      { "name": "src_data", "wave": "=...........", "data": ["0xA5 held until acknowledge"] },
+      { "name": "req", "wave": "0.1.......0.." },
+      { "name": "ack_sync2", "wave": "0.......1.0.." }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p............", "phase": 0.25 },
+      { "name": "req_sync2", "wave": "0...1.....0..", "phase": 0.25 },
+      { "name": "dst_capture", "wave": "0...10....0..", "phase": 0.25 },
+      { "name": "ack", "wave": "0....1....0..", "phase": 0.25 },
+      { "name": "dst_data", "wave": "=...=.......", "data": ["OLD", "0xA5"], "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Related clocks — conservative request/acknowledge transfer" },
+  "foot": {
+    "text": "The source holds 0xA5 while req traverses to the destination and until ack returns. This costs round-trip latency and control logic, but remains robust when the assumed related-clock timing margin is unavailable."
+  },
+  "config": { "hscale": 2 }
+}

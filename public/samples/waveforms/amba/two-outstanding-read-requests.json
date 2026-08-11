@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AXI4-Lite two outstanding read requests (ordered implementation policy)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P.............." },
+    {},
+    [
+      "Two accepted AR requests",
+      { "name": "ARVALID", "wave": "0.110.........." },
+      { "name": "ARREADY", "wave": "0.110.........." },
+      { "name": "ARADDR[31:0]", "wave": "x.=2x..........", "data": ["A: 0x4000_0000", "B: 0x4000_0004"] }
+    ],
+    {},
+    [
+      "Responses stay in request order",
+      { "name": "RVALID", "wave": "0.....110......" },
+      { "name": "RREADY", "wave": "0.....110......" },
+      { "name": "RDATA[31:0]", "wave": "x.....=2x......", "data": ["A data", "B data"] },
+      { "name": "RRESP", "wave": "x.....=2x......", "data": ["OKAY", "OKAY"] }
+    ]
+  ],
+  "foot": { "text": "This is one slave implementation policy: it accepts two AR requests before either response and returns R responses in AR order. AXI4-Lite has no IDs, so it cannot use ID-based out-of-order responses; a simpler slave may instead throttle ARREADY to one outstanding read." }
+}

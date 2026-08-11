@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1344" height="368" viewBox="0 0 1344 368">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="368" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Write clock domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wr_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wgray[2:0]</text>
+<text x="8" y="170" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Read clock domain</text>
+<text x="20" y="204" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >rd_clk</text>
+<text x="20" y="244" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wgray_sync1</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >wgray_sync2</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >write_pointer_seen</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1240" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="840" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">10</text>
+<text x="920" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">11</text>
+<text x="620" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Asynchronous FIFO pointer synchronization uses Gray code</text>
+<text x="620" y="358" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">A binary count is Gray-encoded before crossing; only one bit changes per increment. The two read-clock synchronizer stages delay the pointer before it is decoded locally.</text>
+<line x1="0" y1="48" x2="0" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="880" y1="48" x2="880" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="960" y1="48" x2="960" y2="344" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M800,108 L800,84 L840,84 L840,108 L880,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M880,108 L880,84 L920,84 L920,108 L960,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,136 L16,124 L144,124 L160,136 L144,148 L16,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">000</text>
+<path d="M160,136 L176,124 L304,124 L320,136 L304,148 L176,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="240" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">001</text>
+<path d="M320,136 L336,124 L464,124 L480,136 L464,148 L336,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">011</text>
+<path d="M480,136 L496,124 L944,124 L960,136 L944,148 L496,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="720" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">010</text>
+<path d="M-20,216 L-20,192 L20,192 L20,216 L60,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,216 L60,192 L100,192 L100,216 L140,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,216 L140,192 L180,192 L180,216 L220,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,216 L220,192 L260,192 L260,216 L300,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,216 L300,192 L340,192 L340,216 L380,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,216 L380,192 L420,192 L420,216 L460,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,216 L460,192 L500,192 L500,216 L540,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,216 L540,192 L580,192 L580,216 L620,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,216 L620,192 L660,192 L660,216 L700,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M700,216 L700,192 L740,192 L740,216 L780,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M780,216 L780,192 L820,192 L820,216 L860,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M860,216 L860,192 L900,192 L900,216 L940,216" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,244 L-4,232 L204,232 L220,244 L204,256 L-4,256 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="100" y="244" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">000</text>
+<path d="M220,244 L236,232 L364,232 L380,244 L364,256 L236,256 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="300" y="244" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">001</text>
+<path d="M380,244 L396,232 L524,232 L540,244 L524,256 L396,256 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="460" y="244" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">011</text>
+<path d="M540,244 L556,232 L924,232 L940,244 L924,256 L556,256 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="740" y="244" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">010</text>
+<path d="M-20,284 L-4,272 L284,272 L300,284 L284,296 L-4,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">000</text>
+<path d="M300,284 L316,272 L444,272 L460,284 L444,296 L316,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="380" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">001</text>
+<path d="M460,284 L476,272 L604,272 L620,284 L604,296 L476,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="540" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">011</text>
+<path d="M620,284 L636,272 L924,272 L940,284 L924,296 L636,296 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="780" y="284" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">010</text>
+<path d="M-20,324 L-4,312 L284,312 L300,324 L284,336 L-4,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="140" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M300,324 L316,312 L444,312 L460,324 L444,336 L316,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="380" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M460,324 L476,312 L604,312 L620,324 L604,336 L476,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="540" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">2</text>
+<path d="M620,324 L636,312 L924,312 L940,324 L924,336 L636,336 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="780" y="324" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">3</text>
+  </g>
+</svg>

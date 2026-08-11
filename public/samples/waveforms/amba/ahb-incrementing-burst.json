@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AHB-Lite incrementing burst (INCR4)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Burst address/control phases",
+      { "name": "HCLK", "wave": "P............" },
+      { "name": "HSEL", "wave": "0.11110......" },
+      { "name": "HTRANS", "wave": "x.=234x......", "data": ["NONSEQ", "SEQ", "SEQ", "SEQ"] },
+      { "name": "HBURST", "wave": "x.=...x......", "data": ["INCR4"] },
+      { "name": "HADDR", "wave": "x.=234x......", "data": ["0x100", "0x104", "0x108", "0x10C"] },
+      { "name": "HWRITE", "wave": "0.11110......" }
+    ],
+    {},
+    [
+      "Write-data phases",
+      { "name": "HWDATA", "wave": "x..=234x.....", "data": ["D0", "D1", "D2", "D3"] },
+      { "name": "HREADY", "wave": "1............" },
+      { "name": "HRESP", "wave": "0............" }
+    ]
+  ],
+  "foot": { "text": "A 32-bit aligned INCR4 burst starts with NONSEQ and continues with SEQ; each successive address advances by four bytes." }
+}

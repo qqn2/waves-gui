@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1308" height="380" viewBox="0 0 1308 380">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#111111"/>
+  <rect x="0" y="0" width="104" height="380" fill="#242424"/>
+<text x="8" y="62" fill="#e8e8e8" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Synchronous FIFO (depth 4)</text>
+<text x="20" y="96" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >clk</text>
+<text x="20" y="136" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >pop</text>
+<text x="20" y="176" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dout[7:0]</text>
+<text x="20" y="216" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >read_ptr</text>
+<text x="20" y="256" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >occupancy</text>
+<text x="20" y="296" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >empty</text>
+<text x="20" y="336" fill="#e8e8e8" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >full</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="1204" height="24" fill="#242424"/>
+<text x="40" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#999999" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="602" y="38" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Synchronous FIFO pop removes the head word</text>
+<text x="602" y="370" fill="#e8e8e8" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">With empty low, pop is accepted on the clock edge: the stored head word 0xA5 is delivered, the read pointer advances, occupancy falls from 1 to 0, and empty asserts.</text>
+<line x1="0" y1="48" x2="0" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="356" stroke="#333333" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="356" stroke="#333333" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,148 L80,148 L86,148 L92,124 L160,124 L166,124 L172,148 L240,148 L320,148 L400,148 L480,148 L560,148 L640,148" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,176 L16,164 L144,164 L160,176 L144,188 L16,188 Z" fill="rgba(140, 140, 140, 0.35)" stroke="#a0a0a0" stroke-width="2"/>
+<text x="80" y="176" fill="#b0b0b0" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">x</text>
+<path d="M160,176 L176,164 L624,164 L640,176 L624,188 L176,188 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="176" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+<path d="M0,216 L16,204 L144,204 L160,216 L144,228 L16,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M160,216 L176,204 L624,204 L640,216 L624,228 L176,228 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="216" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M0,256 L16,244 L144,244 L160,256 L144,268 L16,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">1</text>
+<path d="M160,256 L176,244 L624,244 L640,256 L624,268 L176,268 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="400" y="256" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0</text>
+<path d="M0,308 L80,308 L160,308 L166,308 L172,284 L240,284 L320,284 L400,284 L480,284 L560,284 L640,284" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,348 L80,348 L160,348 L240,348 L320,348 L400,348 L480,348 L560,348 L640,348" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+  </g>
+</svg>

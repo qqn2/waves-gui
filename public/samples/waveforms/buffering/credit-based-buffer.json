@@ -1,0 +1,18 @@
+{
+  "signal": [
+    [
+      "Credit-based sender (three remote slots)",
+      { "name": "clk", "wave": "p........" },
+      { "name": "send", "wave": "01010...." },
+      { "name": "tx_data[7:0]", "wave": "x.=.=....", "data": ["0xA0", "0xA1"] },
+      { "name": "credits_available", "wave": "=.=.=....", "data": ["3", "2", "1"] },
+      { "name": "can_send", "wave": "1........" },
+      { "name": "remote_occupancy", "wave": "=.=.=....", "data": ["0", "1", "2"] }
+    ]
+  ],
+  "head": { "text": "Credit-based buffer spends one credit per accepted send" },
+  "foot": {
+    "text": "Credits represent advertised free remote storage. Each accepted transfer consumes exactly one credit, reducing available credits from 3 to 1 as remote occupancy rises."
+  },
+  "config": { "hscale": 2 }
+}

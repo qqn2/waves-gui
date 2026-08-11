@@ -1,0 +1,29 @@
+{
+  "signal": [
+    [
+      "Write domain continues",
+      { "name": "wr_clk", "wave": "p.........." },
+      { "name": "wr_active", "wave": "1.........." },
+      { "name": "wgray", "wave": "=.=.=.=....", "data": ["000", "001", "011", "010"] }
+    ],
+    [
+      "Read domain resets independently",
+      { "name": "rd_clk", "wave": "p..........", "phase": 0.25 },
+      { "name": "rd_rst_n", "wave": "1..0.1.....", "phase": 0.25 },
+      { "name": "rgray", "wave": "=.=.=0.....", "data": ["000", "001", "011", "000"], "phase": 0.25 }
+    ],
+    [
+      "What the writer observes",
+      { "name": "rgray_sync2_in_wr", "wave": "=...=0.....", "data": ["000", "001", "000 after read reset"] },
+      { "name": "traffic_allowed", "wave": "1....0....." }
+    ]
+  ],
+  "annotations": [
+    { "text": "remote pointer moves backward", "x": 5.1, "y": 6.2, "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "CORNER / FAILURE — asynchronous FIFO reset mismatch" },
+  "foot": {
+    "text": "Resetting only the read side returns its synchronized pointer to zero while writes continue. Hold traffic and use a defined coordinated-reset, flush, or epoch protocol; this is a logical reset sequence, not an analog CDC model."
+  },
+  "config": { "hscale": 2 }
+}

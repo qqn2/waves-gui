@@ -1,0 +1,23 @@
+{
+  "signal": [
+    {
+      "name": "clk_a (1.00 T)",
+      "wave": "pppppppp",
+      "periods": [1, 1, 1, 1, 1, 1, 1, 1],
+      "duty_cycles": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    },
+    {
+      "name": "clk_b (1.03 T, asynchronous)",
+      "wave": "pppppppp",
+      "periods": [1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03, 1.03],
+      "duty_cycles": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+      "phase": 0.15
+    }
+  ],
+  "head": {
+    "text": "Nominally similar asynchronous clocks accumulate phase drift"
+  },
+  "foot": {
+    "text": "The 3% period mismatch moves clk_b edges progressively relative to clk_a; no fixed sampling phase is safe."
+  }
+}

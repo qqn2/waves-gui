@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AHB-Lite BUSY transfer inside an incrementing burst" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phases",
+      { "name": "HCLK", "wave": "P..........." },
+      { "name": "HSEL", "wave": "0.111...0..." },
+      { "name": "HTRANS", "wave": "x.=23.x.....", "data": ["NONSEQ", "BUSY", "SEQ"] },
+      { "name": "HBURST", "wave": "x.====x.....", "data": ["INCR"] },
+      { "name": "HADDR", "wave": "x.=.2.x.....", "data": ["0x400", "0x404"] },
+      { "name": "HWRITE", "wave": "0.111...0..." }
+    ],
+    {},
+    [
+      "Completed data phases",
+      { "name": "HWDATA", "wave": "x..=.2x.....", "data": ["D0", "D1"] },
+      { "name": "HREADY", "wave": "1..........." },
+      { "name": "HRESP", "wave": "0..........." }
+    ]
+  ],
+  "foot": { "text": "BUSY retains the burst context but is not a transfer: it has no associated data phase. The next SEQ transfer supplies the next valid address and data beat." }
+}

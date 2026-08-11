@@ -1,0 +1,20 @@
+{
+  "signal": [
+    [
+      "Show-ahead FIFO (depth 4)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "push", "wave": "010....." },
+      { "name": "din[7:0]", "wave": "x.=.....", "data": ["0xA5"] },
+      { "name": "pop", "wave": "000010.." },
+      { "name": "occupancy", "wave": "=.=..=..", "data": ["0", "1", "0"] },
+      { "name": "dout[7:0]", "wave": "x.=.....", "data": ["0xA5"] },
+      { "name": "dout_valid", "wave": "0.1..0.." },
+      { "name": "empty", "wave": "1.0..1.." }
+    ]
+  ],
+  "head": { "text": "Show-ahead FIFO exposes the head word before pop" },
+  "foot": {
+    "text": "After push makes the FIFO nonempty, the head word 0xA5 is already visible with dout_valid high. The later pop consumes that visible word."
+  },
+  "config": { "hscale": 2 }
+}

@@ -1,0 +1,21 @@
+{
+  "signal": [
+    [
+      "Write clock domain",
+      { "name": "wr_clk", "wave": "p........." },
+      { "name": "wr_en", "wave": "1........." },
+      { "name": "wgray_next[3:0]", "wave": "=========.", "data": ["0", "1", "3", "2", "6", "7", "5", "4", "C"] },
+      { "name": "rgray_sync[3:0]", "wave": "=.........", "data": ["0"] },
+      { "name": "invert rgray_sync[3:2]", "wave": "=.........", "data": ["C"] },
+      { "name": "full", "wave": "0.......1." }
+    ]
+  ],
+  "annotations": [
+    { "text": "next write Gray pointer matches C", "x": 8.5, "y": 5.3, "font-size": "12px", "font-weight": 700 }
+  ],
+  "head": { "text": "FIFO full detection compares the next Gray write pointer" },
+  "foot": {
+    "text": "For this 4-bit example, full asserts when wgray_next equals rgray_sync with its two most-significant Gray bits inverted (0 becomes C)."
+  },
+  "config": { "hscale": 2 }
+}

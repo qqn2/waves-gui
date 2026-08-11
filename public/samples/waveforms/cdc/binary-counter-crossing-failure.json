@@ -1,0 +1,33 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p......." },
+      {
+        "name": "binary_count[2:0]",
+        "wave": "=..=....",
+        "data": ["011", "100"]
+      }
+    ],
+    [
+      "Independent destination bit paths",
+      { "name": "dst_clk", "wave": "p.......", "phase": 0.25 },
+      { "name": "dst_bit2", "wave": "0....1.." },
+      { "name": "dst_bit1", "wave": "1...0..." },
+      { "name": "dst_bit0", "wave": "1....0.." },
+      {
+        "name": "captured_count[2:0]",
+        "wave": "=...==..",
+        "data": ["011", "001 impossible", "100"]
+      }
+    ]
+  ],
+  "annotations": [
+    { "text": "impossible 001", "x": 4.6, "y": 5.45, "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "FAILURE — binary counter bits cross independently" },
+  "foot": {
+    "text": "The legal source transition is 011 to 100, but unequal bit arrival exposes the impossible intermediate value 001."
+  },
+  "config": { "hscale": 2 }
+}

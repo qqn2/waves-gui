@@ -1,0 +1,24 @@
+{
+  "head": { "text": "AXI4-Lite B response holds VALID and BRESP until accepted" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Accepted write channels",
+      { "name": "ACLK", "wave": "P........" },
+      { "name": "AWVALID", "wave": "0.10....." },
+      { "name": "AWREADY", "wave": "0.1......" },
+      { "name": "WVALID", "wave": "0.10....." },
+      { "name": "WREADY", "wave": "0.1......" }
+    ],
+    {},
+    [
+      "Write response channel",
+      { "name": "BRESP[1:0]", "wave": "x...=..x.", "data": ["OKAY (held)"] },
+      { "name": "BVALID", "wave": "0...1..0." },
+      { "name": "BREADY", "wave": "0.....1.." }
+    ]
+  ],
+  "foot": {
+    "text": "Once both write channels are accepted, the slave may assert BVALID. It must keep BVALID and BRESP stable while BREADY is low, then completes on the later B handshake."
+  }
+}

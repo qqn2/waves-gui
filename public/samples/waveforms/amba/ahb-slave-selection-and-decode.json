@@ -1,0 +1,23 @@
+{
+  "head": { "text": "AHB-Lite slave selection and address decode" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "HCLK", "wave": "P........" },
+    { "name": "HTRANS", "wave": "x.=2.x...", "data": ["NONSEQ", "NONSEQ"] },
+    { "name": "HADDR", "wave": "x.=2.x...", "data": ["0x0000_0040", "0x4000_0008"] },
+    {},
+    [
+      "Decoded slave selects",
+      { "name": "HSEL_RAM", "wave": "0.10...." },
+      { "name": "HSEL_UART", "wave": "0..10..." },
+      { "name": "HSEL_DEFAULT", "wave": "0........" }
+    ],
+    {},
+    [
+      "Response",
+      { "name": "HREADY", "wave": "1........" },
+      { "name": "HRESP", "wave": "0........" }
+    ]
+  ],
+  "foot": { "text": "Each valid address is decoded to exactly one target. 0x0000_0040 selects RAM; 0x4000_0008 selects UART; the default slave is not selected for either mapped address." }
+}

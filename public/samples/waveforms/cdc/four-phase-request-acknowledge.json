@@ -1,0 +1,21 @@
+{
+  "signal": [
+    [
+      "Source domain",
+      { "name": "src_clk", "wave": "p............." },
+      { "name": "src_request", "wave": "0.1.....0....." },
+      { "name": "ack_sync", "wave": "0......1.....0" }
+    ],
+    [
+      "Destination domain",
+      { "name": "dst_clk", "wave": "p.............", "phase": 0.25 },
+      { "name": "request_sync", "wave": "0...1.....0...", "phase": 0.25 },
+      { "name": "dst_ack", "wave": "0....1.....0..", "phase": 0.25 }
+    ]
+  ],
+  "head": { "text": "Four-phase request/acknowledge CDC" },
+  "foot": {
+    "text": "The transfer completes in order: request rises, acknowledge rises, request falls, then acknowledge falls."
+  },
+  "config": { "hscale": 2 }
+}

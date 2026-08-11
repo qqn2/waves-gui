@@ -1,0 +1,15 @@
+{
+  "signal": [
+    { "name": "transaction_valid", "wave": "01....0....1.." },
+    { "name": "quiesce_request", "wave": "0....1....0..." },
+    { "name": "subsystem_idle", "wave": "10....1....0.." },
+    { "name": "clock_enable", "wave": "1......0..1..." },
+    { "name": "subsystem_clk", "wave": "p......0..p..." }
+  ],
+  "head": {
+    "text": "Clock shutdown waits for transaction drain and idle acknowledgement"
+  },
+  "foot": {
+    "text": "Startup reverses the ordering: enable the clock before accepting new transaction_valid activity."
+  }
+}

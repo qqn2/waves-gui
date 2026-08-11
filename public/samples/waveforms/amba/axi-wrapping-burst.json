@@ -1,0 +1,32 @@
+{
+  "head": { "text": "AXI WRAP4 read burst: a word-aligned address wraps inside one 16-byte region" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Read-address channel",
+      { "name": "ACLK", "wave": "P..........." },
+      { "name": "ARADDR[31:0]", "wave": "x.=x........", "data": ["0x0000_010C"] },
+      { "name": "ARLEN[7:0]", "wave": "x.=x........", "data": ["3 (4 beats)"] },
+      { "name": "ARSIZE[2:0]", "wave": "x.=x........", "data": ["2 (4 bytes/beat)"] },
+      { "name": "ARBURST[1:0]", "wave": "x.=x........", "data": ["WRAP"] },
+      { "name": "ARVALID", "wave": "0.10........" },
+      { "name": "ARREADY", "wave": "0.10........" }
+    ],
+    {},
+    [
+      "Read-data channel",
+      { "name": "RVALID", "wave": "0...1...0..." },
+      { "name": "RREADY", "wave": "1..........." },
+      { "name": "RDATA[31:0]", "wave": "x...=234x...", "data": ["D0", "D1", "D2", "D3"] },
+      { "name": "RLAST", "wave": "0......10..." }
+    ],
+    {},
+    [
+      "Derived beat addresses (not an AXI channel)",
+      { "name": "address for each R beat", "wave": "x...=234x...", "data": ["0x10C", "0x100", "0x104", "0x108"] }
+    ]
+  ],
+  "foot": {
+    "text": "This legal WRAP4 burst starts at the word-aligned address 0x10C. Four 4-byte beats occupy a 16-byte wrap region, so the derived addresses are 0x10C, 0x100, 0x104, and 0x108; only the first address is carried on ARADDR."
+  }
+}

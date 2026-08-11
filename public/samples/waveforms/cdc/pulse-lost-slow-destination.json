@@ -1,0 +1,22 @@
+{
+  "signal": [
+    [
+      "Fast source domain",
+      { "name": "src_clk", "wave": "p.......", "period": 0.5 },
+      { "name": "src_pulse", "wave": "010.....", "period": 0.5 }
+    ],
+    [
+      "Slow destination domain",
+      { "name": "dst_clk", "wave": "p.", "period": 2 },
+      { "name": "captured_pulse", "wave": "0.", "period": 2 }
+    ]
+  ],
+  "annotations": [
+    { "text": "missed", "x": 1, "y": 2.8, "font-weight": 700, "fill": "#b42318" }
+  ],
+  "head": { "text": "FAILURE — a narrow pulse is lost by a slow destination" },
+  "foot": {
+    "text": "The source pulse rises and falls between destination sampling edges, so captured_pulse never asserts."
+  },
+  "config": { "hscale": 2 }
+}

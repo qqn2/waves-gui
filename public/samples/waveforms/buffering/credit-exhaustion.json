@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "Credit-based sender (one remote slot)",
+      { "name": "clk", "wave": "p........" },
+      { "name": "send_request", "wave": "01010...." },
+      { "name": "send_accepted", "wave": "010000..." },
+      { "name": "tx_data[7:0]", "wave": "x.=.=....", "data": ["0xA0", "0xA1 (blocked)"] },
+      { "name": "credits_available", "wave": "=.=......", "data": ["1", "0"] },
+      { "name": "can_send", "wave": "1.0......" },
+      { "name": "blocked_request", "wave": "000010..." }
+    ]
+  ],
+  "head": { "text": "FAILURE: credit exhaustion blocks a send" },
+  "foot": {
+    "text": "The first transfer consumes the only credit. The later send request must be blocked while credits_available is zero; accepting it would overrun the advertised remote capacity."
+  },
+  "config": { "hscale": 2 }
+}

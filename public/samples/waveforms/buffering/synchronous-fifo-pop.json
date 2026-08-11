@@ -1,0 +1,19 @@
+{
+  "signal": [
+    [
+      "Synchronous FIFO (depth 4)",
+      { "name": "clk", "wave": "p......." },
+      { "name": "pop", "wave": "010....." },
+      { "name": "dout[7:0]", "wave": "x.=.....", "data": ["0xA5"] },
+      { "name": "read_ptr", "wave": "=.=.....", "data": ["0", "1"] },
+      { "name": "occupancy", "wave": "=.=.....", "data": ["1", "0"] },
+      { "name": "empty", "wave": "0.1....." },
+      { "name": "full", "wave": "0......." }
+    ]
+  ],
+  "head": { "text": "Synchronous FIFO pop removes the head word" },
+  "foot": {
+    "text": "With empty low, pop is accepted on the clock edge: the stored head word 0xA5 is delivered, the read pointer advances, occupancy falls from 1 to 0, and empty asserts."
+  },
+  "config": { "hscale": 2 }
+}

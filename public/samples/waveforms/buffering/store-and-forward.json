@@ -1,0 +1,27 @@
+{
+  "signal": [
+    [
+      "Ingress packet P1",
+      { "name": "clk", "wave": "p.............." },
+      { "name": "in_valid", "wave": "010101000000000" },
+      { "name": "in_data[7:0]", "wave": "x.=.=.=........", "data": ["P1[0]", "P1[1]", "P1[2]"] },
+      { "name": "in_eop", "wave": "000001000000000" }
+    ],
+    [
+      "Store first, then forward",
+      { "name": "packet_complete", "wave": "0000001........" },
+      { "name": "forward_enable", "wave": "00000001......." },
+      { "name": "out_valid", "wave": "000000001010100" },
+      { "name": "out_data[7:0]", "wave": "x........=.=.=.", "data": ["P1[0]", "P1[1]", "P1[2]"] },
+      { "name": "out_eop", "wave": "000000000000010" }
+    ]
+  ],
+  "annotations": [
+    { "text": "egress waits for EOP", "x": 6.8, "y": 7.05, "font-size": "12px", "font-weight": 700, "fill": "#1d4ed8" }
+  ],
+  "head": { "text": "Store-and-forward waits for the complete packet" },
+  "foot": {
+    "text": "Forwarding does not start until P1's end-of-packet marker has arrived. The added latency permits whole-packet validation or routing before egress begins."
+  },
+  "config": { "hscale": 2 }
+}

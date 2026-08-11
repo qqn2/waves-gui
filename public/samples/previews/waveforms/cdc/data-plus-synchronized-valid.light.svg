@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="904" height="448" viewBox="0 0 904 448">
+  <defs>
+    <pattern id="hatch-x" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0,8 L8,0" stroke="#ff6b6b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect x="0" y="0" width="104" height="448" fill="#f8fafc"/>
+<text x="8" y="62" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Source domain</text>
+<text x="20" y="96" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_clk</text>
+<text x="20" y="136" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_data</text>
+<text x="20" y="176" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >src_valid</text>
+<text x="8" y="210" fill="#111827" font-family="sans-serif" font-weight="600" font-size="11" dominant-baseline="middle" >Destination domain</text>
+<text x="20" y="244" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_clk</text>
+<text x="20" y="284" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >valid_sync1</text>
+<text x="20" y="324" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >valid_sync2</text>
+<text x="20" y="364" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >capture</text>
+<text x="20" y="404" fill="#111827" font-family="sans-serif" font-weight="400" font-size="12" dominant-baseline="middle" >dst_data</text>
+  <g transform="translate(104, 0)">
+    <rect x="0" y="0" width="800" height="24" fill="#f8fafc"/>
+<text x="40" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">0</text>
+<text x="120" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">1</text>
+<text x="200" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">2</text>
+<text x="280" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">3</text>
+<text x="360" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">4</text>
+<text x="440" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">5</text>
+<text x="520" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">6</text>
+<text x="600" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">7</text>
+<text x="680" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">8</text>
+<text x="760" y="12" fill="#475569" font-size="11" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">9</text>
+<text x="400" y="38" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">Stable data with a synchronized valid control</text>
+<text x="400" y="438" fill="#111827" font-size="12" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">src_data is held at 0xA5 before valid asserts and remains stable until after the destination capture.</text>
+<line x1="0" y1="48" x2="0" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="80" y1="48" x2="80" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="160" y1="48" x2="160" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="240" y1="48" x2="240" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="320" y1="48" x2="320" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="400" y1="48" x2="400" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="480" y1="48" x2="480" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="560" y1="48" x2="560" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="640" y1="48" x2="640" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="720" y1="48" x2="720" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<line x1="800" y1="48" x2="800" y2="424" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M0,108 L0,84 L40,84 L40,108 L80,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M80,108 L80,84 L120,84 L120,108 L160,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M160,108 L160,84 L200,84 L200,108 L240,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M240,108 L240,84 L280,84 L280,108 L320,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M320,108 L320,84 L360,84 L360,108 L400,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M400,108 L400,84 L440,84 L440,108 L480,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M480,108 L480,84 L520,84 L520,108 L560,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M560,108 L560,84 L600,84 L600,108 L640,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M640,108 L640,84 L680,84 L680,108 L720,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M720,108 L720,84 L760,84 L760,108 L800,108" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,136 L16,124 L144,124 L160,136 L144,148 L16,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="80" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M160,136 L176,124 L544,124 L560,136 L544,148 L176,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="360" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+<path d="M560,136 L576,124 L784,124 L800,136 L784,148 L576,148 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="680" y="136" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">NEXT</text>
+<path d="M0,188 L80,188 L160,188 L240,188 L246,188 L252,164 L320,164 L400,164 L480,164 L486,164 L492,188 L560,188 L640,188 L720,188 L800,188" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,256 L-20,232 L20,232 L20,256 L60,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M60,256 L60,232 L100,232 L100,256 L140,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M140,256 L140,232 L180,232 L180,256 L220,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M220,256 L220,232 L260,232 L260,256 L300,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M300,256 L300,232 L340,232 L340,256 L380,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M380,256 L380,232 L420,232 L420,256 L460,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M460,256 L460,232 L500,232 L500,256 L540,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M540,256 L540,232 L580,232 L580,256 L620,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M620,256 L620,232 L660,232 L660,256 L700,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M700,256 L700,232 L740,232 L740,256 L780,256" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,296 L60,296 L140,296 L220,296 L300,296 L306,296 L312,272 L380,272 L460,272 L540,272 L546,272 L552,296 L620,296 L700,296 L780,296" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,336 L60,336 L140,336 L220,336 L300,336 L380,336 L386,336 L392,312 L460,312 L540,312 L620,312 L626,312 L632,336 L700,336 L780,336" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M-20,376 L60,376 L140,376 L220,376 L300,376 L380,376 L386,376 L392,352 L460,352 L466,352 L472,376 L540,376 L620,376 L700,376 L780,376" fill="none" stroke="#4A9EFF" stroke-width="2"/>
+<path d="M0,404 L16,392 L384,392 L400,404 L384,416 L16,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="200" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">OLD</text>
+<path d="M400,404 L416,392 L784,392 L800,404 L784,416 L416,416 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="600" y="404" fill="#172033" font-size="14" font-family="sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">0xA5</text>
+  </g>
+</svg>

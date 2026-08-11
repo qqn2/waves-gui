@@ -2,6 +2,7 @@ import { access, readFile, stat } from 'node:fs/promises';
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { loadValidatedSamples, validationReference, validationReviewNote } from './validated-samples.mjs';
+import { loadDraftSamples } from './draft-samples.mjs';
 
 const EXPECTED_SCHEMA_VERSION = 1;
 const EXPECTED_CATALOG_VERSION = 'v1';
@@ -374,10 +375,16 @@ export async function validateSampleCatalog(options = {}) {
   const indexFile = resolve(options.indexFile ?? resolve(samplesDir, 'catalog.v1.json'));
   const errors = [];
   let validatedSamples = new Map();
+  let draftSamples = new Map();
   try {
     validatedSamples = await loadValidatedSamples({ rootDir });
   } catch (error) {
     addError(errors, 'validated samples', error.message);
+  }
+  try {
+    draftSamples = await loadDraftSamples({ rootDir });
+  } catch (error) {
+    addError(errors, 'draft samples', error.message);
   }
   const index = await readJson(indexFile, 'catalog', errors);
   if (!isObject(index)) {
@@ -614,6 +621,29 @@ export async function validateSampleCatalog(options = {}) {
     const expectedNote = validationReviewNote(validation);
     if (!Array.isArray(entry.reviewNotes) || !entry.reviewNotes.includes(expectedNote)) {
       addError(errors, location, 'generated validation review note is missing');
+    }
+  }
+
+  for (const [sourceNumber, draft] of draftSamples) {
+    const entryId = sourceNumbers.get(sourceNumber);
+    const entry = entryId === undefined ? undefined : entriesById.get(entryId);
+    const location = `draft samples sourceNumber ${sourceNumber}`;
+    if (entry === undefined) {
+      addError(errors, location, 'does not resolve to a generated curriculum entry');
+      continue;
+    }
+    // A validation record intentionally overrides a stale same-number draft.
+    if (validatedSamples.has(sourceNumber)) continue;
+    if (entry.contentStatus !== 'draft') {
+      addError(errors, location, 'generated status must be draft');
+    }
+    if (!isObject(entry.asset)
+      || entry.asset.path !== draft.asset.path
+      || entry.asset.format !== draft.asset.format) {
+      addError(errors, location, 'generated asset path and format must match the draft registry');
+    }
+    if (entry.owner !== null || entry.lastReviewed !== null) {
+      addError(errors, location, 'draft entries must not carry reviewer metadata');
     }
   }
 

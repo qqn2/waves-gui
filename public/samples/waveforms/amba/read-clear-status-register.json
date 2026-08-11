@@ -1,0 +1,29 @@
+{
+  "head": { "text": "AXI4-Lite read-clear status register (peripheral policy)" },
+  "config": { "hscale": 2 },
+  "signal": [
+    { "name": "ACLK", "wave": "P............" },
+    {},
+    [
+      "Status state",
+      { "name": "irq_event[3:0]", "wave": "0.10........." },
+      { "name": "STATUS[3:0]", "wave": "0.=......2...", "data": ["0b0101 pending", "0b0000 after read"] }
+    ],
+    {},
+    [
+      "Read address",
+      { "name": "ARVALID", "wave": "0...10......." },
+      { "name": "ARREADY", "wave": "0...10......." },
+      { "name": "ARADDR[31:0]", "wave": "x...=x.......", "data": ["IRQ_STATUS"] }
+    ],
+    {},
+    [
+      "Read response held through backpressure",
+      { "name": "RVALID", "wave": "0.....1..0..." },
+      { "name": "RREADY", "wave": "0.......10..." },
+      { "name": "RDATA[3:0]", "wave": "x.....=..x...", "data": ["0b0101"] },
+      { "name": "RRESP", "wave": "x.....=..x...", "data": ["OKAY"] }
+    ]
+  ],
+  "foot": { "text": "This peripheral policy clears STATUS only on the RVALID/RREADY handshake. RDATA and STATUS remain 0b0101 while RVALID waits, then the register clears after the read completes; AXI4-Lite itself does not mandate read-clear behavior." }
+}

@@ -1,0 +1,22 @@
+{
+  "head": { "text": "AHB-Lite address/data phase overlap" },
+  "config": { "hscale": 2 },
+  "signal": [
+    [
+      "Address/control phase",
+      { "name": "HCLK", "wave": "P........" },
+      { "name": "HSEL", "wave": "0.110...." },
+      { "name": "HTRANS", "wave": "x.=2x....", "data": ["NONSEQ A", "NONSEQ B"] },
+      { "name": "HADDR", "wave": "x.=2x....", "data": ["0x1000 (A)", "0x1004 (B)"] },
+      { "name": "HWRITE", "wave": "0.110...." }
+    ],
+    {},
+    [
+      "Data/response phase",
+      { "name": "HWDATA", "wave": "x..=2x...", "data": ["A: 0xAAAA", "B: 0xBBBB"] },
+      { "name": "HREADY", "wave": "1........" },
+      { "name": "HRESP", "wave": "0........" }
+    ]
+  ],
+  "foot": { "text": "While write data for A completes, address/control for B is already on the bus. The data phase is one transfer behind the address phase." }
+}
