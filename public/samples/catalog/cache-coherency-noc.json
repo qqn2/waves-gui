@@ -1,0 +1,2783 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "cache-coherency-noc",
+    "label": "Cache, coherency, and NoC",
+    "path": "catalog/cache-coherency-noc.json",
+    "sourceNumberRange": {
+      "start": 236,
+      "end": 310
+    },
+    "curriculumCount": 75,
+    "entryCount": 75,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "cache-coherency-noc/cpu-cache-hit",
+      "slug": "cpu-cache-hit",
+      "sourceNumber": 236,
+      "title": "CPU cache hit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CPU cache hit",
+        "body": [
+          "- **Source number:** 236",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/read-miss",
+      "slug": "read-miss",
+      "sourceNumber": 237,
+      "title": "Read miss",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read miss",
+        "body": [
+          "- **Source number:** 237",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/write-hit",
+      "slug": "write-hit",
+      "sourceNumber": 238,
+      "title": "Write hit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write hit",
+        "body": [
+          "- **Source number:** 238",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/write-miss-with-write-allocate",
+      "slug": "write-miss-with-write-allocate",
+      "sourceNumber": 239,
+      "title": "Write miss with write allocate",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write miss with write allocate",
+        "body": [
+          "- **Source number:** 239",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/write-through-cache",
+      "slug": "write-through-cache",
+      "sourceNumber": 240,
+      "title": "Write-through cache",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-through cache",
+        "body": [
+          "- **Source number:** 240",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/write-back-cache",
+      "slug": "write-back-cache",
+      "sourceNumber": 241,
+      "title": "Write-back cache",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-back cache",
+        "body": [
+          "- **Source number:** 241",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/dirty-line-eviction",
+      "slug": "dirty-line-eviction",
+      "sourceNumber": 242,
+      "title": "Dirty-line eviction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dirty-line eviction",
+        "body": [
+          "- **Source number:** 242",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/clean-line-eviction",
+      "slug": "clean-line-eviction",
+      "sourceNumber": 243,
+      "title": "Clean-line eviction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clean-line eviction",
+        "body": [
+          "- **Source number:** 243",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/cache-line-refill",
+      "slug": "cache-line-refill",
+      "sourceNumber": 244,
+      "title": "Cache-line refill",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Cache-line refill",
+        "body": [
+          "- **Source number:** 244",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/critical-word-first-refill",
+      "slug": "critical-word-first-refill",
+      "sourceNumber": 245,
+      "title": "Critical-word-first refill",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Critical-word-first refill",
+        "body": [
+          "- **Source number:** 245",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/nonblocking-cache-with-multiple-misses",
+      "slug": "nonblocking-cache-with-multiple-misses",
+      "sourceNumber": 246,
+      "title": "Nonblocking cache with multiple misses",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Nonblocking cache with multiple misses",
+        "body": [
+          "- **Source number:** 246",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mshr-allocation",
+      "slug": "mshr-allocation",
+      "sourceNumber": 247,
+      "title": "MSHR allocation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MSHR allocation",
+        "body": [
+          "- **Source number:** 247",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mshr-merge",
+      "slug": "mshr-merge",
+      "sourceNumber": 248,
+      "title": "MSHR merge",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MSHR merge",
+        "body": [
+          "- **Source number:** 248",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/load-after-store-forwarding",
+      "slug": "load-after-store-forwarding",
+      "sourceNumber": 249,
+      "title": "Load after store forwarding",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Load after store forwarding",
+        "body": [
+          "- **Source number:** 249",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/store-buffer-drain",
+      "slug": "store-buffer-drain",
+      "sourceNumber": 250,
+      "title": "Store buffer drain",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "buffer"
+      ],
+      "protocols": [],
+      "concepts": [
+        "buffer"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Store buffer drain",
+        "body": [
+          "- **Source number:** 250",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/memory-ordering-fence",
+      "slug": "memory-ordering-fence",
+      "sourceNumber": 251,
+      "title": "Memory ordering fence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Memory ordering fence",
+        "body": [
+          "- **Source number:** 251",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/instruction-cache-invalidation",
+      "slug": "instruction-cache-invalidation",
+      "sourceNumber": 252,
+      "title": "Instruction-cache invalidation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Instruction-cache invalidation",
+        "body": [
+          "- **Source number:** 252",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/data-cache-clean",
+      "slug": "data-cache-clean",
+      "sourceNumber": 253,
+      "title": "Data-cache clean",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Data-cache clean",
+        "body": [
+          "- **Source number:** 253",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/tlb-hit",
+      "slug": "tlb-hit",
+      "sourceNumber": 254,
+      "title": "TLB hit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TLB hit",
+        "body": [
+          "- **Source number:** 254",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/tlb-miss-and-page-table-walk",
+      "slug": "tlb-miss-and-page-table-walk",
+      "sourceNumber": 255,
+      "title": "TLB miss and page-table walk",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TLB miss and page-table walk",
+        "body": [
+          "- **Source number:** 255",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/tlb-refill",
+      "slug": "tlb-refill",
+      "sourceNumber": 256,
+      "title": "TLB refill",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TLB refill",
+        "body": [
+          "- **Source number:** 256",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/page-fault",
+      "slug": "page-fault",
+      "sourceNumber": 257,
+      "title": "Page fault",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Page fault",
+        "body": [
+          "- **Source number:** 257",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/iommu-translation",
+      "slug": "iommu-translation",
+      "sourceNumber": 258,
+      "title": "IOMMU translation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "iommu"
+      ],
+      "protocols": [
+        "iommu"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "IOMMU translation",
+        "body": [
+          "- **Source number:** 258",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/iommu-fault-response",
+      "slug": "iommu-fault-response",
+      "sourceNumber": 259,
+      "title": "IOMMU fault response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "iommu"
+      ],
+      "protocols": [
+        "iommu"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "IOMMU fault response",
+        "body": [
+          "- **Source number:** 259",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/dma-coherent-read",
+      "slug": "dma-coherent-read",
+      "sourceNumber": 260,
+      "title": "DMA coherent read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "dma"
+      ],
+      "protocols": [
+        "dma"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DMA coherent read",
+        "body": [
+          "- **Source number:** 260",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/dma-noncoherent-cache-maintenance-sequence",
+      "slug": "dma-noncoherent-cache-maintenance-sequence",
+      "sourceNumber": 261,
+      "title": "DMA noncoherent cache-maintenance sequence",
+      "description": "Planned curriculum lesson for DMA noncoherent cache-maintenance sequence.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "cache",
+        "dma"
+      ],
+      "protocols": [
+        "dma"
+      ],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DMA noncoherent cache-maintenance sequence",
+        "body": [
+          "- **Source number:** 261",
+          "- **Initial status:** `index-only`",
+          "- ### Coherence-state samples"
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-invalid-to-shared",
+      "slug": "mesi-invalid-to-shared",
+      "sourceNumber": 262,
+      "title": "MESI: Invalid to Shared",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Invalid to Shared",
+        "body": [
+          "- **Source number:** 262",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-invalid-to-exclusive",
+      "slug": "mesi-invalid-to-exclusive",
+      "sourceNumber": 263,
+      "title": "MESI: Invalid to Exclusive",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Invalid to Exclusive",
+        "body": [
+          "- **Source number:** 263",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-exclusive-to-modified",
+      "slug": "mesi-exclusive-to-modified",
+      "sourceNumber": 264,
+      "title": "MESI: Exclusive to Modified",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Exclusive to Modified",
+        "body": [
+          "- **Source number:** 264",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-shared-to-modified-upgrade",
+      "slug": "mesi-shared-to-modified-upgrade",
+      "sourceNumber": 265,
+      "title": "MESI: Shared to Modified upgrade",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Shared to Modified upgrade",
+        "body": [
+          "- **Source number:** 265",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-snoop-read-of-modified-line",
+      "slug": "mesi-snoop-read-of-modified-line",
+      "sourceNumber": 266,
+      "title": "MESI: Snoop read of Modified line",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Snoop read of Modified line",
+        "body": [
+          "- **Source number:** 266",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/mesi-modified-line-writeback",
+      "slug": "mesi-modified-line-writeback",
+      "sourceNumber": 267,
+      "title": "MESI: Modified-line writeback",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MESI: Modified-line writeback",
+        "body": [
+          "- **Source number:** 267",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/two-core-read-sharing",
+      "slug": "two-core-read-sharing",
+      "sourceNumber": 268,
+      "title": "Two-core read sharing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-core read sharing",
+        "body": [
+          "- **Source number:** 268",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/two-core-write-invalidation",
+      "slug": "two-core-write-invalidation",
+      "sourceNumber": 269,
+      "title": "Two-core write invalidation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-core write invalidation",
+        "body": [
+          "- **Source number:** 269",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/false-sharing",
+      "slug": "false-sharing",
+      "sourceNumber": 270,
+      "title": "False sharing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "False sharing",
+        "body": [
+          "- **Source number:** 270",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/snoop-response-latency",
+      "slug": "snoop-response-latency",
+      "sourceNumber": 271,
+      "title": "Snoop response latency",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Snoop response latency",
+        "body": [
+          "- **Source number:** 271",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/snoop-filter-hit",
+      "slug": "snoop-filter-hit",
+      "sourceNumber": 272,
+      "title": "Snoop filter hit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Snoop filter hit",
+        "body": [
+          "- **Source number:** 272",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/snoop-filter-miss",
+      "slug": "snoop-filter-miss",
+      "sourceNumber": 273,
+      "title": "Snoop filter miss",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Snoop filter miss",
+        "body": [
+          "- **Source number:** 273",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/directory-lookup",
+      "slug": "directory-lookup",
+      "sourceNumber": 274,
+      "title": "Directory lookup",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Directory lookup",
+        "body": [
+          "- **Source number:** 274",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/coherence-retry",
+      "slug": "coherence-retry",
+      "sourceNumber": 275,
+      "title": "Coherence retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Coherence retry",
+        "body": [
+          "- **Source number:** 275",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/coherence-race-between-eviction-and-snoop",
+      "slug": "coherence-race-between-eviction-and-snoop",
+      "sourceNumber": 276,
+      "title": "Coherence race between eviction and snoop",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Coherence race between eviction and snoop",
+        "body": [
+          "- **Source number:** 276",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/ace-read-shared",
+      "slug": "ace-read-shared",
+      "sourceNumber": 277,
+      "title": "ACE read shared",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ACE read shared",
+        "body": [
+          "- **Source number:** 277",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/ace-read-unique",
+      "slug": "ace-read-unique",
+      "sourceNumber": 278,
+      "title": "ACE read unique",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ACE read unique",
+        "body": [
+          "- **Source number:** 278",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/ace-clean-unique",
+      "slug": "ace-clean-unique",
+      "sourceNumber": 279,
+      "title": "ACE clean unique",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ACE clean unique",
+        "body": [
+          "- **Source number:** 279",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/ace-snoop-channels",
+      "slug": "ace-snoop-channels",
+      "sourceNumber": 280,
+      "title": "ACE snoop channels",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ACE snoop channels",
+        "body": [
+          "- **Source number:** 280",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/chi-request-data-response-conceptual-transaction",
+      "slug": "chi-request-data-response-conceptual-transaction",
+      "sourceNumber": 281,
+      "title": "CHI request/data/response conceptual transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CHI request/data/response conceptual transaction",
+        "body": [
+          "- **Source number:** 281",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/chi-retry-acknowledge",
+      "slug": "chi-retry-acknowledge",
+      "sourceNumber": 282,
+      "title": "CHI retry acknowledge",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CHI retry acknowledge",
+        "body": [
+          "- **Source number:** 282",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/chi-data-separated-from-response",
+      "slug": "chi-data-separated-from-response",
+      "sourceNumber": 283,
+      "title": "CHI data separated from response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CHI data separated from response",
+        "body": [
+          "- **Source number:** 283",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/chi-transaction-id-reuse-constraints",
+      "slug": "chi-transaction-id-reuse-constraints",
+      "sourceNumber": 284,
+      "title": "CHI transaction ID reuse constraints",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CHI transaction ID reuse constraints",
+        "body": [
+          "- **Source number:** 284",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/chi-credit-flow",
+      "slug": "chi-credit-flow",
+      "sourceNumber": 285,
+      "title": "CHI credit flow",
+      "description": "Planned curriculum lesson for CHI credit flow.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CHI credit flow",
+        "body": [
+          "- **Source number:** 285",
+          "- **Initial status:** `index-only`",
+          "- # 12. Network-on-Chip and arbitration"
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/two-request-round-robin-arbiter",
+      "slug": "two-request-round-robin-arbiter",
+      "sourceNumber": 286,
+      "title": "Two-request round-robin arbiter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-request round-robin arbiter",
+        "body": [
+          "- **Source number:** 286",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/fixed-priority-arbiter",
+      "slug": "fixed-priority-arbiter",
+      "sourceNumber": 287,
+      "title": "Fixed-priority arbiter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Fixed-priority arbiter",
+        "body": [
+          "- **Source number:** 287",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/priority-starvation",
+      "slug": "priority-starvation",
+      "sourceNumber": 288,
+      "title": "Priority starvation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Priority starvation",
+        "body": [
+          "- **Source number:** 288",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/aging-based-arbitration",
+      "slug": "aging-based-arbitration",
+      "sourceNumber": 289,
+      "title": "Aging-based arbitration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Aging-based arbitration",
+        "body": [
+          "- **Source number:** 289",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/weighted-round-robin",
+      "slug": "weighted-round-robin",
+      "sourceNumber": 290,
+      "title": "Weighted round robin",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Weighted round robin",
+        "body": [
+          "- **Source number:** 290",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/grant-hold-until-transaction-completion",
+      "slug": "grant-hold-until-transaction-completion",
+      "sourceNumber": 291,
+      "title": "Grant hold until transaction completion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Grant hold until transaction completion",
+        "body": [
+          "- **Source number:** 291",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/one-hot-grant",
+      "slug": "one-hot-grant",
+      "sourceNumber": 292,
+      "title": "One-hot grant",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "One-hot grant",
+        "body": [
+          "- **Source number:** 292",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/request-withdrawal",
+      "slug": "request-withdrawal",
+      "sourceNumber": 293,
+      "title": "Request withdrawal",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Request withdrawal",
+        "body": [
+          "- **Source number:** 293",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/locking-an-arbiter",
+      "slug": "locking-an-arbiter",
+      "sourceNumber": 294,
+      "title": "Locking an arbiter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Locking an arbiter",
+        "body": [
+          "- **Source number:** 294",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/split-transaction-request-response",
+      "slug": "split-transaction-request-response",
+      "sourceNumber": 295,
+      "title": "Split transaction request/response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Split transaction request/response",
+        "body": [
+          "- **Source number:** 295",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-packet-header-and-payload-flits",
+      "slug": "noc-packet-header-and-payload-flits",
+      "sourceNumber": 296,
+      "title": "NoC packet header and payload flits",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC packet header and payload flits",
+        "body": [
+          "- **Source number:** 296",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/start-of-packet-end-of-packet",
+      "slug": "start-of-packet-end-of-packet",
+      "sourceNumber": 297,
+      "title": "Start-of-packet/end-of-packet",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Start-of-packet/end-of-packet",
+        "body": [
+          "- **Source number:** 297",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/virtual-channel-assignment",
+      "slug": "virtual-channel-assignment",
+      "sourceNumber": 298,
+      "title": "Virtual channel assignment",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Virtual channel assignment",
+        "body": [
+          "- **Source number:** 298",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/virtual-channel-credits",
+      "slug": "virtual-channel-credits",
+      "sourceNumber": 299,
+      "title": "Virtual-channel credits",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Virtual-channel credits",
+        "body": [
+          "- **Source number:** 299",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/credit-exhaustion",
+      "slug": "credit-exhaustion",
+      "sourceNumber": 300,
+      "title": "Credit exhaustion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Credit exhaustion",
+        "body": [
+          "- **Source number:** 300",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/head-of-line-blocking",
+      "slug": "head-of-line-blocking",
+      "sourceNumber": 301,
+      "title": "Head-of-line blocking",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Head-of-line blocking",
+        "body": [
+          "- **Source number:** 301",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/wormhole-routing",
+      "slug": "wormhole-routing",
+      "sourceNumber": 302,
+      "title": "Wormhole routing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wormhole routing",
+        "body": [
+          "- **Source number:** 302",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/store-and-forward-routing",
+      "slug": "store-and-forward-routing",
+      "sourceNumber": 303,
+      "title": "Store-and-forward routing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Store-and-forward routing",
+        "body": [
+          "- **Source number:** 303",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-retry",
+      "slug": "noc-retry",
+      "sourceNumber": 304,
+      "title": "NoC retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC retry",
+        "body": [
+          "- **Source number:** 304",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-parity-error",
+      "slug": "noc-parity-error",
+      "sourceNumber": 305,
+      "title": "NoC parity error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC parity error",
+        "body": [
+          "- **Source number:** 305",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-poison-propagation",
+      "slug": "noc-poison-propagation",
+      "sourceNumber": 306,
+      "title": "NoC poison propagation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC poison propagation",
+        "body": [
+          "- **Source number:** 306",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-ordering-domain",
+      "slug": "noc-ordering-domain",
+      "sourceNumber": 307,
+      "title": "NoC ordering domain",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC ordering domain",
+        "body": [
+          "- **Source number:** 307",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-transaction-reordering",
+      "slug": "noc-transaction-reordering",
+      "sourceNumber": 308,
+      "title": "NoC transaction reordering",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC transaction reordering",
+        "body": [
+          "- **Source number:** 308",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-deadlock-dependency-cycle",
+      "slug": "noc-deadlock-dependency-cycle",
+      "sourceNumber": 309,
+      "title": "NoC deadlock dependency cycle",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "cache-coherency-noc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC deadlock dependency cycle",
+        "body": [
+          "- **Source number:** 309",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "cache-coherency-noc/noc-clock-domain-bridge",
+      "slug": "noc-clock-domain-bridge",
+      "sourceNumber": 310,
+      "title": "NoC clock-domain bridge",
+      "description": "Planned curriculum lesson for NoC clock-domain bridge.",
+      "shardId": "cache-coherency-noc",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cache-coherency-noc",
+        "clock",
+        "noc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "NoC clock-domain bridge",
+        "body": [
+          "- **Source number:** 310",
+          "- **Initial status:** `index-only`",
+          "- # 13. SRAM, ROM and register files"
+        ]
+      }
+    }
+  ]
+}

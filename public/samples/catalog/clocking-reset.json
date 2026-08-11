@@ -1,0 +1,915 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "clocking-reset",
+    "label": "Clocking and reset",
+    "path": "catalog/clocking-reset.json",
+    "sourceNumberRange": {
+      "start": 33,
+      "end": 54
+    },
+    "curriculumCount": 22,
+    "entryCount": 23,
+    "assetEntryCount": 1
+  },
+  "entries": [
+    {
+      "id": "clocking-reset/asynchronous-assertion-synchronous-deassertion",
+      "slug": "asynchronous-assertion-synchronous-deassertion",
+      "sourceNumber": 33,
+      "title": "Asynchronous assertion, synchronous deassertion",
+      "description": "Standard reset synchronizer pattern.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Asynchronous assertion, synchronous deassertion",
+        "body": [
+          "- **Source number:** 33",
+          "- **Initial status:** `index-only`",
+          "- Standard reset synchronizer pattern."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/reset-synchronizer-with-two-flops",
+      "slug": "reset-synchronizer-with-two-flops",
+      "sourceNumber": 34,
+      "title": "Reset synchronizer with two flops",
+      "description": "Show the deassertion pipeline.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reset synchronizer with two flops",
+        "body": [
+          "- **Source number:** 34",
+          "- **Initial status:** `index-only`",
+          "- Show the deassertion pipeline."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/reset-released-while-clock-is-stopped",
+      "slug": "reset-released-while-clock-is-stopped",
+      "sourceNumber": 35,
+      "title": "Reset released while clock is stopped",
+      "description": "Output remains in reset until clocks resume.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reset released while clock is stopped",
+        "body": [
+          "- **Source number:** 35",
+          "- **Initial status:** `index-only`",
+          "- Output remains in reset until clocks resume."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/reset-domain-crossing",
+      "slug": "reset-domain-crossing",
+      "sourceNumber": 36,
+      "title": "Reset-domain crossing",
+      "description": "One block exits reset before another.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reset-domain crossing",
+        "body": [
+          "- **Source number:** 36",
+          "- **Initial status:** `index-only`",
+          "- One block exits reset before another."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/reset-sequencing-between-subsystems",
+      "slug": "reset-sequencing-between-subsystems",
+      "sourceNumber": 37,
+      "title": "Reset sequencing between subsystems",
+      "description": "Power, PLL lock, bus reset, CPU reset.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "reset",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset",
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reset sequencing between subsystems",
+        "body": [
+          "- **Source number:** 37",
+          "- **Initial status:** `index-only`",
+          "- Power, PLL lock, bus reset, CPU reset."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/reset-stretching",
+      "slug": "reset-stretching",
+      "sourceNumber": 38,
+      "title": "Reset stretching",
+      "description": "Keep reset asserted for N cycles after lock.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reset stretching",
+        "body": [
+          "- **Source number:** 38",
+          "- **Initial status:** `index-only`",
+          "- Keep reset asserted for N cycles after lock."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/pll-lock-sequence",
+      "slug": "pll-lock-sequence",
+      "sourceNumber": 39,
+      "title": "PLL lock sequence",
+      "description": "ref_clk, pll_enable, pll_lock, generated_clk.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PLL lock sequence",
+        "body": [
+          "- **Source number:** 39",
+          "- **Initial status:** `index-only`",
+          "- `ref_clk`, `pll_enable`, `pll_lock`, `generated_clk`."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-divider-by-two",
+      "slug": "clock-divider-by-two",
+      "sourceNumber": 40,
+      "title": "Clock divider by two",
+      "description": "Illustrates divided-clock CDC behavior.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock",
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "cdc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock divider by two",
+        "body": [
+          "- **Source number:** 40",
+          "- **Initial status:** `index-only`",
+          "- Illustrates divided-clock CDC behavior."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-divider-by-four",
+      "slug": "clock-divider-by-four",
+      "sourceNumber": 41,
+      "title": "Clock divider by four",
+      "description": "Show deterministic phase relation.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock divider by four",
+        "body": [
+          "- **Source number:** 41",
+          "- **Initial status:** `index-only`",
+          "- Show deterministic phase relation."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/related-clocks-with-phase-offset",
+      "slug": "related-clocks-with-phase-offset",
+      "sourceNumber": 42,
+      "title": "Related clocks with phase offset",
+      "description": "Same frequency but shifted clock edges.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Related clocks with phase offset",
+        "body": [
+          "- **Source number:** 42",
+          "- **Initial status:** `index-only`",
+          "- Same frequency but shifted clock edges."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/generated-clock-crossing",
+      "slug": "generated-clock-crossing",
+      "sourceNumber": 43,
+      "title": "Generated-clock crossing",
+      "description": "Parent clock to divided child clock.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Generated-clock crossing",
+        "body": [
+          "- **Source number:** 43",
+          "- **Initial status:** `index-only`",
+          "- Parent clock to divided child clock."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-mux-switching-incorrectly",
+      "slug": "clock-mux-switching-incorrectly",
+      "sourceNumber": 44,
+      "title": "Clock mux switching incorrectly",
+      "description": "Show a runt pulse or double edge.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock mux switching incorrectly",
+        "body": [
+          "- **Source number:** 44",
+          "- **Initial status:** `index-only`",
+          "- Show a runt pulse or double edge."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/glitch-free-clock-mux",
+      "slug": "glitch-free-clock-mux",
+      "sourceNumber": 45,
+      "title": "Glitch-free clock mux",
+      "description": "Disable old clock before enabling new clock.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Glitch-free clock mux",
+        "body": [
+          "- **Source number:** 45",
+          "- **Initial status:** `index-only`",
+          "- Disable old clock before enabling new clock."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-gating",
+      "slug": "clock-gating",
+      "sourceNumber": 46,
+      "title": "Clock gating",
+      "description": "Enable latched while clock is low.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock gating",
+        "body": [
+          "- **Source number:** 46",
+          "- **Initial status:** `index-only`",
+          "- Enable latched while clock is low."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/unsafe-combinational-clock-gate",
+      "slug": "unsafe-combinational-clock-gate",
+      "sourceNumber": 47,
+      "title": "Unsafe combinational clock gate",
+      "description": "Deliberately show a glitch.",
+      "shardId": "clocking-reset",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Unsafe combinational clock gate",
+        "body": [
+          "- **Source number:** 47",
+          "- **Initial status:** `index-only`",
+          "- Deliberately show a glitch."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/integrated-clock-gating-test-enable",
+      "slug": "integrated-clock-gating-test-enable",
+      "sourceNumber": 48,
+      "title": "Integrated clock-gating test enable",
+      "description": "Functional enable OR scan enable.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Integrated clock-gating test enable",
+        "body": [
+          "- **Source number:** 48",
+          "- **Initial status:** `index-only`",
+          "- Functional enable OR scan enable."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-startup-and-shutdown",
+      "slug": "clock-startup-and-shutdown",
+      "sourceNumber": 49,
+      "title": "Clock startup and shutdown",
+      "description": "Quiesce transaction flow before stopping clock.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock startup and shutdown",
+        "body": [
+          "- **Source number:** 49",
+          "- **Initial status:** `index-only`",
+          "- Quiesce transaction flow before stopping clock."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/dynamic-frequency-change",
+      "slug": "dynamic-frequency-change",
+      "sourceNumber": 50,
+      "title": "Dynamic frequency change",
+      "description": "Pause, reprogram divider/PLL, lock, resume.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dynamic frequency change",
+        "body": [
+          "- **Source number:** 50",
+          "- **Initial status:** `index-only`",
+          "- Pause, reprogram divider/PLL, lock, resume."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-domain-phase-drift",
+      "slug": "clock-domain-phase-drift",
+      "sourceNumber": 51,
+      "title": "Clock-domain phase drift",
+      "description": "Two nominally similar but asynchronous clocks.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock-domain phase drift",
+        "body": [
+          "- **Source number:** 51",
+          "- **Initial status:** `index-only`",
+          "- Two nominally similar but asynchronous clocks."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/duty-cycle-distortion",
+      "slug": "duty-cycle-distortion",
+      "sourceNumber": 52,
+      "title": "Duty-cycle distortion",
+      "description": "Useful for fine-timing and Undulate rendering.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Duty-cycle distortion",
+        "body": [
+          "- **Source number:** 52",
+          "- **Initial status:** `index-only`",
+          "- Useful for fine-timing and Undulate rendering."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/clock-jitter-illustration",
+      "slug": "clock-jitter-illustration",
+      "sourceNumber": 53,
+      "title": "Clock jitter illustration",
+      "description": "Fine-timed edge placement.",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock jitter illustration",
+        "body": [
+          "- **Source number:** 53",
+          "- **Initial status:** `index-only`",
+          "- Fine-timed edge placement."
+        ]
+      }
+    },
+    {
+      "id": "clocking-reset/minimum-pulse-width-violation",
+      "slug": "minimum-pulse-width-violation",
+      "sourceNumber": 54,
+      "title": "Minimum pulse-width violation",
+      "description": "Very narrow high or low phase. This section should demonstrate core CDC concepts with clear, focused examples.",
+      "shardId": "clocking-reset",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "clocking-reset",
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cdc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Minimum pulse-width violation",
+        "body": [
+          "- **Source number:** 54",
+          "- **Initial status:** `index-only`",
+          "- Very narrow high or low phase.",
+          "- # 3. CDC examples",
+          "- This section should demonstrate core CDC concepts with clear, focused examples."
+        ]
+      }
+    },
+    {
+      "id": "general/clock-reset",
+      "slug": "clock-reset",
+      "sourceNumber": null,
+      "title": "Clock and reset",
+      "description": "Clock (P, arrow), active-low reset, enable",
+      "shardId": "clocking-reset",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "clocking-reset",
+        "clock",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "reset"
+      ],
+      "sourceRecord": null,
+      "asset": {
+        "path": "clock-reset.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    }
+  ]
+}

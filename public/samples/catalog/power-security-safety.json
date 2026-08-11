@@ -1,0 +1,1808 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "power-security-safety",
+    "label": "Power, security, and safety",
+    "path": "catalog/power-security-safety.json",
+    "sourceNumberRange": {
+      "start": 648,
+      "end": 695
+    },
+    "curriculumCount": 48,
+    "entryCount": 48,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "power-security-safety/power-domain-shutdown",
+      "slug": "power-domain-shutdown",
+      "sourceNumber": 648,
+      "title": "Power-domain shutdown",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-domain shutdown",
+        "body": [
+          "- **Source number:** 648",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/isolation-before-power-off",
+      "slug": "isolation-before-power-off",
+      "sourceNumber": 649,
+      "title": "Isolation before power-off",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Isolation before power-off",
+        "body": [
+          "- **Source number:** 649",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/power-on-before-isolation-release",
+      "slug": "power-on-before-isolation-release",
+      "sourceNumber": 650,
+      "title": "Power-on before isolation release",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-on before isolation release",
+        "body": [
+          "- **Source number:** 650",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/state-retention-save",
+      "slug": "state-retention-save",
+      "sourceNumber": 651,
+      "title": "State retention save",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "State retention save",
+        "body": [
+          "- **Source number:** 651",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/state-retention-restore",
+      "slug": "state-retention-restore",
+      "sourceNumber": 652,
+      "title": "State retention restore",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "State retention restore",
+        "body": [
+          "- **Source number:** 652",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/retention-failure",
+      "slug": "retention-failure",
+      "sourceNumber": 653,
+      "title": "Retention failure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Retention failure",
+        "body": [
+          "- **Source number:** 653",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/power-good-sequence",
+      "slug": "power-good-sequence",
+      "sourceNumber": 654,
+      "title": "Power-good sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-good sequence",
+        "body": [
+          "- **Source number:** 654",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/voltage-regulator-enable",
+      "slug": "voltage-regulator-enable",
+      "sourceNumber": 655,
+      "title": "Voltage regulator enable",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Voltage regulator enable",
+        "body": [
+          "- **Source number:** 655",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/dynamic-voltage-and-frequency-scaling",
+      "slug": "dynamic-voltage-and-frequency-scaling",
+      "sourceNumber": 656,
+      "title": "Dynamic voltage and frequency scaling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dynamic voltage and frequency scaling",
+        "body": [
+          "- **Source number:** 656",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/clock-stop-before-voltage-change",
+      "slug": "clock-stop-before-voltage-change",
+      "sourceNumber": 657,
+      "title": "Clock stop before voltage change",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock stop before voltage change",
+        "body": [
+          "- **Source number:** 657",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/memory-self-refresh-before-sleep",
+      "slug": "memory-self-refresh-before-sleep",
+      "sourceNumber": 658,
+      "title": "Memory self-refresh before sleep",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Memory self-refresh before sleep",
+        "body": [
+          "- **Source number:** 658",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/wakeup-request",
+      "slug": "wakeup-request",
+      "sourceNumber": 659,
+      "title": "Wakeup request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wakeup request",
+        "body": [
+          "- **Source number:** 659",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/wakeup-acknowledgment",
+      "slug": "wakeup-acknowledgment",
+      "sourceNumber": 660,
+      "title": "Wakeup acknowledgment",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wakeup acknowledgment",
+        "body": [
+          "- **Source number:** 660",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/always-on-controller-sequence",
+      "slug": "always-on-controller-sequence",
+      "sourceNumber": 661,
+      "title": "Always-on controller sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Always-on controller sequence",
+        "body": [
+          "- **Source number:** 661",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/power-domain-dependency",
+      "slug": "power-domain-dependency",
+      "sourceNumber": 662,
+      "title": "Power-domain dependency",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-domain dependency",
+        "body": [
+          "- **Source number:** 662",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/low-power-handshake-timeout",
+      "slug": "low-power-handshake-timeout",
+      "sourceNumber": 663,
+      "title": "Low-power handshake timeout",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Low-power handshake timeout",
+        "body": [
+          "- **Source number:** 663",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/upf-isolation-control-conceptual-example",
+      "slug": "upf-isolation-control-conceptual-example",
+      "sourceNumber": 664,
+      "title": "UPF isolation control conceptual example",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UPF isolation control conceptual example",
+        "body": [
+          "- **Source number:** 664",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/level-shifter-direction",
+      "slug": "level-shifter-direction",
+      "sourceNumber": 665,
+      "title": "Level shifter direction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Level shifter direction",
+        "body": [
+          "- **Source number:** 665",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/power-aware-reset-sequence",
+      "slug": "power-aware-reset-sequence",
+      "sourceNumber": 666,
+      "title": "Power-aware reset sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "reset",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset",
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-aware reset sequence",
+        "body": [
+          "- **Source number:** 666",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/brownout-detection",
+      "slug": "brownout-detection",
+      "sourceNumber": 667,
+      "title": "Brownout detection",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Brownout detection",
+        "body": [
+          "- **Source number:** 667",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/thermal-throttling",
+      "slug": "thermal-throttling",
+      "sourceNumber": 668,
+      "title": "Thermal throttling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Thermal throttling",
+        "body": [
+          "- **Source number:** 668",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/power-state-machine",
+      "slug": "power-state-machine",
+      "sourceNumber": 669,
+      "title": "Power-state machine",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-state machine",
+        "body": [
+          "- **Source number:** 669",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/pcie-cxl-low-power-coordination",
+      "slug": "pcie-cxl-low-power-coordination",
+      "sourceNumber": 670,
+      "title": "PCIe/CXL low-power coordination",
+      "description": "Planned curriculum lesson for PCIe/CXL low-power coordination.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "pcie",
+        "cxl",
+        "power"
+      ],
+      "protocols": [
+        "pcie",
+        "cxl"
+      ],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe/CXL low-power coordination",
+        "body": [
+          "- **Source number:** 670",
+          "- **Initial status:** `index-only`",
+          "- # 28. Security and fault-management samples"
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/secure-boot-state-sequence",
+      "slug": "secure-boot-state-sequence",
+      "sourceNumber": 671,
+      "title": "Secure boot state sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Secure boot state sequence",
+        "body": [
+          "- **Source number:** 671",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/key-loading-handshake",
+      "slug": "key-loading-handshake",
+      "sourceNumber": 672,
+      "title": "Key-loading handshake",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Key-loading handshake",
+        "body": [
+          "- **Source number:** 672",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/key-valid-and-key-zeroization",
+      "slug": "key-valid-and-key-zeroization",
+      "sourceNumber": 673,
+      "title": "Key-valid and key-zeroization",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Key-valid and key-zeroization",
+        "body": [
+          "- **Source number:** 673",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/authentication-success",
+      "slug": "authentication-success",
+      "sourceNumber": 674,
+      "title": "Authentication success",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Authentication success",
+        "body": [
+          "- **Source number:** 674",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/authentication-failure",
+      "slug": "authentication-failure",
+      "sourceNumber": 675,
+      "title": "Authentication failure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Authentication failure",
+        "body": [
+          "- **Source number:** 675",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/aes-block-request-response",
+      "slug": "aes-block-request-response",
+      "sourceNumber": 676,
+      "title": "AES block request/response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AES block request/response",
+        "body": [
+          "- **Source number:** 676",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/crypto-pipeline-with-backpressure",
+      "slug": "crypto-pipeline-with-backpressure",
+      "sourceNumber": 677,
+      "title": "Crypto pipeline with backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Crypto pipeline with backpressure",
+        "body": [
+          "- **Source number:** 677",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/random-number-generator-valid",
+      "slug": "random-number-generator-valid",
+      "sourceNumber": 678,
+      "title": "Random-number generator valid",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Random-number generator valid",
+        "body": [
+          "- **Source number:** 678",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/entropy-health-test-failure",
+      "slug": "entropy-health-test-failure",
+      "sourceNumber": 679,
+      "title": "Entropy health-test failure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Entropy health-test failure",
+        "body": [
+          "- **Source number:** 679",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/privilege-check-failure",
+      "slug": "privilege-check-failure",
+      "sourceNumber": 680,
+      "title": "Privilege-check failure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Privilege-check failure",
+        "body": [
+          "- **Source number:** 680",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/firewall-allow-transaction",
+      "slug": "firewall-allow-transaction",
+      "sourceNumber": 681,
+      "title": "Firewall allow transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Firewall allow transaction",
+        "body": [
+          "- **Source number:** 681",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/firewall-deny-transaction",
+      "slug": "firewall-deny-transaction",
+      "sourceNumber": 682,
+      "title": "Firewall deny transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Firewall deny transaction",
+        "body": [
+          "- **Source number:** 682",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/secure-nonsecure-transaction-attribute",
+      "slug": "secure-nonsecure-transaction-attribute",
+      "sourceNumber": 683,
+      "title": "Secure/nonsecure transaction attribute",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Secure/nonsecure transaction attribute",
+        "body": [
+          "- **Source number:** 683",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/access-control-audit-event",
+      "slug": "access-control-audit-event",
+      "sourceNumber": 684,
+      "title": "Access-control audit event",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Access-control audit event",
+        "body": [
+          "- **Source number:** 684",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/tamper-detection",
+      "slug": "tamper-detection",
+      "sourceNumber": 685,
+      "title": "Tamper detection",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Tamper detection",
+        "body": [
+          "- **Source number:** 685",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/tamper-triggered-zeroization",
+      "slug": "tamper-triggered-zeroization",
+      "sourceNumber": 686,
+      "title": "Tamper-triggered zeroization",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Tamper-triggered zeroization",
+        "body": [
+          "- **Source number:** 686",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/fault-injection",
+      "slug": "fault-injection",
+      "sourceNumber": 687,
+      "title": "Fault injection",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Fault injection",
+        "body": [
+          "- **Source number:** 687",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/parity-fault-propagation",
+      "slug": "parity-fault-propagation",
+      "sourceNumber": 688,
+      "title": "Parity fault propagation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Parity fault propagation",
+        "body": [
+          "- **Source number:** 688",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/ecc-correction",
+      "slug": "ecc-correction",
+      "sourceNumber": 689,
+      "title": "ECC correction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ECC correction",
+        "body": [
+          "- **Source number:** 689",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/fatal-error-escalation",
+      "slug": "fatal-error-escalation",
+      "sourceNumber": 690,
+      "title": "Fatal-error escalation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Fatal-error escalation",
+        "body": [
+          "- **Source number:** 690",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/watchdog-reset-escalation",
+      "slug": "watchdog-reset-escalation",
+      "sourceNumber": 691,
+      "title": "Watchdog reset escalation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Watchdog reset escalation",
+        "body": [
+          "- **Source number:** 691",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/safety-island-heartbeat",
+      "slug": "safety-island-heartbeat",
+      "sourceNumber": 692,
+      "title": "Safety island heartbeat",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "safety"
+      ],
+      "protocols": [],
+      "concepts": [
+        "safety"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Safety island heartbeat",
+        "body": [
+          "- **Source number:** 692",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/dual-core-lockstep-compare",
+      "slug": "dual-core-lockstep-compare",
+      "sourceNumber": 693,
+      "title": "Dual-core lockstep compare",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dual-core lockstep compare",
+        "body": [
+          "- **Source number:** 693",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/lockstep-divergence",
+      "slug": "lockstep-divergence",
+      "sourceNumber": 694,
+      "title": "Lockstep divergence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "power-security-safety",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Lockstep divergence",
+        "body": [
+          "- **Source number:** 694",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "power-security-safety/error-containment-and-subsystem-reset",
+      "slug": "error-containment-and-subsystem-reset",
+      "sourceNumber": 695,
+      "title": "Error containment and subsystem reset",
+      "description": "These are extremely useful because they can demonstrate why a waveform is wrong, not only how a protocol works.",
+      "shardId": "power-security-safety",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "power-security-safety",
+        "reset",
+        "can"
+      ],
+      "protocols": [
+        "can"
+      ],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Error containment and subsystem reset",
+        "body": [
+          "- **Source number:** 695",
+          "- **Initial status:** `index-only`",
+          "- # 29. Verification and assertion-oriented samples",
+          "- These are extremely useful because they can demonstrate why a waveform is wrong, not only how a protocol works."
+        ]
+      }
+    }
+  ]
+}

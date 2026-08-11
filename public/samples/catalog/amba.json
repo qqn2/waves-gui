@@ -1,0 +1,3733 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "amba",
+    "label": "AMBA",
+    "path": "catalog/amba.json",
+    "sourceNumberRange": {
+      "start": 101,
+      "end": 192
+    },
+    "curriculumCount": 92,
+    "entryCount": 98,
+    "assetEntryCount": 6
+  },
+  "entries": [
+    {
+      "id": "amba/apb-write-without-wait-states",
+      "slug": "apb-write-without-wait-states",
+      "sourceNumber": 101,
+      "title": "APB write without wait states",
+      "description": "PCLK, PSEL, PENABLE, PWRITE, PADDR, PWDATA, PREADY.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB write without wait states",
+        "body": [
+          "- **Source number:** 101",
+          "- **Initial status:** `index-only`",
+          "- `PCLK`, `PSEL`, `PENABLE`, `PWRITE`, `PADDR`, `PWDATA`, `PREADY`."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-read-without-wait-states",
+      "slug": "apb-read-without-wait-states",
+      "sourceNumber": 102,
+      "title": "APB read without wait states",
+      "description": "Add PRDATA.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB read without wait states",
+        "body": [
+          "- **Source number:** 102",
+          "- **Initial status:** `index-only`",
+          "- Add `PRDATA`."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-write-with-wait-states",
+      "slug": "apb-write-with-wait-states",
+      "sourceNumber": 103,
+      "title": "APB write with wait states",
+      "description": "Hold address and control stable while PREADY=0.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB write with wait states",
+        "body": [
+          "- **Source number:** 103",
+          "- **Initial status:** `index-only`",
+          "- Hold address and control stable while `PREADY=0`."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-read-with-wait-states",
+      "slug": "apb-read-with-wait-states",
+      "sourceNumber": 104,
+      "title": "APB read with wait states",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB read with wait states",
+        "body": [
+          "- **Source number:** 104",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/back-to-back-apb-transfers-to-the-same-peripheral",
+      "slug": "back-to-back-apb-transfers-to-the-same-peripheral",
+      "sourceNumber": 105,
+      "title": "Back-to-back APB transfers to the same peripheral",
+      "description": "Return to setup phase.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Back-to-back APB transfers to the same peripheral",
+        "body": [
+          "- **Source number:** 105",
+          "- **Initial status:** `index-only`",
+          "- Return to setup phase."
+        ]
+      }
+    },
+    {
+      "id": "amba/back-to-back-apb-transfers-to-different-peripherals",
+      "slug": "back-to-back-apb-transfers-to-different-peripherals",
+      "sourceNumber": 106,
+      "title": "Back-to-back APB transfers to different peripherals",
+      "description": "Change PSELx.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Back-to-back APB transfers to different peripherals",
+        "body": [
+          "- **Source number:** 106",
+          "- **Initial status:** `index-only`",
+          "- Change `PSELx`."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-error-response",
+      "slug": "apb-error-response",
+      "sourceNumber": 107,
+      "title": "APB error response",
+      "description": "PSLVERR sampled at completion.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB error response",
+        "body": [
+          "- **Source number:** 107",
+          "- **Initial status:** `index-only`",
+          "- `PSLVERR` sampled at completion."
+        ]
+      }
+    },
+    {
+      "id": "amba/illegal-apb-control-mutation-during-access",
+      "slug": "illegal-apb-control-mutation-during-access",
+      "sourceNumber": 108,
+      "title": "Illegal APB control mutation during access",
+      "description": "Deliberately invalid.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Illegal APB control mutation during access",
+        "body": [
+          "- **Source number:** 108",
+          "- **Initial status:** `index-only`",
+          "- Deliberately invalid."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-bridge-request",
+      "slug": "apb-bridge-request",
+      "sourceNumber": 109,
+      "title": "APB bridge request",
+      "description": "Upstream bus transaction converted into APB setup/access phases.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB bridge request",
+        "body": [
+          "- **Source number:** 109",
+          "- **Initial status:** `index-only`",
+          "- Upstream bus transaction converted into APB setup/access phases."
+        ]
+      }
+    },
+    {
+      "id": "amba/apb-peripheral-register-read-write",
+      "slug": "apb-peripheral-register-read-write",
+      "sourceNumber": 110,
+      "title": "APB peripheral register read/write",
+      "description": "Add internal register side effects.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "APB peripheral register read/write",
+        "body": [
+          "- **Source number:** 110",
+          "- **Initial status:** `index-only`",
+          "- Add internal register side effects.",
+          "- # 6. AMBA AHB/AHB-Lite"
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-lite-single-read",
+      "slug": "ahb-lite-single-read",
+      "sourceNumber": 111,
+      "title": "AHB-Lite single read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB-Lite single read",
+        "body": [
+          "- **Source number:** 111",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-lite-single-write",
+      "slug": "ahb-lite-single-write",
+      "sourceNumber": 112,
+      "title": "AHB-Lite single write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB-Lite single write",
+        "body": [
+          "- **Source number:** 112",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-address-data-phase-overlap",
+      "slug": "ahb-address-data-phase-overlap",
+      "sourceNumber": 113,
+      "title": "AHB address/data phase overlap",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB address/data phase overlap",
+        "body": [
+          "- **Source number:** 113",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-wait-state-insertion",
+      "slug": "ahb-wait-state-insertion",
+      "sourceNumber": 114,
+      "title": "AHB wait-state insertion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB wait-state insertion",
+        "body": [
+          "- **Source number:** 114",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-error-response",
+      "slug": "ahb-error-response",
+      "sourceNumber": 115,
+      "title": "AHB error response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB error response",
+        "body": [
+          "- **Source number:** 115",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-back-to-back-transfers",
+      "slug": "ahb-back-to-back-transfers",
+      "sourceNumber": 116,
+      "title": "AHB back-to-back transfers",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB back-to-back transfers",
+        "body": [
+          "- **Source number:** 116",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-incrementing-burst",
+      "slug": "ahb-incrementing-burst",
+      "sourceNumber": 117,
+      "title": "AHB incrementing burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB incrementing burst",
+        "body": [
+          "- **Source number:** 117",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-wrapping-burst",
+      "slug": "ahb-wrapping-burst",
+      "sourceNumber": 118,
+      "title": "AHB wrapping burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB wrapping burst",
+        "body": [
+          "- **Source number:** 118",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-busy-transfer",
+      "slug": "ahb-busy-transfer",
+      "sourceNumber": 119,
+      "title": "AHB BUSY transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB BUSY transfer",
+        "body": [
+          "- **Source number:** 119",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-nonseq-followed-by-seq",
+      "slug": "ahb-nonseq-followed-by-seq",
+      "sourceNumber": 120,
+      "title": "AHB NONSEQ followed by SEQ",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB NONSEQ followed by SEQ",
+        "body": [
+          "- **Source number:** 120",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-pipeline-stall",
+      "slug": "ahb-pipeline-stall",
+      "sourceNumber": 121,
+      "title": "AHB pipeline stall",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB pipeline stall",
+        "body": [
+          "- **Source number:** 121",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-slave-selection-and-decode",
+      "slug": "ahb-slave-selection-and-decode",
+      "sourceNumber": 122,
+      "title": "AHB slave selection and decode",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB slave selection and decode",
+        "body": [
+          "- **Source number:** 122",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-default-slave-response",
+      "slug": "ahb-default-slave-response",
+      "sourceNumber": 123,
+      "title": "AHB default slave response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB default slave response",
+        "body": [
+          "- **Source number:** 123",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-arbitration-between-two-masters",
+      "slug": "ahb-arbitration-between-two-masters",
+      "sourceNumber": 124,
+      "title": "AHB arbitration between two masters",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB arbitration between two masters",
+        "body": [
+          "- **Source number:** 124",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-bus-ownership-handover",
+      "slug": "ahb-bus-ownership-handover",
+      "sourceNumber": 125,
+      "title": "AHB bus ownership handover",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB bus ownership handover",
+        "body": [
+          "- **Source number:** 125",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-locked-sequence",
+      "slug": "ahb-locked-sequence",
+      "sourceNumber": 126,
+      "title": "AHB locked sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB locked sequence",
+        "body": [
+          "- **Source number:** 126",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/ahb-split-retry-historical-example",
+      "slug": "ahb-split-retry-historical-example",
+      "sourceNumber": 127,
+      "title": "AHB split/retry historical example",
+      "description": "Useful conceptually even if focusing mostly on AHB-Lite. This should be a major gallery category.",
+      "shardId": "amba",
+      "tier": "stress",
+      "contentStatus": "index-only",
+      "contentKind": "stress",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AHB split/retry historical example",
+        "body": [
+          "- **Source number:** 127",
+          "- **Initial status:** `index-only`",
+          "- Useful conceptually even if focusing mostly on AHB-Lite.",
+          "- # 7. AXI4-Lite",
+          "- This should be a major gallery category."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-aw-and-w-together",
+      "slug": "axi4-lite-write-aw-and-w-together",
+      "sourceNumber": 128,
+      "title": "AXI4-Lite write: AW and W together",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write: AW and W together",
+        "body": [
+          "- **Source number:** 128",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-aw-before-w",
+      "slug": "axi4-lite-write-aw-before-w",
+      "sourceNumber": 129,
+      "title": "AXI4-Lite write: AW before W",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write: AW before W",
+        "body": [
+          "- **Source number:** 129",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-w-before-aw",
+      "slug": "axi4-lite-write-w-before-aw",
+      "sourceNumber": 130,
+      "title": "AXI4-Lite write: W before AW",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write: W before AW",
+        "body": [
+          "- **Source number:** 130",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-response",
+      "slug": "axi4-lite-write-response",
+      "sourceNumber": 131,
+      "title": "AXI4-Lite write response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write response",
+        "body": [
+          "- **Source number:** 131",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-with-aw-backpressure",
+      "slug": "axi4-lite-write-with-aw-backpressure",
+      "sourceNumber": 132,
+      "title": "AXI4-Lite write with AW backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write with AW backpressure",
+        "body": [
+          "- **Source number:** 132",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-with-w-backpressure",
+      "slug": "axi4-lite-write-with-w-backpressure",
+      "sourceNumber": 133,
+      "title": "AXI4-Lite write with W backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write with W backpressure",
+        "body": [
+          "- **Source number:** 133",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-write-response-backpressure",
+      "slug": "axi4-lite-write-response-backpressure",
+      "sourceNumber": 134,
+      "title": "AXI4-Lite write-response backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite write-response backpressure",
+        "body": [
+          "- **Source number:** 134",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-read",
+      "slug": "axi4-lite-read",
+      "sourceNumber": 135,
+      "title": "AXI4-Lite read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite read",
+        "body": [
+          "- **Source number:** 135",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-ar-backpressure",
+      "slug": "axi4-lite-ar-backpressure",
+      "sourceNumber": 136,
+      "title": "AXI4-Lite AR backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite AR backpressure",
+        "body": [
+          "- **Source number:** 136",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi4-lite-r-backpressure",
+      "slug": "axi4-lite-r-backpressure",
+      "sourceNumber": 137,
+      "title": "AXI4-Lite R backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI4-Lite R backpressure",
+        "body": [
+          "- **Source number:** 137",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/independent-simultaneous-read-and-write",
+      "slug": "independent-simultaneous-read-and-write",
+      "sourceNumber": 138,
+      "title": "Independent simultaneous read and write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Independent simultaneous read and write",
+        "body": [
+          "- **Source number:** 138",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/two-outstanding-read-requests",
+      "slug": "two-outstanding-read-requests",
+      "sourceNumber": 139,
+      "title": "Two outstanding read requests",
+      "description": "Useful to discuss what a specific slave supports, even though many simple slaves limit outstanding depth.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two outstanding read requests",
+        "body": [
+          "- **Source number:** 139",
+          "- **Initial status:** `index-only`",
+          "- Useful to discuss what a specific slave supports, even though many simple slaves limit outstanding depth."
+        ]
+      }
+    },
+    {
+      "id": "amba/write-strobe-partial-update",
+      "slug": "write-strobe-partial-update",
+      "sourceNumber": 140,
+      "title": "Write strobe partial update",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write strobe partial update",
+        "body": [
+          "- **Source number:** 140",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/misaligned-address-handling",
+      "slug": "misaligned-address-handling",
+      "sourceNumber": 141,
+      "title": "Misaligned address handling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Misaligned address handling",
+        "body": [
+          "- **Source number:** 141",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/decerr-response",
+      "slug": "decerr-response",
+      "sourceNumber": 142,
+      "title": "DECERR response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DECERR response",
+        "body": [
+          "- **Source number:** 142",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/slverr-response",
+      "slug": "slverr-response",
+      "sourceNumber": 143,
+      "title": "SLVERR response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SLVERR response",
+        "body": [
+          "- **Source number:** 143",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/register-with-write-one-to-clear-bits",
+      "slug": "register-with-write-one-to-clear-bits",
+      "sourceNumber": 144,
+      "title": "Register with write-one-to-clear bits",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Register with write-one-to-clear bits",
+        "body": [
+          "- **Source number:** 144",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/read-clear-status-register",
+      "slug": "read-clear-status-register",
+      "sourceNumber": 145,
+      "title": "Read-clear status register",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read-clear status register",
+        "body": [
+          "- **Source number:** 145",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-lite-bridge-timeout",
+      "slug": "axi-lite-bridge-timeout",
+      "sourceNumber": 146,
+      "title": "AXI-Lite bridge timeout",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Lite bridge timeout",
+        "body": [
+          "- **Source number:** 146",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/incorrect-coupling-of-awready-and-wready",
+      "slug": "incorrect-coupling-of-awready-and-wready",
+      "sourceNumber": 147,
+      "title": "Incorrect coupling of AWREADY and WREADY",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Incorrect coupling of AWREADY and WREADY",
+        "body": [
+          "- **Source number:** 147",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/incorrect-master-dropping-valid-early",
+      "slug": "incorrect-master-dropping-valid-early",
+      "sourceNumber": 148,
+      "title": "Incorrect master dropping VALID early",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Incorrect master dropping VALID early",
+        "body": [
+          "- **Source number:** 148",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/payload-instability-while-valid-waits",
+      "slug": "payload-instability-while-valid-waits",
+      "sourceNumber": 149,
+      "title": "Payload instability while VALID waits",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Payload instability while VALID waits",
+        "body": [
+          "- **Source number:** 149",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-lite-skid-buffered-slave",
+      "slug": "axi-lite-skid-buffered-slave",
+      "sourceNumber": 150,
+      "title": "AXI-Lite skid-buffered slave",
+      "description": "Break AXI into many small samples. A single giant AXI sample will teach less.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Lite skid-buffered slave",
+        "body": [
+          "- **Source number:** 150",
+          "- **Initial status:** `index-only`",
+          "- # 8. Full AXI4",
+          "- Break AXI into many small samples. A single giant AXI sample will teach less."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-single-beat-read",
+      "slug": "axi-single-beat-read",
+      "sourceNumber": 151,
+      "title": "AXI single-beat read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI single-beat read",
+        "body": [
+          "- **Source number:** 151",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-single-beat-write",
+      "slug": "axi-single-beat-write",
+      "sourceNumber": 152,
+      "title": "AXI single-beat write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI single-beat write",
+        "body": [
+          "- **Source number:** 152",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-incrementing-read-burst",
+      "slug": "axi-incrementing-read-burst",
+      "sourceNumber": 153,
+      "title": "AXI incrementing read burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI incrementing read burst",
+        "body": [
+          "- **Source number:** 153",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-incrementing-write-burst",
+      "slug": "axi-incrementing-write-burst",
+      "sourceNumber": 154,
+      "title": "AXI incrementing write burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI incrementing write burst",
+        "body": [
+          "- **Source number:** 154",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-fixed-burst",
+      "slug": "axi-fixed-burst",
+      "sourceNumber": 155,
+      "title": "AXI fixed burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI fixed burst",
+        "body": [
+          "- **Source number:** 155",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-wrapping-burst",
+      "slug": "axi-wrapping-burst",
+      "sourceNumber": 156,
+      "title": "AXI wrapping burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI wrapping burst",
+        "body": [
+          "- **Source number:** 156",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-rlast",
+      "slug": "axi-rlast",
+      "sourceNumber": 157,
+      "title": "AXI `RLAST`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI `RLAST`",
+        "body": [
+          "- **Source number:** 157",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-wlast",
+      "slug": "axi-wlast",
+      "sourceNumber": 158,
+      "title": "AXI `WLAST`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI `WLAST`",
+        "body": [
+          "- **Source number:** 158",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/write-data-burst-backpressure",
+      "slug": "write-data-burst-backpressure",
+      "sourceNumber": 159,
+      "title": "Write-data burst backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-data burst backpressure",
+        "body": [
+          "- **Source number:** 159",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/read-data-burst-backpressure",
+      "slug": "read-data-burst-backpressure",
+      "sourceNumber": 160,
+      "title": "Read-data burst backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read-data burst backpressure",
+        "body": [
+          "- **Source number:** 160",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/address-channel-backpressure",
+      "slug": "address-channel-backpressure",
+      "sourceNumber": 161,
+      "title": "Address-channel backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Address-channel backpressure",
+        "body": [
+          "- **Source number:** 161",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/separate-aw-and-w-timing",
+      "slug": "separate-aw-and-w-timing",
+      "sourceNumber": 162,
+      "title": "Separate AW and W timing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Separate AW and W timing",
+        "body": [
+          "- **Source number:** 162",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/multiple-outstanding-reads-with-different-ids",
+      "slug": "multiple-outstanding-reads-with-different-ids",
+      "sourceNumber": 163,
+      "title": "Multiple outstanding reads with different IDs",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Multiple outstanding reads with different IDs",
+        "body": [
+          "- **Source number:** 163",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/interleaved-read-responses-by-id",
+      "slug": "interleaved-read-responses-by-id",
+      "sourceNumber": 164,
+      "title": "Interleaved read responses by ID",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Interleaved read responses by ID",
+        "body": [
+          "- **Source number:** 164",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/out-of-order-read-completion",
+      "slug": "out-of-order-read-completion",
+      "sourceNumber": 165,
+      "title": "Out-of-order read completion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Out-of-order read completion",
+        "body": [
+          "- **Source number:** 165",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/multiple-outstanding-writes",
+      "slug": "multiple-outstanding-writes",
+      "sourceNumber": 166,
+      "title": "Multiple outstanding writes",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Multiple outstanding writes",
+        "body": [
+          "- **Source number:** 166",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/write-response-associated-with-id",
+      "slug": "write-response-associated-with-id",
+      "sourceNumber": 167,
+      "title": "Write response associated with ID",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write response associated with ID",
+        "body": [
+          "- **Source number:** 167",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/burst-crossing-a-4-kib-boundary-illegal",
+      "slug": "burst-crossing-a-4-kib-boundary-illegal",
+      "sourceNumber": 168,
+      "title": "Burst crossing a 4 KiB boundary — illegal",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Burst crossing a 4 KiB boundary â€” illegal",
+        "body": [
+          "- **Source number:** 168",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/narrow-transfer-on-wider-bus",
+      "slug": "narrow-transfer-on-wider-bus",
+      "sourceNumber": 169,
+      "title": "Narrow transfer on wider bus",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Narrow transfer on wider bus",
+        "body": [
+          "- **Source number:** 169",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/unaligned-transfer",
+      "slug": "unaligned-transfer",
+      "sourceNumber": 170,
+      "title": "Unaligned transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Unaligned transfer",
+        "body": [
+          "- **Source number:** 170",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/byte-lane-wstrb",
+      "slug": "byte-lane-wstrb",
+      "sourceNumber": 171,
+      "title": "Byte-lane `WSTRB`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Byte-lane `WSTRB`",
+        "body": [
+          "- **Source number:** 171",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/exclusive-read-write-success",
+      "slug": "exclusive-read-write-success",
+      "sourceNumber": 172,
+      "title": "Exclusive read/write success",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Exclusive read/write success",
+        "body": [
+          "- **Source number:** 172",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/exclusive-access-failure",
+      "slug": "exclusive-access-failure",
+      "sourceNumber": 173,
+      "title": "Exclusive access failure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Exclusive access failure",
+        "body": [
+          "- **Source number:** 173",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/atomic-operation-conceptual-sample",
+      "slug": "atomic-operation-conceptual-sample",
+      "sourceNumber": 174,
+      "title": "Atomic operation conceptual sample",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Atomic operation conceptual sample",
+        "body": [
+          "- **Source number:** 174",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-qos-arbitration",
+      "slug": "axi-qos-arbitration",
+      "sourceNumber": 175,
+      "title": "AXI QoS arbitration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI QoS arbitration",
+        "body": [
+          "- **Source number:** 175",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-region-signaling",
+      "slug": "axi-region-signaling",
+      "sourceNumber": 176,
+      "title": "AXI region signaling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI region signaling",
+        "body": [
+          "- **Source number:** 176",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-protection-attributes",
+      "slug": "axi-protection-attributes",
+      "sourceNumber": 177,
+      "title": "AXI protection attributes",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI protection attributes",
+        "body": [
+          "- **Source number:** 177",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-cache-attributes",
+      "slug": "axi-cache-attributes",
+      "sourceNumber": 178,
+      "title": "AXI cache attributes",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi",
+        "cache"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI cache attributes",
+        "body": [
+          "- **Source number:** 178",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-user-sideband",
+      "slug": "axi-user-sideband",
+      "sourceNumber": 179,
+      "title": "AXI user sideband",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI user sideband",
+        "body": [
+          "- **Source number:** 179",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-timeout-and-transaction-abort-policy",
+      "slug": "axi-timeout-and-transaction-abort-policy",
+      "sourceNumber": 180,
+      "title": "AXI timeout and transaction abort policy",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI timeout and transaction abort policy",
+        "body": [
+          "- **Source number:** 180",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-width-converter-32-bit-to-128-bit",
+      "slug": "axi-width-converter-32-bit-to-128-bit",
+      "sourceNumber": 181,
+      "title": "AXI width converter: 32-bit to 128-bit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI width converter: 32-bit to 128-bit",
+        "body": [
+          "- **Source number:** 181",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-width-converter-128-bit-to-32-bit",
+      "slug": "axi-width-converter-128-bit-to-32-bit",
+      "sourceNumber": 182,
+      "title": "AXI width converter: 128-bit to 32-bit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI width converter: 128-bit to 32-bit",
+        "body": [
+          "- **Source number:** 182",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-clock-converter",
+      "slug": "axi-clock-converter",
+      "sourceNumber": 183,
+      "title": "AXI clock converter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "clock",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI clock converter",
+        "body": [
+          "- **Source number:** 183",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-register-slice",
+      "slug": "axi-register-slice",
+      "sourceNumber": 184,
+      "title": "AXI register slice",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI register slice",
+        "body": [
+          "- **Source number:** 184",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-crossbar-arbitration",
+      "slug": "axi-crossbar-arbitration",
+      "sourceNumber": 185,
+      "title": "AXI crossbar arbitration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI crossbar arbitration",
+        "body": [
+          "- **Source number:** 185",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-decode-error",
+      "slug": "axi-decode-error",
+      "sourceNumber": 186,
+      "title": "AXI decode error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI decode error",
+        "body": [
+          "- **Source number:** 186",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-slave-error",
+      "slug": "axi-slave-error",
+      "sourceNumber": 187,
+      "title": "AXI slave error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI slave error",
+        "body": [
+          "- **Source number:** 187",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-outstanding-limit-throttling",
+      "slug": "axi-outstanding-limit-throttling",
+      "sourceNumber": 188,
+      "title": "AXI outstanding-limit throttling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI outstanding-limit throttling",
+        "body": [
+          "- **Source number:** 188",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-write-data-starvation",
+      "slug": "axi-write-data-starvation",
+      "sourceNumber": 189,
+      "title": "AXI write-data starvation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI write-data starvation",
+        "body": [
+          "- **Source number:** 189",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-read-data-starvation",
+      "slug": "axi-read-data-starvation",
+      "sourceNumber": 190,
+      "title": "AXI read-data starvation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI read-data starvation",
+        "body": [
+          "- **Source number:** 190",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/axi-deadlock-caused-by-channel-dependency",
+      "slug": "axi-deadlock-caused-by-channel-dependency",
+      "sourceNumber": 191,
+      "title": "AXI deadlock caused by channel dependency",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "amba",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI deadlock caused by channel dependency",
+        "body": [
+          "- **Source number:** 191",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "amba/correct-independent-channel-implementation",
+      "slug": "correct-independent-channel-implementation",
+      "sourceNumber": 192,
+      "title": "Correct independent-channel implementation",
+      "description": "Planned curriculum lesson for Correct independent-channel implementation.",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "amba"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Correct independent-channel implementation",
+        "body": [
+          "- **Source number:** 192",
+          "- **Initial status:** `index-only`",
+          "- # 9. AXI-Stream"
+        ]
+      }
+    },
+    {
+      "id": "amba/apb/write",
+      "slug": "apb-write",
+      "sourceNumber": null,
+      "title": "Write",
+      "description": "PSEL/PENABLE/PREADY setup and access with PADDR/PWDATA (IHI0024E Fig 3-1)",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-apb-write.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "amba/apb/read",
+      "slug": "apb-read",
+      "sourceNumber": null,
+      "title": "Read",
+      "description": "PSEL/PENABLE/PREADY setup and access with PADDR/PRDATA (IHI0024E Fig 3-4)",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "apb"
+      ],
+      "protocols": [
+        "apb"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-apb-read.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "amba/ahb/write",
+      "slug": "ahb-write",
+      "sourceNumber": null,
+      "title": "Single write",
+      "description": "HTRANS/HADDR/HWRITE/HBURST followed by HWDATA/HREADY/HRESP (IHI0033C)",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-ahb-write.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "amba/ahb/transfer-types",
+      "slug": "transfer-types",
+      "sourceNumber": null,
+      "title": "Transfer types",
+      "description": "HTRANS/HADDR/HREADY with NONSEQ, BUSY, SEQ, INCR, and a wait state",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "ahb"
+      ],
+      "protocols": [
+        "ahb"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-ahb-transfer-types.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "amba/axi/write",
+      "slug": "axi-write",
+      "sourceNumber": null,
+      "title": "Write",
+      "description": "AWADDR/AWVALID/AWREADY; WDATA/WSTRB/WLAST; BVALID/BREADY/BRESP",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-axi-write.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "amba/axi/read",
+      "slug": "axi-read",
+      "sourceNumber": null,
+      "title": "Read",
+      "description": "ARADDR/ARLEN/ARVALID/ARREADY; RDATA/RRESP/RLAST/RVALID/RREADY",
+      "shardId": "amba",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "amba",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "amba-axi-read.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    }
+  ]
+}

@@ -23,9 +23,12 @@
     "test:visual": "vitest run src/undulateBridge/visualConformance.test.ts",
     "test:security": "vitest run src/security/hostileInput.test.ts",
     "test:e2e": "playwright test",
+    "samples:catalog": "node scripts/generate-sample-catalog.mjs",
     "confidentiality:check": "node scripts/check-confidentiality.mjs",
     "licenses:generate": "node scripts/generate-third-party-notices.mjs",
     "samples:previews": "node scripts/generate-sample-previews.mjs",
+    "samples:check": "node scripts/check-sample-catalog.mjs",
+    "samples:validate": "npm run samples:catalog && npm run samples:previews && npm run samples:check",
     "licenses:check": "node scripts/check-production-artifact.mjs",
     "check": "npm run confidentiality:check && npm run lint && npm test && npm run test:visual && npm run test:security && npm run build && npm run licenses:check",
     "deploy": "npm run check && wrangler deploy"

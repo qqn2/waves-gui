@@ -1,0 +1,2538 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "networking-media",
+    "label": "Networking and media",
+    "path": "catalog/networking-media.json",
+    "sourceNumberRange": {
+      "start": 580,
+      "end": 647
+    },
+    "curriculumCount": 68,
+    "entryCount": 68,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "networking-media/ethernet-preamble-and-sfd",
+      "slug": "ethernet-preamble-and-sfd",
+      "sourceNumber": 580,
+      "title": "Ethernet preamble and SFD",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet preamble and SFD",
+        "body": [
+          "- **Source number:** 580",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-mac-frame",
+      "slug": "ethernet-mac-frame",
+      "sourceNumber": 581,
+      "title": "Ethernet MAC frame",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet MAC frame",
+        "body": [
+          "- **Source number:** 581",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-interpacket-gap",
+      "slug": "ethernet-interpacket-gap",
+      "sourceNumber": 582,
+      "title": "Ethernet interpacket gap",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet interpacket gap",
+        "body": [
+          "- **Source number:** 582",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-crc-error",
+      "slug": "ethernet-crc-error",
+      "sourceNumber": 583,
+      "title": "Ethernet CRC error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet CRC error",
+        "body": [
+          "- **Source number:** 583",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-pause-frame",
+      "slug": "ethernet-pause-frame",
+      "sourceNumber": 584,
+      "title": "Ethernet pause frame",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet pause frame",
+        "body": [
+          "- **Source number:** 584",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-transmit-ready-valid",
+      "slug": "ethernet-transmit-ready-valid",
+      "sourceNumber": 585,
+      "title": "Ethernet transmit ready/valid",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet transmit ready/valid",
+        "body": [
+          "- **Source number:** 585",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-receive-ready-valid",
+      "slug": "ethernet-receive-ready-valid",
+      "sourceNumber": 586,
+      "title": "Ethernet receive ready/valid",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet receive ready/valid",
+        "body": [
+          "- **Source number:** 586",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/mii-transmit-nibble-stream",
+      "slug": "mii-transmit-nibble-stream",
+      "sourceNumber": 587,
+      "title": "MII transmit nibble stream",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MII transmit nibble stream",
+        "body": [
+          "- **Source number:** 587",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/rmii-transfer",
+      "slug": "rmii-transfer",
+      "sourceNumber": 588,
+      "title": "RMII transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "RMII transfer",
+        "body": [
+          "- **Source number:** 588",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/rgmii-double-data-rate-transfer",
+      "slug": "rgmii-double-data-rate-transfer",
+      "sourceNumber": 589,
+      "title": "RGMII double-data-rate transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "RGMII double-data-rate transfer",
+        "body": [
+          "- **Source number:** 589",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/gmii-transfer",
+      "slug": "gmii-transfer",
+      "sourceNumber": 590,
+      "title": "GMII transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "GMII transfer",
+        "body": [
+          "- **Source number:** 590",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/xgmii-control-and-data",
+      "slug": "xgmii-control-and-data",
+      "sourceNumber": 591,
+      "title": "XGMII control and data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "XGMII control and data",
+        "body": [
+          "- **Source number:** 591",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ethernet-frame-with-vlan-tag",
+      "slug": "ethernet-frame-with-vlan-tag",
+      "sourceNumber": 592,
+      "title": "Ethernet frame with VLAN tag",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "ethernet"
+      ],
+      "protocols": [
+        "ethernet"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ethernet frame with VLAN tag",
+        "body": [
+          "- **Source number:** 592",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/arp-request-and-response-conceptual-timeline",
+      "slug": "arp-request-and-response-conceptual-timeline",
+      "sourceNumber": 593,
+      "title": "ARP request and response conceptual timeline",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ARP request and response conceptual timeline",
+        "body": [
+          "- **Source number:** 593",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ipv4-packet-streaming",
+      "slug": "ipv4-packet-streaming",
+      "sourceNumber": 594,
+      "title": "IPv4 packet streaming",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "IPv4 packet streaming",
+        "body": [
+          "- **Source number:** 594",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/udp-packet-streaming",
+      "slug": "udp-packet-streaming",
+      "sourceNumber": 595,
+      "title": "UDP packet streaming",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UDP packet streaming",
+        "body": [
+          "- **Source number:** 595",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/tcp-acknowledgment-conceptual-sequence",
+      "slug": "tcp-acknowledgment-conceptual-sequence",
+      "sourceNumber": 596,
+      "title": "TCP acknowledgment conceptual sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TCP acknowledgment conceptual sequence",
+        "body": [
+          "- **Source number:** 596",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/packet-parser-stages",
+      "slug": "packet-parser-stages",
+      "sourceNumber": 597,
+      "title": "Packet parser stages",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet parser stages",
+        "body": [
+          "- **Source number:** 597",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/header-extraction",
+      "slug": "header-extraction",
+      "sourceNumber": 598,
+      "title": "Header extraction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Header extraction",
+        "body": [
+          "- **Source number:** 598",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/checksum-offload",
+      "slug": "checksum-offload",
+      "sourceNumber": 599,
+      "title": "Checksum offload",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Checksum offload",
+        "body": [
+          "- **Source number:** 599",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/packet-classification",
+      "slug": "packet-classification",
+      "sourceNumber": 600,
+      "title": "Packet classification",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet classification",
+        "body": [
+          "- **Source number:** 600",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/packet-queue-congestion",
+      "slug": "packet-queue-congestion",
+      "sourceNumber": 601,
+      "title": "Packet queue congestion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet queue congestion",
+        "body": [
+          "- **Source number:** 601",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/packet-drop",
+      "slug": "packet-drop",
+      "sourceNumber": 602,
+      "title": "Packet drop",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet drop",
+        "body": [
+          "- **Source number:** 602",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/priority-flow-control",
+      "slug": "priority-flow-control",
+      "sourceNumber": 603,
+      "title": "Priority flow control",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Priority flow control",
+        "body": [
+          "- **Source number:** 603",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/ptp-timestamp-capture",
+      "slug": "ptp-timestamp-capture",
+      "sourceNumber": 604,
+      "title": "PTP timestamp capture",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PTP timestamp capture",
+        "body": [
+          "- **Source number:** 604",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/cut-through-switch",
+      "slug": "cut-through-switch",
+      "sourceNumber": 605,
+      "title": "Cut-through switch",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Cut-through switch",
+        "body": [
+          "- **Source number:** 605",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/store-and-forward-switch",
+      "slug": "store-and-forward-switch",
+      "sourceNumber": 606,
+      "title": "Store-and-forward switch",
+      "description": "Planned curriculum lesson for Store-and-forward switch.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Store-and-forward switch",
+        "body": [
+          "- **Source number:** 606",
+          "- **Initial status:** `index-only`",
+          "- # 25. USB and common peripheral interfaces"
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-reset",
+      "slug": "usb-reset",
+      "sourceNumber": 607,
+      "title": "USB reset",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "reset",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB reset",
+        "body": [
+          "- **Source number:** 607",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-packet-sync-pid-data-crc-conceptual-sequence",
+      "slug": "usb-packet-sync-pid-data-crc-conceptual-sequence",
+      "sourceNumber": 608,
+      "title": "USB packet SYNC/PID/data/CRC conceptual sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB packet SYNC/PID/data/CRC conceptual sequence",
+        "body": [
+          "- **Source number:** 608",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-setup-transaction",
+      "slug": "usb-setup-transaction",
+      "sourceNumber": 609,
+      "title": "USB SETUP transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB SETUP transaction",
+        "body": [
+          "- **Source number:** 609",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-control-transfer",
+      "slug": "usb-control-transfer",
+      "sourceNumber": 610,
+      "title": "USB control transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB control transfer",
+        "body": [
+          "- **Source number:** 610",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-bulk-out",
+      "slug": "usb-bulk-out",
+      "sourceNumber": 611,
+      "title": "USB bulk OUT",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB bulk OUT",
+        "body": [
+          "- **Source number:** 611",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-bulk-in",
+      "slug": "usb-bulk-in",
+      "sourceNumber": 612,
+      "title": "USB bulk IN",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB bulk IN",
+        "body": [
+          "- **Source number:** 612",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-interrupt-transfer",
+      "slug": "usb-interrupt-transfer",
+      "sourceNumber": 613,
+      "title": "USB interrupt transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB interrupt transfer",
+        "body": [
+          "- **Source number:** 613",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-isochronous-transfer",
+      "slug": "usb-isochronous-transfer",
+      "sourceNumber": 614,
+      "title": "USB isochronous transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB isochronous transfer",
+        "body": [
+          "- **Source number:** 614",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-nak-and-retry",
+      "slug": "usb-nak-and-retry",
+      "sourceNumber": 615,
+      "title": "USB NAK and retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB NAK and retry",
+        "body": [
+          "- **Source number:** 615",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-stall",
+      "slug": "usb-stall",
+      "sourceNumber": 616,
+      "title": "USB STALL",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB STALL",
+        "body": [
+          "- **Source number:** 616",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-suspend-and-resume",
+      "slug": "usb-suspend-and-resume",
+      "sourceNumber": 617,
+      "title": "USB suspend and resume",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB suspend and resume",
+        "body": [
+          "- **Source number:** 617",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-endpoint-data-toggle",
+      "slug": "usb-endpoint-data-toggle",
+      "sourceNumber": 618,
+      "title": "USB endpoint data toggle",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB endpoint data toggle",
+        "body": [
+          "- **Source number:** 618",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/usb-link-power-state-transition",
+      "slug": "usb-link-power-state-transition",
+      "sourceNumber": 619,
+      "title": "USB link power-state transition",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "usb",
+        "power"
+      ],
+      "protocols": [
+        "usb"
+      ],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "USB link power-state transition",
+        "body": [
+          "- **Source number:** 619",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/sd-card-command-response",
+      "slug": "sd-card-command-response",
+      "sourceNumber": 620,
+      "title": "SD card command/response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SD card command/response",
+        "body": [
+          "- **Source number:** 620",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/sd-card-single-block-read",
+      "slug": "sd-card-single-block-read",
+      "sourceNumber": 621,
+      "title": "SD card single-block read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SD card single-block read",
+        "body": [
+          "- **Source number:** 621",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/sd-card-single-block-write",
+      "slug": "sd-card-single-block-write",
+      "sourceNumber": 622,
+      "title": "SD card single-block write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SD card single-block write",
+        "body": [
+          "- **Source number:** 622",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/sd-multi-block-read",
+      "slug": "sd-multi-block-read",
+      "sourceNumber": 623,
+      "title": "SD multi-block read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SD multi-block read",
+        "body": [
+          "- **Source number:** 623",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/sdio-interrupt",
+      "slug": "sdio-interrupt",
+      "sourceNumber": 624,
+      "title": "SDIO interrupt",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SDIO interrupt",
+        "body": [
+          "- **Source number:** 624",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/emmc-command-and-response",
+      "slug": "emmc-command-and-response",
+      "sourceNumber": 625,
+      "title": "eMMC command and response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "eMMC command and response",
+        "body": [
+          "- **Source number:** 625",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/emmc-boot-sequence",
+      "slug": "emmc-boot-sequence",
+      "sourceNumber": 626,
+      "title": "eMMC boot sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "eMMC boot sequence",
+        "body": [
+          "- **Source number:** 626",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/emmc-hs-timing",
+      "slug": "emmc-hs-timing",
+      "sourceNumber": 627,
+      "title": "eMMC HS timing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "eMMC HS timing",
+        "body": [
+          "- **Source number:** 627",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/emmc-command-queueing",
+      "slug": "emmc-command-queueing",
+      "sourceNumber": 628,
+      "title": "eMMC command queueing",
+      "description": "Planned curriculum lesson for eMMC command queueing.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "eMMC command queueing",
+        "body": [
+          "- **Source number:** 628",
+          "- **Initial status:** `index-only`",
+          "- # 26. MIPI and display/camera interfaces"
+        ]
+      }
+    },
+    {
+      "id": "networking-media/mipi-csi-2-frame-start-end",
+      "slug": "mipi-csi-2-frame-start-end",
+      "sourceNumber": 629,
+      "title": "MIPI CSI-2 frame start/end",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MIPI CSI-2 frame start/end",
+        "body": [
+          "- **Source number:** 629",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/mipi-csi-2-line-start-end",
+      "slug": "mipi-csi-2-line-start-end",
+      "sourceNumber": 630,
+      "title": "MIPI CSI-2 line start/end",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MIPI CSI-2 line start/end",
+        "body": [
+          "- **Source number:** 630",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/csi-2-short-packet",
+      "slug": "csi-2-short-packet",
+      "sourceNumber": 631,
+      "title": "CSI-2 short packet",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CSI-2 short packet",
+        "body": [
+          "- **Source number:** 631",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/csi-2-long-packet",
+      "slug": "csi-2-long-packet",
+      "sourceNumber": 632,
+      "title": "CSI-2 long packet",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CSI-2 long packet",
+        "body": [
+          "- **Source number:** 632",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/csi-2-ecc-error",
+      "slug": "csi-2-ecc-error",
+      "sourceNumber": 633,
+      "title": "CSI-2 ECC error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CSI-2 ECC error",
+        "body": [
+          "- **Source number:** 633",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/csi-2-crc-error",
+      "slug": "csi-2-crc-error",
+      "sourceNumber": 634,
+      "title": "CSI-2 CRC error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CSI-2 CRC error",
+        "body": [
+          "- **Source number:** 634",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/csi-2-virtual-channels",
+      "slug": "csi-2-virtual-channels",
+      "sourceNumber": 635,
+      "title": "CSI-2 virtual channels",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CSI-2 virtual channels",
+        "body": [
+          "- **Source number:** 635",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/d-phy-low-power-to-high-speed-transition",
+      "slug": "d-phy-low-power-to-high-speed-transition",
+      "sourceNumber": 636,
+      "title": "D-PHY low-power to high-speed transition",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "D-PHY low-power to high-speed transition",
+        "body": [
+          "- **Source number:** 636",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/d-phy-high-speed-data-burst",
+      "slug": "d-phy-high-speed-data-burst",
+      "sourceNumber": 637,
+      "title": "D-PHY high-speed data burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "D-PHY high-speed data burst",
+        "body": [
+          "- **Source number:** 637",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/d-phy-turnaround",
+      "slug": "d-phy-turnaround",
+      "sourceNumber": 638,
+      "title": "D-PHY turnaround",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "D-PHY turnaround",
+        "body": [
+          "- **Source number:** 638",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/mipi-dsi-command-mode",
+      "slug": "mipi-dsi-command-mode",
+      "sourceNumber": 639,
+      "title": "MIPI DSI command mode",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MIPI DSI command mode",
+        "body": [
+          "- **Source number:** 639",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/mipi-dsi-video-mode",
+      "slug": "mipi-dsi-video-mode",
+      "sourceNumber": 640,
+      "title": "MIPI DSI video mode",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "MIPI DSI video mode",
+        "body": [
+          "- **Source number:** 640",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/display-horizontal-sync",
+      "slug": "display-horizontal-sync",
+      "sourceNumber": 641,
+      "title": "Display horizontal sync",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Display horizontal sync",
+        "body": [
+          "- **Source number:** 641",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/display-vertical-sync",
+      "slug": "display-vertical-sync",
+      "sourceNumber": 642,
+      "title": "Display vertical sync",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Display vertical sync",
+        "body": [
+          "- **Source number:** 642",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/pixel-valid-and-pixel-data",
+      "slug": "pixel-valid-and-pixel-data",
+      "sourceNumber": 643,
+      "title": "Pixel-valid and pixel-data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pixel-valid and pixel-data",
+        "body": [
+          "- **Source number:** 643",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/frame-blanking",
+      "slug": "frame-blanking",
+      "sourceNumber": 644,
+      "title": "Frame blanking",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Frame blanking",
+        "body": [
+          "- **Source number:** 644",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/camera-exposure-and-frame-valid",
+      "slug": "camera-exposure-and-frame-valid",
+      "sourceNumber": 645,
+      "title": "Camera exposure and frame-valid",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Camera exposure and frame-valid",
+        "body": [
+          "- **Source number:** 645",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/image-sensor-line-valid",
+      "slug": "image-sensor-line-valid",
+      "sourceNumber": 646,
+      "title": "Image-sensor line-valid",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Image-sensor line-valid",
+        "body": [
+          "- **Source number:** 646",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "networking-media/pixel-pipeline-backpressure",
+      "slug": "pixel-pipeline-backpressure",
+      "sourceNumber": 647,
+      "title": "Pixel pipeline backpressure",
+      "description": "Planned curriculum lesson for Pixel pipeline backpressure.",
+      "shardId": "networking-media",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "networking-media"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pixel pipeline backpressure",
+        "body": [
+          "- **Source number:** 647",
+          "- **Initial status:** `index-only`",
+          "- # 27. Power management and low-power design"
+        ]
+      }
+    }
+  ]
+}

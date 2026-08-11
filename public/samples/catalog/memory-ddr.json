@@ -1,0 +1,2003 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "memory-ddr",
+    "label": "SRAM and external memory",
+    "path": "catalog/memory-ddr.json",
+    "sourceNumberRange": {
+      "start": 311,
+      "end": 364
+    },
+    "curriculumCount": 54,
+    "entryCount": 54,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "memory-ddr/asynchronous-rom-read",
+      "slug": "asynchronous-rom-read",
+      "sourceNumber": 311,
+      "title": "Asynchronous ROM read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Asynchronous ROM read",
+        "body": [
+          "- **Source number:** 311",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/synchronous-rom-read",
+      "slug": "synchronous-rom-read",
+      "sourceNumber": 312,
+      "title": "Synchronous ROM read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Synchronous ROM read",
+        "body": [
+          "- **Source number:** 312",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/single-port-sram-read",
+      "slug": "single-port-sram-read",
+      "sourceNumber": 313,
+      "title": "Single-port SRAM read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Single-port SRAM read",
+        "body": [
+          "- **Source number:** 313",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/single-port-sram-write",
+      "slug": "single-port-sram-write",
+      "sourceNumber": 314,
+      "title": "Single-port SRAM write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Single-port SRAM write",
+        "body": [
+          "- **Source number:** 314",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/read-first-sram-collision",
+      "slug": "read-first-sram-collision",
+      "sourceNumber": 315,
+      "title": "Read-first SRAM collision",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read-first SRAM collision",
+        "body": [
+          "- **Source number:** 315",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/write-first-sram-collision",
+      "slug": "write-first-sram-collision",
+      "sourceNumber": 316,
+      "title": "Write-first SRAM collision",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-first SRAM collision",
+        "body": [
+          "- **Source number:** 316",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/no-change-sram-collision",
+      "slug": "no-change-sram-collision",
+      "sourceNumber": 317,
+      "title": "No-change SRAM collision",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "No-change SRAM collision",
+        "body": [
+          "- **Source number:** 317",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/byte-enable-sram-write",
+      "slug": "byte-enable-sram-write",
+      "sourceNumber": 318,
+      "title": "Byte-enable SRAM write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Byte-enable SRAM write",
+        "body": [
+          "- **Source number:** 318",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/dual-port-sram-independent-access",
+      "slug": "dual-port-sram-independent-access",
+      "sourceNumber": 319,
+      "title": "Dual-port SRAM independent access",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "sram"
+      ],
+      "protocols": [
+        "sram"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dual-port SRAM independent access",
+        "body": [
+          "- **Source number:** 319",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/dual-port-same-address-read-read",
+      "slug": "dual-port-same-address-read-read",
+      "sourceNumber": 320,
+      "title": "Dual-port same-address read/read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dual-port same-address read/read",
+        "body": [
+          "- **Source number:** 320",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/dual-port-same-address-read-write",
+      "slug": "dual-port-same-address-read-write",
+      "sourceNumber": 321,
+      "title": "Dual-port same-address read/write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dual-port same-address read/write",
+        "body": [
+          "- **Source number:** 321",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/dual-port-same-address-write-write-conflict",
+      "slug": "dual-port-same-address-write-write-conflict",
+      "sourceNumber": 322,
+      "title": "Dual-port same-address write/write conflict",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Dual-port same-address write/write conflict",
+        "body": [
+          "- **Source number:** 322",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/memory-macro-chip-enable",
+      "slug": "memory-macro-chip-enable",
+      "sourceNumber": 323,
+      "title": "Memory macro chip-enable",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Memory macro chip-enable",
+        "body": [
+          "- **Source number:** 323",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/memory-sleep-and-wakeup",
+      "slug": "memory-sleep-and-wakeup",
+      "sourceNumber": 324,
+      "title": "Memory sleep and wakeup",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Memory sleep and wakeup",
+        "body": [
+          "- **Source number:** 324",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ecc-read-without-error",
+      "slug": "ecc-read-without-error",
+      "sourceNumber": 325,
+      "title": "ECC read without error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ECC read without error",
+        "body": [
+          "- **Source number:** 325",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ecc-corrected-single-bit-error",
+      "slug": "ecc-corrected-single-bit-error",
+      "sourceNumber": 326,
+      "title": "ECC corrected single-bit error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ECC corrected single-bit error",
+        "body": [
+          "- **Source number:** 326",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ecc-uncorrectable-double-bit-error",
+      "slug": "ecc-uncorrectable-double-bit-error",
+      "sourceNumber": 327,
+      "title": "ECC uncorrectable double-bit error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ECC uncorrectable double-bit error",
+        "body": [
+          "- **Source number:** 327",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/parity-error",
+      "slug": "parity-error",
+      "sourceNumber": 328,
+      "title": "Parity error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Parity error",
+        "body": [
+          "- **Source number:** 328",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/register-file-two-read-one-write",
+      "slug": "register-file-two-read-one-write",
+      "sourceNumber": 329,
+      "title": "Register-file two-read one-write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Register-file two-read one-write",
+        "body": [
+          "- **Source number:** 329",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/register-file-write-read-same-address",
+      "slug": "register-file-write-read-same-address",
+      "sourceNumber": 330,
+      "title": "Register-file write/read same address",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Register-file write/read same address",
+        "body": [
+          "- **Source number:** 330",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/register-file-bypass",
+      "slug": "register-file-bypass",
+      "sourceNumber": 331,
+      "title": "Register-file bypass",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Register-file bypass",
+        "body": [
+          "- **Source number:** 331",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/cam-lookup",
+      "slug": "cam-lookup",
+      "sourceNumber": 332,
+      "title": "CAM lookup",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CAM lookup",
+        "body": [
+          "- **Source number:** 332",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/cam-multiple-match",
+      "slug": "cam-multiple-match",
+      "sourceNumber": 333,
+      "title": "CAM multiple match",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CAM multiple match",
+        "body": [
+          "- **Source number:** 333",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/content-invalidation",
+      "slug": "content-invalidation",
+      "sourceNumber": 334,
+      "title": "Content invalidation",
+      "description": "You do not need to model every electrical detail initially. Start with command-level timing.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Content invalidation",
+        "body": [
+          "- **Source number:** 334",
+          "- **Initial status:** `index-only`",
+          "- # 14. DDR and external memory",
+          "- You do not need to model every electrical detail initially. Start with command-level timing."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/sdram-activate-read-precharge",
+      "slug": "sdram-activate-read-precharge",
+      "sourceNumber": 335,
+      "title": "SDRAM activate-read-precharge",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SDRAM activate-read-precharge",
+        "body": [
+          "- **Source number:** 335",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/sdram-activate-write-precharge",
+      "slug": "sdram-activate-write-precharge",
+      "sourceNumber": 336,
+      "title": "SDRAM activate-write-precharge",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "SDRAM activate-write-precharge",
+        "body": [
+          "- **Source number:** 336",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/row-hit",
+      "slug": "row-hit",
+      "sourceNumber": 337,
+      "title": "Row hit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Row hit",
+        "body": [
+          "- **Source number:** 337",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/row-miss",
+      "slug": "row-miss",
+      "sourceNumber": 338,
+      "title": "Row miss",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Row miss",
+        "body": [
+          "- **Source number:** 338",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/bank-conflict",
+      "slug": "bank-conflict",
+      "sourceNumber": 339,
+      "title": "Bank conflict",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Bank conflict",
+        "body": [
+          "- **Source number:** 339",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/auto-precharge",
+      "slug": "auto-precharge",
+      "sourceNumber": 340,
+      "title": "Auto-precharge",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Auto-precharge",
+        "body": [
+          "- **Source number:** 340",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/refresh",
+      "slug": "refresh",
+      "sourceNumber": 341,
+      "title": "Refresh",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Refresh",
+        "body": [
+          "- **Source number:** 341",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/refresh-postponement",
+      "slug": "refresh-postponement",
+      "sourceNumber": 342,
+      "title": "Refresh postponement",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Refresh postponement",
+        "body": [
+          "- **Source number:** 342",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/read-to-read-timing",
+      "slug": "read-to-read-timing",
+      "sourceNumber": 343,
+      "title": "Read-to-read timing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read-to-read timing",
+        "body": [
+          "- **Source number:** 343",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/write-to-write-timing",
+      "slug": "write-to-write-timing",
+      "sourceNumber": 344,
+      "title": "Write-to-write timing",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-to-write timing",
+        "body": [
+          "- **Source number:** 344",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/read-to-write-turnaround",
+      "slug": "read-to-write-turnaround",
+      "sourceNumber": 345,
+      "title": "Read-to-write turnaround",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read-to-write turnaround",
+        "body": [
+          "- **Source number:** 345",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/write-to-read-turnaround",
+      "slug": "write-to-read-turnaround",
+      "sourceNumber": 346,
+      "title": "Write-to-read turnaround",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write-to-read turnaround",
+        "body": [
+          "- **Source number:** 346",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/cas-latency",
+      "slug": "cas-latency",
+      "sourceNumber": 347,
+      "title": "CAS latency",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CAS latency",
+        "body": [
+          "- **Source number:** 347",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/burst-read",
+      "slug": "burst-read",
+      "sourceNumber": 348,
+      "title": "Burst read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Burst read",
+        "body": [
+          "- **Source number:** 348",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/burst-write",
+      "slug": "burst-write",
+      "sourceNumber": 349,
+      "title": "Burst write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Burst write",
+        "body": [
+          "- **Source number:** 349",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ddr-dqs-centered-write-data",
+      "slug": "ddr-dqs-centered-write-data",
+      "sourceNumber": 350,
+      "title": "DDR DQS-centered write data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "ddr"
+      ],
+      "protocols": [
+        "ddr"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DDR DQS-centered write data",
+        "body": [
+          "- **Source number:** 350",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ddr-dqs-aligned-read-data",
+      "slug": "ddr-dqs-aligned-read-data",
+      "sourceNumber": 351,
+      "title": "DDR DQS-aligned read data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "ddr"
+      ],
+      "protocols": [
+        "ddr"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DDR DQS-aligned read data",
+        "body": [
+          "- **Source number:** 351",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/write-leveling",
+      "slug": "write-leveling",
+      "sourceNumber": 352,
+      "title": "Write leveling",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Write leveling",
+        "body": [
+          "- **Source number:** 352",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/read-training",
+      "slug": "read-training",
+      "sourceNumber": 353,
+      "title": "Read training",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Read training",
+        "body": [
+          "- **Source number:** 353",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/zq-calibration",
+      "slug": "zq-calibration",
+      "sourceNumber": 354,
+      "title": "ZQ calibration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ZQ calibration",
+        "body": [
+          "- **Source number:** 354",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/self-refresh-entry-and-exit",
+      "slug": "self-refresh-entry-and-exit",
+      "sourceNumber": 355,
+      "title": "Self-refresh entry and exit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Self-refresh entry and exit",
+        "body": [
+          "- **Source number:** 355",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/power-down-entry-and-exit",
+      "slug": "power-down-entry-and-exit",
+      "sourceNumber": 356,
+      "title": "Power-down entry and exit",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Power-down entry and exit",
+        "body": [
+          "- **Source number:** 356",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ddr-bank-group-restriction",
+      "slug": "ddr-bank-group-restriction",
+      "sourceNumber": 357,
+      "title": "DDR bank-group restriction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "ddr"
+      ],
+      "protocols": [
+        "ddr"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DDR bank-group restriction",
+        "body": [
+          "- **Source number:** 357",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ddr-command-queue-reordering",
+      "slug": "ddr-command-queue-reordering",
+      "sourceNumber": 358,
+      "title": "DDR command queue reordering",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "ddr"
+      ],
+      "protocols": [
+        "ddr"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "DDR command queue reordering",
+        "body": [
+          "- **Source number:** 358",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/memory-controller-arbitration",
+      "slug": "memory-controller-arbitration",
+      "sourceNumber": 359,
+      "title": "Memory-controller arbitration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Memory-controller arbitration",
+        "body": [
+          "- **Source number:** 359",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/ecc-scrub",
+      "slug": "ecc-scrub",
+      "sourceNumber": 360,
+      "title": "ECC scrub",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "ECC scrub",
+        "body": [
+          "- **Source number:** 360",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/lpddr-deep-power-down-conceptual-sample",
+      "slug": "lpddr-deep-power-down-conceptual-sample",
+      "sourceNumber": 361,
+      "title": "LPDDR deep-power-down conceptual sample",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr",
+        "power"
+      ],
+      "protocols": [],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "LPDDR deep-power-down conceptual sample",
+        "body": [
+          "- **Source number:** 361",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/lpddr-data-bus-inversion",
+      "slug": "lpddr-data-bus-inversion",
+      "sourceNumber": 362,
+      "title": "LPDDR data-bus inversion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "LPDDR data-bus inversion",
+        "body": [
+          "- **Source number:** 362",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/hbm-pseudo-channel-transaction",
+      "slug": "hbm-pseudo-channel-transaction",
+      "sourceNumber": 363,
+      "title": "HBM pseudo-channel transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "HBM pseudo-channel transaction",
+        "body": [
+          "- **Source number:** 363",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "memory-ddr/hbm-multiple-bank-parallelism",
+      "slug": "hbm-multiple-bank-parallelism",
+      "sourceNumber": 364,
+      "title": "HBM multiple-bank parallelism",
+      "description": "These will heavily exercise fine timing, phases, grouped signals and annotations.",
+      "shardId": "memory-ddr",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "memory-ddr"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "HBM multiple-bank parallelism",
+        "body": [
+          "- **Source number:** 364",
+          "- **Initial status:** `index-only`",
+          "- These will heavily exercise fine timing, phases, grouped signals and annotations.",
+          "- # 15. SPI and QSPI"
+        ]
+      }
+    }
+  ]
+}

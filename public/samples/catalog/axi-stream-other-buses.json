@@ -1,0 +1,1601 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "axi-stream-other-buses",
+    "label": "AXI-Stream and other buses",
+    "path": "catalog/axi-stream-other-buses.json",
+    "sourceNumberRange": {
+      "start": 193,
+      "end": 235
+    },
+    "curriculumCount": 43,
+    "entryCount": 43,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "axi-stream-other-buses/single-axi-stream-beat",
+      "slug": "single-axi-stream-beat",
+      "sourceNumber": 193,
+      "title": "Single AXI-Stream beat",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Single AXI-Stream beat",
+        "body": [
+          "- **Source number:** 193",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/continuous-streaming",
+      "slug": "continuous-streaming",
+      "sourceNumber": 194,
+      "title": "Continuous streaming",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Continuous streaming",
+        "body": [
+          "- **Source number:** 194",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/backpressure",
+      "slug": "backpressure",
+      "sourceNumber": 195,
+      "title": "Backpressure",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Backpressure",
+        "body": [
+          "- **Source number:** 195",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-with-tlast",
+      "slug": "packet-with-tlast",
+      "sourceNumber": 196,
+      "title": "Packet with `TLAST`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet with `TLAST`",
+        "body": [
+          "- **Source number:** 196",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/partial-final-beat-with-tkeep",
+      "slug": "partial-final-beat-with-tkeep",
+      "sourceNumber": 197,
+      "title": "Partial final beat with `TKEEP`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Partial final beat with `TKEEP`",
+        "body": [
+          "- **Source number:** 197",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/byte-qualification-with-tstrb",
+      "slug": "byte-qualification-with-tstrb",
+      "sourceNumber": 198,
+      "title": "Byte qualification with `TSTRB`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Byte qualification with `TSTRB`",
+        "body": [
+          "- **Source number:** 198",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-metadata-with-tuser",
+      "slug": "packet-metadata-with-tuser",
+      "sourceNumber": 199,
+      "title": "Packet metadata with `TUSER`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet metadata with `TUSER`",
+        "body": [
+          "- **Source number:** 199",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/stream-routing-with-tdest",
+      "slug": "stream-routing-with-tdest",
+      "sourceNumber": 200,
+      "title": "Stream routing with `TDEST`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Stream routing with `TDEST`",
+        "body": [
+          "- **Source number:** 200",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/stream-identification-with-tid",
+      "slug": "stream-identification-with-tid",
+      "sourceNumber": 201,
+      "title": "Stream identification with `TID`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Stream identification with `TID`",
+        "body": [
+          "- **Source number:** 201",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/source-holds-data-stable-during-stall",
+      "slug": "source-holds-data-stable-during-stall",
+      "sourceNumber": 202,
+      "title": "Source holds data stable during stall",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Source holds data stable during stall",
+        "body": [
+          "- **Source number:** 202",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/illegal-source-changing-data-under-stall",
+      "slug": "illegal-source-changing-data-under-stall",
+      "sourceNumber": 203,
+      "title": "Illegal source changing data under stall",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Illegal source changing data under stall",
+        "body": [
+          "- **Source number:** 203",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-bubble",
+      "slug": "packet-bubble",
+      "sourceNumber": 204,
+      "title": "Packet bubble",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet bubble",
+        "body": [
+          "- **Source number:** 204",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-truncation",
+      "slug": "packet-truncation",
+      "sourceNumber": 205,
+      "title": "Packet truncation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet truncation",
+        "body": [
+          "- **Source number:** 205",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-abort-using-tuser",
+      "slug": "packet-abort-using-tuser",
+      "sourceNumber": 206,
+      "title": "Packet abort using `TUSER`",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet abort using `TUSER`",
+        "body": [
+          "- **Source number:** 206",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/axi-stream-fifo",
+      "slug": "axi-stream-fifo",
+      "sourceNumber": 207,
+      "title": "AXI-Stream FIFO",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "fifo",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Stream FIFO",
+        "body": [
+          "- **Source number:** 207",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/axi-stream-skid-buffer",
+      "slug": "axi-stream-skid-buffer",
+      "sourceNumber": 208,
+      "title": "AXI-Stream skid buffer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "buffer",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [
+        "buffer"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Stream skid buffer",
+        "body": [
+          "- **Source number:** 208",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/axi-stream-width-conversion",
+      "slug": "axi-stream-width-conversion",
+      "sourceNumber": 209,
+      "title": "AXI-Stream width conversion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Stream width conversion",
+        "body": [
+          "- **Source number:** 209",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/axi-stream-clock-conversion",
+      "slug": "axi-stream-clock-conversion",
+      "sourceNumber": 210,
+      "title": "AXI-Stream clock conversion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "clock",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "AXI-Stream clock conversion",
+        "body": [
+          "- **Source number:** 210",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/two-input-stream-arbiter",
+      "slug": "two-input-stream-arbiter",
+      "sourceNumber": 211,
+      "title": "Two-input stream arbiter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-input stream arbiter",
+        "body": [
+          "- **Source number:** 211",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/packet-level-arbitration",
+      "slug": "packet-level-arbitration",
+      "sourceNumber": 212,
+      "title": "Packet-level arbitration",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Packet-level arbitration",
+        "body": [
+          "- **Source number:** 212",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/beat-level-arbitration-problem",
+      "slug": "beat-level-arbitration-problem",
+      "sourceNumber": 213,
+      "title": "Beat-level arbitration problem",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Beat-level arbitration problem",
+        "body": [
+          "- **Source number:** 213",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/rate-limiter",
+      "slug": "rate-limiter",
+      "sourceNumber": 214,
+      "title": "Rate limiter",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Rate limiter",
+        "body": [
+          "- **Source number:** 214",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/frame-synchronizer",
+      "slug": "frame-synchronizer",
+      "sourceNumber": 215,
+      "title": "Frame synchronizer",
+      "description": "These add protocol diversity without being as enormous as AXI.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "axi"
+      ],
+      "protocols": [
+        "axi"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Frame synchronizer",
+        "body": [
+          "- **Source number:** 215",
+          "- **Initial status:** `index-only`",
+          "- # 10. Wishbone and TileLink",
+          "- These add protocol diversity without being as enormous as AXI."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-classic-read",
+      "slug": "wishbone-classic-read",
+      "sourceNumber": 216,
+      "title": "Wishbone classic read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone classic read",
+        "body": [
+          "- **Source number:** 216",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-classic-write",
+      "slug": "wishbone-classic-write",
+      "sourceNumber": 217,
+      "title": "Wishbone classic write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone classic write",
+        "body": [
+          "- **Source number:** 217",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-wait-states",
+      "slug": "wishbone-wait-states",
+      "sourceNumber": 218,
+      "title": "Wishbone wait states",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone wait states",
+        "body": [
+          "- **Source number:** 218",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-error",
+      "slug": "wishbone-error",
+      "sourceNumber": 219,
+      "title": "Wishbone error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone error",
+        "body": [
+          "- **Source number:** 219",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-retry",
+      "slug": "wishbone-retry",
+      "sourceNumber": 220,
+      "title": "Wishbone retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone retry",
+        "body": [
+          "- **Source number:** 220",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-pipelined-transfer",
+      "slug": "wishbone-pipelined-transfer",
+      "sourceNumber": 221,
+      "title": "Wishbone pipelined transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone pipelined transfer",
+        "body": [
+          "- **Source number:** 221",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-burst",
+      "slug": "wishbone-burst",
+      "sourceNumber": 222,
+      "title": "Wishbone burst",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone burst",
+        "body": [
+          "- **Source number:** 222",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-stall",
+      "slug": "wishbone-stall",
+      "sourceNumber": 223,
+      "title": "Wishbone stall",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone stall",
+        "body": [
+          "- **Source number:** 223",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/wishbone-byte-select",
+      "slug": "wishbone-byte-select",
+      "sourceNumber": 224,
+      "title": "Wishbone byte select",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Wishbone byte select",
+        "body": [
+          "- **Source number:** 224",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-ul-get",
+      "slug": "tilelink-ul-get",
+      "sourceNumber": 225,
+      "title": "TileLink UL Get",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink UL Get",
+        "body": [
+          "- **Source number:** 225",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-ul-putfulldata",
+      "slug": "tilelink-ul-putfulldata",
+      "sourceNumber": 226,
+      "title": "TileLink UL PutFullData",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink UL PutFullData",
+        "body": [
+          "- **Source number:** 226",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-ul-putpartialdata",
+      "slug": "tilelink-ul-putpartialdata",
+      "sourceNumber": 227,
+      "title": "TileLink UL PutPartialData",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink UL PutPartialData",
+        "body": [
+          "- **Source number:** 227",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-request-response-source-id",
+      "slug": "tilelink-request-response-source-id",
+      "sourceNumber": 228,
+      "title": "TileLink request/response source ID",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink request/response source ID",
+        "body": [
+          "- **Source number:** 228",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-denied-response",
+      "slug": "tilelink-denied-response",
+      "sourceNumber": 229,
+      "title": "TileLink denied response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink denied response",
+        "body": [
+          "- **Source number:** 229",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-corrupt-response",
+      "slug": "tilelink-corrupt-response",
+      "sourceNumber": 230,
+      "title": "TileLink corrupt response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink corrupt response",
+        "body": [
+          "- **Source number:** 230",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-multibeat-transfer",
+      "slug": "tilelink-multibeat-transfer",
+      "sourceNumber": 231,
+      "title": "TileLink multibeat transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink multibeat transfer",
+        "body": [
+          "- **Source number:** 231",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-acquire-grant-conceptual-coherence-flow",
+      "slug": "tilelink-acquire-grant-conceptual-coherence-flow",
+      "sourceNumber": 232,
+      "title": "TileLink Acquire/Grant conceptual coherence flow",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink Acquire/Grant conceptual coherence flow",
+        "body": [
+          "- **Source number:** 232",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-release",
+      "slug": "tilelink-release",
+      "sourceNumber": 233,
+      "title": "TileLink Release",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink Release",
+        "body": [
+          "- **Source number:** 233",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-probe",
+      "slug": "tilelink-probe",
+      "sourceNumber": 234,
+      "title": "TileLink Probe",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink Probe",
+        "body": [
+          "- **Source number:** 234",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "axi-stream-other-buses/tilelink-credit-backpressure-behavior",
+      "slug": "tilelink-credit-backpressure-behavior",
+      "sourceNumber": 235,
+      "title": "TileLink credit/backpressure behavior",
+      "description": "These are highly relevant to CPU, NoC, IOMMU and interconnect work.",
+      "shardId": "axi-stream-other-buses",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "axi-stream-other-buses",
+        "noc",
+        "iommu"
+      ],
+      "protocols": [
+        "iommu"
+      ],
+      "concepts": [
+        "noc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "TileLink credit/backpressure behavior",
+        "body": [
+          "- **Source number:** 235",
+          "- **Initial status:** `index-only`",
+          "- # 11. Cache and coherency",
+          "- These are highly relevant to CPU, NoC, IOMMU and interconnect work."
+        ]
+      }
+    }
+  ]
+}

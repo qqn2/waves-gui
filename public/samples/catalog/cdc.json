@@ -1,0 +1,1001 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "cdc",
+    "label": "CDC",
+    "path": "catalog/cdc.json",
+    "sourceNumberRange": {
+      "start": 55,
+      "end": 80
+    },
+    "curriculumCount": 26,
+    "entryCount": 26,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "cdc/single-bit-two-flop-synchronizer",
+      "slug": "single-bit-two-flop-synchronizer",
+      "sourceNumber": 55,
+      "title": "Single-bit two-flop synchronizer",
+      "description": "Source level remains stable long enough.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Single-bit two-flop synchronizer",
+        "body": [
+          "- **Source number:** 55",
+          "- **Initial status:** `index-only`",
+          "- Source level remains stable long enough."
+        ]
+      }
+    },
+    {
+      "id": "cdc/two-flop-synchronizer-latency-variation",
+      "slug": "two-flop-synchronizer-latency-variation",
+      "sourceNumber": 56,
+      "title": "Two-flop synchronizer latency variation",
+      "description": "Destination sees the change in two or three cycles depending on phase.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-flop synchronizer latency variation",
+        "body": [
+          "- **Source number:** 56",
+          "- **Initial status:** `index-only`",
+          "- Destination sees the change in two or three cycles depending on phase."
+        ]
+      }
+    },
+    {
+      "id": "cdc/metastability-conceptual-example",
+      "slug": "metastability-conceptual-example",
+      "sourceNumber": 57,
+      "title": "Metastability conceptual example",
+      "description": "Use an X or metastability annotation at the first synchronizer stage.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Metastability conceptual example",
+        "body": [
+          "- **Source number:** 57",
+          "- **Initial status:** `index-only`",
+          "- Use an `X` or metastability annotation at the first synchronizer stage."
+        ]
+      }
+    },
+    {
+      "id": "cdc/pulse-lost-across-a-slow-destination-clock",
+      "slug": "pulse-lost-across-a-slow-destination-clock",
+      "sourceNumber": 58,
+      "title": "Pulse lost across a slow destination clock",
+      "description": "Deliberately incorrect.",
+      "shardId": "cdc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pulse lost across a slow destination clock",
+        "body": [
+          "- **Source number:** 58",
+          "- **Initial status:** `index-only`",
+          "- Deliberately incorrect."
+        ]
+      }
+    },
+    {
+      "id": "cdc/pulse-stretching",
+      "slug": "pulse-stretching",
+      "sourceNumber": 59,
+      "title": "Pulse stretching",
+      "description": "Extend the pulse until destination captures it.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pulse stretching",
+        "body": [
+          "- **Source number:** 59",
+          "- **Initial status:** `index-only`",
+          "- Extend the pulse until destination captures it."
+        ]
+      }
+    },
+    {
+      "id": "cdc/pulse-synchronizer-using-toggle",
+      "slug": "pulse-synchronizer-using-toggle",
+      "sourceNumber": 60,
+      "title": "Pulse synchronizer using toggle",
+      "description": "Source toggles state for every event.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pulse synchronizer using toggle",
+        "body": [
+          "- **Source number:** 60",
+          "- **Initial status:** `index-only`",
+          "- Source toggles state for every event."
+        ]
+      }
+    },
+    {
+      "id": "cdc/toggle-synchronizer-failure-with-events-too-close",
+      "slug": "toggle-synchronizer-failure-with-events-too-close",
+      "sourceNumber": 61,
+      "title": "Toggle synchronizer failure with events too close",
+      "description": "Two source events occur before destination observes the first.",
+      "shardId": "cdc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Toggle synchronizer failure with events too close",
+        "body": [
+          "- **Source number:** 61",
+          "- **Initial status:** `index-only`",
+          "- Two source events occur before destination observes the first."
+        ]
+      }
+    },
+    {
+      "id": "cdc/four-phase-request-acknowledge-cdc",
+      "slug": "four-phase-request-acknowledge-cdc",
+      "sourceNumber": 62,
+      "title": "Four-phase request/acknowledge CDC",
+      "description": "Reliable single transaction transfer.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Four-phase request/acknowledge CDC",
+        "body": [
+          "- **Source number:** 62",
+          "- **Initial status:** `index-only`",
+          "- Reliable single transaction transfer."
+        ]
+      }
+    },
+    {
+      "id": "cdc/handshake-with-source-backpressure",
+      "slug": "handshake-with-source-backpressure",
+      "sourceNumber": 63,
+      "title": "Handshake with source backpressure",
+      "description": "Source cannot issue another request until acknowledgement.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Handshake with source backpressure",
+        "body": [
+          "- **Source number:** 63",
+          "- **Initial status:** `index-only`",
+          "- Source cannot issue another request until acknowledgement."
+        ]
+      }
+    },
+    {
+      "id": "cdc/multi-bit-bus-crossed-independently",
+      "slug": "multi-bit-bus-crossed-independently",
+      "sourceNumber": 64,
+      "title": "Multi-bit bus crossed independently",
+      "description": "Deliberately incorrect incoherent capture.",
+      "shardId": "cdc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Multi-bit bus crossed independently",
+        "body": [
+          "- **Source number:** 64",
+          "- **Initial status:** `index-only`",
+          "- Deliberately incorrect incoherent capture."
+        ]
+      }
+    },
+    {
+      "id": "cdc/data-plus-synchronized-valid",
+      "slug": "data-plus-synchronized-valid",
+      "sourceNumber": 65,
+      "title": "Data plus synchronized valid",
+      "description": "Data held stable around the valid crossing.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Data plus synchronized valid",
+        "body": [
+          "- **Source number:** 65",
+          "- **Initial status:** `index-only`",
+          "- Data held stable around the valid crossing."
+        ]
+      }
+    },
+    {
+      "id": "cdc/mux-based-data-synchronizer",
+      "slug": "mux-based-data-synchronizer",
+      "sourceNumber": 66,
+      "title": "Mux-based data synchronizer",
+      "description": "Source holds data until destination acknowledges.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Mux-based data synchronizer",
+        "body": [
+          "- **Source number:** 66",
+          "- **Initial status:** `index-only`",
+          "- Source holds data until destination acknowledges."
+        ]
+      }
+    },
+    {
+      "id": "cdc/gray-counter-crossing",
+      "slug": "gray-counter-crossing",
+      "sourceNumber": 67,
+      "title": "Gray counter crossing",
+      "description": "Typical asynchronous FIFO pointer technique.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Gray counter crossing",
+        "body": [
+          "- **Source number:** 67",
+          "- **Initial status:** `index-only`",
+          "- Typical asynchronous FIFO pointer technique."
+        ]
+      }
+    },
+    {
+      "id": "cdc/binary-counter-crossing-failure",
+      "slug": "binary-counter-crossing-failure",
+      "sourceNumber": 68,
+      "title": "Binary counter crossing failure",
+      "description": "Multiple bits transition and destination captures an impossible value.",
+      "shardId": "cdc",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "failure"
+      ],
+      "protocols": [],
+      "concepts": [
+        "failure"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Binary counter crossing failure",
+        "body": [
+          "- **Source number:** 68",
+          "- **Initial status:** `index-only`",
+          "- Multiple bits transition and destination captures an impossible value."
+        ]
+      }
+    },
+    {
+      "id": "cdc/asynchronous-fifo-write",
+      "slug": "asynchronous-fifo-write",
+      "sourceNumber": 69,
+      "title": "Asynchronous FIFO write",
+      "description": "Write clock, write enable, write pointer, full.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "clock",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Asynchronous FIFO write",
+        "body": [
+          "- **Source number:** 69",
+          "- **Initial status:** `index-only`",
+          "- Write clock, write enable, write pointer, full."
+        ]
+      }
+    },
+    {
+      "id": "cdc/asynchronous-fifo-read",
+      "slug": "asynchronous-fifo-read",
+      "sourceNumber": 70,
+      "title": "Asynchronous FIFO read",
+      "description": "Read clock, read enable, read pointer, empty.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "clock",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Asynchronous FIFO read",
+        "body": [
+          "- **Source number:** 70",
+          "- **Initial status:** `index-only`",
+          "- Read clock, read enable, read pointer, empty."
+        ]
+      }
+    },
+    {
+      "id": "cdc/asynchronous-fifo-pointer-synchronization",
+      "slug": "asynchronous-fifo-pointer-synchronization",
+      "sourceNumber": 71,
+      "title": "Asynchronous FIFO pointer synchronization",
+      "description": "Binary-to-Gray, synchronizer, Gray-to-binary.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Asynchronous FIFO pointer synchronization",
+        "body": [
+          "- **Source number:** 71",
+          "- **Initial status:** `index-only`",
+          "- Binary-to-Gray, synchronizer, Gray-to-binary."
+        ]
+      }
+    },
+    {
+      "id": "cdc/fifo-full-detection",
+      "slug": "fifo-full-detection",
+      "sourceNumber": 72,
+      "title": "FIFO full detection",
+      "description": "Inverted high Gray-pointer bits.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "FIFO full detection",
+        "body": [
+          "- **Source number:** 72",
+          "- **Initial status:** `index-only`",
+          "- Inverted high Gray-pointer bits."
+        ]
+      }
+    },
+    {
+      "id": "cdc/fifo-empty-detection",
+      "slug": "fifo-empty-detection",
+      "sourceNumber": 73,
+      "title": "FIFO empty detection",
+      "description": "Synchronized write pointer equals read pointer.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "FIFO empty detection",
+        "body": [
+          "- **Source number:** 73",
+          "- **Initial status:** `index-only`",
+          "- Synchronized write pointer equals read pointer."
+        ]
+      }
+    },
+    {
+      "id": "cdc/fifo-almost-full-and-almost-empty",
+      "slug": "fifo-almost-full-and-almost-empty",
+      "sourceNumber": 74,
+      "title": "FIFO almost-full and almost-empty",
+      "description": "Threshold-based flow control.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "fifo"
+      ],
+      "protocols": [],
+      "concepts": [
+        "fifo"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "FIFO almost-full and almost-empty",
+        "body": [
+          "- **Source number:** 74",
+          "- **Initial status:** `index-only`",
+          "- Threshold-based flow control."
+        ]
+      }
+    },
+    {
+      "id": "cdc/cdc-reset-mismatch",
+      "slug": "cdc-reset-mismatch",
+      "sourceNumber": 75,
+      "title": "CDC reset mismatch",
+      "description": "One pointer resets while the other domain continues.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CDC reset mismatch",
+        "body": [
+          "- **Source number:** 75",
+          "- **Initial status:** `index-only`",
+          "- One pointer resets while the other domain continues."
+        ]
+      }
+    },
+    {
+      "id": "cdc/reconvergence-hazard",
+      "slug": "reconvergence-hazard",
+      "sourceNumber": 76,
+      "title": "Reconvergence hazard",
+      "description": "Two synchronized bits reconverge into logic.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Reconvergence hazard",
+        "body": [
+          "- **Source number:** 76",
+          "- **Initial status:** `index-only`",
+          "- Two synchronized bits reconverge into logic."
+        ]
+      }
+    },
+    {
+      "id": "cdc/related-clock-transfer-without-handshake",
+      "slug": "related-clock-transfer-without-handshake",
+      "sourceNumber": 77,
+      "title": "Related-clock transfer without handshake",
+      "description": "Show valid timing assumptions.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Related-clock transfer without handshake",
+        "body": [
+          "- **Source number:** 77",
+          "- **Initial status:** `index-only`",
+          "- Show valid timing assumptions."
+        ]
+      }
+    },
+    {
+      "id": "cdc/related-clock-transfer-with-conservative-handshake",
+      "slug": "related-clock-transfer-with-conservative-handshake",
+      "sourceNumber": 78,
+      "title": "Related-clock transfer with conservative handshake",
+      "description": "Compare latency and implementation cost.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Related-clock transfer with conservative handshake",
+        "body": [
+          "- **Source number:** 78",
+          "- **Initial status:** `index-only`",
+          "- Compare latency and implementation cost."
+        ]
+      }
+    },
+    {
+      "id": "cdc/mesochronous-crossing",
+      "slug": "mesochronous-crossing",
+      "sourceNumber": 79,
+      "title": "Mesochronous crossing",
+      "description": "Same nominal frequency, unknown phase.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Mesochronous crossing",
+        "body": [
+          "- **Source number:** 79",
+          "- **Initial status:** `index-only`",
+          "- Same nominal frequency, unknown phase."
+        ]
+      }
+    },
+    {
+      "id": "cdc/plesiochronous-crossing",
+      "slug": "plesiochronous-crossing",
+      "sourceNumber": 80,
+      "title": "Plesiochronous crossing",
+      "description": "Slightly different frequencies causing elastic-buffer drift.",
+      "shardId": "cdc",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "cdc",
+        "buffer"
+      ],
+      "protocols": [],
+      "concepts": [
+        "buffer"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Plesiochronous crossing",
+        "body": [
+          "- **Source number:** 80",
+          "- **Initial status:** `index-only`",
+          "- Slightly different frequencies causing elastic-buffer drift.",
+          "- # 4. FIFOs, queues and buffering"
+        ]
+      }
+    }
+  ]
+}

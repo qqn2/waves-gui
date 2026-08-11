@@ -19,6 +19,7 @@ export {
 } from './FileOperations';
 export {
   loadSampleDiagram,
+  loadSampleDiagramAsset,
   SAMPLE_DIAGRAMS,
   SAMPLE_LIBRARY,
   collectSampleLeaves,
@@ -26,3 +27,4 @@ export {
   sampleAssetUrl,
 } from './samples';
 export type { SampleLeaf, SampleFolder, SampleTreeNode, SampleDiagram } from './samples';
+export type { LoadableSampleAsset } from './samples';

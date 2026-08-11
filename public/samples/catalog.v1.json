@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "generatedFrom": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+  "curriculumCount": 832,
+  "entryCount": 869,
+  "assetEntryCount": 37,
+  "shardCount": 13,
+  "aliases": {},
+  "shards": [
+    {
+      "id": "fundamentals",
+      "label": "Fundamentals",
+      "path": "catalog/fundamentals.json",
+      "sourceNumberRange": {
+        "start": 1,
+        "end": 32
+      },
+      "curriculumCount": 32,
+      "entryCount": 36,
+      "assetEntryCount": 4
+    },
+    {
+      "id": "clocking-reset",
+      "label": "Clocking and reset",
+      "path": "catalog/clocking-reset.json",
+      "sourceNumberRange": {
+        "start": 33,
+        "end": 54
+      },
+      "curriculumCount": 22,
+      "entryCount": 23,
+      "assetEntryCount": 1
+    },
+    {
+      "id": "cdc",
+      "label": "CDC",
+      "path": "catalog/cdc.json",
+      "sourceNumberRange": {
+        "start": 55,
+        "end": 80
+      },
+      "curriculumCount": 26,
+      "entryCount": 26,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "buffering",
+      "label": "FIFOs and buffering",
+      "path": "catalog/buffering.json",
+      "sourceNumberRange": {
+        "start": 81,
+        "end": 100
+      },
+      "curriculumCount": 20,
+      "entryCount": 20,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "amba",
+      "label": "AMBA",
+      "path": "catalog/amba.json",
+      "sourceNumberRange": {
+        "start": 101,
+        "end": 192
+      },
+      "curriculumCount": 92,
+      "entryCount": 98,
+      "assetEntryCount": 6
+    },
+    {
+      "id": "axi-stream-other-buses",
+      "label": "AXI-Stream and other buses",
+      "path": "catalog/axi-stream-other-buses.json",
+      "sourceNumberRange": {
+        "start": 193,
+        "end": 235
+      },
+      "curriculumCount": 43,
+      "entryCount": 43,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "cache-coherency-noc",
+      "label": "Cache, coherency, and NoC",
+      "path": "catalog/cache-coherency-noc.json",
+      "sourceNumberRange": {
+        "start": 236,
+        "end": 310
+      },
+      "curriculumCount": 75,
+      "entryCount": 75,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "memory-ddr",
+      "label": "SRAM and external memory",
+      "path": "catalog/memory-ddr.json",
+      "sourceNumberRange": {
+        "start": 311,
+        "end": 364
+      },
+      "curriculumCount": 54,
+      "entryCount": 54,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "serial-peripherals",
+      "label": "Serial and peripherals",
+      "path": "catalog/serial-peripherals.json",
+      "sourceNumberRange": {
+        "start": 365,
+        "end": 515
+      },
+      "curriculumCount": 151,
+      "entryCount": 151,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "pcie-chiplets",
+      "label": "PCIe and chiplets",
+      "path": "catalog/pcie-chiplets.json",
+      "sourceNumberRange": {
+        "start": 516,
+        "end": 579
+      },
+      "curriculumCount": 64,
+      "entryCount": 64,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "networking-media",
+      "label": "Networking and media",
+      "path": "catalog/networking-media.json",
+      "sourceNumberRange": {
+        "start": 580,
+        "end": 647
+      },
+      "curriculumCount": 68,
+      "entryCount": 68,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "power-security-safety",
+      "label": "Power, security, and safety",
+      "path": "catalog/power-security-safety.json",
+      "sourceNumberRange": {
+        "start": 648,
+        "end": 695
+      },
+      "curriculumCount": 48,
+      "entryCount": 48,
+      "assetEntryCount": 0
+    },
+    {
+      "id": "firmware-verification-stress",
+      "label": "Firmware, verification, and stress",
+      "path": "catalog/firmware-verification-stress.json",
+      "sourceNumberRange": {
+        "start": 696,
+        "end": 832
+      },
+      "curriculumCount": 137,
+      "entryCount": 163,
+      "assetEntryCount": 26
+    }
+  ]
+}

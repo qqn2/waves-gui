@@ -1,0 +1,2527 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "pcie-chiplets",
+    "label": "PCIe and chiplets",
+    "path": "catalog/pcie-chiplets.json",
+    "sourceNumberRange": {
+      "start": 516,
+      "end": 579
+    },
+    "curriculumCount": 64,
+    "entryCount": 64,
+    "assetEntryCount": 0
+  },
+  "entries": [
+    {
+      "id": "pcie-chiplets/pcie-memory-read-request",
+      "slug": "pcie-memory-read-request",
+      "sourceNumber": 516,
+      "title": "PCIe Memory Read Request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Memory Read Request",
+        "body": [
+          "- **Source number:** 516",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-completion-with-data",
+      "slug": "pcie-completion-with-data",
+      "sourceNumber": 517,
+      "title": "PCIe Completion with Data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Completion with Data",
+        "body": [
+          "- **Source number:** 517",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-memory-write-posted-transaction",
+      "slug": "pcie-memory-write-posted-transaction",
+      "sourceNumber": 518,
+      "title": "PCIe Memory Write posted transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Memory Write posted transaction",
+        "body": [
+          "- **Source number:** 518",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-configuration-read",
+      "slug": "pcie-configuration-read",
+      "sourceNumber": 519,
+      "title": "PCIe Configuration Read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Configuration Read",
+        "body": [
+          "- **Source number:** 519",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-configuration-write",
+      "slug": "pcie-configuration-write",
+      "sourceNumber": 520,
+      "title": "PCIe Configuration Write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Configuration Write",
+        "body": [
+          "- **Source number:** 520",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-completion-without-data",
+      "slug": "pcie-completion-without-data",
+      "sourceNumber": 521,
+      "title": "PCIe Completion without Data",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Completion without Data",
+        "body": [
+          "- **Source number:** 521",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-unsupported-request",
+      "slug": "pcie-unsupported-request",
+      "sourceNumber": 522,
+      "title": "PCIe Unsupported Request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Unsupported Request",
+        "body": [
+          "- **Source number:** 522",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-completer-abort",
+      "slug": "pcie-completer-abort",
+      "sourceNumber": 523,
+      "title": "PCIe Completer Abort",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Completer Abort",
+        "body": [
+          "- **Source number:** 523",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-split-completion",
+      "slug": "pcie-split-completion",
+      "sourceNumber": 524,
+      "title": "PCIe split completion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe split completion",
+        "body": [
+          "- **Source number:** 524",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-tag-allocation",
+      "slug": "pcie-tag-allocation",
+      "sourceNumber": 525,
+      "title": "PCIe tag allocation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe tag allocation",
+        "body": [
+          "- **Source number:** 525",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-tag-reuse",
+      "slug": "pcie-tag-reuse",
+      "sourceNumber": 526,
+      "title": "PCIe tag reuse",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe tag reuse",
+        "body": [
+          "- **Source number:** 526",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-multiple-outstanding-reads",
+      "slug": "pcie-multiple-outstanding-reads",
+      "sourceNumber": 527,
+      "title": "PCIe multiple outstanding reads",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe multiple outstanding reads",
+        "body": [
+          "- **Source number:** 527",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-completion-reordering",
+      "slug": "pcie-completion-reordering",
+      "sourceNumber": 528,
+      "title": "PCIe completion reordering",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe completion reordering",
+        "body": [
+          "- **Source number:** 528",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-relaxed-ordering",
+      "slug": "pcie-relaxed-ordering",
+      "sourceNumber": 529,
+      "title": "PCIe relaxed ordering",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe relaxed ordering",
+        "body": [
+          "- **Source number:** 529",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-no-snoop-attribute",
+      "slug": "pcie-no-snoop-attribute",
+      "sourceNumber": 530,
+      "title": "PCIe no-snoop attribute",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe no-snoop attribute",
+        "body": [
+          "- **Source number:** 530",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-byte-enables",
+      "slug": "pcie-byte-enables",
+      "sourceNumber": 531,
+      "title": "PCIe byte enables",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe byte enables",
+        "body": [
+          "- **Source number:** 531",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-maximum-payload-segmentation",
+      "slug": "pcie-maximum-payload-segmentation",
+      "sourceNumber": 532,
+      "title": "PCIe maximum payload segmentation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe maximum payload segmentation",
+        "body": [
+          "- **Source number:** 532",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-maximum-read-request-size",
+      "slug": "pcie-maximum-read-request-size",
+      "sourceNumber": 533,
+      "title": "PCIe maximum read-request size",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe maximum read-request size",
+        "body": [
+          "- **Source number:** 533",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-flow-control-credits",
+      "slug": "pcie-flow-control-credits",
+      "sourceNumber": 534,
+      "title": "PCIe flow-control credits",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe flow-control credits",
+        "body": [
+          "- **Source number:** 534",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/posted-header-credit-exhaustion",
+      "slug": "posted-header-credit-exhaustion",
+      "sourceNumber": 535,
+      "title": "Posted-header credit exhaustion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Posted-header credit exhaustion",
+        "body": [
+          "- **Source number:** 535",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/nonposted-credit-exhaustion",
+      "slug": "nonposted-credit-exhaustion",
+      "sourceNumber": 536,
+      "title": "Nonposted credit exhaustion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Nonposted credit exhaustion",
+        "body": [
+          "- **Source number:** 536",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/completion-credit-exhaustion",
+      "slug": "completion-credit-exhaustion",
+      "sourceNumber": 537,
+      "title": "Completion credit exhaustion",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Completion credit exhaustion",
+        "body": [
+          "- **Source number:** 537",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-replay-after-missing-acknowledgment",
+      "slug": "pcie-replay-after-missing-acknowledgment",
+      "sourceNumber": 538,
+      "title": "PCIe replay after missing acknowledgment",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe replay after missing acknowledgment",
+        "body": [
+          "- **Source number:** 538",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-sequence-number",
+      "slug": "pcie-sequence-number",
+      "sourceNumber": 539,
+      "title": "PCIe sequence number",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe sequence number",
+        "body": [
+          "- **Source number:** 539",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-l0-to-l0s",
+      "slug": "pcie-l0-to-l0s",
+      "sourceNumber": 540,
+      "title": "PCIe L0 to L0s",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe L0 to L0s",
+        "body": [
+          "- **Source number:** 540",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-l0-to-l1",
+      "slug": "pcie-l0-to-l1",
+      "sourceNumber": 541,
+      "title": "PCIe L0 to L1",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe L0 to L1",
+        "body": [
+          "- **Source number:** 541",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-link-retraining",
+      "slug": "pcie-link-retraining",
+      "sourceNumber": 542,
+      "title": "PCIe link retraining",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe link retraining",
+        "body": [
+          "- **Source number:** 542",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-hot-reset",
+      "slug": "pcie-hot-reset",
+      "sourceNumber": 543,
+      "title": "PCIe hot reset",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "reset",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe hot reset",
+        "body": [
+          "- **Source number:** 543",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-fundamental-reset",
+      "slug": "pcie-fundamental-reset",
+      "sourceNumber": 544,
+      "title": "PCIe fundamental reset",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "reset",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe fundamental reset",
+        "body": [
+          "- **Source number:** 544",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-surprise-down",
+      "slug": "pcie-surprise-down",
+      "sourceNumber": 545,
+      "title": "PCIe surprise-down",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe surprise-down",
+        "body": [
+          "- **Source number:** 545",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-msi",
+      "slug": "pcie-msi",
+      "sourceNumber": 546,
+      "title": "PCIe MSI",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe MSI",
+        "body": [
+          "- **Source number:** 546",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-msi-x",
+      "slug": "pcie-msi-x",
+      "sourceNumber": 547,
+      "title": "PCIe MSI-X",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe MSI-X",
+        "body": [
+          "- **Source number:** 547",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-aer-correctable-error",
+      "slug": "pcie-aer-correctable-error",
+      "sourceNumber": 548,
+      "title": "PCIe AER correctable error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe AER correctable error",
+        "body": [
+          "- **Source number:** 548",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-aer-uncorrectable-error",
+      "slug": "pcie-aer-uncorrectable-error",
+      "sourceNumber": 549,
+      "title": "PCIe AER uncorrectable error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe AER uncorrectable error",
+        "body": [
+          "- **Source number:** 549",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-function-level-reset",
+      "slug": "pcie-function-level-reset",
+      "sourceNumber": 550,
+      "title": "PCIe Function-Level Reset",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "reset",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe Function-Level Reset",
+        "body": [
+          "- **Source number:** 550",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-sr-iov-vf-transaction",
+      "slug": "pcie-sr-iov-vf-transaction",
+      "sourceNumber": 551,
+      "title": "PCIe SR-IOV VF transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe SR-IOV VF transaction",
+        "body": [
+          "- **Source number:** 551",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-ats-translation-request",
+      "slug": "pcie-ats-translation-request",
+      "sourceNumber": 552,
+      "title": "PCIe ATS translation request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe ATS translation request",
+        "body": [
+          "- **Source number:** 552",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-pasid-tagged-request",
+      "slug": "pcie-pasid-tagged-request",
+      "sourceNumber": 553,
+      "title": "PCIe PASID-tagged request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe PASID-tagged request",
+        "body": [
+          "- **Source number:** 553",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-pri-page-request",
+      "slug": "pcie-pri-page-request",
+      "sourceNumber": 554,
+      "title": "PCIe PRI page request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie"
+      ],
+      "protocols": [
+        "pcie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe PRI page request",
+        "body": [
+          "- **Source number:** 554",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/pcie-peer-to-peer-transaction",
+      "slug": "pcie-peer-to-peer-transaction",
+      "sourceNumber": 555,
+      "title": "PCIe peer-to-peer transaction",
+      "description": "The PCIe + IOMMU + ATS/PASID/PRI group provides valuable advanced-protocol coverage. Start conceptually rather than pretending to encode every flit field.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "pcie",
+        "iommu"
+      ],
+      "protocols": [
+        "pcie",
+        "iommu"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "PCIe peer-to-peer transaction",
+        "body": [
+          "- **Source number:** 555",
+          "- **Initial status:** `index-only`",
+          "- The PCIe + IOMMU + ATS/PASID/PRI group provides valuable advanced-protocol coverage.",
+          "- # 23. CXL, UCIe and chiplet-oriented samples",
+          "- Start conceptually rather than pretending to encode every flit field."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-io-transaction",
+      "slug": "cxl-io-transaction",
+      "sourceNumber": 556,
+      "title": "CXL.io transaction",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.io transaction",
+        "body": [
+          "- **Source number:** 556",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-cache-host-request",
+      "slug": "cxl-cache-host-request",
+      "sourceNumber": 557,
+      "title": "CXL.cache host request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cache",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.cache host request",
+        "body": [
+          "- **Source number:** 557",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-cache-device-response",
+      "slug": "cxl-cache-device-response",
+      "sourceNumber": 558,
+      "title": "CXL.cache device response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cache",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [
+        "cache"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.cache device response",
+        "body": [
+          "- **Source number:** 558",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-mem-read",
+      "slug": "cxl-mem-read",
+      "sourceNumber": 559,
+      "title": "CXL.mem read",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.mem read",
+        "body": [
+          "- **Source number:** 559",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-mem-write",
+      "slug": "cxl-mem-write",
+      "sourceNumber": 560,
+      "title": "CXL.mem write",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.mem write",
+        "body": [
+          "- **Source number:** 560",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-mem-media-response",
+      "slug": "cxl-mem-media-response",
+      "sourceNumber": 561,
+      "title": "CXL.mem media response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL.mem media response",
+        "body": [
+          "- **Source number:** 561",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-poison-response",
+      "slug": "cxl-poison-response",
+      "sourceNumber": 562,
+      "title": "CXL poison response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL poison response",
+        "body": [
+          "- **Source number:** 562",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-retry",
+      "slug": "cxl-retry",
+      "sourceNumber": 563,
+      "title": "CXL retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL retry",
+        "body": [
+          "- **Source number:** 563",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-device-coherency-flow",
+      "slug": "cxl-device-coherency-flow",
+      "sourceNumber": 564,
+      "title": "CXL device coherency flow",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "coherency",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [
+        "coherency"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL device coherency flow",
+        "body": [
+          "- **Source number:** 564",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-hdm-decoder-request",
+      "slug": "cxl-hdm-decoder-request",
+      "sourceNumber": 565,
+      "title": "CXL HDM decoder request",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL HDM decoder request",
+        "body": [
+          "- **Source number:** 565",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-link-initialization-conceptual-sample",
+      "slug": "cxl-link-initialization-conceptual-sample",
+      "sourceNumber": 566,
+      "title": "CXL link initialization conceptual sample",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL link initialization conceptual sample",
+        "body": [
+          "- **Source number:** 566",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/cxl-ide-security-setup-conceptual-sample",
+      "slug": "cxl-ide-security-setup-conceptual-sample",
+      "sourceNumber": 567,
+      "title": "CXL IDE security setup conceptual sample",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "cxl",
+        "security"
+      ],
+      "protocols": [
+        "cxl"
+      ],
+      "concepts": [
+        "security"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "CXL IDE security setup conceptual sample",
+        "body": [
+          "- **Source number:** 567",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-adapter-request-response",
+      "slug": "ucie-adapter-request-response",
+      "sourceNumber": 568,
+      "title": "UCIe adapter request/response",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe adapter request/response",
+        "body": [
+          "- **Source number:** 568",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-flit-transfer",
+      "slug": "ucie-flit-transfer",
+      "sourceNumber": 569,
+      "title": "UCIe flit transfer",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe flit transfer",
+        "body": [
+          "- **Source number:** 569",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-credit-flow",
+      "slug": "ucie-credit-flow",
+      "sourceNumber": 570,
+      "title": "UCIe credit flow",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe credit flow",
+        "body": [
+          "- **Source number:** 570",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-retry",
+      "slug": "ucie-retry",
+      "sourceNumber": 571,
+      "title": "UCIe retry",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe retry",
+        "body": [
+          "- **Source number:** 571",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-crc-error",
+      "slug": "ucie-crc-error",
+      "sourceNumber": 572,
+      "title": "UCIe CRC error",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe CRC error",
+        "body": [
+          "- **Source number:** 572",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-link-initialization",
+      "slug": "ucie-link-initialization",
+      "sourceNumber": 573,
+      "title": "UCIe link initialization",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe link initialization",
+        "body": [
+          "- **Source number:** 573",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-power-state-transition",
+      "slug": "ucie-power-state-transition",
+      "sourceNumber": 574,
+      "title": "UCIe power-state transition",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie",
+        "power"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [
+        "power"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe power-state transition",
+        "body": [
+          "- **Source number:** 574",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/ucie-protocol-layer-stall",
+      "slug": "ucie-protocol-layer-stall",
+      "sourceNumber": 575,
+      "title": "UCIe protocol-layer stall",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "ucie"
+      ],
+      "protocols": [
+        "ucie"
+      ],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "UCIe protocol-layer stall",
+        "body": [
+          "- **Source number:** 575",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/chiplet-sideband-reset-sequence",
+      "slug": "chiplet-sideband-reset-sequence",
+      "sourceNumber": 576,
+      "title": "Chiplet sideband reset sequence",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Chiplet sideband reset sequence",
+        "body": [
+          "- **Source number:** 576",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/die-to-die-clock-compensation",
+      "slug": "die-to-die-clock-compensation",
+      "sourceNumber": 577,
+      "title": "Die-to-die clock compensation",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Die-to-die clock compensation",
+        "body": [
+          "- **Source number:** 577",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/die-to-die-lane-repair",
+      "slug": "die-to-die-lane-repair",
+      "sourceNumber": 578,
+      "title": "Die-to-die lane repair",
+      "description": "Define one focused rule, corner case, or GUI feature before promoting this entry to draft.",
+      "shardId": "pcie-chiplets",
+      "tier": "advanced",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Die-to-die lane repair",
+        "body": [
+          "- **Source number:** 578",
+          "- **Initial status:** `index-only`",
+          "- **Authoring note:** Define one focused rule, corner case, or GUI feature before promoting this entry to `draft`."
+        ]
+      }
+    },
+    {
+      "id": "pcie-chiplets/chiplet-error-containment",
+      "slug": "chiplet-error-containment",
+      "sourceNumber": 579,
+      "title": "Chiplet error containment",
+      "description": "Planned curriculum lesson for Chiplet error containment.",
+      "shardId": "pcie-chiplets",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "study",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "pcie-chiplets"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Chiplet error containment",
+        "body": [
+          "- **Source number:** 579",
+          "- **Initial status:** `index-only`",
+          "- # 24. Ethernet and packet processing"
+        ]
+      }
+    }
+  ]
+}

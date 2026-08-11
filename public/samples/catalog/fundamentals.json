@@ -1,0 +1,1340 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "v1",
+  "shard": {
+    "id": "fundamentals",
+    "label": "Fundamentals",
+    "path": "catalog/fundamentals.json",
+    "sourceNumberRange": {
+      "start": 1,
+      "end": 32
+    },
+    "curriculumCount": 32,
+    "entryCount": 36,
+    "assetEntryCount": 4
+  },
+  "entries": [
+    {
+      "id": "fundamentals/clock-and-synchronous-data",
+      "slug": "clock-and-synchronous-data",
+      "sourceNumber": 1,
+      "title": "Clock and synchronous data",
+      "description": "clk, data, sampled_data Show setup and hold around a rising edge. Exercises clocks, ordinary bits and timing annotations.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock and synchronous data",
+        "body": [
+          "- **Source number:** 1",
+          "- **Initial status:** `index-only`",
+          "- `clk`, `data`, `sampled_data`",
+          "- Show setup and hold around a rising edge.",
+          "- Exercises clocks, ordinary bits and timing annotations."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/positive-edge-flip-flop",
+      "slug": "positive-edge-flip-flop",
+      "sourceNumber": 2,
+      "title": "Positive-edge flip-flop",
+      "description": "clk, d, q Show one-cycle propagation.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Positive-edge flip-flop",
+        "body": [
+          "- **Source number:** 2",
+          "- **Initial status:** `index-only`",
+          "- `clk`, `d`, `q`",
+          "- Show one-cycle propagation."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/flip-flop-with-asynchronous-reset",
+      "slug": "flip-flop-with-asynchronous-reset",
+      "sourceNumber": 3,
+      "title": "Flip-flop with asynchronous reset",
+      "description": "Assert reset between clock edges. Deassert near a clock edge.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "clock",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock",
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Flip-flop with asynchronous reset",
+        "body": [
+          "- **Source number:** 3",
+          "- **Initial status:** `index-only`",
+          "- Assert reset between clock edges.",
+          "- Deassert near a clock edge."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/synchronous-reset",
+      "slug": "synchronous-reset",
+      "sourceNumber": 4,
+      "title": "Synchronous reset",
+      "description": "Contrast with asynchronous reset. Reset only takes effect at the next active edge.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Synchronous reset",
+        "body": [
+          "- **Source number:** 4",
+          "- **Initial status:** `index-only`",
+          "- Contrast with asynchronous reset.",
+          "- Reset only takes effect at the next active edge."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/active-low-reset",
+      "slug": "active-low-reset",
+      "sourceNumber": 5,
+      "title": "Active-low reset",
+      "description": "rst_n Common naming and polarity convention.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "reset"
+      ],
+      "protocols": [],
+      "concepts": [
+        "reset"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Active-low reset",
+        "body": [
+          "- **Source number:** 5",
+          "- **Initial status:** `index-only`",
+          "- `rst_n`",
+          "- Common naming and polarity convention."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/clock-enable",
+      "slug": "clock-enable",
+      "sourceNumber": 6,
+      "title": "Clock enable",
+      "description": "clk, en, d, q Q holds while enable is low.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "clock"
+      ],
+      "protocols": [],
+      "concepts": [
+        "clock"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Clock enable",
+        "body": [
+          "- **Source number:** 6",
+          "- **Initial status:** `index-only`",
+          "- `clk`, `en`, `d`, `q`",
+          "- Q holds while enable is low."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/registered-pulse",
+      "slug": "registered-pulse",
+      "sourceNumber": 7,
+      "title": "Registered pulse",
+      "description": "One-cycle pulse generated from a condition.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Registered pulse",
+        "body": [
+          "- **Source number:** 7",
+          "- **Initial status:** `index-only`",
+          "- One-cycle pulse generated from a condition."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/level-versus-pulse",
+      "slug": "level-versus-pulse",
+      "sourceNumber": 8,
+      "title": "Level versus pulse",
+      "description": "Compare a persistent request with a one-cycle event.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Level versus pulse",
+        "body": [
+          "- **Source number:** 8",
+          "- **Initial status:** `index-only`",
+          "- Compare a persistent request with a one-cycle event."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/rising-edge-detector",
+      "slug": "rising-edge-detector",
+      "sourceNumber": 9,
+      "title": "Rising-edge detector",
+      "description": "signal, signal_d, rise_pulse",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Rising-edge detector",
+        "body": [
+          "- **Source number:** 9",
+          "- **Initial status:** `index-only`",
+          "- `signal`, `signal_d`, `rise_pulse`"
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/falling-edge-detector",
+      "slug": "falling-edge-detector",
+      "sourceNumber": 10,
+      "title": "Falling-edge detector",
+      "description": "signal, signal_d, fall_pulse",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Falling-edge detector",
+        "body": [
+          "- **Source number:** 10",
+          "- **Initial status:** `index-only`",
+          "- `signal`, `signal_d`, `fall_pulse`"
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/toggle-detector",
+      "slug": "toggle-detector",
+      "sourceNumber": 11,
+      "title": "Toggle detector",
+      "description": "Useful introduction to CDC toggle schemes.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals",
+        "cdc"
+      ],
+      "protocols": [],
+      "concepts": [
+        "cdc"
+      ],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Toggle detector",
+        "body": [
+          "- **Source number:** 11",
+          "- **Initial status:** `index-only`",
+          "- Useful introduction to CDC toggle schemes."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/two-cycle-pipeline",
+      "slug": "two-cycle-pipeline",
+      "sourceNumber": 12,
+      "title": "Two-cycle pipeline",
+      "description": "valid, data, pipeline stages, output.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-cycle pipeline",
+        "body": [
+          "- **Source number:** 12",
+          "- **Initial status:** `index-only`",
+          "- `valid`, `data`, pipeline stages, output."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/pipeline-with-stalls",
+      "slug": "pipeline-with-stalls",
+      "sourceNumber": 13,
+      "title": "Pipeline with stalls",
+      "description": "Show valid data remaining stable during a stall.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pipeline with stalls",
+        "body": [
+          "- **Source number:** 13",
+          "- **Initial status:** `index-only`",
+          "- Show valid data remaining stable during a stall."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/pipeline-flush",
+      "slug": "pipeline-flush",
+      "sourceNumber": 14,
+      "title": "Pipeline flush",
+      "description": "Insert bubbles after branch misprediction or cancellation.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Pipeline flush",
+        "body": [
+          "- **Source number:** 14",
+          "- **Initial status:** `index-only`",
+          "- Insert bubbles after branch misprediction or cancellation."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/bubble-propagation",
+      "slug": "bubble-propagation",
+      "sourceNumber": 15,
+      "title": "Bubble propagation",
+      "description": "Explicit valid-bit pipeline.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Bubble propagation",
+        "body": [
+          "- **Source number:** 15",
+          "- **Initial status:** `index-only`",
+          "- Explicit valid-bit pipeline."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/ready-valid-transfer",
+      "slug": "ready-valid-transfer",
+      "sourceNumber": 16,
+      "title": "Ready/valid transfer",
+      "description": "Transfer occurs only when both are asserted.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ready/valid transfer",
+        "body": [
+          "- **Source number:** 16",
+          "- **Initial status:** `index-only`",
+          "- Transfer occurs only when both are asserted."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/ready-before-valid",
+      "slug": "ready-before-valid",
+      "sourceNumber": 17,
+      "title": "Ready before valid",
+      "description": "Receiver is already available.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ready before valid",
+        "body": [
+          "- **Source number:** 17",
+          "- **Initial status:** `index-only`",
+          "- Receiver is already available."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/valid-before-ready",
+      "slug": "valid-before-ready",
+      "sourceNumber": 18,
+      "title": "Valid before ready",
+      "description": "Producer must hold payload stable.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Valid before ready",
+        "body": [
+          "- **Source number:** 18",
+          "- **Initial status:** `index-only`",
+          "- Producer must hold payload stable."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/back-to-back-ready-valid-transfers",
+      "slug": "back-to-back-ready-valid-transfers",
+      "sourceNumber": 19,
+      "title": "Back-to-back ready/valid transfers",
+      "description": "One transfer per cycle.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Back-to-back ready/valid transfers",
+        "body": [
+          "- **Source number:** 19",
+          "- **Initial status:** `index-only`",
+          "- One transfer per cycle."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/ready-valid-backpressure",
+      "slug": "ready-valid-backpressure",
+      "sourceNumber": 20,
+      "title": "Ready/valid backpressure",
+      "description": "Payload stability while valid=1, ready=0.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Ready/valid backpressure",
+        "body": [
+          "- **Source number:** 20",
+          "- **Initial status:** `index-only`",
+          "- Payload stability while `valid=1`, `ready=0`."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/illegal-payload-mutation-under-backpressure",
+      "slug": "illegal-payload-mutation-under-backpressure",
+      "sourceNumber": 21,
+      "title": "Illegal payload mutation under backpressure",
+      "description": "A deliberately incorrect sample. Excellent for teaching protocol assertions.",
+      "shardId": "fundamentals",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Illegal payload mutation under backpressure",
+        "body": [
+          "- **Source number:** 21",
+          "- **Initial status:** `index-only`",
+          "- A deliberately incorrect sample.",
+          "- Excellent for teaching protocol assertions."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/request-acknowledge-handshake",
+      "slug": "request-acknowledge-handshake",
+      "sourceNumber": 22,
+      "title": "Request/acknowledge handshake",
+      "description": "Four-phase return-to-zero handshake.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Request/acknowledge handshake",
+        "body": [
+          "- **Source number:** 22",
+          "- **Initial status:** `index-only`",
+          "- Four-phase return-to-zero handshake."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/two-phase-toggle-handshake",
+      "slug": "two-phase-toggle-handshake",
+      "sourceNumber": 23,
+      "title": "Two-phase toggle handshake",
+      "description": "Request and acknowledge change state rather than pulse.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Two-phase toggle handshake",
+        "body": [
+          "- **Source number:** 23",
+          "- **Initial status:** `index-only`",
+          "- Request and acknowledge change state rather than pulse."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/fixed-latency-request-response",
+      "slug": "fixed-latency-request-response",
+      "sourceNumber": 24,
+      "title": "Fixed-latency request/response",
+      "description": "Response exactly N cycles after request.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Fixed-latency request/response",
+        "body": [
+          "- **Source number:** 24",
+          "- **Initial status:** `index-only`",
+          "- Response exactly N cycles after request."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/variable-latency-request-response",
+      "slug": "variable-latency-request-response",
+      "sourceNumber": 25,
+      "title": "Variable-latency request/response",
+      "description": "Request ID or tag is needed.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Variable-latency request/response",
+        "body": [
+          "- **Source number:** 25",
+          "- **Initial status:** `index-only`",
+          "- Request ID or tag is needed."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/timeout",
+      "slug": "timeout",
+      "sourceNumber": 26,
+      "title": "Timeout",
+      "description": "Request receives no response before a watchdog expires.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Timeout",
+        "body": [
+          "- **Source number:** 26",
+          "- **Initial status:** `index-only`",
+          "- Request receives no response before a watchdog expires."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/retry",
+      "slug": "retry",
+      "sourceNumber": 27,
+      "title": "Retry",
+      "description": "Failed operation is reissued.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Retry",
+        "body": [
+          "- **Source number:** 27",
+          "- **Initial status:** `index-only`",
+          "- Failed operation is reissued."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/counter-rollover",
+      "slug": "counter-rollover",
+      "sourceNumber": 28,
+      "title": "Counter rollover",
+      "description": "Exercise buses and boundary values.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Counter rollover",
+        "body": [
+          "- **Source number:** 28",
+          "- **Initial status:** `index-only`",
+          "- Exercise buses and boundary values."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/gray-code-counter",
+      "slug": "gray-code-counter",
+      "sourceNumber": 29,
+      "title": "Gray-code counter",
+      "description": "Only one bit changes per increment.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Gray-code counter",
+        "body": [
+          "- **Source number:** 29",
+          "- **Initial status:** `index-only`",
+          "- Only one bit changes per increment."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/one-hot-state-machine",
+      "slug": "one-hot-state-machine",
+      "sourceNumber": 30,
+      "title": "One-hot state machine",
+      "description": "State transitions and illegal-state recovery.",
+      "shardId": "fundamentals",
+      "tier": "failure",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "One-hot state machine",
+        "body": [
+          "- **Source number:** 30",
+          "- **Initial status:** `index-only`",
+          "- State transitions and illegal-state recovery."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/encoded-state-machine",
+      "slug": "encoded-state-machine",
+      "sourceNumber": 31,
+      "title": "Encoded state machine",
+      "description": "IDLE, REQUEST, WAIT, DONE.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Encoded state machine",
+        "body": [
+          "- **Source number:** 31",
+          "- **Initial status:** `index-only`",
+          "- IDLE, REQUEST, WAIT, DONE."
+        ]
+      }
+    },
+    {
+      "id": "fundamentals/mealy-versus-moore-output",
+      "slug": "mealy-versus-moore-output",
+      "sourceNumber": 32,
+      "title": "Mealy versus Moore output",
+      "description": "Demonstrate combinational versus registered output timing. These are highly relevant to ASIC integration and backend discussions.",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "index-only",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Planned curriculum entry; waveform and technical content have not been reviewed."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": {
+        "document": "docs/SAMPLE_BROWSER_PHASE_2_FULL_CATALOG.md",
+        "title": "Mealy versus Moore output",
+        "body": [
+          "- **Source number:** 32",
+          "- **Initial status:** `index-only`",
+          "- Demonstrate combinational versus registered output timing.",
+          "- # 2. Reset and clock-management samples",
+          "- These are highly relevant to ASIC integration and backend discussions."
+        ]
+      }
+    },
+    {
+      "id": "general/handshake",
+      "slug": "handshake",
+      "sourceNumber": null,
+      "title": "Handshake",
+      "description": "req / gnt / valid / ready",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "handshake.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "general/data-bus",
+      "slug": "data-bus",
+      "sourceNumber": null,
+      "title": "Address / data bus",
+      "description": "Vector addr and data with write enable",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "data-bus.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "general/groups",
+      "slug": "groups",
+      "sourceNumber": null,
+      "title": "Grouped signals",
+      "description": "Nested WaveDrom groups and spacer row",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "groups.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    },
+    {
+      "id": "general/undefined-states",
+      "slug": "undefined-states",
+      "sourceNumber": null,
+      "title": "X / Z / U / D",
+      "description": "Undefined, high-Z, and meta states",
+      "shardId": "fundamentals",
+      "tier": "intermediate",
+      "contentStatus": "draft",
+      "contentKind": "lesson",
+      "owner": null,
+      "lastReviewed": null,
+      "waveformFeatures": [],
+      "prerequisites": [],
+      "next": [],
+      "pairWith": [],
+      "references": [],
+      "artifactPrompt": null,
+      "reviewNotes": [
+        "Bundled Phase 1 template; protocol and rendering review are still pending."
+      ],
+      "tags": [
+        "fundamentals"
+      ],
+      "protocols": [],
+      "concepts": [],
+      "sourceRecord": null,
+      "asset": {
+        "path": "undefined-states.json",
+        "format": "wavedrom-json",
+        "previewVersion": "v1",
+        "support": "supported",
+        "supportNote": null
+      }
+    }
+  ]
+}

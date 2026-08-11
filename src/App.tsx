@@ -33,8 +33,9 @@ import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
 import { CodePanelLayoutProvider } from './shell/codePanelLayout';
 import { flushPendingCodeToDiagram } from './codePanel/flushRegistry';
-import { loadSampleDiagram } from './shell/samples';
+import { loadSampleDiagramAsset } from './shell/samples';
 import { SampleBrowser } from './sampleLibrary/SampleBrowser';
+import type { SampleLibraryEntry } from './sampleLibrary/catalog';
 import './App.css';
 
 const ExportDialog = lazy(() =>
@@ -204,8 +205,14 @@ function App() {
     setSampleBrowserOpen(true);
   }, []);
 
-  const pickSample = useCallback((sampleId: string) => {
-    void loadSampleDiagram(sampleId).then((loaded) => {
+  const pickSample = useCallback((entry: SampleLibraryEntry) => {
+    if (!entry.assetUrl || !entry.asset) return;
+    void loadSampleDiagramAsset({
+      id: entry.id,
+      file: entry.asset.path,
+      assetUrl: entry.assetUrl,
+      format: entry.format,
+    }).then((loaded) => {
       if (loaded) setSampleBrowserOpen(false);
     });
   }, []);

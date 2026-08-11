@@ -60,6 +60,13 @@ Required Phase 2 fields:
 - `references` with specification name/edition/section;
 - `artifactPrompt` describing a possible assertion, verification plan, or design note.
 
+Reviewed promotion is deliberately explicit: add one record to
+[`public/samples/validated-samples.v1.json`](../public/samples/validated-samples.v1.json)
+and run `npm run samples:validate`. The exact record shape and checks are in
+[`SAMPLE_LIBRARY_VALIDATION.md`](./SAMPLE_LIBRARY_VALIDATION.md). Do not hand-edit
+generated catalog shards or treat a local waveform file as published before it
+has a validation record.
+
 ## Catalog sharding and loading
 
 An 832-entry catalog should not be one large React constant or one eagerly parsed waveform bundle.

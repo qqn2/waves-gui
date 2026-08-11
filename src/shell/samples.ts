@@ -388,3 +388,34 @@ export async function loadSampleDiagram(sampleId: string): Promise<boolean> {
     return false;
   }
 }
+
+export interface LoadableSampleAsset {
+  id: string;
+  file: string;
+  assetUrl: string;
+  format?: SampleFormat;
+}
+
+export async function loadSampleDiagramAsset(sample: LoadableSampleAsset): Promise<boolean> {
+  if (!confirmDiscardIfDirty()) return false;
+  try {
+    const res = await fetch(sample.assetUrl);
+    if (!res.ok) {
+      window.alert(`Could not load sample (${res.status})`);
+      return false;
+    }
+    const source = await res.text();
+    const parsed = parseCodeToDiagram(source, sampleParseOptions(sample.format));
+    if (parsed.ok === false) {
+      window.alert(parsed.error);
+      return false;
+    }
+    useStore.getState().loadDiagram(parsed.diagram);
+    useStore.getState().markClean(sample.file);
+    forgetCurrentFileHandle();
+    return true;
+  } catch {
+    window.alert(`Could not load sample: ${sample.id}`);
+    return false;
+  }
+}

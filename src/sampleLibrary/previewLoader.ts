@@ -43,6 +43,9 @@ export async function loadSamplePreview(
   signal?: AbortSignal,
 ): Promise<DiagramState> {
   if (signal?.aborted) throw cancellationError();
+  if (entry.contentStatus === 'index-only' || !entry.assetUrl) {
+    throw new Error('This planned sample does not have a waveform asset yet');
+  }
   const key = cacheKey(entry);
   const cached = readCachedPreview(key);
   if (cached) return cached;
