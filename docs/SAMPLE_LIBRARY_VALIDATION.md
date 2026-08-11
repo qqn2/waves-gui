@@ -20,7 +20,7 @@ validation registry at
        "path": "waveforms/cdc/single-bit-two-flop-synchronizer.json",
        "format": "wavedrom-json"
      },
-     "reviewedBy": "Samy Rekioua",
+     "reviewedBy": "Validation reviewer",
      "reviewedOn": "2026-08-10",
      "validationEvidence": "Checked source timing and both generated SVG themes against the lesson description."
    }
