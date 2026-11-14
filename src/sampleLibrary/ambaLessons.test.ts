@@ -84,7 +84,7 @@ describe('AMBA teaching trace semantics', () => {
         if (direction === 'write') {
           expect(trace.PWDATA[cycle]).toBe('0xDEADBEEF');
           expect(trace.PWDATA[cycle - 1]).toBe(trace.PWDATA[cycle]);
-        } else expect(trace.PRDATA[cycle]).toBe('0x5A5A5A5A');
+        } else expect(trace.PRDATA[cycle]).toBe('0x5A5A');
       }
     }
     expect(setup).toHaveLength(1);
@@ -98,7 +98,7 @@ describe('AMBA teaching trace semantics', () => {
     ));
     expect(addresses).toHaveLength(1);
     const cycle = addresses[0];
-    expect(trace.HADDR[cycle]).toBe('0xA0000000');
+    expect(trace.HADDR[cycle]).toBe('0xA000');
     expect(trace.HWRITE[cycle]).toBe('1');
     expect(trace.HBURST[cycle]).toBe('SINGLE');
     expect(trace.HWDATA[cycle + 1]).toBe('0x12345678');

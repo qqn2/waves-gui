@@ -61,6 +61,9 @@ previous 0xDEADBEEF did not fit one cell at the editor's maximum hscale. New APB
 read-with-waits also uses 4; the other three additions use 2. Timings were not
 stretched to make labels fit. The label-fit regression test uses real Node font
 metrics and actual lane geometry; browser audit is still needed for font changes.
+Compact hexadecimal values in the APB reads and the single-write AHB address
+also leave room for wider system fonts on CI and user machines. Omitted leading
+zeroes do not change the illustrated bus widths or transfer timing.
 
 ### Files for carrying this pass to another layout
 

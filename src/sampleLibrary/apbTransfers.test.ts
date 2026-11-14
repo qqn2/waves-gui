@@ -84,9 +84,9 @@ function checkTransfers(trace: Trace): Transfer[] {
 
 const cases: Array<{ name: string; expected: Transfer[] }> = [
   { name: 'write', expected: [{ setup: 2, completion: 3, waits: 0, address: '0x1000', data: '0xDEADBEEF', error: false }] },
-  { name: 'read', expected: [{ setup: 2, completion: 3, waits: 0, address: '0x2000', data: '0x5A5A5A5A', error: false }] },
+  { name: 'read', expected: [{ setup: 2, completion: 3, waits: 0, address: '0x2000', data: '0x5A5A', error: false }] },
   { name: 'write-wait', expected: [{ setup: 2, completion: 5, waits: 2, address: '0x1000', data: '0x0000002A', error: false }] },
-  { name: 'read-wait', expected: [{ setup: 2, completion: 5, waits: 2, address: '0x2000', data: '0xA5A5A5A5', error: false }] },
+  { name: 'read-wait', expected: [{ setup: 2, completion: 5, waits: 2, address: '0x2000', data: '0xA5A5', error: false }] },
   { name: 'back-to-back', expected: [
     { setup: 2, completion: 3, waits: 0, address: '0x1000', data: '0x00000011', error: false },
     { setup: 4, completion: 5, waits: 0, address: '0x1004', data: '0x00000022', error: false },
@@ -106,7 +106,7 @@ describe('APB learning path', () => {
   it('delays read data until completion without requiring stable PRDATA during waits', () => {
     const { trace } = readSample('read-wait');
     expect(trace.PRDATA.slice(2, 5)).toEqual(['x', 'x', 'x']);
-    expect(trace.PRDATA[5]).toBe('0xA5A5A5A5');
+    expect(trace.PRDATA[5]).toBe('0xA5A5');
     // These unaccepted values are legal too; only the completion value is captured.
     trace.PRDATA[3] = '0x11111111';
     trace.PRDATA[4] = '0x22222222';

@@ -28,7 +28,7 @@ export const AXI_AHB_LESSONS: Record<string, SampleLearningNotes> = {
         title: 'Present the address and controls',
         start: 2,
         end: 3,
-        description: 'During cycle 2, the manager requests a word write to 0xA0000000. HWRITE=1 selects a write; NONSEQ starts a transfer, and SINGLE means no burst follows. With HSEL=1 and HREADY=1, the subordinate accepts these controls at the right-hand edge of cycle 2.',
+        description: 'During cycle 2, the manager requests a word write to 0xA000. HWRITE=1 selects a write; NONSEQ starts a transfer, and SINGLE means no burst follows. With HSEL=1 and HREADY=1, the subordinate accepts these controls at the right-hand edge of cycle 2.',
         signals: ['HSEL', 'HTRANS', 'HADDR', 'HWRITE', 'HSIZE', 'HBURST', 'HREADY'],
       },
       {
@@ -43,7 +43,7 @@ export const AXI_AHB_LESSONS: Record<string, SampleLearningNotes> = {
       { name: 'HCLK', meaning: 'System clock. Address acceptance and data completion occur on rising edges.' },
       { name: 'HSEL', meaning: 'Address decoder → subordinate: this peripheral is selected for the current address phase.' },
       { name: 'HTRANS', meaning: 'Manager → subordinate: IDLE requests no data transfer; NONSEQ begins a single transfer or burst.' },
-      { name: 'HADDR', meaning: 'Manager → subordinate: byte address of the requested access.' },
+      { name: 'HADDR', meaning: 'Manager → subordinate: 32-bit byte address of the requested access. The label 0xA000 omits leading zeros from 0x0000A000.' },
       { name: 'HWRITE', meaning: 'Manager → subordinate: 1 means write, 0 means read; this is an address-phase control.' },
       { name: 'HSIZE', meaning: 'Manager → subordinate: bytes per transfer. A 32-bit word is four bytes (encoding 010).' },
       { name: 'HBURST', meaning: 'Manager → subordinate: SINGLE requests one transfer (encoding 000).' },

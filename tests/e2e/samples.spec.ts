@@ -104,7 +104,7 @@ test('walks through wait states with aligned highlights, readable labels, and an
   await library.getByRole('button', { name: 'Stage signals', exact: true }).click();
   await library.getByRole('button', { name: 'Next stage', exact: true }).click();
   await expect(highlight).toHaveAttribute('data-highlight-start', '5');
-  await expect(library.getByLabel('Current stage')).toContainText('0xA5A5A5A5');
+  await expect(library.getByLabel('Current stage')).toContainText('0xA5A5');
   await page.setViewportSize({ width: 375, height: 812 });
   const viewport = library.getByLabel('Scrollable waveform');
   await viewport.scrollIntoViewIfNeeded();

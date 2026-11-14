@@ -42,13 +42,13 @@ export const APB_LESSONS: Record<string, SampleLearningNotes> = {
   },
   'amba/apb/read': {
     protocol: 'APB', order: 2,
-    summary: 'Read 0x5A5A5A5A from 0x2000. The request phases are unchanged, but the peripheral supplies the data.',
+    summary: 'Read 0x5A5A from 0x2000. The request phases are unchanged, but the peripheral supplies the data.',
     objective: 'Separate the requester’s stable address from the peripheral’s read response.',
     stages: [
       { title: 'Select the read address', start: 2, end: 3, signals: ['PSEL', 'PENABLE', 'PWRITE', 'PADDR'],
         description: 'SETUP selects address 0x2000 with PWRITE=0. PSEL is high and PENABLE is low. The requester does not provide write data for this transaction.' },
       { title: 'Sample the read response', start: 3, end: 4, signals: ['PENABLE', 'PREADY', 'PRDATA', 'PSLVERR'],
-        description: 'During ACCESS, the peripheral presents PRDATA=0x5A5A5A5A. With PSEL, PENABLE, and PREADY high, the right-hand rising edge of cycle 3 completes the read and samples that data with PSLVERR=0.' },
+        description: 'During ACCESS, the peripheral presents PRDATA=0x5A5A. With PSEL, PENABLE, and PREADY high, the right-hand rising edge of cycle 3 completes the read and samples that data with PSLVERR=0.' },
       { title: 'Release the transfer', start: 4, end: 5, signals: ['PSEL', 'PENABLE', 'PRDATA'],
         description: 'The requester returns to idle after the completion edge of cycle 3. PRDATA is unspecified outside the transfer in this trace; the captured value came from the completion edge.' },
     ],
@@ -78,7 +78,7 @@ export const APB_LESSONS: Record<string, SampleLearningNotes> = {
   },
   'amba/apb/read-wait': {
     protocol: 'APB', order: 4,
-    summary: 'Read 0xA5A5A5A5 from 0x2000 after two wait cycles. The read data appears only when the peripheral is ready.',
+    summary: 'Read 0xA5A5 from 0x2000 after two wait cycles. The read data appears only when the peripheral is ready.',
     objective: 'Distinguish stable request signals from read data that is not yet valid.',
     stages: [
       { title: 'Request the read', start: 2, end: 3, signals: ['PSEL', 'PENABLE', 'PWRITE', 'PADDR'],
@@ -86,7 +86,7 @@ export const APB_LESSONS: Record<string, SampleLearningNotes> = {
       { title: 'Wait for the peripheral', start: 3, end: 5, signals: ['PSEL', 'PENABLE', 'PREADY', 'PADDR', 'PRDATA'],
         description: 'ACCESS is active, but PREADY=0 blocks completion at the right-hand rising edges of cycles 3 and 4. The requester holds the address and control signals. PRDATA may remain unspecified while the peripheral is not ready.' },
       { title: 'Capture valid read data', start: 5, end: 6, signals: ['PREADY', 'PRDATA', 'PSLVERR'],
-        description: 'The peripheral presents 0xA5A5A5A5 and drives PREADY high. The right-hand rising edge of cycle 5 completes the read with PSLVERR=0. PRDATA must be valid for this edge.' },
+        description: 'The peripheral presents 0xA5A5 and drives PREADY high. The right-hand rising edge of cycle 5 completes the read with PSLVERR=0. PRDATA must be valid for this edge.' },
       { title: 'Return to idle', start: 6, end: 7, signals: ['PSEL', 'PENABLE', 'PRDATA'],
         description: 'The requester lowers PSEL and PENABLE after the completion edge of cycle 5. The data was already captured; later PRDATA values are not part of this transaction.' },
     ],
