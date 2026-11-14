@@ -124,8 +124,16 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
     .toHaveAttribute('aria-pressed', 'true');
   await renderScale.getByRole('button', { name: '100%', exact: true }).click();
   await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
-  await expect.poll(() => preview.locator('svg').boundingBox()).not.toBeNull();
-  const naturalRenderBox = await preview.locator('svg').boundingBox();
+  const naturalRenderBox = { width: 0, height: 0 };
+  await expect.poll(async () => {
+    const box = await preview.locator('svg').boundingBox();
+    // Keep the successful measurement; another query can race SVG replacement.
+    if (box) {
+      naturalRenderBox.width = box.width;
+      naturalRenderBox.height = box.height;
+    }
+    return box;
+  }).not.toBeNull();
   await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
   await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
     .toHaveAttribute('aria-pressed', 'true');
@@ -148,12 +156,11 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
         - Number.parseFloat(style.paddingBottom),
     };
   });
-  expect(naturalRenderBox).not.toBeNull();
   expect(fitted.width).toBeLessThanOrEqual(fitted.availableWidth + 1);
   expect(fitted.height).toBeLessThanOrEqual(fitted.availableHeight + 1);
   expect(
-    Math.abs(fitted.width - naturalRenderBox!.width)
-    + Math.abs(fitted.height - naturalRenderBox!.height),
+    Math.abs(fitted.width - naturalRenderBox.width)
+    + Math.abs(fitted.height - naturalRenderBox.height),
   ).toBeGreaterThan(1);
 });
 
