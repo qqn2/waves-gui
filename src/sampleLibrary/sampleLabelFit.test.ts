@@ -42,11 +42,15 @@ describe('bundled sample label readability', () => {
     const hscale = diagram.config.hscale;
     expect(hscale).toBeGreaterThanOrEqual(MIN_HSCALE);
     expect(hscale).toBeLessThanOrEqual(MAX_HSCALE);
+    const overflows: string[] = [];
 
     for (const signal of vectorSignals(diagram.signals)) {
       const fontPx = signal.style?.fontSize ?? Math.max(10, (signal.rowHeight ?? ROW_HEIGHT) * 0.35);
       const weight = signal.style?.fontWeight ?? 400;
-      const font = `${signal.style?.fontFamily ?? 'sans-serif'} ${weight >= 600 ? 'bold ' : ''}${fontPx}`;
+      // Generic sans-serif resolves differently on developer machines and CI.
+      // DejaVu Sans reproduces the wider Linux runner metrics explicitly.
+      const fonts = [...new Set([signal.style?.fontFamily ?? 'sans-serif', 'DejaVu Sans'])]
+        .map((family) => `${family} ${weight >= 600 ? 'bold ' : ''}${fontPx}`);
       for (const segment of signal.segments) {
         if (!segment.value.trim() || segment.value === 'x') continue;
         // Use the rendered cell boundaries, including native fine timing and lane period.
@@ -59,9 +63,14 @@ describe('bundled sample label readability', () => {
         for (const line of segment.value.split('\n')) {
           if (!line.trim()) continue;
           // Deliberately exclude vectorLabelFit's overflow slack and Canvas's maxWidth compression.
-          expect(await textWidth(line, font), context).toBeLessThanOrEqual(available);
+          for (const font of fonts) {
+            const width = await textWidth(line, font);
+            if (width > available) overflows.push(`${context}: ${font} needs ${width}px, has ${available}px`);
+          }
         }
       }
     }
+    // Report every overflowing label in the asset, not just the first lane.
+    expect(overflows).toEqual([]);
   });
 });

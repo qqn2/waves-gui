@@ -41,7 +41,7 @@
         "name": "HSIZE",
         "wave": "x.=x....",
         "data": [
-          "word (32-bit)"
+          "32-bit"
         ]
       },
       {
@@ -59,7 +59,7 @@
         "name": "HWDATA",
         "wave": "x..=x...",
         "data": [
-          "0x12345678"
+          "0x1234"
         ]
       },
       {

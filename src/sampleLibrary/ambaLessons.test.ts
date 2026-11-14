@@ -100,8 +100,9 @@ describe('AMBA teaching trace semantics', () => {
     const cycle = addresses[0];
     expect(trace.HADDR[cycle]).toBe('0xA000');
     expect(trace.HWRITE[cycle]).toBe('1');
+    expect(trace.HSIZE[cycle]).toBe('32-bit');
     expect(trace.HBURST[cycle]).toBe('SINGLE');
-    expect(trace.HWDATA[cycle + 1]).toBe('0x12345678');
+    expect(trace.HWDATA[cycle + 1]).toBe('0x1234');
     expect(trace.HREADY[cycle + 1]).toBe('1');
     expect(trace.HRESP[cycle + 1]).toBe('0');
     expect(trace.HTRANS[cycle + 1]).toBe('IDLE');

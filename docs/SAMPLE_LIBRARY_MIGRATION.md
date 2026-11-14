@@ -56,11 +56,13 @@ promise rollback. AHB and AXI lessons reference IHI 0033C and IHI 0022H.c.
 
 All 19 assets were audited at their authored scales with browser font metrics:
 57 bus labels fit without font compression or overflow slack. APB read and both
-AHB examples now use hscale 4. The single AHB write uses 0x12345678 because the
+AHB examples now use hscale 4. The single AHB write uses 0x1234 because the
 previous 0xDEADBEEF did not fit one cell at the editor's maximum hscale. New APB
 read-with-waits also uses 4; the other three additions use 2. Timings were not
 stretched to make labels fit. The label-fit regression test uses real Node font
-metrics and actual lane geometry; browser audit is still needed for font changes.
+metrics, both the local generic font and the wider DejaVu Sans fallback, and
+actual lane geometry. It reports all failures within an asset together; browser
+audit is still needed for font changes.
 Compact hexadecimal values in the APB reads and the single-write AHB address
 also leave room for wider system fonts on CI and user machines. Omitted leading
 zeroes do not change the illustrated bus widths or transfer timing.
