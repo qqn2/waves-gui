@@ -9,14 +9,12 @@ import {
 import {
   registerCodeDebounceCancel,
   registerCodeFlush,
-  type CodeFlushResult,
 } from './flushRegistry';
 
-export function useCodeToDiagram(onApplied?: () => void) {
+export function useCodeToDiagram(onApplied?: (code: string) => void) {
   const applyDiagramEdit = useStore((s) => s.applyDiagramEdit);
   const setSourceDraftStatus = useStore((s) => s.setSourceDraftStatus);
   const suppressDiagramToCodeSyncRef = useRef<number | null>(null);
-  const lastApplyResultRef = useRef<CodeFlushResult>({ ok: true });
 
   const applyCodeToDiagram = useCallback(
     (newCode: string): string | null => {
@@ -27,15 +25,13 @@ export function useCodeToDiagram(onApplied?: () => void) {
         preferTOML: format === 'undulate-toml',
       });
       if (result.ok === false) {
-        lastApplyResultRef.current = { ok: false, error: result.error };
         setSourceDraftStatus(true, result.error, newCode);
         return result.error;
       }
       applyDiagramEdit(result.diagram);
       suppressDiagramToCodeSyncRef.current = useStore.getState().view.diagramRevision;
-      lastApplyResultRef.current = { ok: true };
       setSourceDraftStatus(false, null);
-      onApplied?.();
+      onApplied?.(newCode);
       return null;
     },
     [applyDiagramEdit, onApplied, setSourceDraftStatus],
@@ -47,10 +43,15 @@ export function useCodeToDiagram(onApplied?: () => void) {
 
   useEffect(() => {
     return registerCodeFlush(() => {
-      debouncedApply.flush();
-      return lastApplyResultRef.current;
+      debouncedApply.cancel();
+      const { sourceDraftDirty, sourceDraft } = useStore.getState().view;
+      if (!sourceDraftDirty || sourceDraft == null) return { ok: true };
+      // Restored drafts have no scheduled debounce or cached validation result.
+      // Always validate the current draft before a document action.
+      const error = applyCodeToDiagram(sourceDraft);
+      return error === null ? { ok: true } : { ok: false, error };
     });
-  }, [debouncedApply]);
+  }, [applyCodeToDiagram, debouncedApply]);
 
   useEffect(() => {
     return registerCodeDebounceCancel(() => {

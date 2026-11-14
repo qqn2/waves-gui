@@ -231,6 +231,20 @@ export function cubicMidpoint(
   };
 }
 
+/** Match the actual path, including the fixed tangent of a half-curve. */
+export function edgeCurveMidpoint(
+  from: CanvasAnchor,
+  to: CanvasAnchor,
+  shape: string,
+  control = defaultCurveControl(shape),
+): CanvasAnchor {
+  const connector = shape.replace(/^</, '').replace(/>$/, '');
+  const dx = to.x - from.x;
+  const c1x = connector === '~-' ? 0 : control.c1x;
+  const c2x = connector === '-~' ? 1 : control.c2x;
+  return cubicMidpoint(from, to, from.x + c1x * dx, from.y, from.x + c2x * dx, to.y);
+}
+
 /**
  * SVG path `d` aligned with WaveDrom `lib/arc-shape.js` (shape = middle of edge word).
  */
@@ -295,7 +309,11 @@ export function labelPositionOnPath(
   from: CanvasAnchor,
   to: CanvasAnchor,
   shape: string,
+  curveControl?: { c1x: number; c2x: number },
 ): CanvasAnchor {
+  if (curveControl && isCurvyEdgeShape(shape)) {
+    return edgeCurveMidpoint(from, to, shape, curveControl);
+  }
   const dx = to.x - from.x;
   const key = shape.length > 0 ? shape : '-';
   let lx = (from.x + to.x) / 2;
@@ -354,7 +372,7 @@ export function buildEdgeDrawItems(
       ? (controls[i] ?? defaultCurveControl(parsed.shape))
       : undefined;
     const d = buildEdgePathD(anchors.from, anchors.to, parsed.shape, curve);
-    const labelPos = labelPositionOnPath(anchors.from, anchors.to, parsed.shape);
+    const labelPos = labelPositionOnPath(anchors.from, anchors.to, parsed.shape, controls[i]);
     const bidirectional = parsed.hasStartArrow;
     items.push({
       d,

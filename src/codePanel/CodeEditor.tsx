@@ -16,8 +16,7 @@ import {
   validateCodeString,
   type DiagramCodeFormat,
 } from './codeSync';
-import { flushPendingCodeToDiagram } from './flushRegistry';
-import { useStore } from '../shared/store';
+import { redoDocument, undoDocument } from './documentHistory';
 import styles from './CodePanel.module.css';
 
 export interface CodeEditorProps {
@@ -90,24 +89,21 @@ const unifiedHistoryKeymap = [
   {
     key: 'Mod-z',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().undo();
+      undoDocument();
       return true;
     },
   },
   {
     key: 'Mod-y',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().redo();
+      redoDocument();
       return true;
     },
   },
   {
     key: 'Mod-Shift-z',
     run: () => {
-      if (!flushPendingCodeToDiagram().ok) return false;
-      useStore.getState().redo();
+      redoDocument();
       return true;
     },
   },

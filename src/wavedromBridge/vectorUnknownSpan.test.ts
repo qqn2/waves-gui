@@ -40,8 +40,10 @@ describe('vector x. continuation on import', () => {
   });
 
   it('extends a trailing x bus span to the longest document lane', () => {
-    const raw = readFileSync(join(samplesDir, 'amba-axi-read.json'), 'utf8');
-    const diagram = fromWavedromJSON(JSON.parse(raw) as WdRoot);
+    const diagram = fromWavedromJSON({ signal: [
+      { name: 'ACLK', wave: 'P........' },
+      { name: 'ARADDR', wave: 'x..=x..', data: ['0x07000100'] },
+    ] });
 
     const araddr = findVector(diagram, 'ARADDR');
     expect(araddr?.type).toBe('vector');

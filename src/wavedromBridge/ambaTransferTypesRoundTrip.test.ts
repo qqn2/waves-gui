@@ -43,7 +43,11 @@ describe('AHB transfer types sample (WaveDrom-faithful)', () => {
   });
 
   it('does not pad short bus waves with duplicate colorless segments', () => {
-    const json = JSON.parse(readFileSync(fixture, 'utf8'));
+    // Keep the intentionally short bus fixture independent of the teaching sample.
+    const json = { signal: [
+      { name: 'HCLK', wave: 'P........' },
+      { name: 'HBURST[2:0]', wave: 'x.6..', data: ['INCR'] },
+    ] };
     const diagram = fromWavedromJSON(json);
     const hburst = findVectorSignal(diagram.signals, 'HBURST[2:0]');
     expect(hburst?.type).toBe('vector');
@@ -64,15 +68,15 @@ describe('AHB transfer types sample (WaveDrom-faithful)', () => {
 
     const busy = htrans.segments.find((s) => s.value === 'BUSY');
     const seq = htrans.segments.find((s) => s.value === 'SEQ');
-    expect(busy?.color).toBe(fillHexForColorIndex(2));
-    expect(seq?.color).toBe(fillHexForColorIndex(3));
+    expect(busy?.color).toBe(fillHexForColorIndex(4));
+    expect(seq?.color).toBe(fillHexForColorIndex(5));
 
     const exported = toWavedromJSON(diagram);
     const outHtrans = (exported.signal as object[]).find(
       (e) => !Array.isArray(e) && (e as { name?: string }).name === 'HTRANS[1:0]',
     ) as { wave?: string; data?: string[] };
-    expect(outHtrans?.data).toEqual(['NONSEQ', 'BUSY', 'SEQ']);
-    expect(outHtrans?.wave).toMatch(/^x\./);
-    expect(outHtrans?.wave).toContain('3');
+    expect(outHtrans?.data).toEqual(['IDLE', 'NONSEQ', 'BUSY', 'SEQ', 'IDLE']);
+    expect(outHtrans?.wave).toMatch(/^[=2]\./);
+    expect(outHtrans?.wave).toContain('5');
   });
 });

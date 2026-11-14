@@ -13,7 +13,12 @@ export interface DraftEnvelope {
   version: typeof DRAFT_ENVELOPE_VERSION;
   savedAt: number;
   diagram: DiagramState;
+  fileName?: string | null;
+  /** Present in new snapshots, including null; absent in legacy split drafts. */
+  source?: SourceDraftEnvelope | null;
 }
+
+export type DraftMetadata = Pick<DraftEnvelope, 'fileName' | 'source'>;
 
 export function isDiagramEmpty(diagram: DiagramState): boolean {
   return diagram.signals.length === 0;
@@ -45,20 +50,28 @@ function isDraftEnvelope(value: unknown): value is DraftEnvelope {
 export function saveDraft(
   diagram: DiagramState,
   storage: StorageLike = getSafeStorage(),
-): void {
+  metadata: DraftMetadata = {},
+): boolean {
   try {
     const envelope: DraftEnvelope = {
       version: DRAFT_ENVELOPE_VERSION,
       savedAt: Date.now(),
       diagram: normalizeDiagram(diagram),
+      ...metadata,
     };
     storage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(envelope));
+    return true;
   } catch (err) {
     console.warn('[soloDesk] saveDraft failed', err);
+    return false;
   }
 }
 
 export function loadDraft(storage: StorageLike = getSafeStorage()): DiagramState | null {
+  return loadDraftEnvelope(storage)?.diagram ?? null;
+}
+
+export function loadDraftEnvelope(storage: StorageLike = getSafeStorage()): DraftEnvelope | null {
   try {
     const raw = storage.getItem(DRAFT_STORAGE_KEY);
     if (!raw) {
@@ -68,7 +81,15 @@ export function loadDraft(storage: StorageLike = getSafeStorage()): DiagramState
     if (!isDraftEnvelope(parsed)) {
       return null;
     }
-    return normalizeDiagram(parsed.diagram);
+    return {
+      version: DRAFT_ENVELOPE_VERSION,
+      savedAt: parsed.savedAt,
+      diagram: normalizeDiagram(parsed.diagram),
+      fileName: typeof parsed.fileName === 'string' ? parsed.fileName : null,
+      ...('source' in parsed ? {
+        source: isSourceDraftEnvelope(parsed.source) ? parsed.source : null,
+      } : {}),
+    };
   } catch (err) {
     console.warn('[soloDesk] loadDraft failed', err);
     return null;
@@ -89,6 +110,15 @@ export interface SourceDraftEnvelope {
   savedAt: number;
   code: string;
   error?: string | null;
+}
+
+function isSourceDraftEnvelope(value: unknown): value is SourceDraftEnvelope {
+  if (!value || typeof value !== 'object') return false;
+  const source = value as Partial<SourceDraftEnvelope>;
+  return source.version === 1
+    && typeof source.code === 'string'
+    && typeof source.savedAt === 'number'
+    && (source.error === undefined || source.error === null || typeof source.error === 'string');
 }
 
 export function saveSourceDraft(
@@ -113,12 +143,7 @@ export function loadSourceDraft(
 ): SourceDraftEnvelope | null {
   try {
     const parsed: unknown = JSON.parse(storage.getItem(SOURCE_DRAFT_STORAGE_KEY) ?? 'null');
-    if (
-      !parsed || typeof parsed !== 'object'
-      || (parsed as SourceDraftEnvelope).version !== 1
-      || typeof (parsed as SourceDraftEnvelope).code !== 'string'
-    ) return null;
-    return parsed as SourceDraftEnvelope;
+    return isSourceDraftEnvelope(parsed) ? parsed : null;
   } catch {
     return null;
   }

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { showEditingPanels } from './helpers/editor-panels';
 
 const editedDiagram = JSON.stringify({
   signal: [
@@ -26,6 +27,7 @@ test.beforeEach(async ({ page }) => {
   page.on('dialog', (dialog) => dialog.accept());
   await page.goto('/');
   await expect(page.locator('.appRoot')).toBeVisible();
+  await showEditingPanels(page);
 });
 
 test('starts cleanly and never offers diagram transmission', async ({ page }) => {
@@ -34,6 +36,7 @@ test('starts cleanly and never offers diagram transmission', async ({ page }) =>
     if (message.type() === 'error') errors.push(message.text());
   });
   await page.reload();
+  await showEditingPanels(page);
   await expect(page.locator('canvas')).toBeVisible();
   expect((await page.locator('canvas').boundingBox())!.height).toBeGreaterThanOrEqual(120);
   await expect(page.getByTitle('Show or hide local timing diagram preview')).toHaveAttribute('aria-pressed', 'true');
@@ -124,8 +127,14 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
     .toHaveAttribute('aria-pressed', 'true');
   await renderScale.getByRole('button', { name: '100%', exact: true }).click();
   await expect(preview.locator('svg')).toHaveCSS('max-width', 'none');
-  await expect.poll(() => preview.locator('svg').boundingBox()).not.toBeNull();
-  const naturalRenderBox = await preview.locator('svg').boundingBox();
+  let naturalRenderBox = { width: 0, height: 0 };
+  await expect(async () => {
+    const box = await preview.locator('svg').boundingBox();
+    expect(box).not.toBeNull();
+    // Capture the same non-null observation we verified. A source-preview
+    // refresh can replace the SVG between a successful poll and a second read.
+    naturalRenderBox = box!;
+  }).toPass({ timeout: 8_000 });
   await renderScale.getByRole('button', { name: 'Fit', exact: true }).click();
   await expect(renderScale.getByRole('button', { name: 'Fit', exact: true }))
     .toHaveAttribute('aria-pressed', 'true');
@@ -148,12 +157,11 @@ test('round-trips Undulate canvas edits through JSON and the local render', asyn
         - Number.parseFloat(style.paddingBottom),
     };
   });
-  expect(naturalRenderBox).not.toBeNull();
   expect(fitted.width).toBeLessThanOrEqual(fitted.availableWidth + 1);
   expect(fitted.height).toBeLessThanOrEqual(fitted.availableHeight + 1);
   expect(
-    Math.abs(fitted.width - naturalRenderBox!.width)
-    + Math.abs(fitted.height - naturalRenderBox!.height),
+    Math.abs(fitted.width - naturalRenderBox.width)
+    + Math.abs(fitted.height - naturalRenderBox.height),
   ).toBeGreaterThan(1);
 });
 
@@ -438,6 +446,7 @@ test('keeps waveform pixels aligned at fractional Windows display scaling', asyn
     });
   });
   await page.reload();
+  await showEditingPanels(page);
 
   const geometry = await page.evaluate(() => {
     const canvas = document.querySelector('canvas');
@@ -698,6 +707,7 @@ test('synchronizes JSON, supports undo/redo, and restores the local draft', asyn
     }
   });
   await page.reload();
+  await showEditingPanels(page);
   await expect(signalRow(page, 'safe_bus')).toBeVisible();
   expect(recoveryDialogs).toEqual([]);
 });
@@ -827,7 +837,7 @@ test('adds below a filtered child in a collapsed group without escaping the grou
 
 test('commits hscale once and restores it after a blank blur', async ({ page }) => {
   await page.getByRole('button', { name: 'Diagram settings' }).click();
-  const hscale = page.getByLabel('WaveDrom horizontal scale');
+  const hscale = page.getByLabel('hscale', { exact: true });
 
   await hscale.fill('1.5');
   await hscale.press('Enter');
@@ -1175,8 +1185,17 @@ for (const viewport of [
   test(`renders the ${viewport.name} layout`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.reload();
+    await showEditingPanels(page);
     await expect(page.locator('.appRoot')).toBeVisible();
     await expect(page.locator('canvas')).toBeVisible();
+    await expect(page.getByLabel('Current filename', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Browser recovery status'))
+      .toHaveText('Recovery saved in browser');
+    if (viewport.name === 'desktop') {
+      await expect(page.getByRole('button', { name: 'Help and keyboard shortcuts' }))
+        .toBeInViewport({ ratio: 1 });
+    }
+    await page.screenshot({ path: test.info().outputPath('editor.png'), fullPage: true });
   });
 }
 

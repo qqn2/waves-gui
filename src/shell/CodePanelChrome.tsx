@@ -9,6 +9,7 @@ import {
   PanelRight,
   PictureInPicture2,
   Rows2,
+  X,
 } from 'lucide-react';
 import type {
   BottomDockArrangement,
@@ -21,6 +22,7 @@ export interface CodePanelChromeProps {
   title: string;
   layout: DockPanelLayout;
   onPlacementChange: (placement: CodePanelPlacement) => void;
+  onClose: () => void;
   onFloatDragStart?: (e: ReactPointerEvent<HTMLDivElement>) => void;
   /** When two panels share an edge, axis of the shared stack. */
   stackAxis?: 'x' | 'y';
@@ -46,6 +48,7 @@ export function CodePanelChrome({
   title,
   layout,
   onPlacementChange,
+  onClose,
   onFloatDragStart,
   stackAxis,
   canMoveTowardCanvas,
@@ -146,6 +149,16 @@ export function CodePanelChrome({
             <Icon size={14} aria-hidden />
           </button>
         ))}
+        <button
+          type="button"
+          className={styles.codePanelLayoutBtn}
+          title={`Close ${title} panel`}
+          aria-label={`Close ${title} panel`}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={onClose}
+        >
+          <X size={16} aria-hidden />
+        </button>
       </div>
     </div>
   );

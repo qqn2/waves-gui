@@ -1,20 +1,79 @@
 {
   "head": {
-    "text": "Figure 3-6 Transfer type examples (AHB, IHI0033C-style)",
-    "tick": 0,
-    "every": 1
+    "text": "AHB read burst \u2014 BUSY and wait states",
+    "tick": 0
   },
-  "config": { "hscale": 2 },
+  "config": {
+    "hscale": 4
+  },
   "signal": [
-    { "name": "HCLK", "wave": "P........" },
-    { "name": "HTRANS[1:0]", "wave": "x.=2.3..", "data": ["NONSEQ", "BUSY", "SEQ", "SEQ"] },
-    { "name": "HADDR[31:0]", "wave": "x.=x.=3.", "data": ["0x20", "0x24", "0x28", "0x2C"] },
-    { "name": "HWRITE", "wave": "1.0..1.." },
-    { "name": "HBURST[2:0]", "wave": "x.6..", "data": ["INCR"] },
-    { "name": "HREADY", "wave": "1..0.1.." },
-    { "name": "HRDATA[31:0]", "wave": "x...=x..", "data": ["Data (0x20)", "Data (0x24)", "Data (0x28)", "Data (0x2C)"] }
+    {
+      "name": "HCLK",
+      "wave": "P..........."
+    },
+    {
+      "name": "HSEL",
+      "wave": "0.1.....0..."
+    },
+    {
+      "name": "HTRANS[1:0]",
+      "wave": "2.345...2...",
+      "data": [
+        "IDLE",
+        "NONSEQ",
+        "BUSY",
+        "SEQ",
+        "IDLE"
+      ]
+    },
+    {
+      "name": "HADDR[31:0]",
+      "wave": "x.=2.3.4x...",
+      "data": [
+        "0x20",
+        "0x24",
+        "0x28",
+        "0x2C"
+      ]
+    },
+    {
+      "name": "HWRITE",
+      "wave": "0..........."
+    },
+    {
+      "name": "HSIZE[2:0]",
+      "wave": "x.=.....x...",
+      "data": [
+        "word (32-bit)"
+      ]
+    },
+    {
+      "name": "HBURST[2:0]",
+      "wave": "x.=.....x...",
+      "data": [
+        "INCR"
+      ]
+    },
+    {
+      "name": "HREADY",
+      "wave": "1....01....."
+    },
+    {
+      "name": "HRESP",
+      "wave": "0..........."
+    },
+    {
+      "name": "HRDATA[31:0]",
+      "wave": "x..=x=.=2x..",
+      "data": [
+        "Data (0x20)",
+        "Data (0x24)",
+        "Data (0x28)",
+        "Data (0x2C)"
+      ]
+    }
   ],
   "foot": {
-    "text": "Use Preview in JSON panel for WaveDrom rendering; edit bus labels in panel or paint with Bus field"
+    "text": "BUSY adds no data beat. HREADY=0 extends a data phase and holds the next address. Simplified teaching trace."
   }
 }

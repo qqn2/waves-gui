@@ -1,6 +1,6 @@
 import { useStore } from '../shared/store';
 import { parseCodeToDiagram } from '../codePanel/codeSync';
-import { forgetCurrentFileHandle } from './FileOperations';
+import { currentFileSession, forgetCurrentFileHandle } from './FileOperations';
 
 export interface SampleLeaf {
   kind: 'sample';
@@ -80,16 +80,44 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
           {
             kind: 'sample',
             id: 'amba/apb/write',
-            title: 'Write',
-            description: 'SETUP + ACCESS, no wait (IHI0024E Fig 3-1)',
+            title: 'Write without wait states',
+            description: 'Hold address and write data through SETUP and ACCESS',
             file: 'amba-apb-write.json',
           },
           {
             kind: 'sample',
             id: 'amba/apb/read',
-            title: 'Read',
-            description: 'SETUP + ACCESS, PRDATA (IHI0024E Fig 3-4)',
+            title: 'Read without wait states',
+            description: 'Read data completes when PSEL, PENABLE, and PREADY are high',
             file: 'amba-apb-read.json',
+          },
+          {
+            kind: 'sample',
+            id: 'amba/apb/write-wait',
+            title: 'Write with wait states',
+            description: 'Hold the request stable while PREADY extends ACCESS',
+            file: 'amba-apb-write-wait.json',
+          },
+          {
+            kind: 'sample',
+            id: 'amba/apb/read-wait',
+            title: 'Read with wait states',
+            description: 'Wait for completion before sampling PRDATA',
+            file: 'amba-apb-read-wait.json',
+          },
+          {
+            kind: 'sample',
+            id: 'amba/apb/back-to-back',
+            title: 'Back-to-back transfers',
+            description: 'Keep PSEL high while each write gets its own SETUP cycle',
+            file: 'amba-apb-back-to-back.json',
+          },
+          {
+            kind: 'sample',
+            id: 'amba/apb/error',
+            title: 'Error response after a wait',
+            description: 'Complete a write with PREADY and report its error through PSLVERR',
+            file: 'amba-apb-error.json',
           },
         ],
       },
@@ -101,14 +129,14 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
             kind: 'sample',
             id: 'amba/ahb/write',
             title: 'Single write',
-            description: 'NONSEQ address phase + data phase (IHI0033C)',
+            description: 'A NONSEQ address followed by its write data one cycle later',
             file: 'amba-ahb-write.json',
           },
           {
             kind: 'sample',
             id: 'amba/ahb/transfer-types',
-            title: 'Transfer types',
-            description: 'Fig 3-6 style: NONSEQ, BUSY, SEQ, INCR, wait states',
+            title: 'Read burst: BUSY and wait states',
+            description: 'Four INCR read beats showing BUSY versus an HREADY wait',
             file: 'amba-ahb-transfer-types.json',
           },
         ],
@@ -119,17 +147,17 @@ export const SAMPLE_LIBRARY: SampleTreeNode[] = [
         children: [
           {
             kind: 'sample',
-            id: 'amba/axi/write',
-            title: 'Write',
-            description: 'AW + W + B channels, AWLEN=0, WLAST=1',
-            file: 'amba-axi-write.json',
+            id: 'amba/axi/read',
+            title: 'Single read with backpressure',
+            description: 'ARLEN=0, then stable RDATA and RLAST while RREADY waits',
+            file: 'amba-axi-read.json',
           },
           {
             kind: 'sample',
-            id: 'amba/axi/read',
-            title: 'Read',
-            description: 'AR + R channels, RLAST=1',
-            file: 'amba-axi-read.json',
+            id: 'amba/axi/write',
+            title: 'Single write with backpressure',
+            description: 'Independent AW, W, and B handshakes with stable stalled payloads',
+            file: 'amba-axi-write.json',
           },
         ],
       },
@@ -203,30 +231,50 @@ function confirmDiscardIfDirty(): boolean {
   return window.confirm('Discard unsaved changes and load the sample?');
 }
 
-export async function loadSampleDiagram(sampleId: string): Promise<void> {
+let sampleLoadRequest = 0;
+
+/** Open a fresh sample copy only while the initiating document is unchanged. */
+export async function loadSampleDiagram(sampleId: string, signal?: AbortSignal): Promise<boolean> {
+  const request = ++sampleLoadRequest;
+  if (signal?.aborted) return false;
   const sample = findSampleById(sampleId);
-  if (!sample) {
-    window.alert(`Unknown sample: ${sampleId}`);
-    return;
-  }
-  if (!confirmDiscardIfDirty()) return;
+  if (!sample) throw new Error(`Unknown sample: ${sampleId}`);
+
+  const session = currentFileSession();
+  let documentChanged = false;
+  const unsubscribe = useStore.subscribe((state, previous) => {
+    if (
+      state.diagram !== previous.diagram
+      || state.savedDiagram !== previous.savedDiagram
+      || state.view.sourceDraft !== previous.view.sourceDraft
+      || state.view.sourceDraftDirty !== previous.view.sourceDraftDirty
+      || state.view.fileName !== previous.view.fileName
+    ) documentChanged = true;
+  });
+  const isCurrent = () => !signal?.aborted
+    && request === sampleLoadRequest
+    && !documentChanged
+    && session === currentFileSession();
 
   try {
-    const res = await fetch(sampleAssetUrl(sample.file));
-    if (!res.ok) {
-      window.alert(`Could not load sample (${res.status})`);
-      return;
-    }
+    const res = await fetch(sampleAssetUrl(sample.file), { signal });
+    if (!isCurrent()) return false;
+    if (!res.ok) throw new Error(`Could not load sample (${res.status})`);
     const source = await res.text();
-    const parsed = parseCodeToDiagram(source);
-    if (parsed.ok === false) {
-      window.alert(parsed.error);
-      return;
-    }
+    if (!isCurrent()) return false;
+    const parsed = parseCodeToDiagram(source, { preferUndulate: sample.id.startsWith('undulate/') });
+    if (parsed.ok === false) throw new Error(parsed.error);
+    // Fetching or parsing must never discard the current source draft. Ask only
+    // after the replacement is ready, and check again before committing it.
+    if (!confirmDiscardIfDirty() || !isCurrent()) return false;
+    forgetCurrentFileHandle();
     useStore.getState().loadDiagram(parsed.diagram);
     useStore.getState().markClean(sample.file);
-    forgetCurrentFileHandle();
-  } catch {
-    window.alert('Could not load sample diagram');
+    return true;
+  } catch (error) {
+    if (!isCurrent() || (error instanceof Error && error.name === 'AbortError')) return false;
+    throw error instanceof Error ? error : new Error('Could not load sample diagram');
+  } finally {
+    unsubscribe();
   }
 }

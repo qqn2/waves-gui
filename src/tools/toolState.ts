@@ -116,7 +116,5 @@ export const toolState = {
 };
 
 export function setActiveSignalIds(ids: string[]): void {
-  useStore.setState((s) => {
-    s.view.activeSignalIds = ids;
-  });
+  useStore.getState().setActiveSignalIds(ids);
 }

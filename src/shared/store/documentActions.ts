@@ -48,6 +48,7 @@ function resetTransientDocumentView(s: AppState & StoreActions): void {
   s.view.structuredArrowPending = null;
   s.view.edgeToolHover = null;
   s.view.activeSignalIds = [];
+  s.view.activeBusSegment = null;
   s.view.activeAnnotationId = null;
   s.view.activeTimingCellIndex = null;
   toolState.cancelAll();
@@ -861,6 +862,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.view.collapsedGroupIds = s.view.collapsedGroupIds.filter((id) => validGroupIds.has(id));
         s.view.activeAnnotationId = null;
         s.view.activeTimingCellIndex = null;
+        s.view.activeBusSegment = null;
         s.view.paintDraft = null;
         s.view.edgeAnchorPending = null;
         s.view.structuredArrowPending = null;
@@ -963,6 +965,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.view.activeSignalIds = [];
         s.view.activeAnnotationId = null;
         s.view.activeTimingCellIndex = null;
+        s.view.activeBusSegment = null;
         toolState.cancelAll();
         s.view.diagramRevision += 1;
       });
@@ -978,6 +981,7 @@ export function createDocumentActions(set: ImmerSet): Pick<
         s.view.activeSignalIds = [];
         s.view.activeAnnotationId = null;
         s.view.activeTimingCellIndex = null;
+        s.view.activeBusSegment = null;
         toolState.cancelAll();
         s.view.diagramRevision += 1;
       });

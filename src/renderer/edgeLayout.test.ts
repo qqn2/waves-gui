@@ -3,6 +3,8 @@ import type { DiagramState } from '../shared/types';
 import {
   buildEdgePathD,
   buildNodeIndex,
+  edgeCurveMidpoint,
+  labelPositionOnPath,
   hitTestDiagramEdge,
   parseEdge,
   parseEdgePath,
@@ -231,5 +233,25 @@ describe('buildEdgePathD', () => {
   it('emits Manhattan path for -|>', () => {
     const d = buildEdgePathD({ x: 10, y: 20 }, { x: 110, y: 80 }, '-|>');
     expect(d).toBe('M 10 20 l 100 0 0 60');
+  });
+});
+
+describe('custom curve label and handle positions', () => {
+  const from = { x: 0, y: 20 };
+  const to = { x: 200, y: 100 };
+
+  it('moves the label with the dragged curve midpoint', () => {
+    const control = { c1x: 0.9, c2x: 0.5 };
+    expect(edgeCurveMidpoint(from, to, '~', control)).toEqual({ x: 130, y: 60 });
+    expect(labelPositionOnPath(from, to, '~', control)).toEqual({ x: 130, y: 60 });
+    expect(labelPositionOnPath(from, to, '~')).toEqual({ x: 100, y: 60 });
+  });
+
+  it('uses only the movable control for half-curve labels and handles', () => {
+    const control = { c1x: 0.8, c2x: 0.2 };
+    expect(edgeCurveMidpoint(from, to, '-~', control)).toEqual({ x: 160, y: 60 });
+    expect(labelPositionOnPath(from, to, '-~', control)).toEqual({ x: 160, y: 60 });
+    expect(edgeCurveMidpoint(from, to, '~-', control)).toEqual({ x: 40, y: 60 });
+    expect(labelPositionOnPath(from, to, '~-', control)).toEqual({ x: 40, y: 60 });
   });
 });

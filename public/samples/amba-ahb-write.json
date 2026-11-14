@@ -1,23 +1,78 @@
 {
-  "head": { "text": "AHB single write (NONSEQ, HBURST=SINGLE)" },
-  "config": { "hscale": 2 },
+  "head": {
+    "text": "AHB single write \u2014 address then data",
+    "tick": 0
+  },
+  "config": {
+    "hscale": 4
+  },
   "signal": [
     [
       "Address phase",
-      { "name": "HCLK", "wave": "P......." },
-      { "name": "HSEL", "wave": "0.1..0.." },
-      { "name": "HTRANS", "wave": "x.=x..", "data": ["NONSEQ"] },
-      { "name": "HADDR", "wave": "x.=x..", "data": ["0xA0000000"] },
-      { "name": "HWRITE", "wave": "0.1..0.." },
-      { "name": "HBURST", "wave": "x.=x..", "data": ["SINGLE"] }
+      {
+        "name": "HCLK",
+        "wave": "P......."
+      },
+      {
+        "name": "HSEL",
+        "wave": "0.10...."
+      },
+      {
+        "name": "HTRANS",
+        "wave": "2.32....",
+        "data": [
+          "IDLE",
+          "NONSEQ",
+          "IDLE"
+        ]
+      },
+      {
+        "name": "HADDR",
+        "wave": "x.=x....",
+        "data": [
+          "0xA0000000"
+        ]
+      },
+      {
+        "name": "HWRITE",
+        "wave": "0.10...."
+      },
+      {
+        "name": "HSIZE",
+        "wave": "x.=x....",
+        "data": [
+          "word (32-bit)"
+        ]
+      },
+      {
+        "name": "HBURST",
+        "wave": "x.=x....",
+        "data": [
+          "SINGLE"
+        ]
+      }
     ],
     {},
     [
       "Data phase",
-      { "name": "HWDATA", "wave": "x...=x.", "data": ["0xDEADBEEF"] },
-      { "name": "HREADY", "wave": "1......." },
-      { "name": "HRESP", "wave": "0......." }
+      {
+        "name": "HWDATA",
+        "wave": "x..=x...",
+        "data": [
+          "0x12345678"
+        ]
+      },
+      {
+        "name": "HREADY",
+        "wave": "1......."
+      },
+      {
+        "name": "HRESP",
+        "wave": "0......."
+      }
     ]
   ],
-  "foot": { "text": "Address then data phase; HREADY=1, no wait; IHI0033C-style" }
+  "foot": {
+    "text": "HWDATA follows its address by one cycle; HREADY=1 completes without a wait. Simplified teaching trace."
+  }
 }

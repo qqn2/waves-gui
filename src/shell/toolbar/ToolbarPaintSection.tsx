@@ -1,5 +1,6 @@
 import {
   fillHexForColorIndex,
+  colorIndexFromFillHex,
   WAVEDROM_COLOR_INDEXES,
   type WavedromColorIndex,
 } from '../../wavedromBridge/wavedromColors';
@@ -10,7 +11,12 @@ import type {
   PaintStyle,
 } from '../../shared/types';
 import { ArrowLeftRight, Columns2, Zap } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { EDITING_SHORTCUTS } from '../../shared/shortcuts';
+import { useStore } from '../../shared/store';
+import { selectedBusSegment } from '../../tools/busLabelPick';
+import { runAfterSourceFlush } from '../../codePanel/sourceMutationGuard';
+import { useEffect, useRef, useState } from 'react';
+import { registerBusLabelDraftCommit } from '../busLabelDraft';
 import { BitStateButton } from './BitStateButton';
 import {
   BIT_STATE_LABELS,
@@ -89,7 +95,7 @@ export function ToolbarPaintSection({
       <button
         ref={moreButtonRef}
         type="button"
-        title="Glitch — add a spurious transition (G)"
+        title={`Glitch — add a spurious transition (${EDITING_SHORTCUTS.glitch.label})`}
         className={`${styles.toolBtn} ${paintMode === 'glitch' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('glitch')}
         aria-pressed={paintMode === 'glitch'}
@@ -98,7 +104,7 @@ export function ToolbarPaintSection({
       </button>
       <button
         type="button"
-        title="Gap — insert a timeline break before the next column (|)"
+        title={`Gap — insert a timeline break before the next column (${EDITING_SHORTCUTS.gap.label})`}
         className={`${styles.toolBtn} ${paintMode === 'gap' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('gap')}
         aria-pressed={paintMode === 'gap'}
@@ -107,7 +113,7 @@ export function ToolbarPaintSection({
       </button>
       <button
         type="button"
-        title="Invert — toggle 0↔1 and clock phase p↔n or P↔N (T); x/z unchanged"
+        title={`Invert — toggle 0↔1 and clock phase p↔n or P↔N (${EDITING_SHORTCUTS.invert.label}); x/z unchanged`}
         className={`${styles.toolBtn} ${paintMode === 'toggle' ? styles.toolActive : ''}`}
         onClick={() => onSetPaintMode('toggle')}
         aria-pressed={paintMode === 'toggle'}
@@ -158,6 +164,7 @@ export function ToolbarPaintSection({
 }
 
 export interface ToolbarBusSectionProps {
+  mode: 'edit' | 'paint';
   activeBusLabel: string;
   activeBusColorIndex: WavedromColorIndex;
   onBusLabel: (label: string) => void;
@@ -248,27 +255,49 @@ export function ToolbarAnaloguePaintSection({
 }
 
 export function ToolbarBusSection({
+  mode,
   activeBusLabel,
   activeBusColorIndex,
   onBusLabel,
   onBusColorIndex,
 }: ToolbarBusSectionProps) {
+  const diagram = useStore((state) => state.diagram);
+  const view = useStore((state) => state.view);
+  const selected = mode === 'edit' ? selectedBusSegment(diagram, view) : null;
+  const disabled = mode === 'edit' && !selected;
+  const colorIndex = selected ? colorIndexFromFillHex(selected.segment.color) : activeBusColorIndex;
+
+  const editSelected = (edit: (signalId: string, segmentId: string) => void): boolean => {
+    if (!selected) return false;
+    let applied = false;
+    runAfterSourceFlush(() => {
+      const current = useStore.getState();
+      const target = selectedBusSegment(current.diagram, current.view);
+      if (target?.signalId !== selected.signalId || target.segment.id !== selected.segment.id) return;
+      edit(target.signalId, target.segment.id);
+      applied = true;
+    });
+    return applied;
+  };
+
   return (
     <>
       <span className={styles.toolGroupLabel}>Bus</span>
       <label
         className={styles.busLabelWrap}
-        title="Label applied to new bus spans"
+        title={mode === 'paint' ? 'Label applied to new bus spans'
+          : selected ? 'Edit selected bus span; Enter or leaving this field applies the label'
+            : 'Select a bus span on the waveform to edit its label'}
       >
         <span className={styles.busLabelTag}>Label</span>
-        <input
-          type="text"
-          className={styles.busLabelInput}
-          value={activeBusLabel}
-          onChange={(event) => onBusLabel(event.target.value)}
-          placeholder="data"
-          aria-label="Bus label"
-          spellCheck={false}
+        <BusLabelInput
+          key={`${mode}:${view.diagramRevision}:${selected?.signalId ?? ''}:${selected?.segment.id ?? ''}`}
+          value={mode === 'paint' ? activeBusLabel : selected?.segment.value ?? ''}
+          disabled={disabled}
+          onChange={mode === 'paint' ? onBusLabel : undefined}
+          onCommit={mode === 'edit' ? (value) => editSelected((signalId, segmentId) => {
+            useStore.getState().updateVectorSegmentValue(signalId, segmentId, value);
+          }) : undefined}
         />
       </label>
       <span className={styles.busColorGroup} title="WaveDrom bus fill (wave digits 2–9)">
@@ -277,18 +306,66 @@ export function ToolbarBusSection({
             key={idx}
             type="button"
             className={`${styles.busColorSwatch} ${
-              activeBusColorIndex === idx ? styles.busColorSwatchActive : ''
+              !disabled && colorIndex === idx ? styles.busColorSwatchActive : ''
             }`}
             style={{ background: fillHexForColorIndex(idx) }}
             title={`Bus color ${idx}`}
             aria-label={`Bus color ${idx}`}
-            aria-pressed={activeBusColorIndex === idx}
-            onClick={() => onBusColorIndex(idx as WavedromColorIndex)}
+            aria-pressed={!disabled && colorIndex === idx}
+            disabled={disabled}
+            onClick={() => {
+              if (mode === 'paint') onBusColorIndex(idx as WavedromColorIndex);
+              else editSelected((signalId, segmentId) => {
+                useStore.getState().updateVectorSegmentColor(signalId, segmentId, fillHexForColorIndex(idx));
+              });
+            }}
           />
         ))}
       </span>
     </>
   );
+}
+
+function BusLabelInput({ value, disabled, onChange, onCommit }: {
+  value: string;
+  disabled: boolean;
+  onChange?: (value: string) => void;
+  onCommit?: (value: string) => boolean;
+}) {
+  const [draft, setDraft] = useState<{ source: string; value: string } | null>(null);
+  const cancelBlur = useRef(false);
+  const displayed = draft?.source === value ? draft.value : value;
+  const commit = (): boolean => {
+    if (displayed !== value && onCommit && !onCommit(displayed)) return false;
+    setDraft(null);
+    return true;
+  };
+  const commitRef = useRef(commit);
+  commitRef.current = commit;
+  useEffect(() => registerBusLabelDraftCommit(() => commitRef.current()), []);
+  return <input type="text" className={styles.busLabelInput}
+    value={displayed} disabled={disabled} placeholder={disabled ? 'Select bus span' : 'data'}
+    aria-label="Bus label" spellCheck={false}
+    onChange={(event) => {
+      if (onChange) onChange(event.target.value);
+      else setDraft({ source: value, value: event.target.value });
+    }}
+    onBlur={() => {
+      if (cancelBlur.current) cancelBlur.current = false;
+      else commit();
+    }}
+    onKeyDown={(event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelBlur.current = true;
+        setDraft(null);
+        event.currentTarget.blur();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        commit();
+        event.currentTarget.blur();
+      }
+    }} />;
 }
 
 export interface ToolbarEdgeSectionProps {

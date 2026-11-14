@@ -7,15 +7,32 @@ import {
   openDiagramFile,
   openVCDFile,
   saveCurrentDiagramFile,
+  saveCurrentDiagramAs,
   saveDiagramFile,
   switchCurrentDiagramFileFormat,
 } from './FileOperations';
 import { DRAFT_STORAGE_KEY, saveDraft } from './soloDesk/localDraft';
+import { useFileStatus } from './fileStatus';
+import { useRecoveryStatus } from './soloDesk/recoveryStatus';
 
 type PickerWindow = Window & {
   showOpenFilePicker?: () => Promise<FileSystemFileHandle[]>;
   showSaveFilePicker?: () => Promise<FileSystemFileHandle>;
 };
+
+function fileHandle(name: string, write: ReturnType<typeof vi.fn>): FileSystemFileHandle {
+  return {
+    name,
+    getFile: vi.fn().mockResolvedValue(new File([
+      JSON.stringify({ signal: [{ name: 'opened', wave: '01..' }] }),
+    ], name, { type: 'application/json' })),
+    createWritable: vi.fn().mockResolvedValue({
+      write,
+      close: vi.fn().mockResolvedValue(undefined),
+      abort: vi.fn().mockResolvedValue(undefined),
+    }),
+  } as unknown as FileSystemFileHandle;
+}
 
 describe('FileOperations', () => {
   beforeEach(() => {
@@ -39,6 +56,15 @@ describe('FileOperations', () => {
 
     expect(useStore.getState().view.isDirty).toBe(true);
     expect(localStorage.getItem(DRAFT_STORAGE_KEY)).not.toBeNull();
+    expect(useFileStatus.getState().phase).toBe('download-requested');
+    useStore.getState().addSignal('bit');
+    expect(useFileStatus.getState().phase).toBe('idle');
+  });
+
+  it('clears the restored notice when switching documents', () => {
+    useRecoveryStatus.setState({ restored: true });
+    forgetCurrentFileHandle();
+    expect(useRecoveryStatus.getState().restored).toBe(false);
   });
 
   it('retains an opened file handle and writes back through Save', async () => {
@@ -65,6 +91,108 @@ describe('FileOperations', () => {
     expect(close).toHaveBeenCalledOnce();
     expect((window as PickerWindow).showSaveFilePicker).not.toHaveBeenCalled();
     expect(useStore.getState().view.isDirty).toBe(false);
+  });
+
+  it('Save As writes a new file and subsequent Save uses the new handle', async () => {
+    const originalWrite = vi.fn().mockResolvedValue(undefined);
+    const copyWrite = vi.fn().mockResolvedValue(undefined);
+    const original = fileHandle('original.json', originalWrite);
+    const copy = fileHandle('copy.json', copyWrite);
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([original]);
+    const picker = vi.fn().mockResolvedValue(copy);
+    (window as PickerWindow).showSaveFilePicker = picker;
+    await openDiagramFile();
+    useStore.getState().addSignal('bit');
+
+    await saveCurrentDiagramAs();
+
+    expect(originalWrite).not.toHaveBeenCalled();
+    expect(copyWrite).toHaveBeenCalledOnce();
+    expect(useStore.getState().view.fileName).toBe('copy.json');
+    expect(useStore.getState().view.isDirty).toBe(false);
+    expect(useFileStatus.getState().confirmedFileName).toBe('copy.json');
+    useStore.getState().addSignal('bit');
+    await saveCurrentDiagramFile();
+    expect(copyWrite).toHaveBeenCalledTimes(2);
+    expect(picker).toHaveBeenCalledOnce();
+  });
+
+  it.each(['cancel', 'write failure'])('preserves the original file after Save As %s', async (failure) => {
+    const originalWrite = vi.fn().mockResolvedValue(undefined);
+    const original = fileHandle('original.json', originalWrite);
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([original]);
+    (window as PickerWindow).showSaveFilePicker = failure === 'cancel'
+      ? vi.fn().mockRejectedValue(new DOMException('cancelled', 'AbortError'))
+      : vi.fn().mockResolvedValue(fileHandle('failed.json', vi.fn().mockRejectedValue(new Error('Disk full'))));
+    await openDiagramFile();
+    useStore.getState().addSignal('bit');
+    const savepoint = useStore.getState().savedDiagram;
+
+    await saveCurrentDiagramAs();
+
+    expect(useStore.getState().view.fileName).toBe('original.json');
+    expect(useStore.getState().savedDiagram).toBe(savepoint);
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(originalWrite).not.toHaveBeenCalled();
+    expect(useFileStatus.getState().phase).toBe(failure === 'cancel' ? 'idle' : 'error');
+    await saveCurrentDiagramFile();
+    expect(originalWrite).toHaveBeenCalledOnce();
+  });
+
+  it('does not mark edits made during an asynchronous write as saved', async () => {
+    let finishWrite!: () => void;
+    const writing = new Promise<void>((resolve) => { finishWrite = resolve; });
+    const write = vi.fn().mockReturnValue(writing);
+    (window as PickerWindow).showSaveFilePicker = vi.fn().mockResolvedValue(fileHandle('saved.json', write));
+    useStore.getState().addSignal('bit');
+    const savedSnapshot = useStore.getState().diagram;
+    const saving = saveCurrentDiagramAs();
+    await vi.waitFor(() => expect(write).toHaveBeenCalledOnce());
+    useStore.getState().addSignal('bit');
+    useStore.getState().setSourceDraftStatus(true, 'Incomplete JSON', '{');
+    saveDraft(useStore.getState().diagram);
+    finishWrite();
+    await saving;
+
+    expect(useStore.getState().savedDiagram).toEqual(savedSnapshot);
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(useStore.getState().view.sourceDraft).toBe('{');
+    expect(localStorage.getItem(DRAFT_STORAGE_KEY)).not.toBeNull();
+  });
+
+  it('keeps browser recovery when an unchanged document is saved again', async () => {
+    const write = vi.fn().mockResolvedValue(undefined);
+    (window as PickerWindow).showSaveFilePicker = vi.fn().mockResolvedValue(fileHandle('saved.json', write));
+    useStore.getState().addSignal('bit');
+    await saveCurrentDiagramAs();
+    saveDraft(useStore.getState().diagram);
+    const recovery = localStorage.getItem(DRAFT_STORAGE_KEY);
+
+    await saveCurrentDiagramFile();
+
+    expect(write).toHaveBeenCalledTimes(2);
+    expect(useStore.getState().view.isDirty).toBe(false);
+    expect(localStorage.getItem(DRAFT_STORAGE_KEY)).toBe(recovery);
+  });
+
+  it('Save As fallback requests a download without changing the filename or savepoint', async () => {
+    const write = vi.fn();
+    (window as PickerWindow).showOpenFilePicker = vi.fn().mockResolvedValue([fileHandle('original.json', write)]);
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    await openDiagramFile();
+    useStore.getState().addSignal('bit');
+    const savepoint = useStore.getState().savedDiagram;
+
+    await saveCurrentDiagramAs();
+
+    expect(click).toHaveBeenCalledOnce();
+    expect(write).not.toHaveBeenCalled();
+    expect(useStore.getState().view.fileName).toBe('original.json');
+    expect(useStore.getState().savedDiagram).toBe(savepoint);
+    expect(useStore.getState().view.isDirty).toBe(true);
+    expect(useFileStatus.getState().phase).toBe('download-requested');
   });
 
   it('opens commented WaveDrom JSON5 and preserves its syntax on Save', async () => {

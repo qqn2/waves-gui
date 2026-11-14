@@ -9,6 +9,7 @@ import {
   loadSourceDraft,
   isDiagramEmpty,
   loadDraft,
+  loadDraftEnvelope,
   saveDraft,
   saveSourceDraft,
   SOURCE_DRAFT_STORAGE_KEY,
@@ -105,6 +106,16 @@ describe('localDraft', () => {
     );
   });
 
+  it('keeps the filename and incomplete source in the same recovery snapshot', () => {
+    const source = { version: 1 as const, savedAt: 123, code: '{ signal: [', error: 'Incomplete source' };
+    expect(saveDraft(sampleDiagram(), storage, { fileName: 'timing.json', source })).toBe(true);
+    expect(loadDraftEnvelope(storage)).toMatchObject({ fileName: 'timing.json', source });
+    expect(loadDraft(storage)?.signals).toHaveLength(1);
+
+    saveDraft(sampleDiagram(), storage, { fileName: 'timing.json', source: null });
+    expect(loadDraftEnvelope(storage)?.source).toBeNull();
+  });
+
   it('serializeDraftEnvelope includes envelope and diagram version fields', () => {
     const diagram = sampleDiagram();
     saveDraft(diagram, storage);
@@ -163,7 +174,7 @@ describe('localDraft', () => {
         throw new DOMException('NS_ERROR_STORAGE_BUSY', 'SecurityError');
       },
     };
-    expect(() => saveDraft(sampleDiagram(), broken)).not.toThrow();
+    expect(saveDraft(sampleDiagram(), broken)).toBe(false);
     expect(loadDraft(broken)).toBeNull();
     expect(() => clearDraft(broken)).not.toThrow();
   });

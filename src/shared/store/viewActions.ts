@@ -70,6 +70,7 @@ export function createViewActions(set: ImmerSet): Pick<
 
     setTool(tool: Tool) {
       set((s) => {
+        if (s.view.selectedTool !== tool) s.view.activeBusSegment = null;
         s.view.selectedTool = tool;
       });
     },

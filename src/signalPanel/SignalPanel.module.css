@@ -18,6 +18,7 @@
 
 .scrollInner {
   box-sizing: border-box;
+  min-height: calc(100% + var(--canvas-scroll-max-y, 0px));
 }
 
 .scroll::-webkit-scrollbar {

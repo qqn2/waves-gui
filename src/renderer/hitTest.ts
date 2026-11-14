@@ -70,6 +70,9 @@ export function hitTest(
     return { ...MISS, isTimeAxis: true, step };
   }
 
+  // The title is fixed while signal rows scroll underneath it.
+  if (canvasY < waveformTop) return MISS;
+
   const logicalX = canvasToLogicalX(canvasX, transform);
   const logicalY = canvasToLogicalY(canvasY - waveformTop, transform);
   const rows = buildRowLayout(diagram.signals, view.collapsedGroupIds);

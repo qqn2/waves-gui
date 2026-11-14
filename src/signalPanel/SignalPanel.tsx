@@ -297,6 +297,7 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
           </button>
         )}
       </div>
+      <div aria-hidden="true" style={{ height: signalRowsTopInset, flexShrink: 0 }} />
       <div
         ref={scrollRef}
         className={styles.scroll}
@@ -304,7 +305,6 @@ export function SignalPanel({ scrollSync, panelScrollRef }: SignalPanelProps) {
       >
         <div
           className={styles.scrollInner}
-          style={{ paddingTop: signalRowsTopInset }}
         >
         {renderTree(
           filteredSignals,

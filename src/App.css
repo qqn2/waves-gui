@@ -32,6 +32,13 @@
   height: 100%;
 }
 
+.canvasOverlays {
+  position: absolute;
+  inset: 0 18px 18px 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .canvasWrapOuter[data-edge-tool] {
   cursor: crosshair;
 }

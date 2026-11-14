@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ShortcutHelp } from './ShortcutHelp';
 import {
-  Braces,
   CircleHelp,
-  Eye,
   ZoomIn,
   ZoomOut,
   Maximize,
@@ -31,7 +29,10 @@ import { HeadFootFields } from './HeadFootFields';
 import { DiagramStepsControl } from './DiagramStepsControl';
 import { DiagramSubStepsControl } from './DiagramSubStepsControl';
 import { ToolbarFileMenu } from './toolbar/ToolbarFileMenu';
+import { DocumentStatus } from './DocumentStatus';
+import { PanelVisibilityControls } from './PanelVisibilityControls';
 import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
+import { redoDocument, undoDocument } from '../codePanel/documentHistory';
 import {
   ToolbarBusSection,
   ToolbarAnaloguePaintSection,
@@ -42,9 +43,10 @@ import styles from './shell.module.css';
 
 export interface ToolbarProps {
   onExport: () => void;
+  onBrowseSamples: () => void;
 }
 
-export function Toolbar({ onExport }: ToolbarProps) {
+export function Toolbar({ onExport, onBrowseSamples }: ToolbarProps) {
   const tool = useStore((s) => s.view.selectedTool);
   const paintMode = useStore((s) => s.view.paintMode);
   const paintStyle = useStore((s) => s.view.paintStyle);
@@ -76,12 +78,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
   const setPaintStyle = useStore((s) => s.setPaintStyle);
   const setZoom = useStore((s) => s.setZoom);
   const setScroll = useStore((s) => s.setScroll);
-  const toggleCodePanel = useStore((s) => s.toggleCodePanel);
-  const toggleRenderPanel = useStore((s) => s.toggleRenderPanel);
   const setDiagramSkin = useStore((s) => s.setDiagramSkin);
   const diagramSkin = useStore((s) => s.diagram.config.skin);
-  const undo = useStore((s) => s.undo);
-  const redo = useStore((s) => s.redo);
   const setAnnotationSnapToGrid = useStore((s) => s.setAnnotationSnapToGrid);
 
   const [fileOpen, setFileOpen] = useState(false);
@@ -198,6 +196,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
 
   return (
     <div ref={toolbarRef} className={styles.toolbarShell}>
+      <DocumentStatus />
       <div className={`${styles.toolbar} ${styles.toolbarPrimary}`} data-toolbar="primary">
         <div className={styles.appIdentity} aria-label="Waves GUI waveform editor">
           <span className={styles.appMark}>W</span>
@@ -216,11 +215,21 @@ export function Toolbar({ onExport }: ToolbarProps) {
           })}
           onClose={() => setFileOpen(false)}
           onExport={onExport}
+          onBrowseSamples={onBrowseSamples}
         />
-        <button type="button" className={styles.toolBtn} onClick={() => runAfterSourceFlush(undo)} title="Undo (Ctrl+Z)">
+        <button type="button" className={styles.toolBtn} data-sample-browser-trigger
+          onClick={() => {
+            setFileOpen(false);
+            setDiagramControlsVisible(false);
+            setAppearanceOpen(false);
+            onBrowseSamples();
+          }}>
+          Samples
+        </button>
+        <button type="button" className={styles.toolBtn} onClick={undoDocument} title="Undo (Ctrl+Z)">
           <Undo2 size={16} aria-hidden /><span>Undo</span>
         </button>
-        <button type="button" className={styles.toolBtn} onClick={() => runAfterSourceFlush(redo)} title="Redo (Ctrl+Shift+Z)">
+        <button type="button" className={styles.toolBtn} onClick={redoDocument} title="Redo (Ctrl+Shift+Z)">
           <Redo2 size={16} aria-hidden /><span>Redo</span>
         </button>
 
@@ -251,27 +260,33 @@ export function Toolbar({ onExport }: ToolbarProps) {
           {diagramControlsVisible ? (
             <div className={styles.diagramSettingsPopover} role="group" aria-label="Diagram settings">
               <HeadFootFields />
-              <label className={styles.hscaleField} title="WaveDrom config.hscale">
-                <span className={styles.hscaleLabel}>hscale</span>
-                <input
-                  type="number"
-                  className={styles.hscaleInput}
-                  min={MIN_HSCALE}
-                  max={MAX_HSCALE}
-                  step={HSCALE_STEP}
-                  value={localHscale}
-                  onChange={(e) => setLocalHscale(e.target.value)}
-                  onBlur={() => {
-                    if (cancelHscaleBlurRef.current) {
-                      cancelHscaleBlurRef.current = false;
-                      return;
-                    }
-                    commitHscale();
-                  }}
-                  onKeyDown={handleHscaleKeyDown}
-                  aria-label="WaveDrom horizontal scale"
-                />
-              </label>
+              <div className={styles.columnWidthSetting}>
+                <label className={styles.hscaleField}>
+                  <span className={styles.hscaleLabel}>hscale</span>
+                  <input
+                    type="number"
+                    className={styles.hscaleInput}
+                    min={MIN_HSCALE}
+                    max={MAX_HSCALE}
+                    step={HSCALE_STEP}
+                    value={localHscale}
+                    onChange={(e) => setLocalHscale(e.target.value)}
+                    onBlur={() => {
+                      if (cancelHscaleBlurRef.current) {
+                        cancelHscaleBlurRef.current = false;
+                        return;
+                      }
+                      commitHscale();
+                    }}
+                    onKeyDown={handleHscaleKeyDown}
+                    aria-label="hscale"
+                    aria-describedby="hscale-help"
+                  />
+                </label>
+                <span id="hscale-help" className={styles.columnWidthHelp}>
+                  Widens time columns in the diagram and exports.
+                </span>
+              </div>
               <label className={styles.hscaleField} title="WaveDrom config.skin">
                 <span className={styles.hscaleLabel}>Skin</span>
                 <select
@@ -315,24 +330,8 @@ export function Toolbar({ onExport }: ToolbarProps) {
         </div>
 
         <div className={styles.viewControls}>
+        <PanelVisibilityControls />
         <ExtensionsModeToggle />
-        <button
-          type="button"
-          className={`${styles.toolBtn} ${view.showCodePanel ? styles.toolActive : ''}`}
-          onClick={() => toggleCodePanel()}
-          title="Show or hide source editor"
-        >
-          <Braces size={16} aria-hidden /> Source
-        </button>
-        <button
-          type="button"
-          className={`${styles.toolBtn} ${view.showRenderPanel ? styles.toolActive : ''}`}
-          onClick={() => toggleRenderPanel()}
-          title="Show or hide local timing diagram preview"
-          aria-pressed={view.showRenderPanel}
-        >
-          <Eye size={16} aria-hidden /> Render
-        </button>
         <button
           type="button"
           className={`${styles.toolBtn} ${inspectorVisible ? styles.toolActive : ''}`}
@@ -431,6 +430,7 @@ export function Toolbar({ onExport }: ToolbarProps) {
         ) : null}
         {(tool === 'cursor' || tool === 'select' || tool === 'paint') && (
           <ToolbarBusSection
+            mode={tool === 'paint' ? 'paint' : 'edit'}
             activeBusLabel={activeBusLabel}
             activeBusColorIndex={activeBusColorIndex}
             onBusLabel={setActiveBusLabel}

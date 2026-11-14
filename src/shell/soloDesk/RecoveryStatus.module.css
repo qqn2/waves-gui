@@ -1,0 +1,34 @@
+.recovery {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.unavailable {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.restored {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+}
+
+.restored button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0 4px;
+}
+
+.restored button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

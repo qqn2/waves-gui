@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BUILD_LABEL } from '../shared/buildInfo';
+import { EDITING_SHORTCUTS, PAINT_VALUE_SHORTCUTS } from '../shared/shortcuts';
 import { Bug, ExternalLink, FileText, GitBranch, ShieldCheck, X } from 'lucide-react';
 import styles from './shell.module.css';
 
@@ -9,12 +10,14 @@ export interface ShortcutHelpProps {
 }
 
 const SHORTCUTS: Array<{ keys: string; action: string }> = [
-  { keys: 'V / D / E', action: 'Pointer / draw / erase tool' },
-  { keys: 'Shift+D', action: 'Undulate analogue cell painter' },
-  { keys: 'G / | / T', action: 'Glitch / timeline gap / invert mode' },
-  { keys: '1 / 0 / P / N / Z / X', action: 'Primary paint values' },
-  { keys: 'Ctrl+Z / Ctrl+Y', action: 'Undo / redo' },
-  { keys: 'Ctrl+S', action: 'Save to the opened file, or Save As' },
+  ...Object.values(EDITING_SHORTCUTS).map(({ label, description }) => ({
+    keys: label,
+    action: description,
+  })),
+  { keys: PAINT_VALUE_SHORTCUTS.map(({ label }) => label).join(' / '), action: 'Paint values (p/n: clocks; P/N: clocks with arrows)' },
+  { keys: 'Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y', action: 'Undo / redo (use Cmd on Mac)' },
+  { keys: 'Ctrl+S', action: 'Save to the opened file, or choose a new file (Cmd on Mac)' },
+  { keys: 'Ctrl+Shift+S', action: 'Save As a new file (Cmd+Shift+S on Mac)' },
   { keys: 'Ctrl+A', action: 'Select all signals' },
   { keys: 'Del / Backspace', action: 'Clear steps or remove selected rows' },
   { keys: 'Esc', action: 'Cancel drag or close this panel' },

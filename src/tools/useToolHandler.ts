@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import { useStore } from '../shared/store';
+import { editingShortcutForEvent, paintValueForEvent } from '../shared/shortcuts';
 import type { HitTestResult } from '../renderer/hitTest';
 import { hitTest } from '../renderer/hitTest';
 import type { SelectOverlayRect } from './toolState';
@@ -19,6 +20,7 @@ import * as analoguePaint from './analoguePaintTool';
 import * as erase from './eraseTool';
 import * as select from './selectTool';
 import { flushPendingCodeToDiagram } from './codeFlush';
+import { undoDocument, redoDocument } from '../codePanel/documentHistory';
 import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import { useEdgeTools } from './useEdgeTools';
 import { useTimeAxisContextMenu } from '../shell/TimeAxisContextMenu';
@@ -35,10 +37,15 @@ import {
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+  if (
+    target instanceof HTMLInputElement
+    || target instanceof HTMLTextAreaElement
+    || target instanceof HTMLSelectElement
+    || target.isContentEditable
+  ) {
     return true;
   }
-  return Boolean(target.closest('.cm-editor'));
+  return Boolean(target.closest('.cm-editor, [contenteditable="true"]'));
 }
 
 export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): {
@@ -55,8 +62,6 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
   const setTool = useStore((s) => s.setTool);
   const setActiveBitState = useStore((s) => s.setActiveBitState);
   const setPaintMode = useStore((s) => s.setPaintMode);
-  const undo = useStore((s) => s.undo);
-  const redo = useStore((s) => s.redo);
   const setZoom = useStore((s) => s.setZoom);
   const zoom = useStore((s) => s.view.zoom);
   const clearPaintDraft = useStore((s) => s.clearPaintDraft);
@@ -81,14 +86,16 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     select.selectCancel(el);
     cancelStructuredArrow();
     edge.cancelEdgeEdit();
+    curveDrag.cancel();
     clearPaintDraft();
     toolState.cancelAll();
     setSelectionOverlay(null);
-  }, [clearPaintDraft, canvasRef, edge]);
+  }, [clearPaintDraft, canvasRef, edge, curveDrag]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (isEditableTarget(e.target)) return;
+      if (e.defaultPrevented || e.isComposing || e.altKey || isEditableTarget(e.target)) return;
+      if (e.target instanceof HTMLElement && e.target.closest('[aria-modal="true"]')) return;
 
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -97,21 +104,20 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
       }
 
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'a' || e.key === 'A') {
+        const key = e.key.toLowerCase();
+        if (key === 'a') {
           e.preventDefault();
           select.selectAllSignals();
-        } else if (e.key === 'z' && !e.shiftKey) {
+        } else if (key === 'z' && !e.shiftKey) {
           e.preventDefault();
-          if (!flushPendingCodeToDiagram().ok) return;
-          undo();
-        } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+          undoDocument();
+        } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
           e.preventDefault();
-          if (!flushPendingCodeToDiagram().ok) return;
-          redo();
-        } else if (e.key === 'c' || e.key === 'C') {
+          redoDocument();
+        } else if (key === 'c') {
           e.preventDefault();
           copyStepSelection();
-        } else if (e.key === 'v' || e.key === 'V') {
+        } else if (key === 'v') {
           e.preventDefault();
           pasteStepSelection();
         } else if (e.key === '+' || e.key === '=') {
@@ -149,83 +155,22 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
         }
       }
 
-      if (e.key === 'v' || e.key === 'V') {
-        if (e.ctrlKey || e.metaKey) return;
-        setTool('cursor');
-      } else if (e.key === 'd' || e.key === 'D') {
-        setTool(
-          e.key === 'D'
-          && useStore.getState().diagram.compatibility?.extensionsEnabled
-            ? 'analogue-paint'
-            : 'paint',
-        );
-      } else if (e.key === 'e' || e.key === 'E') {
-        setTool('erase');
-      } else if (e.key === 'i' || e.key === 'I') {
-        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
-          setTool('annotation');
+      const shortcut = editingShortcutForEvent(
+        e,
+        useStore.getState().diagram.compatibility?.extensionsEnabled === true,
+      );
+      if (shortcut) {
+        e.preventDefault();
+        setTool(shortcut.tool);
+        if (shortcut.paintMode) setPaintMode(shortcut.paintMode);
+      } else {
+        const value = paintValueForEvent(e);
+        if (value !== undefined) {
+          e.preventDefault();
+          setActiveBitState(value);
+          setPaintMode('set');
+          setTool('paint');
         }
-      } else if (e.key === 'A') {
-        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
-          setTool('structured-arrow');
-        }
-      } else if (e.key === 'l' || e.key === 'L') {
-        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
-          setTool(e.shiftKey ? 'horizontal-line' : 'vertical-line');
-        }
-      } else if (e.key === 'C') {
-        if (useStore.getState().diagram.compatibility?.extensionsEnabled) {
-          setTool('global-compression');
-        }
-      } else if (e.key === 'g' || e.key === 'G') {
-        setTool('paint');
-        setPaintMode('glitch');
-      } else if (e.key === '|') {
-        setTool('paint');
-        setPaintMode('gap');
-      } else if (e.key === 't' || e.key === 'T') {
-        setTool('paint');
-        setPaintMode('toggle');
-      } else if (e.key === 'n') {
-        setActiveBitState('n');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'N') {
-        setActiveBitState('N');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === '1') {
-        setActiveBitState('1');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === '0') {
-        setActiveBitState('0');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'p') {
-        setActiveBitState('p');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'P') {
-        setActiveBitState('P');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'z') {
-        setActiveBitState('z');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'x' || e.key === 'X') {
-        setActiveBitState('x');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === 'u' || e.key === 'U') {
-        setActiveBitState('u');
-        setPaintMode('set');
-        setTool('paint');
-      } else if (e.key === '.') {
-        setActiveBitState('.');
-        setPaintMode('set');
-        setTool('paint');
       }
     };
     window.addEventListener('keydown', onKey);
@@ -235,8 +180,6 @@ export function useToolHandler(canvasRef: RefObject<HTMLCanvasElement | null>): 
     setTool,
     setActiveBitState,
     setPaintMode,
-    undo,
-    redo,
     setZoom,
     zoom,
     cancelOperation,

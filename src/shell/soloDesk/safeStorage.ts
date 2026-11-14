@@ -26,8 +26,13 @@ function warnOnce(): void {
 }
 
 function wrapLocalStorage(): StorageLike {
-  if (typeof localStorage === 'undefined') {
+  let browserStorage: Storage;
+  try {
+    browserStorage = globalThis.localStorage;
+    if (!browserStorage) throw new Error('Storage unavailable');
+  } catch {
     localStorageBroken = true;
+    warnOnce();
     return memoryStorage;
   }
 
@@ -37,7 +42,7 @@ function wrapLocalStorage(): StorageLike {
         return memoryStorage.getItem(key);
       }
       try {
-        return localStorage.getItem(key);
+        return browserStorage.getItem(key);
       } catch {
         localStorageBroken = true;
         warnOnce();
@@ -50,7 +55,7 @@ function wrapLocalStorage(): StorageLike {
         return;
       }
       try {
-        localStorage.setItem(key, value);
+        browserStorage.setItem(key, value);
       } catch {
         localStorageBroken = true;
         warnOnce();
@@ -63,7 +68,7 @@ function wrapLocalStorage(): StorageLike {
         return;
       }
       try {
-        localStorage.removeItem(key);
+        browserStorage.removeItem(key);
       } catch {
         localStorageBroken = true;
         warnOnce();
@@ -84,5 +89,6 @@ export function getSafeStorage(): StorageLike {
 }
 
 export function isBrowserStoragePersistent(): boolean {
-  return !localStorageBroken && typeof localStorage !== 'undefined';
+  getSafeStorage();
+  return !localStorageBroken;
 }

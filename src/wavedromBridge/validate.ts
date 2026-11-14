@@ -1,3 +1,4 @@
+import { validateEdgeCurveControls } from '../shared/edgeCurveControls';
 import type { WdRoot } from './wdTypes';
 import { isValidWaveString } from './subcycleWave';
 import { MAX_TOTAL_STEPS } from '../shared/constants';
@@ -110,6 +111,14 @@ export function validateWavedromJSON(
     return 'Root must be an object';
   }
   const root = json as WdRoot;
+  const appMetadata = root['x-waves-gui'];
+  if (appMetadata !== undefined) {
+    if (appMetadata === null || typeof appMetadata !== 'object' || Array.isArray(appMetadata)) {
+      return 'x-waves-gui must be an object';
+    }
+    const curveError = validateEdgeCurveControls(appMetadata.edgeCurveControls);
+    if (curveError) return curveError;
+  }
   if (
     root['x-waves-gui']?.importMode !== undefined
     && root['x-waves-gui'].importMode !== 'event-compressed-vcd'

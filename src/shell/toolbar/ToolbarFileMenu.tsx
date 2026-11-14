@@ -1,12 +1,12 @@
 import { loadRecentFiles } from '../soloDesk/recentFiles';
-import { loadSampleDiagram } from '../samples';
-import { SampleLibraryMenu } from './SampleLibraryMenu';
 import {
   newDiagramFile,
   openDiagramFile,
   openVCDFile,
   saveCurrentDiagramFile,
+  saveCurrentDiagramAs,
 } from '../FileOperations';
+import { useFileStatus } from '../fileStatus';
 import styles from '../shell.module.css';
 
 export interface ToolbarFileMenuProps {
@@ -14,6 +14,7 @@ export interface ToolbarFileMenuProps {
   onToggle: () => void;
   onClose: () => void;
   onExport: () => void;
+  onBrowseSamples: () => void;
 }
 
 export function ToolbarFileMenu({
@@ -21,8 +22,10 @@ export function ToolbarFileMenu({
   onToggle,
   onClose,
   onExport,
+  onBrowseSamples,
 }: ToolbarFileMenuProps) {
   const recentFiles = open ? loadRecentFiles() : [];
+  const saving = useFileStatus((state) => state.phase === 'saving');
 
   return (
     <div className={styles.addWrap}>
@@ -43,6 +46,8 @@ export function ToolbarFileMenu({
             </button>
             <button
               type="button"
+              disabled={saving}
+              title="Save (Ctrl+S / ⌘S)"
               onClick={() => {
                 void saveCurrentDiagramFile();
                 onClose();
@@ -50,8 +55,22 @@ export function ToolbarFileMenu({
             >
               Save
             </button>
+            <button
+              type="button"
+              disabled={saving}
+              title="Save As (Ctrl+Shift+S / ⌘⇧S)"
+              onClick={() => {
+                void saveCurrentDiagramAs();
+                onClose();
+              }}
+            >
+              Save As…
+            </button>
             <button type="button" onClick={() => { onExport(); onClose(); }}>
               Export…
+            </button>
+            <button type="button" onClick={() => { onClose(); onBrowseSamples(); }}>
+              Browse samples…
             </button>
             {recentFiles.length > 0 ? (
               <>
@@ -69,12 +88,6 @@ export function ToolbarFileMenu({
               </>
             ) : null}
           </div>
-          <SampleLibraryMenu
-            onPick={(id) => {
-              void loadSampleDiagram(id);
-              onClose();
-            }}
-          />
         </div>
       )}
     </div>

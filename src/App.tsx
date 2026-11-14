@@ -16,6 +16,7 @@ import {
   StatusBar,
   Toolbar,
   saveCurrentDiagramFile,
+  saveCurrentDiagramAs,
   type AppLayoutPaneContext,
 } from './shell';
 import { TimeAxisContextMenu } from './shell/TimeAxisContextMenu';
@@ -28,6 +29,7 @@ import {
 } from './renderer';
 import type { HitTestResult } from './renderer';
 import { useToolHandler } from './tools';
+import { getWaveformTopInsetPx } from './renderer/renderHeadFoot';
 import { useStore } from './shared/store';
 import { applyThemeSettings, themeSettingsFromView } from './shared/theme';
 import { useSoloDeskPersistence } from './shell/soloDesk';
@@ -38,6 +40,12 @@ import './App.css';
 const ExportDialog = lazy(() =>
   import('./exportEngine/ExportDialog').then((module) => ({
     default: module.ExportDialog,
+  })),
+);
+
+const SampleBrowser = lazy(() =>
+  import('./sampleLibrary/SampleBrowser').then((module) => ({
+    default: module.SampleBrowser,
   })),
 );
 
@@ -143,15 +151,20 @@ function CanvasWithMarker({
       data-edge-tool={edgeTool ?? undefined}
     >
       <IntegratedCanvas scrollSync={scrollSync} onHoverHit={handleHover} />
-      <PointerMarker
-        hit={displayHit}
-        diagram={diagram}
-        view={view}
-        tool={view.selectedTool}
-        edgePending={view.edgeAnchorPending}
-      />
-      <EdgeToolOverlay />
-      <EdgeOverlay />
+      <div
+        className="canvasOverlays"
+        style={{ clipPath: `inset(${getWaveformTopInsetPx(diagram.config)}px 0 0 0)` }}
+      >
+        <PointerMarker
+          hit={displayHit}
+          diagram={diagram}
+          view={view}
+          tool={view.selectedTool}
+          edgePending={view.edgeAnchorPending}
+        />
+        <EdgeToolOverlay />
+        <EdgeOverlay />
+      </div>
     </div>
   );
 }
@@ -161,9 +174,11 @@ function App() {
 
   useEffect(() => {
     const onSaveShortcut = (event: KeyboardEvent) => {
-      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return;
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== 's') return;
       event.preventDefault();
-      void saveCurrentDiagramFile();
+      if (event.target instanceof HTMLElement && event.target.closest('[aria-modal="true"]')) return;
+      if (event.shiftKey) void saveCurrentDiagramAs();
+      else void saveCurrentDiagramFile();
     };
     window.addEventListener('keydown', onSaveShortcut, { capture: true });
     return () => window.removeEventListener('keydown', onSaveShortcut, { capture: true });
@@ -178,6 +193,9 @@ function App() {
   const diagram = useStore((s) => s.diagram);
   const view = useStore((s) => s.view);
   const [exportOpen, setExportOpen] = useState(false);
+  const [samplesOpen, setSamplesOpen] = useState(false);
+  const openSamples = useCallback(() => setSamplesOpen(true), []);
+  const closeSamples = useCallback(() => setSamplesOpen(false), []);
   const inspectorVisible = useStore((s) => s.view.showInspector);
   const toggleInspector = useStore((s) => s.toggleInspector);
   const [hoverHit, setHoverHit] = useState<HitTestResult | null>(null);
@@ -205,6 +223,7 @@ function App() {
         <header className="shellHeader">
           <Toolbar
             onExport={openExport}
+            onBrowseSamples={openSamples}
           />
         </header>
         <div className="mainArea">
@@ -233,6 +252,11 @@ function App() {
           </div>
         </div>
         <StatusBar pointerHit={hoverHit} />
+        {samplesOpen ? (
+          <Suspense fallback={null}>
+            <SampleBrowser onClose={closeSamples} />
+          </Suspense>
+        ) : null}
         {exportOpen ? (
           <Suspense fallback={null}>
             <ExportDialog

@@ -1,3 +1,4 @@
+import { normalizeEdgeCurveControls } from '../shared/edgeCurveControls';
 import { nanoid } from 'nanoid';
 import type {
   DiagramState,
@@ -352,18 +353,7 @@ export function fromWavedromJSON(
   };
   const rawCurveControls = wd['x-waves-gui']?.edgeCurveControls;
   const importMode = wd['x-waves-gui']?.importMode;
-  const edgeCurveControls = rawCurveControls
-    ? Object.fromEntries(
-      Object.entries(rawCurveControls).filter(([index, value]) => (
-        /^\d+$/.test(index)
-        && value !== null
-        && Number.isFinite(value.c1x)
-        && Number.isFinite(value.c2x)
-        && value.c1x >= 0 && value.c1x <= 1
-        && value.c2x >= 0 && value.c2x <= 1
-      )),
-    )
-    : undefined;
+  const edgeCurveControls = normalizeEdgeCurveControls(rawCurveControls, wd.edge?.length ?? 0);
   return {
     version: 2,
     compatibility: {

@@ -1,0 +1,54 @@
+{
+  "head": {
+    "text": "APB back-to-back writes to one peripheral",
+    "tick": 0
+  },
+  "config": {
+    "hscale": 2
+  },
+  "signal": [
+    {
+      "name": "PCLK",
+      "wave": "P........."
+    },
+    {
+      "name": "PSEL",
+      "wave": "0.1...0..."
+    },
+    {
+      "name": "PENABLE",
+      "wave": "0..1010..."
+    },
+    {
+      "name": "PWRITE",
+      "wave": "0.1...0..."
+    },
+    {
+      "name": "PADDR",
+      "wave": "x.=.2.x...",
+      "data": [
+        "0x1000",
+        "0x1004"
+      ]
+    },
+    {
+      "name": "PWDATA",
+      "wave": "x.=.2.x...",
+      "data": [
+        "0x00000011",
+        "0x00000022"
+      ]
+    },
+    {
+      "name": "PREADY",
+      "wave": "1........."
+    },
+    {
+      "name": "PSLVERR",
+      "wave": "0........."
+    }
+  ],
+  "foot": {
+    "text": "Two writes, two SETUP phases. Simplified teaching trace."
+  }
+}

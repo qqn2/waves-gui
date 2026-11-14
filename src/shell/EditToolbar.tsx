@@ -15,31 +15,31 @@ import {
 } from 'lucide-react';
 import { useStore } from '../shared/store';
 import type { Tool } from '../shared/types';
+import { EDITING_SHORTCUTS, type EditingShortcutId } from '../shared/shortcuts';
 import styles from './shell.module.css';
 import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 
 type ToolMode = {
-  id: Tool;
+  id: Tool & EditingShortcutId;
   label: string;
-  shortcut: string;
   Icon: typeof MousePointer2;
 };
 
 const CORE_MODES: ToolMode[] = [
-  { id: 'cursor', label: 'Select', shortcut: 'V', Icon: MousePointer2 },
-  { id: 'paint', label: 'Draw', shortcut: 'D', Icon: Paintbrush },
-  { id: 'erase', label: 'Erase', shortcut: 'E', Icon: Eraser },
-  { id: 'arrow', label: 'Edge', shortcut: 'A', Icon: ArrowRight },
-  { id: 'timespan', label: 'Span', shortcut: 'T', Icon: MoveHorizontal },
+  { id: 'cursor', label: 'Select', Icon: MousePointer2 },
+  { id: 'paint', label: 'Draw', Icon: Paintbrush },
+  { id: 'erase', label: 'Erase', Icon: Eraser },
+  { id: 'arrow', label: 'Edge', Icon: ArrowRight },
+  { id: 'timespan', label: 'Span', Icon: MoveHorizontal },
 ];
 
 const UNDULATE_MODES: ToolMode[] = [
-  { id: 'analogue-paint', label: 'Analog paint', shortcut: 'Shift+D', Icon: Paintbrush },
-  { id: 'annotation', label: 'Text', shortcut: 'I', Icon: TextCursorInput },
-  { id: 'structured-arrow', label: 'Arrow', shortcut: 'Shift+A', Icon: ArrowRight },
-  { id: 'vertical-line', label: 'V line', shortcut: 'L', Icon: MoveVertical },
-  { id: 'horizontal-line', label: 'H line', shortcut: 'Shift+L', Icon: Minus },
-  { id: 'global-compression', label: 'Compress', shortcut: 'Shift+C', Icon: ChevronsLeftRight },
+  { id: 'analogue-paint', label: 'Analog paint', Icon: Paintbrush },
+  { id: 'annotation', label: 'Text', Icon: TextCursorInput },
+  { id: 'structured-arrow', label: 'Arrow', Icon: ArrowRight },
+  { id: 'vertical-line', label: 'V line', Icon: MoveVertical },
+  { id: 'horizontal-line', label: 'H line', Icon: Minus },
+  { id: 'global-compression', label: 'Compress', Icon: ChevronsLeftRight },
 ];
 
 export function EditToolbar() {
@@ -61,7 +61,7 @@ export function EditToolbar() {
     <nav className={styles.editRail} aria-label="Waveform editing tools">
       <div className={styles.editRailGroup} role="group" aria-label="Tools">
         <span className={styles.editRailLabel}>Tools</span>
-        {CORE_MODES.map(({ id, label, shortcut, Icon }) => {
+        {CORE_MODES.map(({ id, label, Icon }) => {
           const active = id === 'cursor'
             ? tool === 'cursor' || tool === 'select'
             : tool === id;
@@ -71,7 +71,7 @@ export function EditToolbar() {
               type="button"
               className={`${styles.railBtn} ${active ? styles.railBtnActive : ''}`}
               aria-pressed={active}
-              title={`${label} (${shortcut})`}
+              title={`${label} (${EDITING_SHORTCUTS[id].label})`}
               onClick={() => setTool(id)}
             >
               <Icon size={21} strokeWidth={1.8} aria-hidden />
@@ -109,7 +109,7 @@ export function EditToolbar() {
             <Activity size={21} strokeWidth={1.8} aria-hidden />
             <span>Add analog</span>
           </button>
-          {UNDULATE_MODES.map(({ id, label, shortcut, Icon }) => {
+          {UNDULATE_MODES.map(({ id, label, Icon }) => {
             const active = tool === id;
             return (
               <button
@@ -117,7 +117,7 @@ export function EditToolbar() {
                 type="button"
                 className={`${styles.railBtn} ${active ? styles.railBtnActive : ''}`}
                 aria-pressed={active}
-                title={`${label} (${shortcut})`}
+                title={`${label} (${EDITING_SHORTCUTS[id].label})`}
                 onClick={() => setTool(id)}
               >
                 <Icon size={21} strokeWidth={1.8} aria-hidden />

@@ -1,0 +1,73 @@
+.waveformViewport {
+  --waveform-scrollbar-size: 18px;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--waveform-scrollbar-size);
+  grid-template-rows: minmax(0, 1fr) var(--waveform-scrollbar-size);
+  overflow: hidden;
+}
+
+.waveformViewport canvas {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.waveformScrollRail {
+  position: relative;
+  z-index: 6;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg-panel);
+  scrollbar-color: var(--text-muted) var(--bg-panel);
+  scrollbar-width: auto;
+  overscroll-behavior: contain;
+}
+
+.waveformScrollRail:focus-visible {
+  outline: 2px solid var(--selection-stroke);
+  outline-offset: -2px;
+}
+
+.waveformScrollRail--horizontal {
+  grid-column: 1;
+  grid-row: 2;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.waveformScrollRail--vertical {
+  grid-column: 2;
+  grid-row: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.waveformScrollRail::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.waveformScrollRail::-webkit-scrollbar-track {
+  background: var(--bg-panel);
+}
+
+.waveformScrollRail::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border: 3px solid var(--bg-panel);
+  border-radius: 8px;
+}
+
+.waveformScrollCorner {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  z-index: 6;
+  background: var(--bg-panel);
+}

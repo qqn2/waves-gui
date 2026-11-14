@@ -9,6 +9,7 @@ import { countSignals } from './statusUtils';
 import styles from './shell.module.css';
 import { runAfterSourceFlush } from '../codePanel/sourceMutationGuard';
 import { countOpaqueMixedWaves } from '../shared/mixedWave';
+import { RecoveryStatus } from './soloDesk/RecoveryStatus';
 
 export interface StatusBarProps {
   pointerHit?: HitTestResult | null;
@@ -193,6 +194,7 @@ export function StatusBar({ pointerHit }: StatusBarProps) {
           </ul>
         </>
       ) : null}
+      <RecoveryStatus />
     </footer>
   );
 }

@@ -15,6 +15,7 @@ export {
   openVCDFile,
   saveDiagramFile,
   saveCurrentDiagramFile,
+  saveCurrentDiagramAs,
   newDiagramFile,
 } from './FileOperations';
 export {

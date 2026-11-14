@@ -1,0 +1,52 @@
+{
+  "head": {
+    "text": "APB write with two wait states",
+    "tick": 0
+  },
+  "config": {
+    "hscale": 2
+  },
+  "signal": [
+    {
+      "name": "PCLK",
+      "wave": "P........."
+    },
+    {
+      "name": "PSEL",
+      "wave": "0.1...0..."
+    },
+    {
+      "name": "PENABLE",
+      "wave": "0..1..0..."
+    },
+    {
+      "name": "PWRITE",
+      "wave": "0.1...0..."
+    },
+    {
+      "name": "PADDR",
+      "wave": "x.=...x...",
+      "data": [
+        "0x1000"
+      ]
+    },
+    {
+      "name": "PWDATA",
+      "wave": "x.=...x...",
+      "data": [
+        "0x0000002A"
+      ]
+    },
+    {
+      "name": "PREADY",
+      "wave": "1..0.1...."
+    },
+    {
+      "name": "PSLVERR",
+      "wave": "0........."
+    }
+  ],
+  "foot": {
+    "text": "Two waits; completion at the end of cycle 5. Simplified teaching trace."
+  }
+}

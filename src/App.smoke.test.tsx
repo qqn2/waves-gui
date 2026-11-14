@@ -93,7 +93,7 @@ describe('App smoke', () => {
     });
     expect(diagramControlsToggle!.getAttribute('aria-expanded')).toBe('true');
     const hscaleInput = host.querySelector<HTMLInputElement>(
-      'input[aria-label="WaveDrom horizontal scale"]',
+      'input[aria-label="hscale"]',
     );
     expect(hscaleInput).not.toBeNull();
 

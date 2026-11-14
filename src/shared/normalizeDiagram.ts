@@ -1,3 +1,4 @@
+import { normalizeEdgeCurveControls } from './edgeCurveControls';
 import { nanoid } from 'nanoid';
 import type {
   DiagramState,
@@ -251,6 +252,9 @@ export function normalizeDiagram(diagram: DiagramState): DiagramState {
   if (!Array.isArray(d.edges)) {
     d.edges = [];
   }
+  const curveControls = normalizeEdgeCurveControls(d.edgeCurveControls, d.edges.length);
+  if (curveControls) d.edgeCurveControls = curveControls;
+  else delete d.edgeCurveControls;
   if (!Array.isArray(d.signals)) {
     d.signals = [];
   }

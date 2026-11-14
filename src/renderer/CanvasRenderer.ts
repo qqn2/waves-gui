@@ -104,6 +104,10 @@ export class CanvasRenderer {
     renderTimeAxis(this.ctx, diagram.config.totalSteps, transform, canvasWidth);
 
     this.ctx.save();
+    // Keep the fixed time axis/title clear when rows scroll underneath them.
+    this.ctx.beginPath();
+    this.ctx.rect(0, waveformTop, canvasWidth, Math.max(0, canvasHeight - waveformTop));
+    this.ctx.clip();
     this.ctx.translate(0, waveformTop);
     renderGrid(
       this.ctx,
@@ -392,7 +396,7 @@ export class CanvasRenderer {
         diagram.config.totalSteps,
         canvasWidth,
         axisOffset,
-        waveformTop + contentH * transform.zoom,
+        waveformTop + contentH * transform.zoom - transform.scrollY,
       );
     }
 

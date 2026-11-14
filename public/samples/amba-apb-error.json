@@ -1,0 +1,52 @@
+{
+  "head": {
+    "text": "APB write completes with an error",
+    "tick": 0
+  },
+  "config": {
+    "hscale": 2
+  },
+  "signal": [
+    {
+      "name": "PCLK",
+      "wave": "P........"
+    },
+    {
+      "name": "PSEL",
+      "wave": "0.1..0..."
+    },
+    {
+      "name": "PENABLE",
+      "wave": "0..1.0..."
+    },
+    {
+      "name": "PWRITE",
+      "wave": "0.1..0..."
+    },
+    {
+      "name": "PADDR",
+      "wave": "x.=..x...",
+      "data": [
+        "0x3000"
+      ]
+    },
+    {
+      "name": "PWDATA",
+      "wave": "x.=..x...",
+      "data": [
+        "0x00000055"
+      ]
+    },
+    {
+      "name": "PREADY",
+      "wave": "1..01...."
+    },
+    {
+      "name": "PSLVERR",
+      "wave": "0...10..."
+    }
+  ],
+  "foot": {
+    "text": "One wait, then an error at the end of cycle 4. Simplified teaching trace."
+  }
+}

@@ -1,3 +1,4 @@
+import { validateEdgeCurveControls } from '../shared/edgeCurveControls';
 import {
   MAX_ANALOGUE_ABS_VALUE,
   MAX_ANALOGUE_SAMPLES_PER_CELL,
@@ -920,25 +921,8 @@ function structuralError(root: Record<string, unknown>): string | null {
     ) {
       return 'x-waves-gui.randomSeed must be an integer from 0 to 4294967295';
     }
-    if (appMetadata.edgeCurveControls !== undefined) {
-      if (!isRecord(appMetadata.edgeCurveControls)) {
-        return 'x-waves-gui.edgeCurveControls must be an object';
-      }
-      for (const [index, control] of Object.entries(appMetadata.edgeCurveControls)) {
-        if (
-          !/^\d+$/.test(index)
-          || !isRecord(control)
-          || typeof control.c1x !== 'number'
-          || !Number.isFinite(control.c1x)
-          || typeof control.c2x !== 'number'
-          || !Number.isFinite(control.c2x)
-          || control.c1x < 0 || control.c1x > 1
-          || control.c2x < 0 || control.c2x > 1
-        ) {
-          return `x-waves-gui.edgeCurveControls.${index} is invalid`;
-        }
-      }
-    }
+    const curveError = validateEdgeCurveControls(appMetadata.edgeCurveControls);
+    if (curveError) return curveError;
     if (
       appMetadata.importMode !== undefined
       && appMetadata.importMode !== 'event-compressed-vcd'
@@ -1016,10 +1000,15 @@ export function validateUndulateJSON(value: unknown): string | null {
 
 export function isUndulateJSON(value: unknown): value is UndulateRoot {
   if (!isRecord(value)) return false;
+  const appMetadata = value['x-waves-gui'];
+  const hasUndulateMetadata = isRecord(appMetadata) && Object.keys(appMetadata).some(
+    (field) => field !== 'edgeCurveControls' && field !== 'importMode',
+  );
   if (
     Object.prototype.hasOwnProperty.call(value, 'annotations')
     || Object.prototype.hasOwnProperty.call(value, 'edges')
-    || Object.prototype.hasOwnProperty.call(value, 'x-waves-gui')
+    // Editing a WaveDrom edge writes shared app metadata, not Undulate syntax.
+    || hasUndulateMetadata
     || (
       Array.isArray(value.edge)
       && value.edge.some(

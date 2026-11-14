@@ -1,30 +1,106 @@
 {
-  "head": { "text": "AXI4 single write (AW + W + B)" },
-  "config": { "hscale": 2 },
+  "head": {
+    "text": "AXI4 single write \u2014 three channel handshakes",
+    "tick": 0
+  },
+  "config": {
+    "hscale": 2
+  },
   "signal": [
     [
-      "AW channel",
-      { "name": "ACLK", "wave": "P..........." },
-      { "name": "AWADDR", "wave": "x..=x..", "data": ["0x40001000"] },
-      { "name": "AWLEN", "wave": "x..2x..", "data": ["0"] },
-      { "name": "AWVALID", "wave": "0..1..0..." },
-      { "name": "AWREADY", "wave": "0...1..0.." }
+      "Write address (AW)",
+      {
+        "name": "ACLK",
+        "wave": "P............."
+      },
+      {
+        "name": "AWADDR",
+        "wave": "x.=.x.........",
+        "data": [
+          "0x40001000"
+        ]
+      },
+      {
+        "name": "AWLEN",
+        "wave": "x.=.x.........",
+        "data": [
+          "0"
+        ]
+      },
+      {
+        "name": "AWSIZE",
+        "wave": "x.=.x.........",
+        "data": [
+          "2 (4 bytes)"
+        ]
+      },
+      {
+        "name": "AWBURST",
+        "wave": "x.=.x.........",
+        "data": [
+          "INCR"
+        ]
+      },
+      {
+        "name": "AWVALID",
+        "wave": "0.1.0........."
+      },
+      {
+        "name": "AWREADY",
+        "wave": "0..10........."
+      }
     ],
     {},
     [
-      "W channel",
-      { "name": "WDATA", "wave": "x....=x..", "data": ["0xCAFEBABE"] },
-      { "name": "WLAST", "wave": "0....1.0.." },
-      { "name": "WVALID", "wave": "0....1.0.." },
-      { "name": "WREADY", "wave": "0....0.1.." }
+      "Write data (W)",
+      {
+        "name": "WDATA",
+        "wave": "x....=..x.....",
+        "data": [
+          "0xCAFEBABE"
+        ]
+      },
+      {
+        "name": "WSTRB",
+        "wave": "x....=..x.....",
+        "data": [
+          "0xF"
+        ]
+      },
+      {
+        "name": "WLAST",
+        "wave": "0....1..0....."
+      },
+      {
+        "name": "WVALID",
+        "wave": "0....1..0....."
+      },
+      {
+        "name": "WREADY",
+        "wave": "0......10....."
+      }
     ],
     {},
     [
-      "B channel",
-      { "name": "BRESP", "wave": "x......=x.", "data": ["OKAY"] },
-      { "name": "BVALID", "wave": "0......1.0" },
-      { "name": "BREADY", "wave": "0......0.1" }
+      "Write response (B)",
+      {
+        "name": "BRESP",
+        "wave": "x........=.x..",
+        "data": [
+          "OKAY"
+        ]
+      },
+      {
+        "name": "BVALID",
+        "wave": "0........1.0.."
+      },
+      {
+        "name": "BREADY",
+        "wave": "0.........10.."
+      }
     ]
   ],
-  "foot": { "text": "AWLEN=0, WLAST=1; channels may overlap; AXI4 write" }
+  "foot": {
+    "text": "Each VALID/READY pair accepts once. Hold payload while stalled; response follows accepted address and data. Simplified teaching trace."
+  }
 }

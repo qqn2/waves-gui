@@ -71,6 +71,18 @@ describe('hitTest', () => {
     expect(hit.signalId).toBeNull();
   });
 
+  it('does not hit scrolled rows behind the fixed title band', () => {
+    const diagram = bitDiagram();
+    diagram.config.head = { text: 'Fixed title' };
+    const view = defaultView({ scrollY: 20 });
+    const hit = hitTest(10, TIME_AXIS_HEIGHT + 10, diagram, view);
+    expect(hit.signalId).toBeNull();
+    expect(hit.annotationId).toBeNull();
+    expect(hit.edgeIndex).toBeNull();
+    expect(hit.isTimeAxis).toBe(false);
+    expect(hitTest(10, TIME_AXIS_HEIGHT + 24 + 5, diagram, view).signalId).toBe('sig1');
+  });
+
   it('maps CSS coords to signal step and top half', () => {
     const diagram = bitDiagram();
     const y = TIME_AXIS_HEIGHT + 10;

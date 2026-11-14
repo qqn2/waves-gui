@@ -5,6 +5,7 @@ import type {
   SidePanelId,
 } from './codePanelLayout';
 import { CodePanelChrome } from './CodePanelChrome';
+import { useStore } from '../shared/store';
 import styles from './shell.module.css';
 
 export interface DockPanelProps {
@@ -23,7 +24,7 @@ export interface DockPanelProps {
 
 const PANEL_TITLES: Record<SidePanelId, string> = {
   json: 'Source',
-  render: 'Render',
+  render: 'Preview',
 };
 
 const CodePanel = lazy(() =>
@@ -46,6 +47,9 @@ export function DockPanel({
   bottomArrangement,
   onBottomArrangementChange,
 }: DockPanelProps) {
+  const closePanel = useStore((s) =>
+    panelId === 'json' ? s.toggleCodePanel : s.toggleRenderPanel,
+  );
   const body = children ?? (
     <Suspense fallback={<div className={styles.panelLoading}>Loading panel…</div>}>
       {panelId === 'json' ? <CodePanel /> : <RenderPanel />}
@@ -58,6 +62,7 @@ export function DockPanel({
         title={PANEL_TITLES[panelId]}
         layout={layout}
         onPlacementChange={(placement) => onLayoutChange({ placement })}
+        onClose={closePanel}
         stackAxis={stackAxis}
         canMoveTowardCanvas={canMoveTowardCanvas}
         canMoveAwayFromCanvas={canMoveAwayFromCanvas}

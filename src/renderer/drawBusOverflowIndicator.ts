@@ -48,6 +48,6 @@ export function drawBusOverflowIndicator(
   ctx.font = `bold ${Math.max(8, badgeR * 1.5)}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('…', badgeCx, badgeCy + 0.5);
+  ctx.fillText('!', badgeCx, badgeCy + 0.5);
   ctx.restore();
 }

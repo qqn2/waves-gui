@@ -3,7 +3,7 @@ import { useStore } from '../shared/store';
 import {
   buildEdgePathD,
   buildNodeIndex,
-  cubicMidpoint,
+  edgeCurveMidpoint,
   defaultCurveControl,
   isCurvyEdgeShape,
   labelPositionOnPath,
@@ -63,19 +63,16 @@ export function EdgeOverlay() {
         anchors.from,
         anchors.to,
         parsed.shape,
+        controls[i],
       );
       let handleX: number | undefined;
       let handleY: number | undefined;
       if (curve && isCurvyEdgeShape(parsed.shape)) {
-        const dx = anchors.to.x - anchors.from.x;
-        const dy = anchors.to.y - anchors.from.y;
-        const mid = cubicMidpoint(
+        const mid = edgeCurveMidpoint(
           anchors.from,
           anchors.to,
-          anchors.from.x + curve.c1x * dx,
-          anchors.from.y,
-          anchors.from.x + curve.c2x * dx,
-          anchors.from.y + dy,
+          parsed.shape,
+          curve,
         );
         handleX = mid.x;
         handleY = mid.y;

@@ -9,7 +9,11 @@ import { scanExtensionContent } from '../shared/annotations';
 import { createDefaultDiagram } from '../shared/defaultDiagram';
 import type { DiagramSourceFormat, DiagramState } from '../shared/types';
 import { useStore } from '../shared/store';
+import { commitPendingBusLabelDraft } from './busLabelDraft';
+import { normalizeDiagram } from '../shared/normalizeDiagram';
+import { resetFileStatus, useFileStatus } from './fileStatus';
 import { clearDraft } from './soloDesk/localDraft';
+import { useRecoveryStatus } from './soloDesk/recoveryStatus';
 import { recordRecentFile } from './soloDesk/recentFiles';
 import { flushPendingCodeToDiagram } from '../codePanel/flushRegistry';
 import type { DiagramCodeFormat } from '../codePanel/codeSync';
@@ -29,10 +33,16 @@ type FilePickerWindow = Window & {
 };
 
 let retainedFileHandle: FileSystemFileHandle | null = null;
+let fileSession = 0;
 let retainedFileFormat: Extract<
   DiagramSourceFormat,
   'wavedrom-json' | 'undulate-json' | 'undulate-yaml' | 'undulate-toml'
 > | null = null;
+
+/** Identifies the file handle session across asynchronous document operations. */
+export function currentFileSession(): number {
+  return fileSession;
+}
 
 function hasUnsavedWork(): boolean {
   const { view } = useStore.getState();
@@ -44,8 +54,11 @@ function confirmDiscardUnsavedWork(): boolean {
 }
 
 export function forgetCurrentFileHandle(): void {
+  fileSession += 1;
   retainedFileHandle = null;
   retainedFileFormat = null;
+  resetFileStatus();
+  useRecoveryStatus.setState({ restored: false });
 }
 
 export function switchCurrentDiagramFileFormat(
@@ -54,7 +67,7 @@ export function switchCurrentDiagramFileFormat(
     'undulate-json' | 'undulate-yaml' | 'undulate-toml'
   >,
 ): void {
-  retainedFileHandle = null;
+  forgetCurrentFileHandle();
   retainedFileFormat = format;
   useStore.setState((state) => {
     const name = state.view.fileName;
@@ -251,11 +264,26 @@ async function writeDiagramToHandle(
   blob: Blob,
 ): Promise<void> {
   const writable = await handle.createWritable();
-  await writable.write(blob);
-  await writable.close();
-  useStore.getState().markClean(handle.name);
-  clearDraft();
-  recordRecentFile(handle.name);
+  try {
+    await writable.write(blob);
+    await writable.close();
+  } catch (error) {
+    try { await writable.abort(); } catch { /* The stream may already be closed. */ }
+    throw error;
+  }
+}
+
+function confirmSavedDiagram(diagram: DiagramState, name: string): void {
+  // Saving is asynchronous. Only the serialized snapshot is the savepoint;
+  // edits made while the picker or write is pending must remain unsaved.
+  useStore.setState((state) => {
+    state.savedDiagram = normalizeDiagram(diagram);
+    state.view.fileName = name;
+  });
+  // The recovery copy is independent of the disk save. Keep it even when
+  // saving an already-clean document, which does not trigger autosave again.
+  recordRecentFile(name);
+  useFileStatus.setState({ phase: 'idle', confirmedFileName: name, error: null });
 }
 
 function readFileAsText(file: File): Promise<string> {
@@ -294,10 +322,15 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
         return;
       }
       if (!confirmDiscardUnsavedWork()) return;
+      forgetCurrentFileHandle();
       useStore.getState().loadDiagram(parsed.diagram);
       useStore.getState().markClean(handle.name);
-      retainedFileHandle = handle;
+      // VCD is imported into a different syntax and must never be overwritten.
+      retainedFileHandle = kind === 'vcd' ? null : handle;
       retainedFileFormat = parsed.format;
+      if (kind === 'document') {
+        useFileStatus.setState({ confirmedFileName: handle.name });
+      }
       recordRecentFile(handle.name);
       return;
     } catch (e) {
@@ -330,6 +363,9 @@ async function openFile(kind: 'document' | 'vcd'): Promise<void> {
           useStore.getState().loadDiagram(parsed.diagram);
           useStore.getState().markClean(file.name);
           forgetCurrentFileHandle();
+          if (kind === 'document') {
+            useFileStatus.setState({ confirmedFileName: file.name });
+          }
           recordRecentFile(file.name);
         }
       } catch {
@@ -352,32 +388,34 @@ export function openVCDFile(): Promise<void> {
 export async function saveDiagramFile(
   diagram: DiagramState,
   existingName?: string | null,
+  options: { saveAs?: boolean } = {},
 ): Promise<void> {
+  if (useFileStatus.getState().phase === 'saving') return;
+  const session = fileSession;
+  const previousStatus = useFileStatus.getState();
+  useFileStatus.setState({ phase: 'saving', error: null });
   const w = window as FilePickerWindow;
   const format = saveFormatForDiagram(diagram);
-  const blob = await diagramBlob(diagram, format);
+  const suggestedName = existingName?.replace(/\.vcd$/i, '.json') ?? (
+    format === 'undulate-yaml' ? 'diagram.undulate.yaml'
+      : format === 'undulate-toml' ? 'diagram.undulate.toml'
+        : 'diagram.json'
+  );
 
-  if (retainedFileHandle) {
-    try {
+  try {
+    const blob = await diagramBlob(diagram, format);
+    if (session !== fileSession) return;
+    if (retainedFileHandle && !options.saveAs) {
       await writeDiagramToHandle(retainedFileHandle, blob);
+      if (session !== fileSession) return;
       retainedFileFormat = format;
+      confirmSavedDiagram(diagram, retainedFileHandle.name);
       return;
-    } catch {
-      // A revoked or unavailable handle falls through to Save As/download.
-      forgetCurrentFileHandle();
     }
-  }
 
-  if (w.showSaveFilePicker) {
-    try {
+    if (w.showSaveFilePicker) {
       const handle = await w.showSaveFilePicker({
-        suggestedName:
-          existingName
-          ?? (format === 'undulate-yaml'
-            ? 'diagram.undulate.yaml'
-            : format === 'undulate-toml'
-              ? 'diagram.undulate.toml'
-            : 'diagram.json'),
+        suggestedName,
         types: [
           {
             description: 'Waveform document',
@@ -389,38 +427,52 @@ export async function saveDiagramFile(
           },
         ],
       });
+      if (session !== fileSession) return;
       await writeDiagramToHandle(handle, blob);
+      if (session !== fileSession) return;
       retainedFileHandle = handle;
       retainedFileFormat = format;
+      confirmSavedDiagram(diagram, handle.name);
       return;
-    } catch (e) {
-      if ((e as DOMException).name === 'AbortError') return;
     }
-  }
 
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = existingName ?? (
-    format === 'undulate-yaml'
-      ? 'diagram.undulate.yaml'
-      : format === 'undulate-toml'
-        ? 'diagram.undulate.toml'
-        : 'diagram.json'
-  );
-  a.click();
-  URL.revokeObjectURL(a.href);
-  // A download click is only a request: the browser may block or cancel it.
-  // Keep the document dirty and preserve recovery data until a confirmed write.
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = suggestedName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    // A download click is only a request: the browser may block or cancel it.
+    // Keep the filename, savepoint and recovery until a confirmed write.
+    useFileStatus.setState({ phase: 'download-requested' });
+  } catch (error) {
+    if (session !== fileSession) return;
+    if ((error as DOMException).name === 'AbortError') {
+      useFileStatus.setState(previousStatus);
+      return;
+    }
+    useFileStatus.setState({
+      phase: 'error',
+      error: `${error instanceof Error ? error.message : 'Could not write the file'}. Try Save As to choose another file.`,
+    });
+  }
 }
 
-export async function saveCurrentDiagramFile(): Promise<void> {
+export async function saveCurrentDiagramFile(options: { saveAs?: boolean } = {}): Promise<void> {
+  if (!commitPendingBusLabelDraft()) {
+    window.alert('Cannot save the pending bus label. Resolve the source draft or select the bus span again.');
+    return;
+  }
   const flushed = flushPendingCodeToDiagram();
   if (flushed.ok !== true) {
     window.alert(`Cannot save source draft: ${flushed.error}`);
     return;
   }
   const { diagram, view } = useStore.getState();
-  await saveDiagramFile(diagram, view.fileName);
+  await saveDiagramFile(diagram, view.fileName, options);
+}
+
+export function saveCurrentDiagramAs(): Promise<void> {
+  return saveCurrentDiagramFile({ saveAs: true });
 }
 
 export function newDiagramFile(): void {

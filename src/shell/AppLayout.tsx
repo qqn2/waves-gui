@@ -88,8 +88,8 @@ function useNarrowLayout(): boolean {
 export function AppLayout({
   signalPanel,
   canvas,
-  showCodePanel = true,
-  showRenderPanel = true,
+  showCodePanel = false,
+  showRenderPanel = false,
 }: AppLayoutProps) {
   const panelScrollRef = useRef<HTMLDivElement | null>(null);
   const [
@@ -323,7 +323,7 @@ export function AppLayout({
       {floatRender ? (
         <FloatingCodePanel
           layout={effectivePanelsLayout.render}
-          ariaLabel="Render panel"
+          ariaLabel="Preview panel"
           onLayoutChange={(patch) => updatePanelLayout('render', patch)}
         >
           <DockPanel

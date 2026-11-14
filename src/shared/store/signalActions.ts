@@ -1021,6 +1021,7 @@ export function createSignalActions(set: ImmerSet): Pick<
     setActiveSignalIds(ids) {
       set((s) => {
         s.view.activeSignalIds = ids;
+        s.view.activeBusSegment = null;
         if (ids.length > 0) s.view.activeAnnotationId = null;
       });
     },

@@ -16,7 +16,7 @@ import { useStore } from '../shared/store';
 
 import type { Signal, SignalOrGroup, VectorSegment } from '../shared/types';
 
-import { segmentLabelFit, segmentLabelOverflows } from '../shared/vectorLabelFit';
+import { busSegmentLabelFit } from '../renderer/busLabelWarnings';
 import { VECTOR_UNKNOWN_LABEL } from '../shared/vectorSegments';
 
 import styles from './SignalPanel.module.css';
@@ -118,7 +118,7 @@ function SegmentValueRow({
 
   const fit = useMemo(
 
-    () => segmentLabelFit(segment, signal, hscale, signal.rowHeight, draft),
+    () => busSegmentLabelFit(segment, signal, hscale, draft),
 
     [draft, hscale, segment, signal],
 
@@ -149,7 +149,8 @@ function SegmentValueRow({
       ? null
       : colorIndexFromFillHex(segment.color);
 
-  const canRaiseHscale = fit.minHscale > hscale && hscale < MAX_HSCALE;
+  const targetHscale = fit.minHscale ?? MAX_HSCALE;
+  const canRaiseHscale = targetHscale > hscale && hscale < MAX_HSCALE;
 
 
 
@@ -251,15 +252,15 @@ function SegmentValueRow({
 
             className={styles.segmentOverflow}
 
-            title={`Label needs hscale ≥ ${fit.minHscale} (currently ${hscale})`}
+            title={fit.minHscale === null ? 'Shorten the label or widen its span' : `Label needs hscale ${fit.minHscale} (currently ${hscale})`}
 
           >
 
-            {fit.tooNarrowForShape ? 'Span too narrow' : 'Label clipped on canvas'}
+            {fit.tooNarrowForShape ? 'Span too narrow' : 'Label needs more space'}
 
             {' · '}
 
-            hscale ≥ {fit.minHscale}
+            {fit.minHscale === null ? 'shorten label or widen span' : `hscale ${fit.minHscale}`}
 
           </span>
 
@@ -275,11 +276,11 @@ function SegmentValueRow({
 
               canRaiseHscale
 
-                ? `Set hscale to ${fit.minHscale}`
+                ? `Set hscale to ${targetHscale}; timing stays the same`
 
                 : hscale >= MAX_HSCALE
 
-                  ? 'Already at maximum hscale'
+                  ? 'Already at maximum hscale — shorten the label or widen its span'
 
                   : `Current hscale ${hscale} is sufficient — commit label change if editing`
 
@@ -291,7 +292,7 @@ function SegmentValueRow({
 
               commit();
 
-              onIncreaseHscale(fit.minHscale);
+              onIncreaseHscale(targetHscale);
 
             }}
 
@@ -357,7 +358,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
     return ordered.filter((seg) =>
 
-      segmentLabelOverflows(seg, sig, hscale, sig.rowHeight),
+      !busSegmentLabelFit(seg, sig, hscale).fits,
 
     ).length;
 
@@ -448,7 +449,7 @@ export function VectorSegmentEditor({ signalId }: VectorSegmentEditorProps) {
 
             className={styles.segmentEditorOverflowBadge}
 
-            title={`${overflowCount} label${overflowCount === 1 ? '' : 's'} clipped on canvas — raise hscale to fit`}
+            title={`${overflowCount} label${overflowCount === 1 ? '' : 's'} need more space — widen columns or edit labels`}
 
           >
 

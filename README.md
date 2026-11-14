@@ -49,6 +49,8 @@ incompatibilities instead of silently dropping content.
 
 ## Quick start
 
+Use Node.js 22 or newer (required by the local deployment and browser-test tools).
+
 ```bash
 npm ci
 npm run dev
@@ -56,6 +58,25 @@ npm run dev
 
 Open `http://localhost:5173`. Create a production build with `npm run build`
 and inspect it with `npm run preview`.
+
+The editor starts with the canvas. **Source** and **Preview** open independently;
+closing either panel preserves its contents. Use the bottom scrollbar or
+Shift+wheel to move along a long timeline. **hscale** in Settings widens time
+columns in the diagram and exports; zoom changes only the view.
+
+In **Select**, click a bus span to edit its label or color in the toolbar.
+Enter or leaving the label field commits the edit; Escape cancels it. In
+**Draw**, those controls set the label and color for new spans. **Samples → AMBA**
+offers ordered APB, AHB, and AXI lessons with cycle highlights and explanations.
+
+The document bar shows the filename and disk-save status. **Save** (`Ctrl+S`,
+or `Cmd+S` on Mac) writes to the opened file when the browser supports it;
+**Save As** (`Ctrl+Shift+S` / `Cmd+Shift+S`) chooses a new destination. Browsers
+without file-picker support request a download and keep the save unconfirmed.
+The separate recovery status reports whether a recovery copy is stored in this
+browser, including incomplete source edits. Source undo/redo works even while
+the source contains syntax errors. Editing shortcuts include **A** for Edge,
+**T** for Span, and **Shift+T** for Invert.
 
 ## Product scope
 
